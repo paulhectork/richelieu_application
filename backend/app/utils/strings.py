@@ -3,6 +3,7 @@ import re
 import os
 
 from .constants import CONFIDENTIALS
+from .io import read_credfile
 
 
 def build_uuid() -> str:
@@ -34,15 +35,16 @@ def validate_uuid(_uuid:str, tablename:str) -> str:
     return _uuid
 
 
-def db_uri(uri:str, db:str) -> str:
+def db_uri() -> str:
     """
-    create an URI to the postgres database based on `uri` and `db`,
-    keys of `CONFIDENTIALS` that indicate the database to connect to
-    (local or distant...)
+    create an URI to the postgres database. the 
+    targeted database is specified by the 
+    `-d --database` argument provided by the user
     """
-    with open(os.path.join(CONFIDENTIALS, "postgresql_credentials.json")) as fh:
+    fn = read_credfile()
+    with open(os.path.join(CONFIDENTIALS, fn)) as fh:
         cred = json.load(fh)
     # create the engine
-    return f"postgresql://{ cred['username'] }:{ cred['password'] }@{ cred[uri] }/{ cred[db] }"
+    return f"postgresql://{cred['username']}:{cred['password']}@{cred['uri']}/{cred['db']}"
 
 

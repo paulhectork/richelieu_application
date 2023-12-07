@@ -18,7 +18,7 @@ class Base(DeclarativeBase):
 app = Flask("RICH.DATA"
             , static_folder=STATICS)
 db = SQLAlchemy(model_class=Base)
-app.config["SQLALCHEMY_DATABASE_URI"] = db_uri(uri="uri_local", db="db_local")
+app.config["SQLALCHEMY_DATABASE_URI"] = db_uri()
 app.config["SQLALCHEMY_ECHO"] = True
 db.init_app(app)
 
