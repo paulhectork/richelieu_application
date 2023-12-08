@@ -38,6 +38,31 @@ class Institution(db.Model):
     @validates("uuid", include_backrefs=False)
     def validate_uuid(self, key, value):
         return validate_uuid(value, self.__tablename__)
+    
+    def get_iconography(self):
+        return [ r.iconography.serialize_lite() 
+                 for r in self.r_institution ]
+    
+    def get_cartography(self):
+        return [ r.cartography.serialize_lite() 
+                 for r in self.r_institution ]
+    
+    def get_directory(self):
+        return [ r.directory.serialize_lite() 
+                 for r in self.r_institution ]
+    
+    def serialize_lite(self):
+        return { "uuid": self.uuid,   # str
+                 "name": self.name }  # str
+    
+    def serialize_full(self):
+        return { "uuid"        : self.uuid,               # str
+                 "name"        : self.name,               # str
+                 "description" : self.description,        # str
+                 "iconography" : self.get_iconography(),  # t.Dict
+                 "cartography" : self.get_cartography(),  # t.Dict
+                 "dicterory"   : self.get_directory()     # t.Dict
+        }
         
     
 class License(db.Model):
@@ -63,6 +88,16 @@ class License(db.Model):
     @validates("uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return validate_uuid(_uuid, self.__tablename__)
+    
+    def serialize_light(self):
+        return { "uuid" : self.uuid,   # str
+                 "name" : self.name }  # str
+    
+    def serialize_full(self):
+        return { "uuid"        : self.uuid,        # str
+                 "name"        : self.name,        # str
+                 "description" : self.description  # str
+        }
 
 
 class AdminPerson(db.Model):
@@ -87,4 +122,8 @@ class AdminPerson(db.Model):
     def validate_uuid(self, key, _uuid):
         return validate_uuid(_uuid, self.__tablename__)
     
+    def serialize_lite(self):
+        return { "uuid"       : self.uuid,
+                 "first_name" : self.first_name,
+                 "last_name"  : self.last_name }
 

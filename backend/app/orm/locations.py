@@ -86,4 +86,8 @@ class Address(db.Model):
     def validate_uuid(self, key, _uuid):
         return validate_uuid(_uuid, self.__tablename__)
     
-    
+    def to_string(self):
+        """
+        string representation of an address
+        """
+        return f"{self.number} {self.street}, {self.city} ({self.date})"

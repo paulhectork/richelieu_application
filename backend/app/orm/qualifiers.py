@@ -3,7 +3,7 @@ from sqlalchemy import ForeignKey, Text, Boolean, ARRAY
 from sqlalchemy.dialects import postgresql
 from typing import List, Dict
 
-from ..utils.strings import validate_uuid
+from ..utils.strings import validate_uuid, int4range2list
 from ..app import db 
 
 
@@ -81,6 +81,10 @@ class Theme(db.Model):
     def validate_uuid(self, key, _uuid):
         return validate_uuid(_uuid, self.__tablename__)
 
+    def serialize_lite(self):
+        return { "uuid": self.uuid,
+                 "name": self.name }
+
 
 class NamedEntity(db.Model):
     """
@@ -100,6 +104,10 @@ class NamedEntity(db.Model):
     @validates("uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return validate_uuid(_uuid, self.__tablename__)
+    
+    def serialize_lite(self):
+        return { "uuid": self.uuid,
+                 "name": self.name }
 
 
 class Actor(db.Model):
@@ -122,7 +130,20 @@ class Actor(db.Model):
     @validates("uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return validate_uuid(_uuid, self.__tablename__)
-
+    
+    def serialize_lite(self):
+        return { "uuid": self.uuid,              # str
+                 "first_name": self.first_name,  # str
+                 "last_name": self.last_name }   # str
+    
+    def serialize_full(self):
+        return { "uuid"       : self.uuid,                  # str
+                 "first_name" : self.first_name,            # str
+                 "last_name"  : self.last_name,             # str
+                 "date"       : int4range2list(self.date),  # t.List[int]
+                 "sources"    : self.sources                # t.List[str]
+         }
+    
 
 class LocationGroup(db.Model):
     """

@@ -1,6 +1,6 @@
+import atexit
 import click
 
-from app.app import app
 from app.utils.io import maketmp, deltmp, write_credfile, read_credfile
 
 
@@ -11,11 +11,17 @@ from app.utils.io import maketmp, deltmp, write_credfile, read_credfile
               , required=True)
 def run(database:str) -> None:
     """
-    run the app
+    configure and run  the backend app
     """
-    maketmp()
-    write_credfile(database)
-    app.run(port=5000, debug=True)
+    try:
+        maketmp()                       # create necessary files/dirs
+        write_credfile(database)        # write the credential file to use
+        from app.app import app         # avoid import errors
+        app.run(port=5000, debug=True)  # run the app
+    finally:
+        atexit.register(deltmp)         # delete temp files at exit, or exception
+
+    return
 
 
 if __name__ == "__main__":
