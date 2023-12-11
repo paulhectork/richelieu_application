@@ -1,35 +1,46 @@
-@import './base.css';
+@charset "UTF-8";
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+/***********************************************
+ *              basic definitions              *
+ ***********************************************/
 
+/*@import '~bootstrap/dist/css/bootstrap.css';*/
+
+@font-face {
+  font-family: "urlaub-grotesk";
+  src: url("./fonts/Urlaub-Grotesk-Regular.otf") format("opentype");
   font-weight: normal;
+  font-style: normal;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
+
+:root {
+  --cs-font-sans-serif: "urlaub-grotesk", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --cs-plum: #710551;
+  --cs-pink: #ffb0ff;
+  --cs-black: #000000;
+  --cs-duck: #00553e;
+  --cs-seagreen: #8fc7b1;
+  --cs-gold: #da9902;
+  --cs-blue: #001bde;
+  /*--cs-darkplum: #680059;
+  --cs-lightplum: #a2004e;*/
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+
+/***********************************************
+ *                global styles                *
+ ***********************************************/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  font-family: var(--cs-font-sans-serif);
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
 }

@@ -12,14 +12,34 @@ from ..orm import *
 # *************************************************
 
 
-@app.route("/i/catalog_iconography")
+@app.route("/i/iconography")
 def catalog_iconography():
     """
     get all `iconography` ressources.
-    we mimic `flask.jsonify` with `Response` because 
+    we mimic `flask.jsonify` with `Response` because
     the json isn't sent to the client using `jsonify`
     """
     r = db.session.execute(Iconography.query)
+    return Response(json.dumps([ _[0].serialize_lite() for _ in r.all() ])
+                    , mimetype="application/json")
+
+
+@app.route("/i/cartography")
+def catalog_cartography():
+    """
+    get all `cartography` ressources.
+    """
+    r = db.session.execute(Cartography.query)
+    return Response(json.dumps([ _[0].serialize_lite() for _ in r.all() ])
+                    , mimetype="application/json")
+
+
+@app.route("/i/directory")
+def catalog_directory():
+    """
+    get all directory ressources
+    """
+    r = db.session.execute(Directory.query)
     return Response(json.dumps([ _[0].serialize_lite() for _ in r.all() ])
                     , mimetype="application/json")
 
@@ -33,11 +53,11 @@ def __():
     l = [ random.choice([ _ for _ in range(5, 100) ]) for i in range(20) ]
     x = db.session.execute(R_IconographyActor.query
                                              .filter(R_IconographyActor.id.in_(l)))
-    
+
     # create an html list
     ul = "<ul>"               # html unordered list
     for _ in x.all():         # access each row
-        print(_)              # `_` is a tuple, `_[0]` is row itself 
+        print(_)              # `_` is a tuple, `_[0]` is row itself
         print(_[0].__dict__)  # print the dict rpr of row
         ul += f"""<li><dl>
             <dt>{ _[0].actor.last_name.upper() }</dt>

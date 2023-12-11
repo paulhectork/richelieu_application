@@ -9,14 +9,14 @@ from ..app import db
 
 # -----------------------------------------------------------------
 # tables describing external ressources gathered by the project.
-# these are the "main" tables, since they contain all of our 
+# these are the "main" tables, since they contain all of our
 # documentary research
 #
 # contains
 # ~~~~~~~~
 # * `Iconography`: iconographic ressources (paintings, print...)
 # * `Cartography`: cartographic ressources
-# * `File`: external files, especially images of iconographic 
+# * `File`: external files, especially images of iconographic
 #   and cartographic ressources
 # * `Directory`: the Bottins et Annuaires.
 # -----------------------------------------------------------------
@@ -28,7 +28,7 @@ class Iconography(db.Model):
     presented on the website.
     """
     __tablename__: str = "iconography"
-    
+
     id                   : Mapped[int]       = mapped_column(postgresql.INTEGER, nullable=False, primary_key=True)
     uuid                 : Mapped[str]       = mapped_column(Text, nullable=False)
     # url_manifest         : Mapped[str]       = mapped_column(Text, nullable=False)
@@ -47,10 +47,10 @@ class Iconography(db.Model):
     inventory_number     : Mapped[str]       = mapped_column(Text, nullable=True)
     # produced_richelieu   : Mapped[bool]      = mapped_column(Boolean, nullable=False)
     produced_richelieu   : Mapped[bool]      = mapped_column(Boolean, nullable=True)
-    # represents_richelieu : Mapped[bool]      = mapped_column(Boolean, nullable=False)    
-    represents_richelieu : Mapped[bool]      = mapped_column(Boolean, nullable=True)    
+    # represents_richelieu : Mapped[bool]      = mapped_column(Boolean, nullable=False)
+    represents_richelieu : Mapped[bool]      = mapped_column(Boolean, nullable=True)
     id_license           : Mapped[int]       = mapped_column(postgresql.INTEGER, ForeignKey("license.id"), nullable=False)
-    
+
     title                      : Mapped[t.List["Title"]]                    = relationship("Title"
                                                                                          , back_populates="iconography")
     annotation                 : Mapped[t.List["Annotation"]]               = relationship("Annotation"
@@ -71,11 +71,11 @@ class Iconography(db.Model):
                                                                                          , back_populates="iconography")
     r_institution              : Mapped[t.List["R_Institution"]]              = relationship("R_Institution"
                                                                                            , back_populates="iconography")
-    
+
     @validates("uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return validate_uuid(_uuid, self.__tablename__)
-    
+
     def get_author(self) -> t.List[t.Dict]:
         """
         return a t.list of authors, with the main author first
@@ -86,7 +86,7 @@ class Iconography(db.Model):
         print(l)
         l = [ a[0] for a in sorted(l, key=lambda x: x[1]) ]  # reorder + remove the `ismain` flag. the first item is the main author
         return l
-    
+
     def get_title(self) -> t.List[str]:
         """
         get the title(s) for a ressource and return them as a list of strings.
@@ -94,29 +94,29 @@ class Iconography(db.Model):
         l = [ [t.name, t.ismain] for t in self.title ]
         l = [ t[0] for t in sorted(l, key=lambda x: x[1]) ]  # [<main title>, <other title>, <...> ]
         return l
-    
+
     def get_publisher(self) -> t.List[t.Dict]:
         """
         get the list of publishers associated to a ressource
         """
-        return [ r.actor.serialize_lite() 
+        return [ r.actor.serialize_lite()
                  for r in self.r_iconography_actor
                  if r.role == "publisher" ]
-    
+
     def get_theme(self) -> t.List[t.Dict]:
         return [ r.theme.serialize_lite()
                  for r in self.r_iconography_theme ]
-    
+
     def get_named_entity(self) -> t.List[t.Dict]:
         return [ r.named_entity.serialize_lite()
                  for r in self.r_iconography_named_entity ]
-    
+
     def get_admin_person(self) -> t.Dict:
-        return [ r.admin_person.serialize_lite() 
+        return [ r.admin_person.serialize_lite()
                  for r in self.r_admin_person ]
-    
+
     def get_institution(self) -> t.Dict:
-        return [ r.institution.serialize_lite() 
+        return [ r.institution.serialize_lite()
                  for r in self.r_institution ]
 
     def serialize_lite(self) -> t.Dict:
@@ -126,7 +126,7 @@ class Iconography(db.Model):
                  "authors"      : self.get_author(),          # t.List[str]
                  "title"        : self.get_title()            # str ; 1st title
         }
-    
+
     def serialize_full(self) -> t.Dict:
         return { "uuid"                 : self.uuid,                         # str
                  "url_manifest"         : self.url_manifest,                 # str
@@ -138,7 +138,7 @@ class Iconography(db.Model):
                  "inventory_number"     : self.inventory_number,             # str
                  "produced_richelieu"   : self.produced_richelieu,           # bool
                  "represents_richelieu" : self.represents_richelieu,         # bool
-                 
+
                  "author"               : self.get_author(),                 # t.List[t.Dict]
                  "title"                : self.get_title(),                  # str ; 1st title
                  "license"              : self.license.serialize_light(),    # t.Dict
@@ -147,14 +147,14 @@ class Iconography(db.Model):
                  "named_entity"         : self.get_named_entity(),           # t.List[t.Dict]
                  "admin_person"         : self.get_admin_person()            # t.List[t.Dict]
         }
-        
+
 
 class Cartography(db.Model):
     """
     class describing our cartographic ressources
     """
     __tablename__: str = "cartography"
-    
+
     id                : Mapped[int]                   = mapped_column(postgresql.INTEGER, nullable=False, primary_key=True)
     uuid              : Mapped[str]                   = mapped_column(Text, nullable=False)
     # url_source        : Mapped[str]                   = mapped_column(Text, nullable=False)
@@ -169,7 +169,7 @@ class Cartography(db.Model):
     date              : Mapped[intervals.IntInterval] = mapped_column(postgresql.INT4RANGE, nullable=True)
     vector            : Mapped[t.Dict]                  = mapped_column(postgresql.JSON)  # MAYBE DELETE ?
     id_license        : Mapped[int]                   = mapped_column(postgresql.INTEGER, ForeignKey("license.id"), nullable=False)
-    
+
     r_cartography_location : Mapped[t.List["R_CartographyLocation"]] = relationship("R_CartographyLocation"
                                                                                  , back_populates="cartography")
     r_admin_person         : Mapped[t.List["R_AdminPerson"]]         = relationship("R_AdminPerson"
@@ -180,11 +180,24 @@ class Cartography(db.Model):
                                                                                  , back_populates="cartography")
     license                : Mapped["License"]                       = relationship("License"
                                                                                  , back_populates="cartography")
-    
+
     @validates("uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return validate_uuid(_uuid, self.__tablename__)
-    
+
+    def get_location(self) -> t.List:
+        """
+        retrieve locations associated to a cartographic ressource
+        """
+        # TODOOOOOOOOOOOOOOOOOOO
+        return ""
+
+    def serialize_lite(self) -> t.Dict:
+        return { "uuid"         : self.uuid,                  # str
+                 "description"  : self.description,           # str
+                 "date"         : int4range2list(self.date),  # t.List[int]
+                 "location"     : self.get_location()         # TODO
+        }
 
 
 class Directory(db.Model):
@@ -194,7 +207,7 @@ class Directory(db.Model):
     practiced there. the Bottins were extracted from Gallica.
     """
     __tablename__ = "directory"
-    
+
     id           : Mapped[int]       = mapped_column(postgresql.INTEGER, nullable=False, primary_key=True)
     uuid         : Mapped[str]       = mapped_column(Text, nullable=False)
     gallica_ark  : Mapped[str]       = mapped_column(Text, nullable=False)
@@ -206,7 +219,7 @@ class Directory(db.Model):
     tags         : Mapped[t.List[str]] = mapped_column(postgresql.ARRAY(Text, dimensions=1), nullable=True)
     id_address   : Mapped[int]       = mapped_column(postgresql.INTEGER, ForeignKey("address.id"), nullable=False)
     id_license   : Mapped[int]       = mapped_column(postgresql.INTEGER, ForeignKey("license.id"), nullable=False)
-    
+
     address        : Mapped["Address"]             = relationship("Address", back_populates="directory")
     license        : Mapped["License"]             = relationship("License", back_populates="directory")
     r_admin_person : Mapped[t.List["R_AdminPerson"]] = relationship("R_AdminPerson", back_populates="directory")
@@ -215,14 +228,14 @@ class Directory(db.Model):
     @validates("uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return validate_uuid(_uuid, self.__tablename__)
-    
+
     def serialize_lite(self) -> t.Dict:
         return { "uuid"       : self.uuid,
                  "name"       : self.name,
                  "occupation" : self.occupation,
                  "date"       : self.date,
                  "address"    : self.address.to_string() }
-    
+
     def serialize_full(self):
         return { "uuid"       : self.uuid,
                  "name"       : self.name,
@@ -231,17 +244,17 @@ class Directory(db.Model):
                  "license"    : self.license.t.dict_lite(),
                  "address"    : self.license.t.dict_lite(),
                  # "r_admin_person": #TODO,
-                 # r_institution: # TODO        
+                 # r_institution: # TODO
         }
-        
+
 
 class File(db.Model):
     """
-    class containing data on image and other external files (reproduction 
+    class containing data on image and other external files (reproduction
     of iconographic ressources or cartographic ressources.
     """
     __tablename__ = "file"
-    
+
     id             : Mapped[int]                      = mapped_column(postgresql.INTEGER, nullable=False, primary_key=True)
     uuid           : Mapped[str]                      = mapped_column(Text, nullable=False)
     url            : Mapped[str]                      = mapped_column(Text, nullable=False)
@@ -253,7 +266,7 @@ class File(db.Model):
     license     : Mapped["License"]     = relationship("License", back_populates="file")
     iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="file")
     cartography : Mapped["Cartography"] = relationship("Cartography", back_populates="file")
-    
+
     @validates("id", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return validate_uuid(_uuid, self.__tablename__)
