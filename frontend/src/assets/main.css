@@ -1,11 +1,9 @@
 @charset "UTF-8";
+@import "./fonts/galliard/stylesheet.css";
 
 /***********************************************
  *              basic definitions              *
  ***********************************************/
-
-/*@import '~bootstrap/dist/css/bootstrap.css';*/
-
 @font-face {
   font-family: "urlaub-grotesk";
   src: url("./fonts/Urlaub-Grotesk-Regular.otf") format("opentype");
@@ -15,6 +13,7 @@
 
 
 :root {
+  --cs-font-serif: "ITC Galliard Std";
   --cs-font-sans-serif: "urlaub-grotesk", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --cs-plum: #710551;
   --cs-pink: #ffb0ff;
@@ -35,7 +34,7 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  font-family: var(--cs-font-sans-serif);
+  font-family: var(--cs-font-serif);
 }
 
 body {

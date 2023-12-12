@@ -21,7 +21,8 @@ def catalog_iconography():
     """
     r = db.session.execute(Iconography.query)
     return Response(json.dumps([ _[0].serialize_lite() for _ in r.all() ])
-                    , mimetype="application/json")
+                    , mimetype="application/json"
+                    , content_type="application/json")
 
 
 @app.route("/i/cartography")
@@ -31,7 +32,8 @@ def catalog_cartography():
     """
     r = db.session.execute(Cartography.query)
     return Response(json.dumps([ _[0].serialize_lite() for _ in r.all() ])
-                    , mimetype="application/json")
+                    , mimetype="application/json"
+                    , content_type="application/json")
 
 
 @app.route("/i/directory")
@@ -41,7 +43,8 @@ def catalog_directory():
     """
     r = db.session.execute(Directory.query)
     return Response(json.dumps([ _[0].serialize_lite() for _ in r.all() ])
-                    , mimetype="application/json")
+                    , mimetype="application/json"
+                    , content_type="application/json")
 
 
 # *************

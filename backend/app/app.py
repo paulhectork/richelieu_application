@@ -1,5 +1,6 @@
 from sqlalchemy.orm import DeclarativeBase
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from flask import Flask
 
 from .utils.strings import db_uri
@@ -21,6 +22,7 @@ db = SQLAlchemy(model_class=Base)
 app.config["SQLALCHEMY_DATABASE_URI"] = db_uri()
 app.config["SQLALCHEMY_ECHO"] = True
 db.init_app(app)
+CORS(app)
 
 # from .orm import *
 # with app.app_context():
