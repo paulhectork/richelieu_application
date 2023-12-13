@@ -1,6 +1,25 @@
 @charset "UTF-8";
 @import "./fonts/galliard/stylesheet.css";
 
+
+/**************************************************************************
+ * ABOUT THE CSS                                                          *
+ *                                                                        *
+ * responsive design rules: there are TWO VIEWPORT SIZES,                 *
+ * with occasional variants.                                              *
+ * (1) default is mobile:                                                 *
+ *     `@media ( max-width: 900px )`                                      *
+ *     (this one is always targeted implicitly                            *
+ * (2) computer screen / tablet :                                         *
+ *     `@media ( min-width: 900px ) and ( orientation: landscape )`       *
+ * (3) sometimes, a 3rd rule is used:                                     *
+ *     `@media ( orientation: landscape )`                                *
+ *     (=> defines a layout for a landscape screen, no matter its size)   *
+ *                                                                        *
+ * - `.navbar` height (and `main-navbar-wrapper`) are defined by (3)      *
+ **************************************************************************/
+
+
 /***********************************************
  *              basic definitions              *
  ***********************************************/
@@ -11,10 +30,16 @@
   font-style: normal;
 }
 
-
 :root {
+  /**
+   * FONT DEFINITIONS
+   */
   --cs-font-serif: "ITC Galliard Std";
   --cs-font-sans-serif: "urlaub-grotesk", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /**
+   * COLOR DEFINITIONS
+   */
   --cs-plum: #710551;
   --cs-pink: #ffb0ff;
   --cs-black: #000000;
@@ -22,19 +47,45 @@
   --cs-seagreen: #8fc7b1;
   --cs-gold: #da9902;
   --cs-blue: #001bde;
-  /*--cs-darkplum: #680059;
-  --cs-lightplum: #a2004e;*/
-}
+  --cs-darkgrey: #212529;
+  --cs-lightgrey: #adb5bd;
+  --cs-darkplum: #680059;
+  /*--cs-lightplum: #a2004e;*/
 
+  --cs-main: black;                 /* main text color */
+  --cs-bg-main: white;              /* main background color */
+
+  --cs-second: var(--cs-lightgrey);   /* secondary text color */
+  --cs-bg-second: white;            /* secondary background color */
+
+  --cs-bg-focus: var(--cs-lightgrey);  /* focus background color */
+  --cs-focus: white;                 /* focus text color */
+
+  --cs-link: var(--cs-plum);
+  --cs-link-focus: var(--cs-link);
+  --cs-link-visited: var(--cs-darkplum);
+
+  /**
+   * OTHER DEFINITIONS
+   */
+  --cs-border: 1px solid black;
+  --cs-navbar-height-mobile: 7vh;
+  --cs-navbar-height-desktop: 9vh;
+  --cs-fontsize-title: max(14px, 2.5vh);
+  --cs-fontsize-main-mobile: max(15px, 1.5vh);
+  --cs-fontsize-main-desktop: max(17px, 1.75vh);
+  --cs-fontsize-menu-mobile: var(--cs-fontsize-main-mobile);
+  --cs-fontsize-menu-desktop: var(--cs-fontsize-main-desktop);
+  --cs-fontsize-legend: 125%;
+}
 
 /***********************************************
  *                global styles                *
  ***********************************************/
-*,
-*::before,
-*::after {
+ *,
+ *::before,
+ *::after {
   box-sizing: border-box;
-  font-family: var(--cs-font-serif);
 }
 
 body {
@@ -42,4 +93,45 @@ body {
   padding: 0;
   height: 100%;
   width: 100%;
+
+  color: var(--cs-main);
+  background-color: var(--cs-bg-main);
+
+  font-weight: 500;
+  font-family: var(--cs-font-serif);
+  font-size: var(--cs-fontsize-main-desktop);
+}
+
+a {
+  color: var(--cs-link);
+}
+a:focus {
+  color: var(--cs-link-focus);
+}
+a:visited {
+  color: var(--cs-link-visited);
+}
+
+.secondary {
+  background-color: var(--cs-bg-second);
+  color: var(--cs-second);
+}
+
+.focus {
+  color: var(--cs-focus);
+  background-color: var(--cs-bg-focus);
+}
+
+.border-bottom {
+  border-bottom: var(--cs-border);
+}
+
+.fill-parent {
+  width: 100%;
+  height: 100%;
+}
+
+.sticky-top {
+  top: 0;
+  position: sticky;
 }
