@@ -31,16 +31,22 @@ import Sidebar from "@components/Sidebar.vue"
   height: 100vh;
   width: 100vw;
 }
-@media ( orientation: landscape ) {
-  .app-wrapper {
-    grid-template-rows: var(--cs-navbar-height-desktop) calc(100vh - var(--cs-navbar-height-desktop));
-  }
-}
-
 .main-navbar-wrapper {
   display: grid;
   grid-template-rows: 100%;
   grid-template-columns: 75% 25%;
+  top: var(--cs-navbar-height-mobile);
+}
+@media ( orientation: landscape ) {
+  .app-wrapper {
+    grid-template-rows: var(--cs-navbar-height-desktop) calc(100vh - var(--cs-navbar-height-desktop));
+  }
+  .main-navbar-wrapper {
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: 75% 25%;
+    margin-top: var(--cs-navbar-height-desktop);
+  }
 }
 </style>
 

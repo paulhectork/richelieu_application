@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar border-bottom fill-parent sticky-top">
+  <nav class="navbar border-bottom fill-parent">
     <h1 class="navbar-brand"
         id="app-title"
     >
@@ -14,12 +14,20 @@ import { RouterLink, RouterView } from 'vue-router'
 
 <style scoped>
 .navbar {
+  top: 0;
   z-index: 2;
+  position: fixed;
+  height: var(--cs-navbar-height-mobile);
   background-color: white;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: left;
+}
+@media ( orientation: landscape ) {
+  .navbar {
+    height: var(--cs-navbar-height-desktop);
+  }
 }
 h1 {
   margin: 0;

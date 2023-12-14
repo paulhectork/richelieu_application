@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar fill-parent sticky-top">
+  <div class="sidebar fill-parent">
     <ul class="sidebar-menu fill-parent">
       <li><RouterLink to="/iconographie"
                       class="menu-text"
@@ -26,16 +26,11 @@ onMounted(() => {});
 
 <style scoped>
 .sidebar {
-  max-height: 100vh;
+  position: fixed;
+  height: calc(100vh - var(--cs-navbar-height-mobile));
   display: grid;
   grid-template-rows: 60% 40%;
   border-left: var(--cs-border);
-  top: var(--cs-navbar-height-mobile);
-}
-@media ( orientation: landscape ) {
-  .sidebar {
-    top: var(--cs-navbar-height-desktop);
-  }
 }
 .sidebar-menu {
   display: flex;
@@ -60,17 +55,22 @@ li > a.selected {
   background-color: var(--cs-bg-focus);
   color: var(--cs-focus);
 }
-.sidebar-menu
 .sidebar-visual {
 	margin: 0;
 	padding: 0;
+  width: 25%;
 	overflow: hidden;
 	display: flex;
-	flex-direction: center;
 	align-items: center;
+  justify-content: center;
 }
-.sidebar-visual img {
+.sidebar-visual > img {
   width: 120%;
 }
 
+@media ( orientation: landscape ) {
+  .sidebar {
+    height: calc(100vh - var(--cs-navbar-height-desktop));
+  }
+}
 </style>
