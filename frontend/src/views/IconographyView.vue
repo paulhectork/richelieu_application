@@ -26,16 +26,12 @@ function processResponse(r) {
    * structure a response to fit the model of `DataTables`
    * @param {Object} r: the response returned by the API
    */
-  r = JSON.parse(r.request.response);
-  for ( let i=0; i<r.length; i++ ) {
-    let authors = [];
-    for ( let j=0; j<r[i].authors.length; j++ ) {
-      authors.push(stringifyAuthor( r[i].authors[j] ));
-    }
-    r[i].authors = JSON.stringify(authors);
-    r[i].date = stringifyDate(r[i].date);
-  }
-  return r
+  return JSON.parse(r.request.response)
+             .map((e) => { let authors = [];
+                           e.authors.map((a) => { authors.push(stringifyAuthor(a)) });
+                           e.authors = JSON.stringify(authors);
+                           e.date = stringifyDate(e.date);
+                           return e; })
 }
 
 function columnsFormatter(colClassNames) {

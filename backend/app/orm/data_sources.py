@@ -185,6 +185,9 @@ class Cartography(db.Model):
     def validate_uuid(self, key, _uuid):
         return validate_uuid(_uuid, self.__tablename__)
 
+    def get_file(self) -> t.List:
+        return [ _.url for _ in self.file ]
+
     def get_location(self) -> t.List:
         """
         retrieve locations associated to a cartographic ressource
@@ -196,7 +199,8 @@ class Cartography(db.Model):
         return { "uuid"         : self.uuid,                  # str
                  "description"  : self.description,           # str
                  "date"         : int4range2list(self.date),  # t.List[int]
-                 "location"     : self.get_location()         # TODO
+                 "location"     : self.get_location(),        # TODO
+                 "file"         : self.get_file()             # t.list[str]
         }
 
 

@@ -6,12 +6,9 @@
 
 <script setup>
 import $ from "jquery";
-import { computed } from "vue";
 import DataTable from "datatables.net-dt";
 import axios from "axios";
 import { onMounted } from "vue";
-import { stringifyDate, stringifyAuthor } from "@utils/stringifiers";
-import { manifestToThumbnail } from "@utils/requests";
 
 const colClassNames = "dt-body-left dt-head-center"; // essayer de le décaler dans `DataTable.vue`
 const props = defineProps(["apiTarget"             // {URL}      : the targeted URL in the backend api

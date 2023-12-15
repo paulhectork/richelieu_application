@@ -3,7 +3,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
-import { backendUrl } from "./src/utils/constants";
+import { backendUrl, serverUrl } from "./src/utils/constants";
 
 // https://vitejs.dev/config/
 /**
@@ -18,6 +18,7 @@ export default defineConfig({
   ],
   define: {
     __API_URL__: JSON.stringify(backendUrl)
+    , __SERVER_URL__: JSON.stringify(serverUrl)
   },
   resolve: {
     alias: {
