@@ -17,11 +17,11 @@ def build_uuid() -> str:
     return f"qr1{uuid.uuid4().hex}"
 
 
-def validate_uuid(_uuid:str, tablename:str) -> str:
+def _validate_uuid(_uuid:str, tablename:str) -> str:
     """
     check that an uuid follows this structure:
     `qr1` + a 32char hexadecimal UUID, with no `-` separators, in lowercase
-    
+
     :param _uuid: the identifier to validate
     :param tablename: the name of the table which we're
                       validating.
@@ -38,9 +38,9 @@ def validate_uuid(_uuid:str, tablename:str) -> str:
 
 def int4range2list(l: t.List[int]) -> t.Optional[t.List]:
     """
-    convert a postgres `int4range` into a list: postgres' `int4range` 
-    type increments the top year by 1 (`[1994,1997]` -> `[1994,1998)`), 
-    so we need to retroconvert it. string representation of the list 
+    convert a postgres `int4range` into a list: postgres' `int4range`
+    type increments the top year by 1 (`[1994,1997]` -> `[1994,1998)`),
+    so we need to retroconvert it. string representation of the list
     will be done on the front end.
     see: https://www.psycopg.org/docs/extras.html#psycopg2.extras.NumericRange
     """
@@ -51,8 +51,8 @@ def int4range2list(l: t.List[int]) -> t.Optional[t.List]:
 
 def db_uri() -> str:
     """
-    create an URI to the postgres database. the 
-    targeted database is specified by the 
+    create an URI to the postgres database. the
+    targeted database is specified by the
     `-d --database` argument provided by the user
     """
     fn = read_credfile()

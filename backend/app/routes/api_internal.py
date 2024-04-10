@@ -63,8 +63,8 @@ def __():
         print(_)              # `_` is a tuple, `_[0]` is row itself
         print(_[0].__dict__)  # print the dict rpr of row
         ul += f"""<li><dl>
-            <dt>{ _[0].actor.last_name.upper() }</dt>
-            <dd><i>{ _[0].iconography.title[0].name }</i></dd>
+            <dt>{ _[0].actor.entry_name.upper() }</dt>
+            <dd><i>{ _[0].iconography.title[0].entry_name }</i></dd>
         </dl></li>"""
     ul += "</ul>"
 

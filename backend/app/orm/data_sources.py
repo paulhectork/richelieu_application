@@ -1,11 +1,12 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
-from sqlalchemy.dialects import postgresql
-from sqlalchemy import ForeignKey, Text, Float, Boolean
+from sqlalchemy import ForeignKey, Text, Boolean, Float
+from sqlalchemy.dialects import postgresql as psql
 import typing as t
 import intervals
 
-from ..utils.strings import validate_uuid, int4range2list
+from ..utils.strings import _validate_uuid, int4range2list
 from ..app import db
+
 
 # -----------------------------------------------------------------
 # tables describing external ressources gathered by the project.
@@ -16,7 +17,7 @@ from ..app import db
 # ~~~~~~~~
 # * `Iconography`: iconographic ressources (paintings, print...)
 # * `Cartography`: cartographic ressources
-# * `File`: external files, especially images of iconographic
+# * `Filename`: external files, especially images of iconographic
 #   and cartographic ressources
 # * `Directory`: the Bottins et Annuaires.
 # -----------------------------------------------------------------
@@ -29,52 +30,37 @@ class Iconography(db.Model):
     """
     __tablename__: str = "iconography"
 
-    id                   : Mapped[int]       = mapped_column(postgresql.INTEGER, nullable=False, primary_key=True)
-    uuid                 : Mapped[str]       = mapped_column(Text, nullable=False)
-    # url_manifest         : Mapped[str]       = mapped_column(Text, nullable=False)
-    # url_source           : Mapped[str]       = mapped_column(Text, nullable=False)
-    url_manifest         : Mapped[str]       = mapped_column(Text, nullable=True)
-    url_source           : Mapped[str]       = mapped_column(Text, nullable=True)
-    # date_source          : Mapped[str]       = mapped_column(Text, nullable=False)
-    date_source          : Mapped[str]       = mapped_column(Text, nullable=True)
-    date_corr            : Mapped[str]       = mapped_column(Text, nullable=True)
-    date                 : Mapped[t.List[int]] = mapped_column(postgresql.INT4RANGE, nullable=True)
-    # date                 : Mapped[t.List[int]] = mapped_column(postgresql.INT4RANGE, nullable=False)
-    technique            : Mapped[str]       = mapped_column(Text, nullable=True)
-    description          : Mapped[str]       = mapped_column(Text, nullable=True)
-    inscription          : Mapped[str]       = mapped_column(Text, nullable=True)
-    corpus               : Mapped[str]       = mapped_column(Text, nullable=True)
-    inventory_number     : Mapped[str]       = mapped_column(Text, nullable=True)
-    # produced_richelieu   : Mapped[bool]      = mapped_column(Boolean, nullable=False)
-    produced_richelieu   : Mapped[bool]      = mapped_column(Boolean, nullable=True)
-    # represents_richelieu : Mapped[bool]      = mapped_column(Boolean, nullable=False)
-    represents_richelieu : Mapped[bool]      = mapped_column(Boolean, nullable=True)
-    id_license           : Mapped[int]       = mapped_column(postgresql.INTEGER, ForeignKey("license.id"), nullable=False)
+    id               : Mapped[int]         = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
+    id_uuid          : Mapped[str]         = mapped_column(Text, nullable=False)
+    iiif_url         : Mapped[str]         = mapped_column(Text, nullable=True)
+    iiif_folio       : Mapped[t.List[int]] = mapped_column(psql.ARRAY(psql.INTEGER, dimensions=1), nullable=True)
+    source_url       : Mapped[str]         = mapped_column(Text, nullable=True)
+    date_source      : Mapped[str]         = mapped_column(Text, nullable=True)
+    date_corr        : Mapped[str]         = mapped_column(Text, nullable=True)
+    date             : Mapped[t.List[int]] = mapped_column(psql.INT4RANGE, nullable=True)
+    technique        : Mapped[t.List[str]] = mapped_column(psql.ARRAY(Text, dimensions=1), nullable=True)
+    description      : Mapped[str]         = mapped_column(Text, nullable=True)
+    inscription      : Mapped[str]         = mapped_column(Text, nullable=True)
+    corpus           : Mapped[str]         = mapped_column(Text, nullable=True)
+    inventory_number : Mapped[str]         = mapped_column(Text, nullable=True)
+    produced         : Mapped[bool]        = mapped_column(Boolean, nullable=True)
+    represents       : Mapped[bool]        = mapped_column(Boolean, nullable=True)
+    id_licence       : Mapped[int]         = mapped_column(psql.INTEGER, ForeignKey("licence.id"), nullable=False)
 
-    title                      : Mapped[t.List["Title"]]                    = relationship("Title"
-                                                                                         , back_populates="iconography")
-    annotation                 : Mapped[t.List["Annotation"]]               = relationship("Annotation"
-                                                                                         , back_populates="iconography")
-    file                       : Mapped[t.List["File"]]                     = relationship("File"
-                                                                                         , back_populates="iconography")
-    license                    : Mapped["License"]                        = relationship("License"
-                                                                                         , back_populates="iconography")
-    r_iconography_theme        : Mapped[t.List["R_IconographyTheme"]]       = relationship("R_IconographyTheme"
-                                                                                         , back_populates="iconography")
-    r_iconography_actor        : Mapped[t.List["R_IconographyActor"]]       = relationship("R_IconographyActor"
-                                                                                         , back_populates="iconography")
-    r_iconography_location     : Mapped[t.List["R_IconographyLocation"]]    = relationship("R_IconographyLocation"
-                                                                                         , back_populates="iconography")
-    r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity"
-                                                                                         , back_populates="iconography")
-    r_admin_person             : Mapped[t.List["R_AdminPerson"]]            = relationship("R_AdminPerson"
-                                                                                         , back_populates="iconography")
-    r_institution              : Mapped[t.List["R_Institution"]]              = relationship("R_Institution"
-                                                                                           , back_populates="iconography")
+    title                      : Mapped[t.List["Title"]]                    = relationship("Title", back_populates="iconography")
+    annotation                 : Mapped[t.List["Annotation"]]               = relationship("Annotation", back_populates="iconography")
+    filename                   : Mapped[t.List["Filename"]]                 = relationship("Filename", back_populates="iconography")
+    licence                    : Mapped["Licence"]                        = relationship("Licence", back_populates="iconography")
+    r_iconography_theme        : Mapped[t.List["R_IconographyTheme"]]       = relationship("R_IconographyTheme", back_populates="iconography")
+    r_iconography_actor        : Mapped[t.List["R_IconographyActor"]]       = relationship("R_IconographyActor", back_populates="iconography")
+    r_iconography_place        : Mapped[t.List["R_IconographyPlace"]]       = relationship("R_IconographyPlace", back_populates="iconography")
+    r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity", back_populates="iconography")
+    r_admin_person             : Mapped[t.List["R_AdminPerson"]]            = relationship("R_AdminPerson", back_populates="iconography")
+    r_institution              : Mapped[t.List["R_Institution"]]            = relationship("R_Institution", back_populates="iconography")
 
-    @validates("uuid", include_backrefs=False)
+    @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
-        return validate_uuid(_uuid, self.__tablename__)
+        return _validate_uuid(_uuid, self.__tablename__)
 
     def get_author(self) -> t.List[t.Dict]:
         """
@@ -91,7 +77,7 @@ class Iconography(db.Model):
         """
         get the title(s) for a ressource and return them as a list of strings.
         """
-        l = [ [t.name, t.ismain] for t in self.title ]
+        l = [ [t.entry_name, t.ismain] for t in self.title ]
         l = [ t[0] for t in sorted(l, key=lambda x: x[1]) ]  # [<main title>, <other title>, <...> ]
         return l
 
@@ -120,16 +106,16 @@ class Iconography(db.Model):
                  for r in self.r_institution ]
 
     def serialize_lite(self) -> t.Dict:
-        return { "uuid"         : self.uuid,                  # str
-                 "url_manifest" : self.url_manifest,          # str
-                 "date"         : int4range2list(self.date),  # t.List[int]
-                 "authors"      : self.get_author(),          # t.List[str]
-                 "title"        : self.get_title()            # str ; 1st title
+        return { "id_uuid"  : self.id_uuid,                  # str
+                 "iiif_url" : self.iiif_url,          # str
+                 "date"     : int4range2list(self.date),  # t.List[int]
+                 "authors"  : self.get_author(),          # t.List[str]
+                 "title"    : self.get_title()            # str ; 1st title
         }
 
     def serialize_full(self) -> t.Dict:
-        return { "uuid"                 : self.uuid,                         # str
-                 "url_manifest"         : self.url_manifest,                 # str
+        return { "id_uuid"              : self.id_uuid,                      # str
+                 "iiif_url"             : self.iiif_url,                     # str
                  "url_source"           : self.source,                       # str
                  "date"                 : int4range2list(self.date),         # t.List[int]
                  "date_source"          : int4range2list(self.date_source),  # t.List[int]
@@ -149,58 +135,55 @@ class Iconography(db.Model):
         }
 
 
+
 class Cartography(db.Model):
     """
     class describing our cartographic ressources
+
+    * `vector` is the shape of the place on a cartographic space. it
+      is stored as a JSON (the structure is a GeoJSON geometry multipolygon)
     """
     __tablename__: str = "cartography"
 
-    id                : Mapped[int]                   = mapped_column(postgresql.INTEGER, nullable=False, primary_key=True)
-    uuid              : Mapped[str]                   = mapped_column(Text, nullable=False)
-    # url_source        : Mapped[str]                   = mapped_column(Text, nullable=False)
-    url_source        : Mapped[str]                   = mapped_column(Text, nullable=True)
-    # url_image         : Mapped[str]                   = mapped_column(Text, nullable=False)
-    url_image         : Mapped[str]                   = mapped_column(Text, nullable=True)
-    description       : Mapped[str]                   = mapped_column(Text, nullable=True)
-    date_source       : Mapped[str]                   = mapped_column(Text, nullable=True)
-    inventory_number  : Mapped[str]                   = mapped_column(Text, nullable=True)
-    isfullstreet      : Mapped[bool]                  = mapped_column(Boolean, nullable=False)
-    # date              : Mapped[intervals.IntInterval] = mapped_column(postgresql.INT4RANGE)
-    date              : Mapped[intervals.IntInterval] = mapped_column(postgresql.INT4RANGE, nullable=True)
-    vector            : Mapped[t.Dict]                  = mapped_column(postgresql.JSON)  # MAYBE DELETE ?
-    id_license        : Mapped[int]                   = mapped_column(postgresql.INTEGER, ForeignKey("license.id"), nullable=False)
+    id               : Mapped[int]                   = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
+    id_uuid          : Mapped[str]                   = mapped_column(Text, nullable=False)
+    source_url       : Mapped[str]                   = mapped_column(Text, nullable=True)
+    title            : Mapped[str]                   = mapped_column(Text, nullable=True)
+    date_source      : Mapped[str]                   = mapped_column(Text, nullable=True)
+    inventory_number : Mapped[str]                   = mapped_column(Text, nullable=True)
+    date             : Mapped[intervals.IntInterval] = mapped_column(psql.INT4RANGE, nullable=True)
+    vector           : Mapped[t.Dict]                  = mapped_column(psql.JSON, nullable=False)
+    crs_epsg         : Mapped[int]                   = mapped_column(psql.INTEGER, nullable=False)
+    granularity      : Mapped[str]                   = mapped_column(Text, nullable=False)
+    map_source       : Mapped[str]                   = mapped_column(Text, nullable=False)
+    id_licence       : Mapped[int]                   = mapped_column(psql.INTEGER, ForeignKey("licence.id"), nullable=False)
 
-    r_cartography_location : Mapped[t.List["R_CartographyLocation"]] = relationship("R_CartographyLocation"
-                                                                                 , back_populates="cartography")
-    r_admin_person         : Mapped[t.List["R_AdminPerson"]]         = relationship("R_AdminPerson"
-                                                                                 , back_populates="cartography")
-    r_institution          : Mapped[t.List["R_Institution"]]         = relationship("R_Institution"
-                                                                                 , back_populates="cartography")
-    file                   : Mapped[t.List["File"]]                  = relationship("File"
-                                                                                 , back_populates="cartography")
-    license                : Mapped["License"]                       = relationship("License"
-                                                                                 , back_populates="cartography")
+    filename            : Mapped[t.List["Filename"]]           = relationship("Filename", back_populates="cartography")
+    licence             : Mapped["Licence"]                    = relationship("Licence", back_populates="cartography")
+    r_cartography_place : Mapped[t.List["R_CartographyPlace"]] = relationship("R_CartographyPlace", back_populates="cartography")
+    r_admin_person      : Mapped[t.List["R_AdminPerson"]]      = relationship("R_AdminPerson", back_populates="cartography")
+    r_institution       : Mapped[t.List["R_Institution"]]      = relationship("R_Institution", back_populates="cartography")
 
-    @validates("uuid", include_backrefs=False)
+    @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
-        return validate_uuid(_uuid, self.__tablename__)
+        return _validate_uuid(_uuid, self.__tablename__)
 
-    def get_file(self) -> t.List:
-        return [ _.url for _ in self.file ]
+    def get_filename(self) -> t.List:
+        return [ _.url for _ in self.filename ]
 
-    def get_location(self) -> t.List:
+    def get_place(self) -> t.List:
         """
-        retrieve locations associated to a cartographic ressource
+        retrieve places associated to a cartographic ressource
         """
         # TODOOOOOOOOOOOOOOOOOOO
         return ""
 
     def serialize_lite(self) -> t.Dict:
-        return { "uuid"         : self.uuid,                  # str
-                 "description"  : self.description,           # str
-                 "date"         : int4range2list(self.date),  # t.List[int]
-                 "location"     : self.get_location(),        # TODO
-                 "file"         : self.get_file()             # t.list[str]
+        return { "id_uuid"  : self.id_uuid,                  # str
+                 "title"    : self.title,           # str
+                 "date"     : int4range2list(self.date),  # t.List[int]
+                 "location" : self.get_place(),        # TODO
+                 "file"     : self.get_filename()             # t.list[str]
         }
 
 
@@ -212,37 +195,37 @@ class Directory(db.Model):
     """
     __tablename__ = "directory"
 
-    id           : Mapped[int]       = mapped_column(postgresql.INTEGER, nullable=False, primary_key=True)
-    uuid         : Mapped[str]       = mapped_column(Text, nullable=False)
+    id           : Mapped[int]       = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
+    id_uuid      : Mapped[str]       = mapped_column(Text, nullable=False)
     gallica_ark  : Mapped[str]       = mapped_column(Text, nullable=False)
     gallica_page : Mapped[str]       = mapped_column(Text, nullable=False)  # the page on the directory
     gallica_row  : Mapped[str]       = mapped_column(Text, nullable=False)  # the page row in the directory
-    name         : Mapped[str]       = mapped_column(Text, nullable=False)
+    entry_name   : Mapped[str]       = mapped_column(Text, nullable=False)
     occupation   : Mapped[str]       = mapped_column(Text, nullable=False)
-    date         : Mapped[str]       = mapped_column(Text, nullable=False)
-    tags         : Mapped[t.List[str]] = mapped_column(postgresql.ARRAY(Text, dimensions=1), nullable=True)
-    id_address   : Mapped[int]       = mapped_column(postgresql.INTEGER, ForeignKey("address.id"), nullable=False)
-    id_license   : Mapped[int]       = mapped_column(postgresql.INTEGER, ForeignKey("license.id"), nullable=False)
+    date         : Mapped[str]       = mapped_column(psql.INT4RANGE, nullable=False)
+    tags         : Mapped[t.List[str]] = mapped_column(psql.ARRAY(Text, dimensions=1), nullable=True)
+    id_address   : Mapped[int]       = mapped_column(psql.INTEGER, ForeignKey("address.id"), nullable=False)
+    id_licence   : Mapped[int]       = mapped_column(psql.INTEGER, ForeignKey("licence.id"), nullable=False)
 
     address        : Mapped["Address"]             = relationship("Address", back_populates="directory")
-    license        : Mapped["License"]             = relationship("License", back_populates="directory")
+    licence        : Mapped["Licence"]             = relationship("Licence", back_populates="directory")
     r_admin_person : Mapped[t.List["R_AdminPerson"]] = relationship("R_AdminPerson", back_populates="directory")
     r_institution  : Mapped[t.List["R_Institution"]] = relationship("R_Institution", back_populates="directory")
 
-    @validates("uuid", include_backrefs=False)
+    @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
-        return validate_uuid(_uuid, self.__tablename__)
+        return _validate_uuid(_uuid, self.__tablename__)
 
     def serialize_lite(self) -> t.Dict:
-        return { "uuid"       : self.uuid,
-                 "name"       : self.name,
+        return { "id_uuid"    : self.id_uuid,
+                 "entry_name" : self.entry_name,
                  "occupation" : self.occupation,
                  "date"       : self.date,
                  "address"    : self.address.to_string() }
 
     def serialize_full(self):
-        return { "uuid"       : self.uuid,
-                 "name"       : self.name,
+        return { "id_uuid"    : self.id_uuid,
+                 "entry_name" : self.entry_name,
                  "occupation" : self.occupation,
                  "date"       : self.date,
                  "license"    : self.license.t.dict_lite(),
@@ -252,27 +235,27 @@ class Directory(db.Model):
         }
 
 
-class File(db.Model):
+class Filename(db.Model):
     """
     class containing data on image and other external files (reproduction
     of iconographic ressources or cartographic ressources.
     """
-    __tablename__ = "file"
+    __tablename__ = "filename"
 
-    id             : Mapped[int]                      = mapped_column(postgresql.INTEGER, nullable=False, primary_key=True)
-    uuid           : Mapped[str]                      = mapped_column(Text, nullable=False)
+    id             : Mapped[int]                      = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
+    id_uuid        : Mapped[str]                      = mapped_column(Text, nullable=False)
     url            : Mapped[str]                      = mapped_column(Text, nullable=False)
-    latlngbounds   : Mapped[t.List[t.List[float]] | None] = mapped_column(postgresql.ARRAY(Float, dimensions=2), nullable=True)  # [ [<float>,<float>], [<float>,<float>] ]
-    id_license     : Mapped[int]                      = mapped_column(postgresql.INTEGER, ForeignKey("license.id"), nullable=True)
-    id_iconography : Mapped[int]                      = mapped_column(postgresql.INTEGER, ForeignKey("iconography.id"), nullable=True)
-    id_cartography : Mapped[int]                      = mapped_column(postgresql.INTEGER, ForeignKey("cartography.id"), nullable=True)
+    latlngbounds   : Mapped[t.List[t.List[float]] | None] = mapped_column(psql.ARRAY(Float, dimensions=2), nullable=True)  # [ [<float>,<float>], [<float>,<float>] ]
+    id_licence     : Mapped[int]                      = mapped_column(psql.INTEGER, ForeignKey("licence.id"), nullable=True)
+    id_iconography : Mapped[int]                      = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=True)
+    id_cartography : Mapped[int]                      = mapped_column(psql.INTEGER, ForeignKey("cartography.id"), nullable=True)
 
-    license     : Mapped["License"]     = relationship("License", back_populates="file")
-    iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="file")
-    cartography : Mapped["Cartography"] = relationship("Cartography", back_populates="file")
+    licence     : Mapped["Licence"]     = relationship("Licence", back_populates="filename")
+    iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="filename")
+    cartography : Mapped["Cartography"] = relationship("Cartography", back_populates="filename")
 
-    @validates("id", include_backrefs=False)
+    @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
-        return validate_uuid(_uuid, self.__tablename__)
+        return _validate_uuid(_uuid, self.__tablename__)
 
 
