@@ -1,6 +1,12 @@
 <template>
   <div class="sidebar fill-parent">
-    <ul class="sidebar-menu fill-parent">
+
+    <div class="fill-parent border-bottom">
+      <button @click="domStore.toggleSidebar"
+      >Masquer</button>
+    </div>
+
+    <ul class="sidebar-menu fill-parent border-bottom">
       <li><RouterLink to="/iconographie"
                       class="menu-text"
       >Iconographie</RouterLink></li>
@@ -8,28 +14,29 @@
                       class="menu-text"
       >Cartographie</RouterLink></li>
     </ul>
+
     <div class="sidebar-visual">
       <img :src="menuCropPath">
     </div>
+
   </div>
 </template>
 
+
 <script setup>
-import $ from "jquery";
-import { onMounted } from 'vue';
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView } from "vue-router";
+import { domStore } from "@stores/dom";
 
-const menuCropPath = "../src/assets/media/menu_crop.jpg"
-
-onMounted(() => {});
+const menuCropPath = "../src/assets/media/menu_crop.jpg";
 </script>
+
 
 <style scoped>
 .sidebar {
   position: fixed;
   height: calc(100vh - var(--cs-navbar-height-mobile));
   display: grid;
-  grid-template-rows: 60% 40%;
+  grid-template-rows: 5% 55% 40%;
   border-left: var(--cs-border);
 }
 .sidebar-menu {
@@ -37,7 +44,6 @@ onMounted(() => {});
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  border-bottom: var(--cs-border);
   padding: 0 2vw;
 }
 .sidebar-menu > li {

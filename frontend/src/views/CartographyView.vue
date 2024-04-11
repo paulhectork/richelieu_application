@@ -21,15 +21,14 @@ function processResponse(r) {
    */
   return JSON.parse(r.request.response)
              .map((e) => { e.date = stringifyDate(e.date);
-                           e.file = e.file.length > 0
-                                    ? fnToCartographyFile(e.file[0])
-                                    : null;
+                           e.file = fnToCartographyFile(e.file[0]);
                            return e; })
 }
 
 function columnsFormatter(colClassNames) {
   /**
-   * define the `DataTables.columns` array
+   * define the `DataTables.columns` array. see
+   * `IconographyView` for more information
    */
   return [
     { data: "file", title: "Image", className: colClassNames,
@@ -43,18 +42,10 @@ function columnsFormatter(colClassNames) {
       }
     }
     , { data: "date", title: "Date", className: colClassNames }
-    , { data: "description", title: "Adresse", className: colClassNames }
+    , { data: "title", title: "Titre", className: colClassNames }
   ]
 }
 
-let n = {
-  "uuid": "qr1f3e5601548874b0daa0dfe0308f320d4",
-  "description": "Neuve-des-Petits-Champs (rue) ; n°9 ; 2e, 3e arr. (anciens) ; 1er, 2e arr. (actuels)",
-  "date": "Date inconnue",
-  "location": "",
-  "file": "qr198377dc6192a4dfebb3bf0d295d33fcd_epsg3857.png"
-}
-
 axios.get(apiTarget, { responseType: "json" })
-     .then((r) => console.log( processResponse(r) ));
+     .then((r) => processResponse(r));
 </script>

@@ -1,6 +1,4 @@
 /************************************************
  *      constants used in the whole app         *
+ *     constants are also in `vite.config.js`   *
  ************************************************/
-
-export const backendUrl = "http://localhost:5000/i";
-export const serverUrl = "https://digital.inha.fr";

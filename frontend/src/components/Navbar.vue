@@ -29,14 +29,36 @@ import { RouterLink, RouterView } from 'vue-router'
     height: var(--cs-navbar-height-desktop);
   }
 }
-h1 {
+#app-title a {
   margin: 0;
   padding: 0;
   font-size: max(3vh, 18px);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--cs-txt);
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: min(50px, 2.5vh);  /* portrait size */
+  font-weight: 500;
 }
+#app-title:hover {
+  color: var(--cs-link);
+}
+
+@media ( orientation: landscape ) and ( max-width: 900px ) {
+	#app-title a {
+	  font-size: 4.5vh;
+	}
+}
+
+@media ( orientation: landscape ) and ( min-width: 900px ) {
+  #app-title a {
+    font-size: 4vh;
+  }
+}
+
+
 /*
 .navbar {
   width: 95%;
