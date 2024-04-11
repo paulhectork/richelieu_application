@@ -1,4 +1,6 @@
 from flask import render_template, jsonify, Response
+from psycopg2.extras import NumericRange
+from sqlalchemy import text, select
 import random
 import json
 
@@ -43,6 +45,45 @@ def catalog_directory():
     """
     r = db.session.execute(Directory.query)
     return Response(json.dumps([ _[0].serialize_lite() for _ in r.all() ])
+                    , mimetype="application/json"
+                    , content_type="application/json")
+
+
+@app.route("/i/list-tables")
+def list_tables():
+    """
+    list all public tables in the database
+    """
+    r = db.session.execute(text( "SELECT table_name "
+                               + "FROM information_schema.tables "
+                               + "WHERE table_schema = 'public';"))
+    return Response( json.dumps([ _[0] for _ in r.all() ])
+                   , mimetype="application/json"
+                   , content_type="application/json")
+
+
+@app.route("/i/table-viewer/<tablename>")
+def table_viewer(tablename:str):
+    """
+    get and return an entire table as a json
+    """
+    # get a row `x` as an input, return it as a list. necessary to jsonify it
+    row2list = lambda x: [ el
+                           if not isinstance(el, NumericRange)
+                           else int4range2list(el)
+                           for el in x ]
+    # map colnames to values in each row
+    zipper = lambda x: [ zip(colnames, row) for row in x ]
+    # transform the above from a list of `zip` to a list of `dict`
+    unzipper = lambda x: [ { z[0]:z[1] for z in row } for row in x ]
+
+    # run the query
+    r = db.session.execute(text(f"SELECT * FROM {tablename};"))
+    colnames = list(r.keys())  # column names for the query
+    r = [ row2list(_) for _ in r.all() ]
+    r = zipper(r)
+    r = unzipper(r)
+    return  Response( json.dumps(r)
                     , mimetype="application/json"
                     , content_type="application/json")
 
