@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar fill-parent">
 
-    <div class="fill-parent border-bottom">
+    <div class="fill-parent border-bottom sidebar-masquer">
       <button @click="domStore.toggleSidebar"
       >Masquer</button>
     </div>
@@ -38,6 +38,18 @@ const menuCropPath = "../src/assets/media/menu_crop.jpg";
   display: grid;
   grid-template-rows: 5% 55% 40%;
   border-left: var(--cs-border);
+}
+.sidebar-masquer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+}
+.sidebar-masquer > button {
+  margin: 0;
+  height: 100%;
+  border: unset;
+  border-right: var(--cs-border);
 }
 .sidebar-menu {
   display: flex;

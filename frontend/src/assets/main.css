@@ -148,4 +148,5 @@ button {
 }
 button:active {
   background-color: var(--cs-seagreen);
+  width: fit-content;
 }

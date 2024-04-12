@@ -20,6 +20,10 @@ const router = createRouter({
       path: '/cartographie',
       name: 'Cartographie',
       component: () => import('@views/CartographyView.vue')
+    }, {
+      path: '/table-viewer',
+      name: 'Voir les tables',
+      component: () => import('@views/TableViewerView.vue')
     }
   ]
 })
