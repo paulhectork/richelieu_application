@@ -67,11 +67,12 @@ def table_viewer(tablename:str):
     """
     get and return an entire table as a json
     """
-    # get a row `x` as an input, return it as a list. necessary to jsonify it
-    row2list = lambda x: [ el
-                           if not isinstance(el, NumericRange)
-                           else int4range2list(el)
-                           for el in x ]
+    # get the response `x` as an input, return it as a list
+    # and transform objects to json-compatible datatypes.
+    row2list = lambda x: [ [ el
+                             if not isinstance(el, NumericRange)
+                             else int4range2list(el)
+                             for el in row ] for row in x.all() ]
     # map colnames to values in each row
     zipper = lambda x: [ zip(colnames, row) for row in x ]
     # transform the above from a list of `zip` to a list of `dict`
@@ -80,7 +81,7 @@ def table_viewer(tablename:str):
     # run the query
     r = db.session.execute(text(f"SELECT * FROM {tablename};"))
     colnames = list(r.keys())  # column names for the query
-    r = [ row2list(_) for _ in r.all() ]
+    r = row2list(r)
     r = zipper(r)
     r = unzipper(r)
     return  Response( json.dumps(r)
