@@ -1,17 +1,26 @@
 <template>
-  <table id="datatable-catalog"
-         class="row-border hover compact fill-parent"
-         @click="console.log($('table').width())"
-  ></table>
+  <div class="datatable-container">
+    <table id="datatable-catalog"></table>
+    <!--<DataTable id="datatable-catalog"
+               class="row-border hover compact fill-parent"
+               ref="table"
+               :options="tableOptions"
+               :columns="localColumnsDefinition"
+               @click="console.log($('table').width())"
+    ></DataTable>-->
+  </div>
 </template>
 
 <script setup>
 import $ from "jquery";
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import axios from "axios";
 import { onMounted } from "vue";
 import { domStore } from "@stores/dom";
-import DataTable from "datatables.net-dt";
+import DataTable from 'datatables.net-vue3';
+import DataTablesCore from "datatables.net-dt";
+
+DataTable.use(DataTablesCore);
 
 /**
  * how does this component work?
@@ -48,11 +57,34 @@ import DataTable from "datatables.net-dt";
  * * https://datatables.net/reference/option/columns
  * * https://datatables.net/manual/ajax#JSON-data-source
  */
-
 const classNames = "dt-body-left dt-head-center";
 const props = defineProps([ "apiTarget"              // {URL}      : the targeted URL in the backend api
                           , "processResponse"        // {function} : function to transform the response JSON to create the `DataTables.data` object
                           , "columnsDefinition"]);   // {function} : function creating the `DataTables.columns`, to format the column objects;
+
+// default datatable options
+const tableOptions = {
+  // width and height change on window resize
+  autoWidth: false,
+  autoHeight: false,
+  // make the table scrollable
+  scrollX: "100%",
+  scrollY: "100%",
+  paging: false
+};
+
+let dt;
+const table=ref();
+const tableData=ref([]);
+const tableColumns=ref([]);
+
+/**
+ * `computed()` allows vue to track to changes with `watch()`
+ * in `props` in the same way that `ref()` changes are tracked.
+ * see: https://stackoverflow.com/a/70631776/17915803
+ */
+const localApiTarget = computed(() => props.apiTarget);
+const localColumnsDefinition = computed(() => props.columnsDefinition);
 
 /**
  * create the `DataTables.columns` object by extending
@@ -72,7 +104,7 @@ function createColumns(allColsNames, dataSample) {
    * @param {string} _colName: a column name
    */
   const getCustomColObj = (_colName) => {
-    props.columnsDefinition.map((c) => {
+    localColumnsDefinition.value.map((c) => {
       if ( c.data === _colName ) { return c; }
     })
     return false;
@@ -107,7 +139,7 @@ function createColumns(allColsNames, dataSample) {
       } else if ( typeof(dataSample[colName]) === "object" ) {
         renderer = (data,type,row,meta) => {
           return data != null
-          ? JSON.stringify(data)
+          ? JSON.stringify(data, 2)
           : data;
         }
       }
@@ -119,27 +151,54 @@ function createColumns(allColsNames, dataSample) {
   return outCols;
 }
 
+/**
+ *
+ * @param {URL} apiTarget: the URL from which to fetch data
+ */
+function buildDataTable(apiTarget) {
+
+}
+
 // hooks
 
 onMounted(() => {
-  console.log(">>>", props.apiTarget);
+  // dt = table.value.dt;
+
+  console.log(">>>", props.apiTarget.href);
+  // buildDataTable(props.apiTarget);
   axios.get(props.apiTarget, { responseType: "json" })
        .then((r) => {
          const d = props.processResponse(r);
          const colNames = Object.keys(d[0]);
+
          $("#datatable-catalog").DataTable({
            data: d,
            columns: createColumns( colNames, d[0] ),
-           autoWidth: false,  // allows width resize
-           autoHeight: false  // allows height resize
+           // width and height change on window resize
+           autoWidth: false,
+           autoHeight: false,
+           // make the table scrollable
+           scrollX: "100%",
+           scrollY: "100%",
+           paging: false
          })
-       })
+  })
+
+  watch(localApiTarget, (newApiTarget, oldApiTarget) => {
+      buildDataTable(newApiTarget);
+  })
+
 })
 </script>
 
 
 <style>
 @import "datatables.net-dt/css/jquery.dataTables.min.css";
+.datatable-container {
+  margin: 10px;
+  padding: 2px;
+  border: var(--cs-border)
+}
 th {
   font-weight: bolder;
   font-size: 50;
@@ -149,5 +208,11 @@ td {
   font-family: sans-serif;
   font-size: 12px;
 }
+/* not working
+tr {
+  height: 15px !important;
+  overflow: scroll;
+}
+*/
 </style>
 
