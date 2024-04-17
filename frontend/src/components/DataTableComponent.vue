@@ -1,13 +1,15 @@
 <template>
   <div class="datatable-container">
+
     <table id="datatable-catalog"></table>
-    <!--<DataTable id="datatable-catalog"
+    <!--
+    <DataTable id="datatable-catalog"
                class="row-border hover compact fill-parent"
                ref="table"
                :options="tableOptions"
-               :columns="localColumnsDefinition"
                @click="console.log($('table').width())"
-    ></DataTable>-->
+    ></DataTable>
+    -->
   </div>
 </template>
 
@@ -17,10 +19,12 @@ import { ref, watch, computed } from 'vue';
 import axios from "axios";
 import { onMounted } from "vue";
 import { domStore } from "@stores/dom";
-import DataTable from 'datatables.net-vue3';
-import DataTablesCore from "datatables.net-dt";
+import DataTable from "datatables.net-dt";
 
-DataTable.use(DataTablesCore);
+// Vue3-DataTables stuff
+// import DataTable from 'datatables.net-vue3';
+// import DataTablesLib from "datatables.net-dt";
+// DataTable.use(DataTablesLib);
 
 /**
  * how does this component work?
@@ -75,8 +79,8 @@ const tableOptions = {
 
 let dt;
 const table=ref();
-const tableData=ref([]);
-const tableColumns=ref([]);
+const tableData=ref([[]]);
+const tableColumns=ref([[]]);
 
 /**
  * `computed()` allows vue to track to changes with `watch()`
@@ -152,37 +156,68 @@ function createColumns(allColsNames, dataSample) {
 }
 
 /**
- *
+ * create a datatable based on the data available at the
+ * address `apiTarget`
  * @param {URL} apiTarget: the URL from which to fetch data
  */
 function buildDataTable(apiTarget) {
+  axios.get(props.apiTarget, { responseType: "json" })
+       .then((r) => {
+        console.log(1);
+
+        const d = props.processResponse(r);
+        const colNames = Object.keys(d[0]);
+
+        console.log(2);
+
+        // delete the datatable if necessary
+        if ( $.fn.dataTable.isDataTable($("#datatable-catalog")) ) {
+          console.log("is datatable");
+          $("#datatable-catalog").DataTable().clear().destroy();
+        }
+        $("#datatable-catalog").empty();
+
+        console.log(3);
+
+        // create the new table
+        $("#datatable-catalog").DataTable({
+          data: d,
+          columns: createColumns( colNames, d[0] ),
+          // width and height change on window resize
+          autoWidth: false,
+          autoHeight: false,
+          // make the table scrollable
+          scrollX: "100%",
+          scrollY: "100%",
+          paging: false
+        })
+      })
 
 }
 
 // hooks
 
 onMounted(() => {
-  // dt = table.value.dt;
-
-  console.log(">>>", props.apiTarget.href);
-  // buildDataTable(props.apiTarget);
+  /* Vue3 style -- doesn't work: :columns must be set
+     by default in the `html:DataTable` but my cols are
+     defined asynchronously
+  dt = table.value.dt;
   axios.get(props.apiTarget, { responseType: "json" })
        .then((r) => {
-         const d = props.processResponse(r);
-         const colNames = Object.keys(d[0]);
+         tableData.value = props.processResponse(r);
+         const colNames = Object.keys(tableData.value[0]);
+         tableColumns.value = createColumns( colNames, tableData.value[0] );
+         console.log(tableColumns.value);
 
-         $("#datatable-catalog").DataTable({
-           data: d,
-           columns: createColumns( colNames, d[0] ),
-           // width and height change on window resize
-           autoWidth: false,
-           autoHeight: false,
-           // make the table scrollable
-           scrollX: "100%",
-           scrollY: "100%",
-           paging: false
-         })
+         dt.destroy();
+         dt.columns(tableColumns);
+         dt.rows.add(d);
   })
+  */
+
+  /* JQuery style */
+  console.log(">>>", props.apiTarget.href);
+  buildDataTable(props.apiTarget);
 
   watch(localApiTarget, (newApiTarget, oldApiTarget) => {
       buildDataTable(newApiTarget);
