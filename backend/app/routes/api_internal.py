@@ -72,7 +72,8 @@ def table_viewer(tablename:str):
     row2list = lambda x: [ [ el
                              if not isinstance(el, NumericRange)
                              else int4range2list(el)
-                             for el in row ] for row in x.all() ]
+                             for el in row ]
+                           for row in x.all() ]
     # map colnames to values in each row
     zipper = lambda x: [ zip(colnames, row) for row in x ]
     # transform the above from a list of `zip` to a list of `dict`
@@ -81,9 +82,18 @@ def table_viewer(tablename:str):
     # run the query
     r = db.session.execute(text(f"SELECT * FROM {tablename};"))
     colnames = list(r.keys())  # column names for the query
-    r = row2list(r)
-    r = zipper(r)
-    r = unzipper(r)
+
+    # process the results. if there are no results, generate
+    # a 1 item list mapping all column names to `None`, to
+    # be able to display something in the frontend.
+    # `r.rowcount` returns the number of rows in the `CursorResult`;
+    # contrary to `all()`, it doesn't close the result after being run
+    if r.rowcount:
+        r = row2list(r)
+        r = zipper(r)
+        r = unzipper(r)
+    else:
+        r = [{ c:None for c in colnames }]
     return  Response( json.dumps(r)
                     , mimetype="application/json"
                     , content_type="application/json")
