@@ -66,30 +66,6 @@ const props = defineProps([ "apiTarget"              // {URL}      : the targete
                           , "processResponse"        // {function} : function to transform the response JSON to create the `DataTables.data` object
                           , "columnsDefinition"]);   // {function} : function creating the `DataTables.columns`, to format the column objects;
 
-// default datatable options
-const tableOptions = {
-  // width and height change on window resize
-  autoWidth: false,
-  autoHeight: false,
-  // make the table scrollable
-  scrollX: "100%",
-  scrollY: "100%",
-  paging: false
-};
-
-let dt;
-const table=ref();
-const tableData=ref([[]]);
-const tableColumns=ref([[]]);
-
-/**
- * `computed()` allows vue to track to changes with `watch()`
- * in `props` in the same way that `ref()` changes are tracked.
- * see: https://stackoverflow.com/a/70631776/17915803
- */
-const localApiTarget = computed(() => props.apiTarget);
-const localColumnsDefinition = computed(() => props.columnsDefinition);
-
 /**
  * create the `DataTables.columns` object by extending
  * `props.columnsDefinition` (the columns object defined
@@ -108,19 +84,39 @@ function createColumns(allColsNames, dataSample) {
    * @param {string} _colName: a column name
    */
   const getCustomColObj = (_colName) => {
-    localColumnsDefinition.value.map((c) => {
-      if ( c.data === _colName ) { return c; }
+    let matchedColObj = undefined;
+    props.columnsDefinition.forEach((c) => {
+      if ( c.data === _colName ) { matchedColObj = c; }
     })
-    return false;
+    return matchedColObj
   }
 
+  /**
+   * DataTable.column renderers for specific columns:
+   * Object (JSON, array) and URLs
+   * @param {*} data: the column values
+   */
+  const rendererObject = (data,type,row,meta) => {
+    return data != null
+    ? JSON.stringify(data, 2)
+    : data;
+  }
+  const rendererUrl = (data,type,row,meta) => {
+    return data != null    // `!= null` matches `null` and `undefined`
+    ? `<a href="${data}">${data}</a>`
+    : data;
+  }
+
+  /**
+   * process
+   */
   const outCols = [];  // our output: an array of DataTables.column objects
   allColsNames.map((colName) => {
     let colObj = getCustomColObj(colName);
 
-    // if a custom processing is defined in `props.columnsDefinition`,
-    // get it and add our extra html class names to it
-    if (colObj) {
+    // if a custom processing is defined in `props.columnsDefinition`
+    // for the column `colObj`, get it and add our extra html class names to it
+    if ( colObj !== undefined ) {
       colObj.className = classNames;
       outCols.push(colObj);
 
@@ -132,20 +128,12 @@ function createColumns(allColsNames, dataSample) {
       // define custom renderers for specific columns
       let renderer = undefined;  // will be defined below
       // URL columns
-      if (  typeof(dataSample[colName]) === "string"
-         && dataSample[colName].match(/^https?/g) ) {
-        renderer = (data,type,row,meta) => {
-          return data != null    // `!= null` matches `null` and `undefined`
-          ? `<a href="${data}">`
-          : data;
-        }
+      if ( typeof(dataSample[colName]) === "string"
+         && dataSample[colName].replace('/(^"|"$)/g', "").match(/^https?/g) ) {
+        renderer = rendererUrl;
       // object columns (array or dict)
       } else if ( typeof(dataSample[colName]) === "object" ) {
-        renderer = (data,type,row,meta) => {
-          return data != null
-          ? JSON.stringify(data, 2)
-          : data;
-        }
+        renderer = rendererObject;
       }
 
       if ( renderer !== undefined ) { colObj.render = renderer }
@@ -156,19 +144,15 @@ function createColumns(allColsNames, dataSample) {
 }
 
 /**
- * create a datatable based on the data available at the
- * address `apiTarget`
- * @param {URL} apiTarget: the URL from which to fetch data
+ * create a datatable based on the data available
+ * at the address `props.apiTarget`
  */
-function buildDataTable(apiTarget) {
+function buildDataTable() {
   axios.get(props.apiTarget, { responseType: "json" })
        .then((r) => {
-        console.log(1);
 
         const d = props.processResponse(r);
         const colNames = Object.keys(d[0]);
-
-        console.log(2);
 
         // delete the datatable if necessary
         if ( $.fn.dataTable.isDataTable($("#datatable-catalog")) ) {
@@ -176,8 +160,6 @@ function buildDataTable(apiTarget) {
           $("#datatable-catalog").DataTable().clear().destroy();
         }
         $("#datatable-catalog").empty();
-
-        console.log(3);
 
         // create the new table
         $("#datatable-catalog").DataTable({
@@ -198,11 +180,29 @@ function buildDataTable(apiTarget) {
 // hooks
 
 onMounted(() => {
+
+  /* JQuery style */
+  buildDataTable();
+
+  watch(props, (newProps, oldProps) => {
+    newProps.apiTarget.value === oldProps.apiTarget.value
+    ? buildDataTable()
+    : false;
+  })
+
+  /*
+  watch(computedApiTarget, (newApiTarget, oldApiTarget) => {
+    console.log("computedApiTarget changed!");
+
+    buildDataTable(newApiTarget);
+  })
+  */
+
   /* Vue3 style -- doesn't work: :columns must be set
      by default in the `html:DataTable` but my cols are
      defined asynchronously
-  dt = table.value.dt;
-  axios.get(props.apiTarget, { responseType: "json" })
+    dt = table.value.dt;
+    axios.get(props.apiTarget, { responseType: "json" })
        .then((r) => {
          tableData.value = props.processResponse(r);
          const colNames = Object.keys(tableData.value[0]);
@@ -214,14 +214,6 @@ onMounted(() => {
          dt.rows.add(d);
   })
   */
-
-  /* JQuery style */
-  console.log(">>>", props.apiTarget.href);
-  buildDataTable(props.apiTarget);
-
-  watch(localApiTarget, (newApiTarget, oldApiTarget) => {
-      buildDataTable(newApiTarget);
-  })
 
 })
 </script>

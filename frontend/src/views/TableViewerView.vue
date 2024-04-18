@@ -1,5 +1,6 @@
 <template>
   <h1>Voir les tables</h1>
+
   <p>Voir les données pour la table
     <select v-model="selectedTable"
             name="selectTable"
@@ -11,7 +12,12 @@
       >{{ tn }}</option>
     </select>
   </p>
-  <div><DataTableComponent v-if="selectedTable !== ''"
+
+  <p v-if="selectedTable != null && resultsCount > 0"
+  >La table <code>{{ selectedTable }}</code>
+  contient <b>{{ resultsCount }}</b> entrées.</p>
+
+  <div><DataTableComponent v-if="selectedTable != null"
                            :api-target="apiTableTarget"
                            :process-response="processResponse"
                            :columns-definition="columnsDefinition"
@@ -31,8 +37,9 @@ const columnsDefinition = [];
 
 // reactive variables
 const tableNames = ref([]);     // array will be filled in `onMounted()`
-const selectedTable = ref("");  // the currently selected table from the `<select>` above
+const selectedTable = ref();  // the currently selected table from the `<select>` above
 const apiTableTarget = ref(""); // the URL from which to fetch datatable data. defined in `loadTable()`
+const resultsCount = ref(0);    // number of results returned by `apiTableTarget`
 
 // functions
 
@@ -41,17 +48,14 @@ const apiTableTarget = ref(""); // the URL from which to fetch datatable data. d
  * @param {Object} r: the response returned by the API
  */
 function processResponse(r) {
-  return JSON.parse(r.request.response);
+  const d = JSON.parse(r.request.response);
+  resultsCount.value = d.length;
+  return d;
 }
 
 /**
- * 1. delete the previous dataTable
- * 2. fetch data on the table from the backend
- * 3. create a new datatable to display the results
- *
- * OU ALORS ON REND `columnsDefinition` ET `processResponse`
- * RESPONSIVE ET ON MODIFIE JUSTE LES ATTRIBUTS ENVOYÉS
- * À DATATABLES
+ * update the URL `apiTableTarget`. the rest of the processing
+ * (querying data, updating the table...) is done in the child
  *
  * @param {str} tableName: the name of the table
  */

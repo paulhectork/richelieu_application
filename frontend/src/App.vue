@@ -38,6 +38,7 @@ import Sidebar from "@components/Sidebar.vue";
 .main-wrapper {
   display: grid;
   grid-template-rows: 100%;
+  grid-template-columns: 100%;
   top: var(--cs-navbar-height-mobile);
 }
 .main-wrapper.sidebar-hidden {
