@@ -20,6 +20,9 @@ import axios from "axios";
 import { onMounted } from "vue";
 import { domStore } from "@stores/dom";
 import DataTable from "datatables.net-dt";
+import "datatables.net-fixedheader";
+
+import { isKindaEmpty } from "@utils/functions";
 
 // Vue3-DataTables stuff
 // import DataTable from 'datatables.net-vue3';
@@ -65,6 +68,7 @@ const classNames = "dt-body-left dt-head-center";
 const props = defineProps([ "apiTarget"              // {URL}      : the targeted URL in the backend api
                           , "processResponse"        // {function} : function to transform the response JSON to create the `DataTables.data` object
                           , "columnsDefinition"]);   // {function} : function creating the `DataTables.columns`, to format the column objects;
+const tableData = ref();                             // {Object}   : the data in the column. array of dicts, with 1 dict per row `[ {<header>: <value>} ]`
 
 /**
  * create the `DataTables.columns` object by extending
@@ -72,12 +76,15 @@ const props = defineProps([ "apiTarget"              // {URL}      : the targete
  * in the parent) with column definitions for all other
  * columns present in the `props.apiTarget` response
  * but not in `props.columnsDefinition`
- *
- * @param {Array<string>} allColsNames: all column names retrieved from `apiTarget`
- * @param {object}        dataSample  : the first row of data, to sniff for specfic cases
- *                                      on which we'll apply special rendering (URLS, objects)
  */
-function createColumns(allColsNames, dataSample) {
+function createColumns() {
+  const allColsNames = Object.keys(tableData.value[0])
+  const dataSample = tableData.value[0]
+
+  /*************
+   * functions
+   */
+
   /**
    * fetch a custom column object in `props.columnsDefinition`
    * based on a column name `_colName`
@@ -94,20 +101,25 @@ function createColumns(allColsNames, dataSample) {
   /**
    * DataTable.column renderers for specific columns:
    * Object (JSON, array) and URLs
+   * https://datatables.net/reference/option/columns.render
    * @param {*} data: the column values
    */
   const rendererObject = (data,type,row,meta) => {
-    return data != null
-    ? JSON.stringify(data, 2)
-    : data;
+    return data != null ? JSON.stringify(data, 2) : data;
   }
   const rendererUrl = (data,type,row,meta) => {
-    return data != null    // `!= null` matches `null` and `undefined`
-    ? `<a href="${data}">${data}</a>`
-    : data;
+    return data != null ? `<a href="${data}">${data}</a>` : data;
   }
 
-  /**
+  const emptyCounter = (colName) => {
+    let i=0;
+    tableData.value.map((tableRow) => {
+      i += isKindaEmpty(tableRow[colName]) ? 1 : 0
+    })
+    return `<p>${i} entrées vides sur ${tableData.value.length}</p>`
+  }
+
+  /***********
    * process
    */
   const outCols = [];  // our output: an array of DataTables.column objects
@@ -118,12 +130,16 @@ function createColumns(allColsNames, dataSample) {
     // for the column `colObj`, get it and add our extra html class names to it
     if ( colObj !== undefined ) {
       colObj.className = classNames;
+      colObj.footer = emptyCounter(colName);
       outCols.push(colObj);
 
     // else, define generic processing
     } else {
       // basic definition
-      colObj = { data: colName, title: colName, className: classNames };
+      colObj = { data: colName,
+                 title: colName,
+                 className: classNames,
+                 footer: emptyCounter(colName) };
 
       // define custom renderers for specific columns
       let renderer = undefined;  // will be defined below
@@ -135,8 +151,8 @@ function createColumns(allColsNames, dataSample) {
       } else if ( typeof(dataSample[colName]) === "object" ) {
         renderer = rendererObject;
       }
-
       if ( renderer !== undefined ) { colObj.render = renderer }
+
       outCols.push(colObj);
     }
   });
@@ -151,8 +167,7 @@ function buildDataTable() {
   axios.get(props.apiTarget, { responseType: "json" })
        .then((r) => {
 
-        const d = props.processResponse(r);
-        const colNames = Object.keys(d[0]);
+        tableData.value = props.processResponse(r);
 
         // delete the datatable if necessary
         if ( $.fn.dataTable.isDataTable($("#datatable-catalog")) ) {
@@ -163,8 +178,9 @@ function buildDataTable() {
 
         // create the new table
         $("#datatable-catalog").DataTable({
-          data: d,
-          columns: createColumns( colNames, d[0] ),
+          data: tableData.value,
+          columns: createColumns(),
+          fixedHeader: { header:true, footer:true },
           // width and height change on window resize
           autoWidth: false,
           autoHeight: false,

@@ -6,7 +6,7 @@
             name="selectTable"
             @change="loadTable(selectedTable)"
     >
-      <option value="">Choisir la table</option>
+      <option value="" selected disabled>Choisir la table</option>
       <option v-for="tn in tableNames"
               :value="tn"
       >{{ tn }}</option>
@@ -68,7 +68,7 @@ function loadTable(tableName) {
 onMounted(() => {
   axios.get(apiTargetListTables)
        .then((r) => {
-        tableNames.value = JSON.parse(r.request.response);
+        tableNames.value = JSON.parse(r.request.response).sort();
       })
 })
 

@@ -2,8 +2,11 @@
   <div class="app-wrapper">
     <!-- navbar -->
     <Navbar/>
+    <!-- with button to hide sidebar
     <div class="main-wrapper fill-parent"
-         :class="domStore.sidebarHidden ? 'sidebar-hidden' : 'sidebar-visible'">
+         :class="domStore.sidebarHidden ? 'sidebar-hidden' : 'sidebar-visible'"
+    > -->
+    <div class="main-wrapper fill-parent">
       <!-- main content: pages -->
       <main>
         <RouterView/>  <!-- display content that corresponds to a url targeted by `router-link` -->
