@@ -1,15 +1,10 @@
 <template>
   <div class="datatable-container">
-
     <table id="datatable-catalog"></table>
-    <!--
-    <DataTable id="datatable-catalog"
-               class="row-border hover compact fill-parent"
-               ref="table"
-               :options="tableOptions"
-               @click="console.log($('table').width())"
-    ></DataTable>
-    -->
+  </div>
+
+  <div id="scroll-buttons">
+    <ButtonArrow></ButtonArrow>
   </div>
 </template>
 
@@ -20,7 +15,8 @@ import axios from "axios";
 import { onMounted } from "vue";
 import { domStore } from "@stores/dom";
 import DataTable from "datatables.net-dt";
-import "datatables.net-fixedheader";
+
+import ButtonArrow from "@components/ui/ButtonArrow.vue";
 
 import { isKindaEmpty } from "@utils/functions";
 
@@ -93,9 +89,9 @@ function createColumns() {
   const getCustomColObj = (_colName) => {
     let matchedColObj = undefined;
     props.columnsDefinition.forEach((c) => {
-      if ( c.data === _colName ) { matchedColObj = c; }
+      if ( c.data === _colName ) { matchedColObj = c; };
     })
-    return matchedColObj
+    return matchedColObj;
   }
 
   /**
@@ -180,7 +176,7 @@ function buildDataTable() {
         $("#datatable-catalog").DataTable({
           data: tableData.value,
           columns: createColumns(),
-          fixedHeader: { header:true, footer:true },
+          // fixedHeader: { header:true, footer:true },
           // width and height change on window resize
           autoWidth: false,
           autoHeight: false,
@@ -205,32 +201,6 @@ onMounted(() => {
     ? buildDataTable()
     : false;
   })
-
-  /*
-  watch(computedApiTarget, (newApiTarget, oldApiTarget) => {
-    console.log("computedApiTarget changed!");
-
-    buildDataTable(newApiTarget);
-  })
-  */
-
-  /* Vue3 style -- doesn't work: :columns must be set
-     by default in the `html:DataTable` but my cols are
-     defined asynchronously
-    dt = table.value.dt;
-    axios.get(props.apiTarget, { responseType: "json" })
-       .then((r) => {
-         tableData.value = props.processResponse(r);
-         const colNames = Object.keys(tableData.value[0]);
-         tableColumns.value = createColumns( colNames, tableData.value[0] );
-         console.log(tableColumns.value);
-
-         dt.destroy();
-         dt.columns(tableColumns);
-         dt.rows.add(d);
-  })
-  */
-
 })
 </script>
 
@@ -251,11 +221,35 @@ td {
   font-family: sans-serif;
   font-size: 12px;
 }
-/* not working
-tr {
-  height: 15px !important;
-  overflow: scroll;
+
+#scroll-buttons {
+  position: absolute;
+  top: 90vh;
+  left: 60vw;
+  z-index: 999;
+  height: 10vh;
+  width: 10vh;
 }
-*/
+
+.dataTables_filter {
+  margin: 1vh 1vw;
+}
+.dataTables_scrollHead {
+  position: sticky !important;
+  top: var(--cs-navbar-height-mobile);
+  background-color: var(--cs-bg-focus);
+}
+.dataTables_scrollHead * {
+  background-color: var(--cs-bg-focus);
+}
+.dataTables_scrollBody {
+  /** Z INDEX MESSES UP THE HORIZONTAL SCROLLING */
+  z-index: -1;
+}
+@media ( orientation:landscape ) {
+  .dataTables_scrollHead {
+    top: var(--cs-navbar-height-desktop);
+  }
+}
 </style>
 

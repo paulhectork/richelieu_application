@@ -1,0 +1,21 @@
+<template>
+  <button>
+    <svg width="100%"
+         height="100%"
+         viewBox="0 0 24 24" fil
+         l="none"
+         xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M12 5V19M12 5L6 11M12 5L18 11"
+            stroke="#000000"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+      />
+    </svg>
+  </button>
+</template>
+
+<script setup></script>
+
+<style></style>

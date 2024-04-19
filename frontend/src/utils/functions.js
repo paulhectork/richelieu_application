@@ -31,4 +31,4 @@ export function isKindaEmpty(obj) {
   } else {
     return obj == null;
   }
-}
+  }
