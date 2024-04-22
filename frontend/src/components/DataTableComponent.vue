@@ -4,21 +4,28 @@
   </div>
 
   <div id="scroll-buttons">
-    <ButtonArrow></ButtonArrow>
+    <ButtonArrow orient="up"
+                 @click="scroller('up')"
+    ></ButtonArrow>
+    <ButtonArrow orient="down"
+                 @click="scroller('down')"
+    ></ButtonArrow>
   </div>
 </template>
 
+
 <script setup>
-import $ from "jquery";
-import { ref, watch, computed } from 'vue';
-import axios from "axios";
 import { onMounted } from "vue";
-import { domStore } from "@stores/dom";
+import { ref, watch, computed } from 'vue';
+
+import $ from "jquery";
+import axios from "axios";
 import DataTable from "datatables.net-dt";
+import "datatables.net-plugins/pagination/scrolling.js";
 
-import ButtonArrow from "@components/ui/ButtonArrow.vue";
-
+import { domStore } from "@stores/dom";
 import { isKindaEmpty } from "@utils/functions";
+import ButtonArrow from "@components/ui/ButtonArrow.vue";
 
 // Vue3-DataTables stuff
 // import DataTable from 'datatables.net-vue3';
@@ -65,6 +72,35 @@ const props = defineProps([ "apiTarget"              // {URL}      : the targete
                           , "processResponse"        // {function} : function to transform the response JSON to create the `DataTables.data` object
                           , "columnsDefinition"]);   // {function} : function creating the `DataTables.columns`, to format the column objects;
 const tableData = ref();                             // {Object}   : the data in the column. array of dicts, with 1 dict per row `[ {<header>: <value>} ]`
+
+
+/********************************************
+ * REGARDER ICI
+ * https://datatables.net/plug-ins/index
+ ********************************************/
+
+/**
+ * scroll to top or bottom of table
+ * @param {str} direction: the direction in which to scroll
+ */
+function scroller(direction) {
+  const allowed = ["up", "down"];
+
+  if ( !allowed.includes(direction) ) {
+    throw new Error(`DataTableComponent.scroller: 'direction' must be one of '${allowed}', got '${direction}'`)
+
+  } else {
+    const rect = document.querySelector("#datatable-catalog").getBoundingClientRect();
+    console.log(direction);
+    switch (direction) {
+      case "up":   window.scrollTo({ top:rect.top, behavior:"smooth" });
+                   break;
+      case "down": window.scrollTo({ top:rect.bottom, behavior:"smooth" });
+                   break;
+    }
+  }
+}
+
 
 /**
  * create the `DataTables.columns` object by extending
@@ -155,6 +191,7 @@ function createColumns() {
   return outCols;
 }
 
+
 /**
  * create a datatable based on the data available
  * at the address `props.apiTarget`
@@ -183,11 +220,16 @@ function buildDataTable() {
           // make the table scrollable
           scrollX: "100%",
           scrollY: "100%",
-          paging: false
+
+          // pagination, using the DataTables plugin:
+          // https://datatables.net/plug-ins/pagination/scrolling
+          paging: true,
+          sPaginationType: "scrolling"
         })
       })
 
 }
+
 
 // hooks
 
@@ -223,12 +265,20 @@ td {
 }
 
 #scroll-buttons {
-  position: absolute;
+  position: fixed;
   top: 90vh;
-  left: 60vw;
-  z-index: 999;
+  left: 0;
+  z-index: 1;
   height: 10vh;
-  width: 10vh;
+  width: 70%;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+}
+#scroll-buttons > button {
+  height: 7vh;
+  width: 7vh;
 }
 
 .dataTables_filter {

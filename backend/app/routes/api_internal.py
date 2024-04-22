@@ -67,17 +67,12 @@ def table_viewer(tablename:str):
     """
     get and return an entire table as a json
     """
-    # get the response `x` as an input, return it as a list
-    # and transform objects to json-compatible datatypes.
-    row2list = lambda x: [ [ el
-                             if not isinstance(el, NumericRange)
-                             else int4range2list(el)
-                             for el in row ]
-                           for row in x.all() ]
-    # map colnames to values in each row
-    zipper = lambda x: [ zip(colnames, row) for row in x ]
-    # transform the above from a list of `zip` to a list of `dict`
-    unzipper = lambda x: [ { z[0]:z[1] for z in row } for row in x ]
+    # convert postgres-specific datatypes into json-compliant ones.
+    maybe_convert = lambda el: el if not isinstance(el, NumericRange) else int4range2list(el)
+    # transform a row of values into a dict of `{ <colname>: <value> }`
+    mapper = lambda row: { colnames[i]: maybe_convert(row[i]) for i, r in enumerate(row) }
+    # process the SQL response into a list of `{ <colname>: <value> }` elts
+    response_process = lambda x: [ mapper(row) for row in x ]
 
     # run the query
     r = db.session.execute(text(f"SELECT * FROM {tablename};"))
@@ -88,12 +83,7 @@ def table_viewer(tablename:str):
     # be able to display something in the frontend.
     # `r.rowcount` returns the number of rows in the `CursorResult`;
     # contrary to `all()`, it doesn't close the result after being run
-    if r.rowcount:
-        r = row2list(r)
-        r = zipper(r)
-        r = unzipper(r)
-    else:
-        r = [{ c:None for c in colnames }]
+    r = response_process(r) if r.rowcount else [{ c:None for c in colnames }]
     return  Response( json.dumps(r)
                     , mimetype="application/json"
                     , content_type="application/json")

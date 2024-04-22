@@ -29,6 +29,18 @@
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: "mels";
+  src: url("./fonts/mels/Mels-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "mels";
+  src: url("./fonts/mels/Mels-Italic.otf") format("opentype");
+  font-weight: normal;
+  font-style: italic;
+}
 
 :root {
   /**
@@ -137,16 +149,41 @@ a:visited {
 }
 
 button {
-  margin: 1px;
-  padding: 1px 3px;
-  font-family: serif;
+  margin: 2px;
+  font-family: "mels";
+  padding: 3px 5px 1px 5px;
   background-color: var(--cs-bg-main);
+
   color: var(--cs-main);
   border: double 1px;
   cursor: grab;
   width: auto;
+
+  transition: color 0.2s;
+  transition: background-color 0.2s;
+}
+button:hover {
+  background-color: var(--cs-bg-focus);
+  color: var(--cs-focus);
+  border: var(--cs-border);
 }
 button:active {
   background-color: var(--cs-seagreen);
+  color: var(--cs-main);
   width: fit-content;
+}
+button > svg > path {
+  stroke: var(--cs-main);
+  transition: stroke 0.2s;
+}
+button:hover > svg > path {
+  stroke: var(--cs-focus);
+}
+button:active > svg > path {
+  stroke: var(--cs-main);
+
+}
+
+select > option {
+  font-family: "mels";
 }

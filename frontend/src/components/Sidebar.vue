@@ -15,6 +15,9 @@
       <li><RouterLink to="/cartographie"
                       class="menu-text"
       >Cartographie</RouterLink></li>
+      <li><RouterLink to="/table-viewer"
+                      class="menu-text"
+      >Voir les tables</RouterLink></li>
     </ul>
 
     <div class="sidebar-visual">

@@ -17,7 +17,7 @@ export default defineConfig({
   ],
   define: {
     __API_URL__: JSON.stringify("http://localhost:5000/i")
-    , __SERVER_URL__: JSON.stringify("https://richdata01-mgt.inha.fr")
+    , __SERVER_URL__: JSON.stringify("https://richdata01.inha.fr")
   },
   resolve: {
     alias: {
