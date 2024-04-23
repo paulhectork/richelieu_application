@@ -6,7 +6,7 @@ from app.utils.io import maketmp, deltmp, write_credfile, read_credfile
 
 @click.command()
 @click.option("--database", "-d"
-              , type=click.Choice(["local", "remote"])
+              , type=click.Choice(["local", "server"])
               , help="a key pointing to the credentials and database to use"
               , required=True)
 def run(database:str) -> None:
