@@ -148,6 +148,7 @@ a:visited {
   position: sticky;
 }
 
+/* generic button styling */
 button {
   margin: 2px;
   font-family: "mels";
@@ -184,6 +185,14 @@ button:active > svg > path {
 
 }
 
-select > option {
-  font-family: "mels";
+/* vue transitions
+ * see: https://vuejs.org/guide/built-ins/transition.html
+ */
+.v-enter-active
+, .v-leave-active {
+  transition: opacity 0.25s ease;
+}
+.v-enter-from
+, .v-leave-to {
+  opacity: 0;
 }

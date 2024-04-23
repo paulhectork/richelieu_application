@@ -1,16 +1,10 @@
 <template>
-  <div class="datatable-container">
+  <div class="datatable-container"
+       @scroll="useDisplayButton">
     <table id="datatable-catalog"></table>
   </div>
 
-  <div id="scroll-buttons">
-    <ButtonArrow orient="up"
-                 @click="scroller('up')"
-    ></ButtonArrow>
-    <ButtonArrow orient="down"
-                 @click="scroller('down')"
-    ></ButtonArrow>
-  </div>
+  <UpDownScroller></UpDownScroller>
 </template>
 
 
@@ -21,16 +15,10 @@ import { ref, watch, computed } from 'vue';
 import $ from "jquery";
 import axios from "axios";
 import DataTable from "datatables.net-dt";
-import "datatables.net-plugins/pagination/scrolling.js";
 
 import { domStore } from "@stores/dom";
 import { isKindaEmpty } from "@utils/functions";
-import ButtonArrow from "@components/ui/ButtonArrow.vue";
-
-// Vue3-DataTables stuff
-// import DataTable from 'datatables.net-vue3';
-// import DataTablesLib from "datatables.net-dt";
-// DataTable.use(DataTablesLib);
+import UpDownScroller from "@components/ui/UpDownScroller.vue";
 
 /**
  * how does this component work?
@@ -75,32 +63,14 @@ const tableData = ref();                             // {Object}   : the data in
 
 
 /********************************************
- * REGARDER ICI
- * https://datatables.net/plug-ins/index
+ * DOM MANIPULATION
  ********************************************/
 
-/**
- * scroll to top or bottom of table
- * @param {str} direction: the direction in which to scroll
- */
-function scroller(direction) {
-  const allowed = ["up", "down"];
 
-  if ( !allowed.includes(direction) ) {
-    throw new Error(`DataTableComponent.scroller: 'direction' must be one of '${allowed}', got '${direction}'`)
 
-  } else {
-    const rect = document.querySelector("#datatable-catalog").getBoundingClientRect();
-    console.log(direction);
-    switch (direction) {
-      case "up":   window.scrollTo({ top:rect.top, behavior:"smooth" });
-                   break;
-      case "down": window.scrollTo({ top:rect.bottom, behavior:"smooth" });
-                   break;
-    }
-  }
-}
-
+/********************************************
+ * DATATABLES STUFF
+ ********************************************/
 
 /**
  * create the `DataTables.columns` object by extending
@@ -221,22 +191,20 @@ function buildDataTable() {
           scrollX: "100%",
           scrollY: "100%",
 
-          // pagination, using the DataTables plugin:
-          // https://datatables.net/plug-ins/pagination/scrolling
-          paging: true,
-          sPaginationType: "scrolling"
-        })
-      })
+          paging: false
+        });
 
+        // displayButtonDown.value = useDisplayButtonDown();
+        // displayButtonUp.value = useDisplayButtonUp();
+      })
 }
 
 
-// hooks
-
+/********************************************
+ * HOOKS
+ ********************************************/
 onMounted(() => {
-
-  /* JQuery style */
-  buildDataTable();
+  buildDataTable()
 
   watch(props, (newProps, oldProps) => {
     newProps.apiTarget.value === oldProps.apiTarget.value
@@ -263,24 +231,6 @@ td {
   font-family: sans-serif;
   font-size: 12px;
 }
-
-#scroll-buttons {
-  position: fixed;
-  top: 90vh;
-  left: 0;
-  z-index: 1;
-  height: 10vh;
-  width: 70%;
-
-  display: flex;
-  flex-direction: row;
-  justify-content: right;
-}
-#scroll-buttons > button {
-  height: 7vh;
-  width: 7vh;
-}
-
 .dataTables_filter {
   margin: 1vh 1vw;
 }
@@ -294,7 +244,7 @@ td {
 }
 .dataTables_scrollBody {
   /** Z INDEX MESSES UP THE HORIZONTAL SCROLLING */
-  z-index: -1;
+  /*z-index: -1;*/
 }
 @media ( orientation:landscape ) {
   .dataTables_scrollHead {
