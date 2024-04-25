@@ -52,33 +52,79 @@
   /**
    * COLOR DEFINITIONS
    */
-  --cs-plum: #710551;
-  --cs-pink: #ffb0ff;
+  --cs-white: #ffffff;
   --cs-black: #000000;
+  --cs-plum: #710551;
   --cs-duck: #00553e;
   --cs-seagreen: #8fc7b1;
-  --cs-gold: #da9902;
-  --cs-blue: #001bde;
   --cs-darkgrey: #212529;
   --cs-lightgrey: #adb5bd;
   --cs-darkplum: #680059;
+
+  /* nice colors that aren't used
+  --cs-pink: #ffb0ff;
+  --cs-gold: #da9902;
+  --cs-blue: #001bde; */
+
   /*--cs-lightplum: #a2004e;*/
 
-  --cs-main: black;                 /* main text color */
-  --cs-bg-main: white;              /* main background color */
+  /**
+   * OUR COLOR THEME
+   *
+   * we define 2 modes, each which 3 states. all have foreground/background combos.
+   *
+   * >>>> `main`        : the base state: common text and elements.
+   * ---> `main-default`: the base state
+   * ---> `main-second` : either for text that we want to shine a light
+   *                      on, or for buttons and interactive stuff that
+   *                      is being hovered
+   * ---> `main-active` : when an action is triggered on an interactive
+   *                      element. this insists on a change of state, or
+   *                      on an action from the user.
+   **********************
+   * >>>> `contrast`        : for contrasting elements. this is thought for
+   *                          big blocks that have a special meaning in
+   *                          term of UI/UX and not just for basic buttons.
+   * ---> `contrast-default`: the base state
+   * ---> `contrast-second` : when we want to shine a light on an element, or
+   *                          for hovering
+   * ---> `contrast-active` : when an action is triggered.
+   **********************
+   * >>>> `link` : is a special, micro state for normal links (in text)
+   *
+   * of course, there may be special cases where we'll use a color
+   * theme different from the 3 states defined above, but keep it
+   * to a minimum.
+   */
 
-  --cs-second: var(--cs-lightgrey);   /* secondary text color */
-  --cs-bg-second: white;            /* secondary background color */
+  /**********************/
+  --cs-main-default: var(--cs-black);           /* font color */
+  --cs-main-default-bg: var(--cs-white);                /* background color */
 
-  --cs-bg-focus: var(--cs-lightgrey);  /* focus background color */
-  --cs-focus: white;                 /* focus text color */
+  --cs-main-second: var(--cs-white);
+  --cs-main-second-bg: var(--cs-lightgrey);
 
-  --cs-link: var(--cs-plum);
-  --cs-link-focus: var(--cs-link);
+  --cs-main-active-bg: var(--cs-white);
+  --cs-main-active: var(--cs-seagreen);
+
+  /**********************/
+  --cs-contrast-main: var(--cs-lightgrey);
+  --cs-contrast-main-bg: var(--cs-darkgrey);
+
+  --cs-contrast-second: var(--cs-white);
+  --cs-contrast-second-bg: var(--cs-lightgrey);
+
+  --cs-contrast-active: var(--cs-white);
+  --cs-contrast-active-bg: var(--cs-seagreen);
+
+  /**********************/
+  --cs-link-default: var(--cs-plum);
+  --cs-link-default-bg: var(--cs-main-default-bg);
   --cs-link-visited: var(--cs-darkplum);
+  --cs-link-visited-bg: var(--cs-main-default-bg);
 
   /**
-   * OTHER DEFINITIONS
+   * OTHER CUSTOM DEFINITIONS
    */
   --cs-border: 1px solid black;
   --cs-navbar-height-mobile: 7vh;
@@ -106,32 +152,44 @@ body {
   height: 100%;
   width: 100%;
 
-  color: var(--cs-main);
-  background-color: var(--cs-bg-main);
-
   font-weight: 500;
   font-family: var(--cs-font-serif);
   font-size: var(--cs-fontsize-main-desktop);
 }
 
 a {
-  color: var(--cs-link);
-}
-a:focus {
-  color: var(--cs-link-focus);
+  color: var(--cs-link-default);
+  background-color: var(--cs-link-default-bg);
 }
 a:visited {
   color: var(--cs-link-visited);
+  background-color: var(--cs-link-visited-bg);
 }
 
-.secondary {
-  background-color: var(--cs-bg-second);
-  color: var(--cs-second);
+.main-default {
+  color: var(--cs-main-default);
+  background-color: var(--cs-main-default-bg);
+}
+.main-second {
+  color: var(--cs-main-second);
+  background-color: var(--cs-main-second-bg);
+}
+.main-active {
+  color: var(--cs-main-active);
+  background-color: var(--cs-main-active-bg);
 }
 
-.focus {
-  color: var(--cs-focus);
-  background-color: var(--cs-bg-focus);
+.contrast-default {
+  color: var(--cs-contrast-default-bg);
+  background-color: var(--cs-contrast-default);
+}
+.contrast-second {
+  background-color: var(--cs-contrast-second-bg);
+  color: var(--cs-contrast-second);
+}
+.contrast-active {
+  color: var(--cs-contrast-active);
+  background-color: var(--cs-contrast-active-bg);
 }
 
 .border-bottom {
@@ -153,9 +211,9 @@ button {
   margin: 2px;
   font-family: "mels";
   padding: 3px 5px 1px 5px;
-  background-color: var(--cs-bg-main);
+  background-color: var(--cs-main-default-bg);
 
-  color: var(--cs-main);
+  color: var(--cs-main-default);
   border: double 1px;
   cursor: grab;
   width: auto;
@@ -164,24 +222,28 @@ button {
   transition: background-color 0.2s;
 }
 button:hover {
-  background-color: var(--cs-bg-focus);
-  color: var(--cs-focus);
+  background-color: var(--cs-main-second-bg);
+  color: var(--cs-main-second);
   border: var(--cs-border);
 }
 button:active {
   background-color: var(--cs-seagreen);
-  color: var(--cs-main);
+  color: var(--cs-main-default);
   width: fit-content;
 }
+
+/* svg */
 button > svg > path {
-  stroke: var(--cs-main);
+  stroke: var(--cs-main-default);
   transition: stroke 0.2s;
 }
 button:hover > svg > path {
-  stroke: var(--cs-focus);
+  stroke: var(--cs-main-second);
+  background-color: var(--cs-main-second-bg);
 }
 button:active > svg > path {
-  stroke: var(--cs-main);
+  stroke: var(--cs-main-active);
+  stroke: var(--cs-main-active-bg);
 
 }
 

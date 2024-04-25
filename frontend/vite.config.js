@@ -9,26 +9,38 @@ import vue from '@vitejs/plugin-vue'
  * stuff that could be useful that i don't want to understand now:
  * server config: https://vitejs.dev/config/server-options.html,
  *                https://vitejs.dev/config/server-options.html#server-proxy
- *
+ *                https://vitejs.dev/guide/env-and-mode#modes
  */
-export default defineConfig({
-  plugins: [
-    vue(),
-  ],
-  define: {
-    __API_URL__: JSON.stringify("http://localhost:5000/i"),
-    __SERVER_URL__: JSON.stringify("https://richdata01.inha.fr")
-  },
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-      "@utils": fileURLToPath(new URL("./src/utils", import.meta.url)),
-      "@views": fileURLToPath(new URL("./src/views", import.meta.url)),
-      "@router": fileURLToPath(new URL("./src/router", import.meta.url)),
-      "@stores": fileURLToPath(new URL("./src/stores", import.meta.url)),
-      "@assets": fileURLToPath(new URL("./src/assets", import.meta.url)),
-      "@components": fileURLToPath(new URL("./src/components", import.meta.url)),
-      "@composables": fileURLToPath(new URL("./src/composables", import.meta.url))
+export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
+  let constants;
+  if ( mode=="staging" ) {
+    console.log("hiii");
+    constants = {
+      __API_URL__: JSON.stringify("http://localhost:5000/i"),
+      __SERVER_URL__: JSON.stringify("http://richdata01.inha.fr")
+    }
+  } else {
+    constants = {
+      __API_URL__: JSON.stringify("http://localhost:5000/i"),
+      __SERVER_URL__: JSON.stringify("http://richdata01.inha.fr")
+    }
+  }
+  return {
+    plugins: [
+      vue(),
+    ],
+    define: constants,
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+        "@utils": fileURLToPath(new URL("./src/utils", import.meta.url)),
+        "@views": fileURLToPath(new URL("./src/views", import.meta.url)),
+        "@router": fileURLToPath(new URL("./src/router", import.meta.url)),
+        "@stores": fileURLToPath(new URL("./src/stores", import.meta.url)),
+        "@assets": fileURLToPath(new URL("./src/assets", import.meta.url)),
+        "@components": fileURLToPath(new URL("./src/components", import.meta.url)),
+        "@composables": fileURLToPath(new URL("./src/composables", import.meta.url))
+      }
     }
   }
 })

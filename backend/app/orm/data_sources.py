@@ -105,12 +105,24 @@ class Iconography(db.Model):
         return [ r.institution.serialize_lite()
                  for r in self.r_institution ]
 
+    def get_filename(self) -> t.List:
+        return [ f.url
+                 for f in self.filename ]
+
+    def get_thumbnail(self) -> t.List:
+        """get thumbnails only"""
+        return [ f.url
+                 for f in self.filename
+                 if "thumbnail" in f.url ]
+
     def serialize_lite(self) -> t.Dict:
-        return { "id_uuid"  : self.id_uuid,                  # str
-                 "iiif_url" : self.iiif_url,          # str
+        return { "id_uuid"  : self.id_uuid,               # str
+                 "iiif_url" : self.iiif_url,              # str
                  "date"     : int4range2list(self.date),  # t.List[int]
                  "authors"  : self.get_author(),          # t.List[str]
-                 "title"    : self.get_title()            # str ; 1st title
+                 "title"    : self.get_title(),           # str ; 1st title
+                 "filename" : self.get_thumbnail(),       # t.List[str]
+
         }
 
     def serialize_full(self) -> t.Dict:
@@ -125,9 +137,10 @@ class Iconography(db.Model):
                  "produced_richelieu"   : self.produced_richelieu,           # bool
                  "represents_richelieu" : self.represents_richelieu,         # bool
 
+                 "filename"             : self.get_filename(),               # t.List[str]
                  "author"               : self.get_author(),                 # t.List[t.Dict]
                  "title"                : self.get_title(),                  # str ; 1st title
-                 "license"              : self.license.serialize_light(),    # t.Dict
+                 "license"              : self.license.serialize_lite(),    # t.Dict
                  "publisher"            : self.get_publisher(),              # t.List[t.Dict]
                  "theme"                : self.get_theme(),                  # t.List[t.Dict]
                  "named_entity"         : self.get_named_entity(),           # t.List[t.Dict]

@@ -1,3 +1,7 @@
+<!-- CartographyView.vue
+     a view for the cartography catalogue
+-->
+
 <template>
   <h1>Cartographie</h1>
   <div><DataTableComponent :api-target="apiTarget"

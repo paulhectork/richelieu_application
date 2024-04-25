@@ -27,32 +27,6 @@ export function manifestToTileSources(manifestUrl) {
        })
 }
 
-export function _manifestToThumbnail(manifestUrl) {
-  /**
-   * extract a thumbnail image from a IIIF manifest
-   */
-  axios.get(manifestUrl, { responseType: "json" })
-       .then((r) => {
-        r = JSON.parse(r.request.response);
-        if ( r.thumbnail && r.thumbnail["@id"] ) {
-          return r.thumbnail["@id"]
-        } else {
-          // console.log(r);
-        }
-  }).catch ((e) => {
-    if (e.response) {
-      console.log("response")
-    } else if (e.request) {
-      // JE CROIS QUE ON SE FAIT BLOQUER PAR LA BNF AVANT
-      // MÊME D'AVOIR LANCÉ LA REQUÊTE PARCE QU'ON REFRESH TROP.
-      console.log(`request on ${manifestUrl}`);
-      console.log("complete log", e);
-      console.log("resquest log", e.request);
-      console.log("config log", e.config);
-      console.log("**************************************************************");
-    }
-  })
-}
 
 export function manifestToThumbnail(manifestUrl) {
   /**

@@ -1,7 +1,12 @@
+<!-- DataTableComponent.vue
+     a generic component to display a datatable
+     based on component received from the parent
+-->
+
 <template>
   <div class="datatable-container"
        @scroll="useDisplayButton">
-    <table id="datatable-catalog"></table>
+    <table id="datatable-catalog" class="row-border order-column"></table>
   </div>
 
   <UpDownScroller></UpDownScroller>
@@ -60,12 +65,6 @@ const props = defineProps([ "apiTarget"              // {URL}      : the targete
                           , "processResponse"        // {function} : function to transform the response JSON to create the `DataTables.data` object
                           , "columnsDefinition"]);   // {function} : function creating the `DataTables.columns`, to format the column objects;
 const tableData = ref();                             // {Object}   : the data in the column. array of dicts, with 1 dict per row `[ {<header>: <value>} ]`
-
-
-/********************************************
- * DOM MANIPULATION
- ********************************************/
-
 
 
 /********************************************
@@ -183,7 +182,6 @@ function buildDataTable() {
         $("#datatable-catalog").DataTable({
           data: tableData.value,
           columns: createColumns(),
-          // fixedHeader: { header:true, footer:true },
           // width and height change on window resize
           autoWidth: false,
           autoHeight: false,
@@ -222,29 +220,42 @@ onMounted(() => {
   padding: 2px;
   border: var(--cs-border)
 }
-th {
+#datatable-catalog th {
   font-weight: bolder;
   font-size: 50;
 }
-td {
+#datatable-catalog td {
   font-weight: lighter !important;
   font-family: sans-serif;
   font-size: 12px;
+
+  /* avoid having the td masking the header */
+  position: relative;
+  z-index: -1;
 }
+#datatable-catalog.row-border td {
+  border-top: none;
+  border-bottom: var(--cs-border);
+}
+#datatable-catalog td:has(img) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#datatable-catalog img {
+  border: var(--cs-border);
+}
+
 .dataTables_filter {
   margin: 1vh 1vw;
 }
 .dataTables_scrollHead {
   position: sticky !important;
   top: var(--cs-navbar-height-mobile);
-  background-color: var(--cs-bg-focus);
+  background-color: var(--cs-main-second-bg);
 }
 .dataTables_scrollHead * {
-  background-color: var(--cs-bg-focus);
-}
-.dataTables_scrollBody {
-  /** Z INDEX MESSES UP THE HORIZONTAL SCROLLING */
-  /*z-index: -1;*/
+  background-color: var(--cs-main-second-bg);
 }
 @media ( orientation:landscape ) {
   .dataTables_scrollHead {

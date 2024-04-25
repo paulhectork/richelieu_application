@@ -1,5 +1,5 @@
 <template>
-  <div class="app-wrapper">
+  <div class="app-wrapper main-default">
     <!-- navbar -->
     <Navbar/>
     <!-- with button to hide sidebar

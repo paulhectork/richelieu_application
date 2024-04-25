@@ -1,3 +1,12 @@
+<!-- Navbar.vue
+     a navbar that is always displayed on top
+     of the viewport.
+
+    a burger menu is displayed to show/hide
+    the navbar when :
+    `@media ( min-width: 900px ) and ( orientation: landscape )`
+-->
+
 <template>
   <nav class="navbar border-bottom fill-parent">
     <h1 class="navbar-brand"
@@ -5,11 +14,24 @@
     >
       <RouterLink to="/">Richelieu. Histoire du quartier</RouterLink>
     </h1>
+
+    <div id="burger"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
   </nav>
 </template>
 
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView } from 'vue-router';
+import { computed } from "vue";
+import $ from "jquery";
+
+//const displayBurger = computed(() => {
+//  window.matchMedia( "@media ( min-width: 900px ) and ( orientation: landscape )")
+//});
 </script>
 
 <style scoped>
@@ -19,10 +41,13 @@ import { RouterLink, RouterView } from 'vue-router'
   position: fixed;
   height: var(--cs-navbar-height-mobile);
   background-color: white;
-  display: flex;
+
+  display: grid;
   flex-direction: row;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: 100%;
+  justify-items: start;
   align-items: center;
-  justify-content: left;
 }
 @media ( orientation: landscape ) {
   .navbar {
@@ -43,7 +68,7 @@ import { RouterLink, RouterView } from 'vue-router'
   font-weight: 500;
 }
 #app-title:hover {
-  color: var(--cs-link);
+  color: var(--cs-link-default);
 }
 
 @media ( orientation: landscape ) and ( max-width: 900px ) {
@@ -58,6 +83,25 @@ import { RouterLink, RouterView } from 'vue-router'
   }
 }
 
+#burger {
+  width: 10vw;
+  height: 4.5vh;
+  display: flex;
+  margin-left: 3vw;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-end;
+  margin-right: 1vw;
+  cursor: pointer;
+}
+#burger > span {
+  height: 0.3vh;
+  min-height: 2px;
+  min-width: 4.5vw;
+  width: 100%;
+  background-color: var(--cs-main-default);
+  transition: transform 1s, opacity 1.1s, background-color 0.5s;
+}
 
 /*
 .navbar {

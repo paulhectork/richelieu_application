@@ -1,3 +1,11 @@
+<!-- Sidebar.vue
+     the sidebar displayed on the website.
+     hidden by default on mobile versions,
+     when:
+
+    `@media ( min-width: 900px ) and ( orientation: landscape )`
+ -->
+
 <template>
   <div class="sidebar fill-parent">
 
@@ -72,14 +80,14 @@ const menuCropPath = "../src/assets/media/menu_crop.jpg";
   transition: background-color 0s;
 }
 .sidebar-menu > li > a {
-  color: var(--cs-bg-focus);
+  color: var(--cs-main-second-bg);
   text-decoration: none;
   font-variant: small-caps;
   font-size: var(--cs-fontsize-menu-mobile);
 }
 li > a.selected {
-  background-color: var(--cs-bg-focus);
-  color: var(--cs-focus);
+  background-color: var(--cs-main-second-bg);
+  color: var(--cs-main-second);
 }
 .sidebar-visual {
 	margin: 0;

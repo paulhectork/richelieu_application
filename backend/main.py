@@ -9,6 +9,7 @@ from app.utils.io import maketmp, deltmp, write_credfile, read_credfile
               , type=click.Choice(["local", "server"])
               , help="a key pointing to the credentials and database to use"
               , required=True)
+
 def run(database:str) -> None:
     """
     configure and run  the backend app
