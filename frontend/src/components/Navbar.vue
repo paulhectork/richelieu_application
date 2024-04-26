@@ -41,7 +41,7 @@ function toggleSidebar(e) {
   // toggle HTML class
   domStore.mobileSidebarActive
   ? $tgt.removeClass("burger-cross")
-  : $tgt.addClass("burger-cross");
+  : $tgt.addClass("burger-cross");https://stackoverflow.com/questions/38644337/css-transition-not-working-with-transform-translate
   // toggle the sidebarActive state
   domStore.toggleMobileSidebar();
   console.log("Navbar.toggleSidebar() : end   -",
