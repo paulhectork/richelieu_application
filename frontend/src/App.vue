@@ -32,9 +32,9 @@ function setMainWrapperClasses() {
   let classes = `${domStore.windowOrientation} `;
   if ( domStore.windowOrientation!== 'landscape' ) {
     classes += domStore.mobileSidebarActive
-               ? 'mobile-sidebar-active' : 'mobile-sidebar-hidden'
+               ? 'portrait-sidebar-active' : 'portrait-sidebar-hidden'
   };
-  console.log(classes);
+  console.log("App.setMainWrapperClasses() : end -", classes);
   return classes;
 }
 
@@ -76,10 +76,10 @@ onUnmounted(() => {
   grid-template-columns: 100vw;
   margin-top: var(--cs-navbar-height-mobile);
 }
-.main-wrapper.mobile-sidebar-hidden {
+.main-wrapper.portrait-sidebar-hidden {
   grid-template-columns: 100vw 0vw;
 }
-.main-wrapper.mobile-sidebar-active {
+.main-wrapper.portrait-sidebar-active {
   grid-template-columns: 100vw 60vh;
 }
 @media ( orientation: landscape ) {
@@ -95,21 +95,25 @@ onUnmounted(() => {
   }
 }
 
-/* sidebar slide in/out animation */
+/* sidebar slide in/out animation
+ * works with `opacity` but not with translateX
+ */
 /* stable state */
 .sidebar-enter-to {
-  transform: translateX(0vw);
+  transform: translateX(-60vw);
+  /*opacity: 1;*/
 }
 /* transitions states */
 .sidebar-enter-active
 , .sidebar-leave-active {
-  transition: translateX 0s;/*all 0.8s cubic-bezier(1, 0.5, 0.8, 1);*/
+  transition: transform 1s;/*all 0.8s cubic-bezier(1, 0.5, 0.8, 1);*/
 }
-/* start / end states */
+/* start/end states */
 .sidebar-enter-from
 , .sidebar-leave-to {
-  transform: translateX(-60vw);
+  transform: translateX(0vw);
 }
+/* base/constant state */
 .portrait .sidebar {
   transform: translateX(-60vw);
 }

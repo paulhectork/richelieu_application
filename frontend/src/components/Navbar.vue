@@ -36,12 +36,17 @@ import { domStore } from "@stores/dom";
 
 function toggleSidebar(e) {
   const $tgt = $(e.target);
+  console.log("Navbar.toggleSidebar() : start -",
+              domStore.mobileSidebarActive)
   // toggle HTML class
   domStore.mobileSidebarActive
   ? $tgt.removeClass("burger-cross")
   : $tgt.addClass("burger-cross");
   // toggle the sidebarActive state
   domStore.toggleMobileSidebar();
+  console.log("Navbar.toggleSidebar() : end   -",
+              domStore.mobileSidebarActive)
+
 }
 
 

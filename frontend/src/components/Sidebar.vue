@@ -49,9 +49,6 @@ const menuCropPath = "../src/assets/media/menu_crop.jpg";
   position: fixed;
   height: calc(100vh - var(--cs-navbar-height-mobile));
   display: grid;
-  /* with a button to hide sidebar
-  grid-template-rows: 5% 55% 40%;
-  */
   grid-template-rows: 60% 40%;
   border-left: var(--cs-border);
 }
