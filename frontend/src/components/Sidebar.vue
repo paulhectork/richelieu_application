@@ -3,7 +3,7 @@
      hidden by default on mobile versions,
      when:
 
-    `@media ( min-width: 900px ) and ( orientation: landscape )`
+    `@media ( orientation: landscape )`
  -->
 
 <template>

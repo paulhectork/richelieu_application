@@ -10,10 +10,22 @@ import { reactive } from 'vue';
  * https://blog.logrocket.com/reactivity-vue-3-composition-api-ref-reactive/#watching-refs-change-watch-function
  */
 
+import $ from "jquery";
+
 
 export const domStore = reactive({
-  sidebarHidden: false,  // the sidebar has been hidden
-  toggleSidebar() {
-    this.sidebarHidden = !this.sidebarHidden
+  // portrait or landscape display.
+  windowOrientation: "portrait",
+  setWindowOrientation(val) {
+    if ( ! ["portrait", "landscape"].includes(val) ) {
+      new Error(`domStore.setWindowOrientation: expected one of ["portrait", "landscape"], got "${val}"`)
+    } else {
+      this.windowOrientation = val;
+    }
+  },
+  // flag to show that the sidebar is visible on mobile displays
+  mobileSidebarActive: false,
+  toggleMobileSidebar() {
+    this.mobileSidebarActive = !this.mobileSidebarActive
   }
 })

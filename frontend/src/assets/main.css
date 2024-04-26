@@ -7,16 +7,12 @@
  *                                                                        *
  * responsive design rules: there are TWO VIEWPORT SIZES,                 *
  * with occasional variants.                                              *
- * (1) default is mobile:                                                 *
- *     `@media ( max-width: 900px )`                                      *
- *     (this one is always targeted implicitly                            *
- * (2) computer screen / tablet :                                         *
- *     `@media ( min-width: 900px ) and ( orientation: landscape )`       *
- * (3) sometimes, a 3rd rule is used:                                     *
+ * (1) default is mobile/portrait:                                        *
+ *     `@media ( orientation:portrait )`                                  *
+ *     (this one is always targeted implicitly)                           *
+ * (2) computer screen/tablet/landscape :                                 *
  *     `@media ( orientation: landscape )`                                *
- *     (=> defines a layout for a landscape screen, no matter its size)   *
  *                                                                        *
- * - `.navbar` height (and `main-navbar-wrapper`) are defined by (3)      *
  **************************************************************************/
 
 
@@ -151,6 +147,7 @@ body {
   padding: 0;
   height: 100%;
   width: 100%;
+  overflow: hidden;
 
   font-weight: 500;
   font-family: var(--cs-font-serif);

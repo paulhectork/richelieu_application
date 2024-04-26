@@ -16,6 +16,8 @@
     </h1>
 
     <div id="burger"
+         v-if="domStore.windowOrientation!=='landscape'"
+         @click="toggleSidebar"
     >
       <span></span>
       <span></span>
@@ -26,8 +28,49 @@
 
 <script setup>
 import { RouterLink, RouterView } from 'vue-router';
-import { computed } from "vue";
+import { onMounted, onUnmounted, computed, ref } from "vue";
 import $ from "jquery";
+
+import { domStore } from "@stores/dom";
+
+
+function toggleSidebar(e) {
+  const $tgt = $(e.target);
+  // toggle HTML class
+  domStore.mobileSidebarActive
+  ? $tgt.removeClass("burger-cross")
+  : $tgt.addClass("burger-cross");
+  // toggle the sidebarActive state
+  domStore.toggleMobileSidebar();
+}
+
+
+/**
+ * set the visibility of the `#burger`.
+const windowOrientation = ref("portrait");  // `portrait` or `landscape`
+ */
+
+/*
+function setWindowOrientation() {
+  windowOrientation.value = $(window).width() > $(window).height()
+                            ? "landscape"
+                            : "portrait";
+}
+function onResize() {
+  setTimeout(setWindowOrientation, 500); /* triggered after .5s for performance * /
+}
+*/
+
+/*
+onMounted(() => {
+  setWindowOrientation();
+  addEventListener("resize", onResize);
+});
+
+onUnmounted(() => {
+  removeEventListener("resize", onResize);
+})
+*/
 
 //const displayBurger = computed(() => {
 //  window.matchMedia( "@media ( min-width: 900px ) and ( orientation: landscape )")
@@ -71,21 +114,15 @@ import $ from "jquery";
   color: var(--cs-link-default);
 }
 
-@media ( orientation: landscape ) and ( max-width: 900px ) {
+@media ( orientation: landscape ) {
 	#app-title a {
-	  font-size: 4.5vh;
+	  font-size: 4vh;
 	}
 }
 
-@media ( orientation: landscape ) and ( min-width: 900px ) {
-  #app-title a {
-    font-size: 4vh;
-  }
-}
-
 #burger {
-  width: 10vw;
-  height: 4.5vh;
+  width: max(5vw, 40px);
+  height: 4vh;
   display: flex;
   margin-left: 3vw;
   flex-direction: column;
@@ -99,9 +136,32 @@ import $ from "jquery";
   min-height: 2px;
   min-width: 4.5vw;
   width: 100%;
-  background-color: var(--cs-main-default);
-  transition: transform 1s, opacity 1.1s, background-color 0.5s;
+  background-color: var(--cs-duck);
+  transition: max-width .5s
+            , transform .5s
+            , opacity .25s
+            , background-color 0.5s;
 }
+#burger:hover > span {
+  background-color: var(--cs-link-default);
+}
+.burger-cross > span {
+  background-color: var(--cs-link-default) !important;
+  max-width: 7.5vh;
+}
+.burger-cross > span:nth-child(2) {
+  opacity: 0;
+}
+.burger-cross > span:nth-child(1) {
+  transform: translateY(450%) rotate(45deg);
+}
+.burger-cross > span:nth-child(3) {
+  transform: translateY(-1.3vh) rotate(-45deg);
+  transform: translateY(-450%) rotate(-45deg);
+}
+
+
+
 
 /*
 .navbar {
