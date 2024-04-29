@@ -71,6 +71,13 @@ onUnmounted(() => {
   width: 100vw;
 }
 .main-wrapper {
+  /* the two lines below are important
+     for the behaviour of the page when
+     scrolling */
+  position: fixed;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
   display: grid;
   grid-template-rows: 100%;
   margin-top: var(--cs-navbar-height-mobile);
@@ -82,6 +89,8 @@ onUnmounted(() => {
 }
 .main-wrapper.portrait-sidebar-active {
   grid-template-columns: 100vw var(--cs-sidebar-width-mobile);
+  width: 100vw;
+
 }
 
 @media ( orientation: landscape ) {
