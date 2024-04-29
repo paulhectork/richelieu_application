@@ -49,7 +49,12 @@ const menuCropPath = "../src/assets/media/menu_crop.jpg";
   position: fixed;
   height: calc(100vh - var(--cs-navbar-height-mobile));
   display: grid;
+  width: 60vw;
   grid-template-rows: 60% 40%;
+  z-index: 10;
+
+  color: var(--cs-main-default);
+  background-color: var(--cs-main-default-bg);
   border-left: var(--cs-border);
 }
 .sidebar-masquer {
@@ -89,19 +94,20 @@ li > a.selected {
 .sidebar-visual {
 	margin: 0;
 	padding: 0;
-  width: 25%;
-	overflow: hidden;
+  overflow: hidden;
 	display: flex;
 	align-items: center;
   justify-content: center;
 }
 .sidebar-visual > img {
-  width: 120%;
+  /*max-width: 100%;*/
+  min-width: 120%;
 }
 
 @media ( orientation: landscape ) {
   .sidebar {
     height: calc(100vh - var(--cs-navbar-height-desktop));
+    width: 25vw;
   }
 }
 </style>

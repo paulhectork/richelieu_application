@@ -2,6 +2,9 @@
  *         globally useful functions          *
  **********************************************/
 
+import $ from "jquery";
+
+
 /**
  * create an URL to an image on the remote server
  * from the cartography/iconography table.
@@ -34,4 +37,24 @@ export function isKindaEmpty(obj) {
   } else {
     return obj == null;
   }
-  }
+}
+
+
+/**
+ * this function avoids the double firing of the `click touchend` event,
+ * used to detect click on both mobile and desktop.
+ *
+ * on touch screens, `touchend` is an equivalent for the `click`
+ * DOM event => we target click on mobile+desktop by listening
+ * to "click touchend" event. however, this can cause a
+ * click-like event to be fired twice (once for click, once
+ * for touchend).
+ *
+ * WARNING: can cause bugs and cancel other click events being fired.
+ * see: https://stackoverflow.com/questions/25572070/javascript-touchend-versus-click-dilemma
+ */
+export function cleanClickOrTouchend(event) {
+  event.stopPropagation();
+  event.preventDefault();
+  return event
+}

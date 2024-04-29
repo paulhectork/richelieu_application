@@ -16,9 +16,7 @@
     </h1>
 
     <div id="burger"
-         v-if="domStore.windowOrientation!=='landscape'"
-         @click="toggleSidebar"
-    >
+         v-if="domStore.windowOrientation!=='landscape'">
       <span></span>
       <span></span>
       <span></span>
@@ -26,61 +24,37 @@
   </nav>
 </template>
 
+
 <script setup>
 import { RouterLink, RouterView } from 'vue-router';
 import { onMounted, onUnmounted, computed, ref } from "vue";
 import $ from "jquery";
 
 import { domStore } from "@stores/dom";
+import { cleanClickOrTouchend } from "@utils/functions";
 
 
-function toggleSidebar(e) {
+async function toggleSidebar(e) {
   const $tgt = $(e.target);
-  console.log("Navbar.toggleSidebar() : start -",
-              domStore.mobileSidebarActive)
   // toggle HTML class
-  domStore.mobileSidebarActive
-  ? $tgt.removeClass("burger-cross")
-  : $tgt.addClass("burger-cross");https://stackoverflow.com/questions/38644337/css-transition-not-working-with-transform-translate
+  domStore.mobileSidebarActive ? $tgt.removeClass("burger-cross")
+                               : $tgt.addClass("burger-cross");
   // toggle the sidebarActive state
   domStore.toggleMobileSidebar();
-  console.log("Navbar.toggleSidebar() : end   -",
-              domStore.mobileSidebarActive)
-
+  return
 }
 
-
-/**
- * set the visibility of the `#burger`.
-const windowOrientation = ref("portrait");  // `portrait` or `landscape`
- */
-
-/*
-function setWindowOrientation() {
-  windowOrientation.value = $(window).width() > $(window).height()
-                            ? "landscape"
-                            : "portrait";
-}
-function onResize() {
-  setTimeout(setWindowOrientation, 500); /* triggered after .5s for performance * /
-}
-*/
-
-/*
 onMounted(() => {
-  setWindowOrientation();
-  addEventListener("resize", onResize);
-});
-
-onUnmounted(() => {
-  removeEventListener("resize", onResize);
+  $("#burger").on("click touchend", (e) => {
+    e = cleanClickOrTouchend(e);
+    toggleSidebar(e);
+  });
 })
-*/
-
-//const displayBurger = computed(() => {
-//  window.matchMedia( "@media ( min-width: 900px ) and ( orientation: landscape )")
-//});
+onUnmounted(() => {
+  document.removeEventListener("click touchend", toggleSidebar);
+})
 </script>
+
 
 <style scoped>
 .navbar {

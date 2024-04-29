@@ -10,9 +10,9 @@
       </main>
       <!-- sidebar -->
       <div>
-        <Transition name="sidebar">
+        <!--<Transition name="sidebar">-->
           <Sidebar v-if="domStore.mobileSidebarActive || domStore.windowOrientation==='landscape'"/>
-        </Transition>
+        <!--</Transition>-->
       </div>
     </div>
   </div>
@@ -34,7 +34,7 @@ function setMainWrapperClasses() {
     classes += domStore.mobileSidebarActive
                ? 'portrait-sidebar-active' : 'portrait-sidebar-hidden'
   };
-  console.log("App.setMainWrapperClasses() : end -", classes);
+  // console.log("App.setMainWrapperClasses() : end -", classes);
   return classes;
 }
 
@@ -63,37 +63,40 @@ onUnmounted(() => {
 .app-wrapper {
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: var(--cs-navbar-height-mobile) calc(100vh - var(--cs-navbar-height-mobile));
+  grid-template-rows: var(--cs-navbar-height-mobile)
+                      calc(100vh - var(--cs-navbar-height-mobile));
   margin: 0;
   padding: 0;
   height: 100vh;
   width: 100vw;
-  overflow: hidden;
 }
 .main-wrapper {
   display: grid;
   grid-template-rows: 100%;
-  grid-template-columns: 100vw;
   margin-top: var(--cs-navbar-height-mobile);
+  height: calc(100vh - var(--cs-navbar-height-mobile));
 }
+
 .main-wrapper.portrait-sidebar-hidden {
   grid-template-columns: 100vw 0vw;
 }
 .main-wrapper.portrait-sidebar-active {
-  grid-template-columns: 100vw 60vh;
+  grid-template-columns: 100vw var(--cs-sidebar-width-mobile);
 }
+
 @media ( orientation: landscape ) {
   .app-wrapper {
-    grid-template-rows: var(--cs-navbar-height-desktop) calc(100vh - var(--cs-navbar-height-desktop));
+    grid-template-rows: var(--cs-navbar-height-desktop)
+                        calc(100vh - var(--cs-navbar-height-desktop));
   }
   .main-wrapper {
-    grid-template-columns: 75% 25%;
     margin-top: var(--cs-navbar-height-desktop);
-  }
-  .main-wrapper.mobile-sidebar-hidden {
-    grid-template-columns: 75% 25%;
+    height: calc(100vh - var(--cs-navbar-height-desktop));
+    grid-template-columns: calc(100vw - var(--cs-sidebar-width-desktop))
+                           var(--cs-sidebar-width-desktop);
   }
 }
+
 
 /* sidebar slide in/out animation
  * works with `opacity` but not with translateX
