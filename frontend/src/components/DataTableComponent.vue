@@ -251,7 +251,7 @@ onMounted(() => {
 }
 .dataTables_scrollHead {
   position: sticky !important;
-  top: var(--cs-navbar-height-mobile);
+  top: 0;/*var(--cs-navbar-height-mobile);*/
   background-color: var(--cs-main-second-bg);
 }
 .dataTables_scrollHead * {
