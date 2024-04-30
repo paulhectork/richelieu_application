@@ -16,7 +16,8 @@
     </h1>
 
     <div id="burger"
-         v-if="domStore.windowOrientation!=='landscape'">
+         v-if="domStore.windowOrientation!=='landscape'"
+         :class="domStore.mobileSidebarActive ? 'burger-cross' : ''">
       <span></span>
       <span></span>
       <span></span>
@@ -37,8 +38,10 @@ import { cleanClickOrTouchend } from "@utils/functions";
 async function toggleSidebar(e) {
   const $tgt = $(e.target);
   // toggle HTML class
-  domStore.mobileSidebarActive ? $tgt.removeClass("burger-cross")
-                               : $tgt.addClass("burger-cross");
+  console.log( domStore.mobileSidebarActive,
+               domStore.mobileSidebarActive ? " : désactiver" : ": activer");
+  // domStore.mobileSidebarActive ? $tgt.removeClass("burger-cross")
+  //                              : $tgt.addClass("burger-cross");
   // toggle the sidebarActive state
   domStore.toggleMobileSidebar();
   return
