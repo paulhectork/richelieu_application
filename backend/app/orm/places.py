@@ -4,7 +4,7 @@ from sqlalchemy import ForeignKey, Text
 import typing as t
 import intervals
 
-from ..utils.strings import _validate_uuid
+from ..utils.strings import _validate_uuid, int4range2list
 from ..app import db
 
 
@@ -52,6 +52,37 @@ class Place(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+    def get_address(self):
+        return [ a.to_string()
+                 for a in self.r_address_place.address ]
+
+    def get_iconography(self):
+        return [ i.serialize_lite()
+                 for i in self.r_iconography_place.iconography ]
+
+    def get_cartography(self):
+        return [ c.serialize_lite()
+                 for c in self.r_cartography_place.cartography ]
+
+    def serialize_lite(self) -> t.Dict:
+        return { "id_uuid"  : self.id_uuid,      # str
+                 "vector"   : self.vector,       # t.Dict
+                 "centroid" : self.centroid }    # t.Dict
+
+    def serialiaze_full(self) -> t.Dict:
+        return { "id_uuid"       : self.id_uuid,                       # str
+                 "id_richelieu"  : self.id_richelieu,                  # str
+                 "date"          : int4range2list(self.date),          # t.List[int]
+                 "centroid"      : self.centroid,                      # t.Dict
+                 "vector"        : self.vector,                        # t.Dict
+                 "vector_source" : self.vector_source,                 # str
+
+                 "place_group"   : self.place_group.serialize_lite(),  # t.List[t.Dict]
+                 "address"       : self.get_address(),                 # t.List[str]
+                 "iconography"   : self.get_iconography(),             # t.List[t.Dict]
+                 "cartography"   : self.get_iconography()              # t.List[t.Dict]
+        }
+
 
 class Address(db.Model):
     """
@@ -85,6 +116,31 @@ class Address(db.Model):
         string representation of an address
         """
         return f"{self.number} {self.street}, {self.city} ({self.date})"
+
+    def get_place(self):
+        return [ p.serialize_lite()
+                 for p in self.r_address_place ]
+
+    # PERFORMANCE WARNING: THIS **WILL** CAUSE SIGNIFICANT
+    # OVERHEAD, ESPECIALLY WITH THE 4.000.000 ENTRIES.
+    def get_directory(self):
+        return [ d.serialize_lite()
+                 for d in self.directory ]
+
+    def serialize_full(self):
+        return { "id_uuid": self.id_uuid,            # str
+                 "number": self.number,              # str
+                 "street": self.street,              # str
+                 "city": self.city,                  # str
+                 "country": self.country,            # str
+                 "source": self.source,              # str
+                 "date": int4range2list(self.date),  # t.List[int]
+
+                 "string_repr": self.to_string(),    # str
+
+                 "place": self.get_place(),          # t.List[t.Dict]
+                 "directory": self.get_directory()   # t.List[t.Dict]
+        }
 
 
 
