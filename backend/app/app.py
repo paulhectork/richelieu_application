@@ -16,8 +16,8 @@ class Base(DeclarativeBase):
     pass
 
 # basic initialization
-app = Flask("RICH.DATA"
-            , static_folder=STATICS)
+app = Flask( "RICH.DATA"
+           , static_folder=STATICS)
 db = SQLAlchemy(model_class=Base)
 app.config["SQLALCHEMY_DATABASE_URI"] = db_uri()
 app.config["SQLALCHEMY_ECHO"] = True

@@ -118,8 +118,8 @@ class Address(db.Model):
         return f"{self.number} {self.street}, {self.city} ({self.date})"
 
     def get_place(self):
-        return [ p.serialize_lite()
-                 for p in self.r_address_place ]
+        return [ r.place.serialize_lite()
+                 for r in self.r_address_place ]
 
     # PERFORMANCE WARNING: THIS **WILL** CAUSE SIGNIFICANT
     # OVERHEAD, ESPECIALLY WITH THE 4.000.000 ENTRIES.

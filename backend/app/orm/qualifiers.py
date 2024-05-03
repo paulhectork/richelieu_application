@@ -80,6 +80,20 @@ class Theme(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+    def get_iconography(self):
+        return [ r.iconography.serialize_lite()
+                 for r in self.r_iconography_theme ]
+
+    def serialize_lite(self):
+        return { "id_uuid": self.id_uuid,
+                 "entry_name": self.entry_name }
+
+    def serialize_full(self):
+        return { "id_uuid": self.id_uuid,
+                 "entry_name": self.entry_name,
+                 "description": self.description,
+                 "iconography": self.get_iconography() }
+
 
 class NamedEntity(db.Model):
     """
@@ -99,6 +113,20 @@ class NamedEntity(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+    def get_iconography(self):
+        return [ r.iconography.serialize_lite()
+                 for r in self.r_iconography_theme ]
+
+    def serialize_lite(self):
+        return { "id_uuid": self.id_uuid,
+                 "entry_name": self.entry_name }
+
+    def serialize_full(self):
+        return { "id_uuid": self.id_uuid,
+                 "entry_name": self.entry_name,
+                 "description": self.description,
+                 "iconography": self.get_iconography() }
+
 
 class Actor(db.Model):
     """
@@ -117,9 +145,25 @@ class Actor(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+    def get_iconography_author(self):
+        return [ r.iconography.serialize_lite()
+                 for r in self.r_iconography_theme
+                 if r.role == "author" ]
+
+    def get_iconography_publisher(self):
+        return [ r.iconography.serialize_lite()
+                 for r in self.r_iconography_theme
+                 if r.role == "publisher" ]
+
     def serialize_lite(self):
         return { "id_uuid": self.id_uuid,
                  "entry_name": self.entry_name }
+
+    def serialize_full(self):
+        return { "id_uuid": self.id_uuid,
+                 "entry_name": self.entry_name,
+                 "iconography_from_author": self.get_iconography_author(),
+                 "iconography_from_publisher": self.get_iconography_publisher() }
 
 
 class PlaceGroup(db.Model):
@@ -141,4 +185,18 @@ class PlaceGroup(db.Model):
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    def get_place(self):
+        return [ p.serialize_lite()
+                 for p in self.place ]
+
+    def serialize_lite(self):
+        return { "id_uuid": self.id_uuid,
+                 "entry_name": self.entry_name }
+
+    def serialize_lite(self):
+        return { "id_uuid": self.id_uuid,
+                 "entry_name": self.entry_name,
+                 "description": self.description,
+                 "place": self.get_place() }
 

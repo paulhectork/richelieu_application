@@ -134,19 +134,16 @@ class AdminPerson(db.Model):
         return _validate_uuid(_uuid, self.__tablename__)
 
     def get_r_admin_person_iconography(self):
-        return [ i.serialize_lite()
-                 for r in self.r_admin_person
-                 for i in r.iconography ]
+        return [ r.iconography.serialize_lite()
+                 for r in self.r_admin_person ]
 
     def get_r_admin_person_cartography(self):
-        return [ c.serialize_lite()
-                 for r in self.r_admin_person
-                 for c in r.cartography ]
+        return [ r.cartography.serialize_lite()
+                 for r in self.r_admin_person ]
 
     def get_r_admin_person_directory(self):
-        return [ d.serialize_lite()
-                 for r in self.r_admin_person
-                 for d in r.directory ]
+        return [ r.directory.serialize_lite()
+                 for r in self.r_admin_person ]
 
     def serialize_lite(self):
         return { "id_uuid"    : self.id_uuid,      # str
