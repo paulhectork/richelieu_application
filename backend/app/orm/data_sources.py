@@ -69,7 +69,6 @@ class Iconography(db.Model):
         l = [ [ r.actor.serialize_lite(), r.ismain ]
               for r in self.r_iconography_actor
               if r.role == "author" ]
-        print(l)
         l = [ a[0] for a in sorted(l, key=lambda x: x[1]) ]  # reorder + remove the `ismain` flag. the first item is the main author
         return l
 
@@ -126,26 +125,26 @@ class Iconography(db.Model):
         }
 
     def serialize_full(self) -> t.Dict:
-        return { "id_uuid"              : self.id_uuid,                      # str
-                 "iiif_url"             : self.iiif_url,                     # str
-                 "url_source"           : self.source,                       # str
-                 "date"                 : int4range2list(self.date),         # t.List[int]
-                 "date_source"          : int4range2list(self.date_source),  # t.List[int]
-                 "technique"            : self.technique,                    # str
-                 "corpus"               : self.corpus,                       # str
-                 "inventory_number"     : self.inventory_number,             # str
-                 "produced_richelieu"   : self.produced_richelieu,           # bool
-                 "represents_richelieu" : self.represents_richelieu,         # bool
+        return { "id_uuid"          : self.id_uuid,                      # str
+                 "iiif_url"         : self.iiif_url,                     # str
+                 "source_url"       : self.source_url,                   # str
+                 "date"             : int4range2list(self.date),         # t.List[int]
+                 "date_source"      : self.date_source,                  # str
+                 "technique"        : self.technique,                    # str
+                 "corpus"           : self.corpus,                       # str
+                 "inventory_number" : self.inventory_number,             # str
+                 "produced"         : self.produced,                     # bool
+                 "represents"       : self.represents,                   # bool
 
-                 "institution"          : self.get_institution(),            # t.List[t.Dict]
-                 "filename"             : self.get_filename(),               # t.List[t.Dict]
-                 "author"               : self.get_author(),                 # t.List[t.Dict]
-                 "title"                : self.get_title(),                  # t.List[str]
-                 "licence"              : self.licence.serialize_lite(),     # t.Dict
-                 "publisher"            : self.get_publisher(),              # t.List[t.Dict]
-                 "theme"                : self.get_theme(),                  # t.List[t.Dict]
-                 "named_entity"         : self.get_named_entity(),           # t.List[t.Dict]
-                 "admin_person"         : self.get_admin_person()            # t.List[t.Dict]
+                 "institution"      : self.get_institution(),            # t.List[t.Dict]
+                 "filename"         : self.get_filename(),               # t.List[t.Dict]
+                 "author"           : self.get_author(),                 # t.List[t.Dict]
+                 "title"            : self.get_title(),                  # t.List[str]
+                 "licence"          : self.licence.serialize_lite(),     # t.Dict
+                 "publisher"        : self.get_publisher(),              # t.List[t.Dict]
+                 "theme"            : self.get_theme(),                  # t.List[t.Dict]
+                 "named_entity"     : self.get_named_entity(),           # t.List[t.Dict]
+                 "admin_person"     : self.get_admin_person()            # t.List[t.Dict]
         }
 
 
@@ -197,7 +196,7 @@ class Cartography(db.Model):
         """
         retrieve places associated to a cartographic ressource
         """
-        return [ r.cartography.serialize_lite()
+        return [ r.place.serialize_lite()
                  for r in self.r_cartography_place ]
 
     def serialize_lite(self) -> t.Dict:
@@ -310,12 +309,18 @@ class Filename(db.Model):
         return { "url": self.url,                     # str
                  "latlngbounds": self.latlngbounds }  # t.List[t.List[float]]
 
+    def get_cartography(self):
+        return self.cartography.serialize_lite() if self.cartography is not None else None
+
+    def get_iconography(self):
+        return self.iconography.serialize_lite() if self.iconography is not None else None
+
     def serialize_full(self):
-        return { "url": self.url,                                    # str
-                 "latlngbounds" : self.latlngbounds,                 # t.Dict
-                 "licence"      : self.licence.serialize_lite(),     # t.Dict
-                 "iconography"  : self.iconography.serialize_lite(), # t.Dict
-                 "cartography"  : self.cartography.serialize_lite()  # t.Dict
+        return { "url": self.url,                                 # str
+                 "latlngbounds" : self.latlngbounds,              # t.Dict
+                 "licence"      : self.licence.serialize_lite(),  # t.Dict
+                 "iconography"  : self.get_cartography(),         # t.Dict | None
+                 "cartography"  : self.get_iconography()          # t.Dict | None
         }
 
 

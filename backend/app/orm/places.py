@@ -53,35 +53,73 @@ class Place(db.Model):
         return _validate_uuid(_uuid, self.__tablename__)
 
     def get_address(self):
-        return [ a.to_string()
-                 for a in self.r_address_place.address ]
+        return [ r.address.to_string()
+                 for r in self.r_address_place ]
 
     def get_iconography(self):
-        return [ i.serialize_lite()
-                 for i in self.r_iconography_place.iconography ]
+        return [ r.iconography.serialize_lite()
+                 for r in self.r_iconography_place ]
 
     def get_cartography(self):
-        return [ c.serialize_lite()
-                 for c in self.r_cartography_place.cartography ]
+        return [ r.cartography.serialize_lite()
+                 for r in self.r_cartography_place ]
+
+    def get_place_group(self):
+        return self.place_group.serialize_lite() if self.place_group is not None else None
 
     def serialize_lite(self) -> t.Dict:
         return { "id_uuid"  : self.id_uuid,      # str
                  "vector"   : self.vector,       # t.Dict
                  "centroid" : self.centroid }    # t.Dict
 
-    def serialiaze_full(self) -> t.Dict:
-        return { "id_uuid"       : self.id_uuid,                       # str
-                 "id_richelieu"  : self.id_richelieu,                  # str
-                 "date"          : int4range2list(self.date),          # t.List[int]
-                 "centroid"      : self.centroid,                      # t.Dict
-                 "vector"        : self.vector,                        # t.Dict
-                 "vector_source" : self.vector_source,                 # str
+    def serialize_full(self) -> t.Dict:
+        return { "id_uuid"       : self.id_uuid,               # str
+                 "id_richelieu"  : self.id_richelieu,          # str
+                 "date"          : int4range2list(self.date),  # t.List[int]
+                 "centroid"      : self.centroid,              # t.Dict
+                 "vector"        : self.vector,                # t.Dict
+                 "vector_source" : self.vector_source,         # str
 
-                 "place_group"   : self.place_group.serialize_lite(),  # t.List[t.Dict]
-                 "address"       : self.get_address(),                 # t.List[str]
-                 "iconography"   : self.get_iconography(),             # t.List[t.Dict]
-                 "cartography"   : self.get_iconography()              # t.List[t.Dict]
+                 "place_group"   : self.get_place_group(),     # t.List[t.Dict] | None
+                 "address"       : self.get_address(),         # t.List[str]
+                 "iconography"   : self.get_iconography(),     # t.List[t.Dict]
+                 "cartography"   : self.get_iconography()      # t.List[t.Dict]
         }
+
+
+class PlaceGroup(db.Model):
+    """
+    a place group regroups different places together to group together
+    different expressions of the same place throughout time (place de la Bourse
+    in 1850, 1860 ... can be represented by different places if they change with
+    time).
+    """
+    __tablename__ = "place_group"
+
+    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
+    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False)
+    entry_name  : Mapped[str] = mapped_column(Text, nullable=False)
+    description : Mapped[str] = mapped_column(Text, nullable=True)
+
+    place : Mapped[t.List["Place"]] = relationship("Place", back_populates="place_group")
+
+    @validates("id_uuid", include_backrefs=False)
+    def validate_uuid(self, key, _uuid):
+        return _validate_uuid(_uuid, self.__tablename__)
+
+    def get_place(self):
+        return [ p.serialize_lite()
+                 for p in self.place ]
+
+    def serialize_lite(self):
+        return { "id_uuid": self.id_uuid,
+                 "entry_name": self.entry_name }
+
+    def serialize_full(self):
+        return { "id_uuid": self.id_uuid,
+                 "entry_name": self.entry_name,
+                 "description": self.description,
+                 "place": self.get_place() }
 
 
 class Address(db.Model):
@@ -127,6 +165,12 @@ class Address(db.Model):
         return [ d.serialize_lite()
                  for d in self.directory ]
 
+    def serialize_lite(self):
+        return { "id_uuid": self.id_uuid,            # str
+                 "as_string": self.to_string(),    # str
+        }
+
+
     def serialize_full(self):
         return { "id_uuid": self.id_uuid,            # str
                  "number": self.number,              # str
@@ -136,7 +180,7 @@ class Address(db.Model):
                  "source": self.source,              # str
                  "date": int4range2list(self.date),  # t.List[int]
 
-                 "string_repr": self.to_string(),    # str
+                 "as_string": self.to_string(),    # str
 
                  "place": self.get_place(),          # t.List[t.Dict]
                  "directory": self.get_directory()   # t.List[t.Dict]

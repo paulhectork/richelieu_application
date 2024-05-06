@@ -3,7 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask import Flask
 
-from .utils.strings import db_uri
+from .config import CONFIGS
+# from .utils.strings import db_uri
 from .utils.constants import STATICS
 
 
@@ -15,18 +16,21 @@ from .utils.constants import STATICS
 class Base(DeclarativeBase):
     pass
 
-# basic initialization
+# generic configuration of the app
 app = Flask( "RICH.DATA"
            , static_folder=STATICS)
 db = SQLAlchemy(model_class=Base)
-app.config["SQLALCHEMY_DATABASE_URI"] = db_uri()
-app.config["SQLALCHEMY_ECHO"] = True
-db.init_app(app)
-CORS(app)
+# db.init_app(app)
 
-# from .orm import *
-# with app.app_context():
-#     db.create_all()
+# specific configuration of the app
+def config_app(cfgname:str):
+    assert cfgname in CONFIGS.keys(), \
+           f"config.config_app: `cfg_name` must be one of `{CONFIGS.keys()}`, got `{cfgname}`"
+
+    app.config.from_object(CONFIGS[cfgname])
+    db.init_app(app)
+    CORS(app)  # allow cors requests
+    return app
 
 from .routes import *
 

@@ -115,7 +115,7 @@ class NamedEntity(db.Model):
 
     def get_iconography(self):
         return [ r.iconography.serialize_lite()
-                 for r in self.r_iconography_theme ]
+                 for r in self.r_iconography_named_entity ]
 
     def serialize_lite(self):
         return { "id_uuid": self.id_uuid,
@@ -147,12 +147,12 @@ class Actor(db.Model):
 
     def get_iconography_author(self):
         return [ r.iconography.serialize_lite()
-                 for r in self.r_iconography_theme
+                 for r in self.r_iconography_actor
                  if r.role == "author" ]
 
     def get_iconography_publisher(self):
         return [ r.iconography.serialize_lite()
-                 for r in self.r_iconography_theme
+                 for r in self.r_iconography_actor
                  if r.role == "publisher" ]
 
     def serialize_lite(self):
@@ -164,39 +164,3 @@ class Actor(db.Model):
                  "entry_name": self.entry_name,
                  "iconography_from_author": self.get_iconography_author(),
                  "iconography_from_publisher": self.get_iconography_publisher() }
-
-
-class PlaceGroup(db.Model):
-    """
-    a place group regroups different places together to group together
-    different expressions of the same place throughout time (place de la Bourse
-    in 1850, 1860 ... can be represented by different places if they change with
-    time).
-    """
-    __tablename__ = "place_group"
-
-    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False)
-    entry_name  : Mapped[str] = mapped_column(Text, nullable=False)
-    description : Mapped[str] = mapped_column(Text, nullable=True)
-
-    place : Mapped[t.List["Place"]] = relationship("Place", back_populates="place_group")
-
-    @validates("id_uuid", include_backrefs=False)
-    def validate_uuid(self, key, _uuid):
-        return _validate_uuid(_uuid, self.__tablename__)
-
-    def get_place(self):
-        return [ p.serialize_lite()
-                 for p in self.place ]
-
-    def serialize_lite(self):
-        return { "id_uuid": self.id_uuid,
-                 "entry_name": self.entry_name }
-
-    def serialize_lite(self):
-        return { "id_uuid": self.id_uuid,
-                 "entry_name": self.entry_name,
-                 "description": self.description,
-                 "place": self.get_place() }
-

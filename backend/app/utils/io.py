@@ -9,41 +9,12 @@ from .constants import TMP
 # ********************************************
 
 
-def write_credfile(db:str) -> None:
-    """
-    create a file `TMP/credfile.txt` with the name of the
-    `postgresql_credentials.json` file to use when creating
-    the engine. because `engine` must be available in the
-    global context, it can't be called simply using a function,
-    and we can't pass the filename as an argument from
-    `main` to `engine.py`.
-
-    :param db: `local` or `server`, the `-d --database`
-               argument in the CLI
-    """
-
-    with open(os.path.join(TMP, "credfile.txt"), mode="w") as fh:
-        fh.write("postgresql_credentials_local.json"
-                 if db=="local"
-                 else "postgresql_credentials_server.json")
-    return
-
-
-def read_credfile() -> str:
-    """
-    read the content of `TMP/credfile.txt` to return the name
-    of the credentials file to use when connecting to the db
-    """
-    with open(os.path.join(TMP, "credfile.txt"), mode="r") as fh:
-        return fh.read()
-
-
 def maketmp() -> None:
     """
     * delete the old TMP
     * create the new TMP and its child folders
     """
-    print("~~~~~~~~~~~~~~", os.path.isdir(TMP))
+    # print("~~~~~~~~~~~~~~", os.path.isdir(TMP))
     os.makedirs(TMP, exist_ok=True)
     # os.makedirs(os.path.join(TMP, "imagefiles"))
     # os.makedirs(os.path.join(TMP, "imagefiles", "iconography"))
@@ -64,7 +35,7 @@ def deltmp(_dir:str=TMP) -> None:
                  == os.path.commonpath([ os.path.abspath(TMP), os.path.abspath(_dir) ])
         ):
             print(f"directory `{_dir}` not in TMP. not deleting the files and exiting")
-            sys.exit(1)
+            exit(1)
 
         # delete recursively
         for root, dirs, files in os.walk(_dir):
@@ -78,5 +49,34 @@ def deltmp(_dir:str=TMP) -> None:
     except FileNotFoundError:
         pass
     return
+
+
+# def write_credfile(db:str) -> None:
+#     """
+#     create a file `TMP/credfile.txt` with the name of the
+#     `postgresql_credentials.json` file to use when creating
+#     the engine. because `engine` must be available in the
+#     global context, it can't be called simply using a function,
+#     and we can't pass the filename as an argument from
+#     `main` to `engine.py`.
+#
+#     :param db: `local` or `server`, the `-d --database`
+#                argument in the CLI
+#     """
+#
+#     with open(os.path.join(TMP, "credfile.txt"), mode="w") as fh:
+#         fh.write("postgresql_credentials_local.json"
+#                  if db=="local"
+#                  else "postgresql_credentials_server.json")
+#     return
+#
+#
+# def read_credfile() -> str:
+#     """
+#     read the content of `TMP/credfile.txt` to return the name
+#     of the credentials file to use when connecting to the db
+#     """
+#     with open(os.path.join(TMP, "credfile.txt"), mode="r") as fh:
+#         return fh.read()
 
 

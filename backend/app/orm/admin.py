@@ -40,15 +40,18 @@ class Institution(db.Model):
 
     def get_iconography(self):
         return [ r.iconography.serialize_lite()
-                 for r in self.r_institution ]
+                 for r in self.r_institution
+                 if r.iconography is not None ]
 
     def get_cartography(self):
         return [ r.cartography.serialize_lite()
-                 for r in self.r_institution ]
+                 for r in self.r_institution
+                 if r.cartography is not None ]
 
     def get_directory(self):
         return [ r.directory.serialize_lite()
-                 for r in self.r_institution ]
+                 for r in self.r_institution
+                 if r.directory is not None ]
 
     def serialize_lite(self):
         return { "id_uuid"    : self.id_uuid,      # str
@@ -135,15 +138,18 @@ class AdminPerson(db.Model):
 
     def get_r_admin_person_iconography(self):
         return [ r.iconography.serialize_lite()
-                 for r in self.r_admin_person ]
+                 for r in self.r_admin_person
+                 if r.iconography is not None ]
 
     def get_r_admin_person_cartography(self):
         return [ r.cartography.serialize_lite()
-                 for r in self.r_admin_person ]
+                 for r in self.r_admin_person
+                 if r.cartography is not None ]
 
     def get_r_admin_person_directory(self):
         return [ r.directory.serialize_lite()
-                 for r in self.r_admin_person ]
+                 for r in self.r_admin_person
+                 if r.directory is not None ]
 
     def serialize_lite(self):
         return { "id_uuid"    : self.id_uuid,      # str

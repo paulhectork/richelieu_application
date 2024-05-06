@@ -3,7 +3,12 @@ import unittest
 from .serializations import TestSerializations
 
 
-def load_tests(loader=unittest.TestLoader(), tests=[], pattern=None):
+def load_tests( loader=unittest.TestLoader()
+              , tests=[]
+              , pattern=None ) -> unittest.TestSuite:
+    """
+    load all the tests we'll need to run
+    """
     # array of test cases to run. could be completed with other test classes
     test_cases = [TestSerializations]
     # suite of tests that will be run
@@ -12,3 +17,13 @@ def load_tests(loader=unittest.TestLoader(), tests=[], pattern=None):
         tests = loader.loadTestsFromTestCase(t)
         suite.addTests(tests)
     return suite
+
+
+def runner() -> None:
+    """
+    run the tests
+    """
+    textrunner = unittest.TextTestRunner()
+    suite = load_tests()
+    textrunner.run(suite)
+    return
