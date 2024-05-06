@@ -12,7 +12,6 @@ from .. import orm
 # return valid results
 # ********************************************
 
-
 # https://github.com/PonteIneptique/cours-python/blob/master/Chapitre%2014%20-%20Ecrire%20des%20tests.ipynb
 
 class TestSerializations(unittest.TestCase):
@@ -68,19 +67,19 @@ class TestSerializations(unittest.TestCase):
         for t in self.tables:
             if hasattr(t, "serialize_lite") or hasattr(t, "serialize_full"):
                 with self.app.app_context():
-                    rowcount = t.query.count()
+                    rowcount = len( db.session.execute( db.select(t) ).all() )
                     if rowcount > 0:
                         # `obj` is a random database row in `t`
                         id_ = randint(0, rowcount-1)
                         obj = t.query.get(id_)
 
                         # test `serialize_lite` and `serialize_full`
-                        self.assertTrue( isinstance( obj.serialize_lite(), dict ),
-                                         f"on table `{t}`: expected type `dict` "
+                        self.assertTrue( isinstance( obj.serialize_lite(), dict )
+                                       , f"on table `{t}`: expected type `dict` "
                                        + f"on `{obj}.serialize_lite()`, "
                                        + f"got f{type(obj.serialize_lite())}")
-                        self.assertTrue( isinstance( obj.serialize_full(), dict ),
-                                         f"on table `{t}`: expected type `dict` "
+                        self.assertTrue( isinstance( obj.serialize_full(), dict )
+                                       , f"on table `{t}`: expected type `dict` "
                                        + f"on `{obj}.serialize_lite()`, "
                                        + f"got {type(obj.serialize_lite())}")
 

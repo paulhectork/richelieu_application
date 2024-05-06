@@ -8,22 +8,22 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: () => import("@views/HomeView.vue")
     }, {
       path: '/iconographie',
       name: 'Iconographie',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('@views/IconographyView.vue')
+      component: () => import("@views/IconographyView.vue")
     }, {
       path: '/cartographie',
       name: 'Cartographie',
-      component: () => import('@views/CartographyView.vue')
+      component: () => import("@views/CartographyView.vue")
     }, {
       path: '/table-viewer',
       name: 'Voir les tables',
-      component: () => import('@views/TableViewerView.vue')
+      component: () => import("@views/TableViewerView.vue")
     }
   ]
 })

@@ -17,7 +17,7 @@ import { fnToIconographyFile } from "@utils/functions";
 import DataTableComponent from "@components/DataTableComponent.vue";
 
 const apiTarget = new URL("/i/iconography", __API_URL__);
-const columnsDefinition = [ { data: "filename",
+const columnsDefinition = [ { data: "thumbnail",
                               title: "Image",
                               render: (data, type, row, meta) => {
                                 // retrieve the image from a manifest if there is one
@@ -51,7 +51,7 @@ function processResponse(r) {
                            e.authors.map((a) => { authors.push(stringifyAuthor(a)) });
                            e.authors = JSON.stringify(authors);
                            e.date = stringifyDate(e.date);
-                           e.filename = e.filename.length ? e.filename[0] : null;
+                           e.thumbnail = e.thumbnail.length ? e.thumbnail[0] : null;
                            return e })
 }
 </script>

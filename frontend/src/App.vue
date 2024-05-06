@@ -20,24 +20,30 @@
 
 
 <script setup>
-import { onMounted, onUnmounted } from "vue";
-import { RouterView } from 'vue-router';
+import { onMounted, onUnmounted, watch } from "vue";
+import { RouterView, useRoute, useRouter } from 'vue-router';
 import $ from "jquery";
 
 import { domStore } from "@stores/dom.js";
 import Navbar from '@components/Navbar.vue';
 import Sidebar from "@components/Sidebar.vue";
 
+
+const route = useRoute();
+
+
+// if we are in `portrait`, toggle class to show
+// that the sidebar is visible or hidden
 function setMainWrapperClasses() {
   let classes = `${domStore.windowOrientation} `;
-  if ( domStore.windowOrientation!== 'landscape' ) {
+  if ( domStore.windowOrientation !== 'landscape' ) {
     classes += domStore.mobileSidebarActive
                ? 'portrait-sidebar-active' : 'portrait-sidebar-hidden'
   };
-  // console.log("App.setMainWrapperClasses() : end -", classes);
   return classes;
 }
 
+// are we in `landscape` or `portrait` mode?
 function calcWindowOrientation() {
   setTimeout(() => {
     const orientation = $(window).width() >= $(window).height()
@@ -46,6 +52,13 @@ function calcWindowOrientation() {
     domStore.setWindowOrientation(orientation);
   }, 1000)
 }
+
+// hide the mobile sidebar when changing route
+watch(route, (newRoute, oldRoute) => {
+  if ( domStore.windowOrientation!== 'landscape' ) {
+    domStore.mobileSidebarActive = false;
+  }
+})
 
 
 onMounted(() => {

@@ -17,7 +17,7 @@ import { stringifyDate } from "@utils/stringifiers";
 import { fnToCartographyFile } from "@utils/functions";
 
 const apiTarget = new URL("/i/cartography", __API_URL__);
-const columnsDefinition = [ { data: "file",
+const columnsDefinition = [ { data: "filename",
                               title: "Image",
                               render: (data,type,row,meta) => {
                                 return data != null
@@ -35,7 +35,9 @@ const columnsDefinition = [ { data: "file",
 function processResponse(r) {
   return JSON.parse(r.request.response)
              .map((e) => { e.date = stringifyDate(e.date);
-                           e.file = fnToCartographyFile(e.file[0]);
+                           e.filename = e.filename.length
+                                        ? fnToCartographyFile(e.filename[0].url)
+                                        : undefined;
                            return e; })
 }
 </script>

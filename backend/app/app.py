@@ -4,13 +4,13 @@ from flask_cors import CORS
 from flask import Flask
 
 from .config import CONFIGS
-# from .utils.strings import db_uri
 from .utils.constants import STATICS
 
 
 # **********************************************************
 # create and configure the backend app object
 # **********************************************************
+
 
 # dummy base class for all sqlalchemy models
 class Base(DeclarativeBase):
@@ -20,7 +20,6 @@ class Base(DeclarativeBase):
 app = Flask( "RICH.DATA"
            , static_folder=STATICS)
 db = SQLAlchemy(model_class=Base)
-# db.init_app(app)
 
 # specific configuration of the app
 def config_app(cfgname:str):
@@ -29,8 +28,9 @@ def config_app(cfgname:str):
 
     app.config.from_object(CONFIGS[cfgname])
     db.init_app(app)
-    CORS(app)  # allow cors requests
+    CORS(app)
     return app
+
 
 from .routes import *
 

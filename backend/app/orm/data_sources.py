@@ -121,7 +121,6 @@ class Iconography(db.Model):
                  "authors"   : self.get_author(),          # t.List[str]
                  "title"     : self.get_title(),           # t.List[str]
                  "thumbnail" : self.get_thumbnail(),       # t.List[str]
-
         }
 
     def serialize_full(self) -> t.Dict:

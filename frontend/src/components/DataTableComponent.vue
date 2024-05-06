@@ -238,7 +238,7 @@ onMounted(() => {
   border-bottom: var(--cs-border);
 }
 #datatable-catalog td:has(img) {
-  display: flex;
+  display: table-cell;
   align-items: center;
   justify-content: center;
 }
@@ -259,7 +259,7 @@ onMounted(() => {
 }
 @media ( orientation:landscape ) {
   .dataTables_scrollHead {
-    top: var(--cs-navbar-height-desktop);
+    /*top: var(--cs-navbar-height-desktop);*/
   }
 }
 </style>
