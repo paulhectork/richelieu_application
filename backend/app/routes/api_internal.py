@@ -49,6 +49,28 @@ def catalog_directory():
                     , content_type="application/json")
 
 
+@app.route("/i/named-entity")
+def catalog_named_entity():
+    """
+    get all named entity elements
+    """
+    r = db.session.execute(NamedEntity.query)
+    return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
+                   , mimetype="application/json"
+                   , content_type="application/json")
+
+
+@app.route("/i/theme")
+def catalog_theme():
+    """
+    get all theme elements
+    """
+    r = db.session.execute(Theme.query)
+    return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
+                   , mimetype="application/json"
+                   , content_type="application/json")
+
+
 @app.route("/i/list-tables")
 def list_tables():
     """
