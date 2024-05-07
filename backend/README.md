@@ -40,7 +40,7 @@ décrite ci-dessous. Il faut que les données dedans correspondent aux
 identifiants de la BDD à laquelle on veut se connecter:
 
 ```json
-# fichier de connexion dans app/utils/confidentials/
+// fichier de connexion dans app/utils/confidentials/
 {
   "username": "<votre nom d'utilisateur.ice>", 
   "password": "<votre mdp>",
