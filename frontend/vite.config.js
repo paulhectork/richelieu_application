@@ -13,20 +13,33 @@ import vue from '@vitejs/plugin-vue'
  */
 export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
 
-  console.log("%%%%%%%", command, mode, isSsrBuild, isPreview);
+  // exit if `--mode` was not provided or
+  // if it isn't one of `allowedModes`
+  const allowedModes = [ "backend-server", "backend-local" ]
+  if ( mode==null || !allowedModes.includes(mode) ) {
+    console.log("INVALID PARAMETERS\n",
+                `  please provide '--mode' with one of [${allowedModes.map(e => "'"+e+"'")}] and start again.\n`,
+                "  exiting...\n")
+    process.exit(1)
+  }
 
+  // console.log("%%%%%%%", command, mode, isSsrBuild, isPreview);
+
+  // choose the configuration based on `mode`
   let constants;
-  if ( mode=="backend-server" ) {
-    console.log("%%%%%%% connecting to backend server");
-    constants = {
-      __API_URL__: JSON.stringify("http://172.17.1.142:5000"),
-      __SERVER_URL__: JSON.stringify("http://richdata01.inha.fr")
-    }
-  } else {
-    constants = {
-      __API_URL__: JSON.stringify("http://localhost:5000/i"),
-      __SERVER_URL__: JSON.stringify("http://richdata01.inha.fr")
-    }
+  switch (mode) {
+    case "backend-server":
+      constants = {
+        __API_URL__: JSON.stringify("http://172.17.1.142:5000"),
+        __SERVER_URL__: JSON.stringify("http://richdata01.inha.fr")
+      };
+      break;
+    case "backend-local":
+      constants = {
+        __API_URL__: JSON.stringify("http://localhost:5000/i"),
+        __SERVER_URL__: JSON.stringify("http://richdata01.inha.fr")
+      };
+      break;
   };
 
   return {

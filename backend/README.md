@@ -7,6 +7,8 @@
 ### Installation
 
 ```bash
+sudo apt install libpq-dev  # pour utiliser `psycopg2`. ATTENTION: INSTALLATION SYSTEM-WIDE
+
 python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt
@@ -19,7 +21,7 @@ laquelle se connecter). En ligne de commande, l'argument `-m` `--mode` permet de
 sélectionner une configuration: 
 
 ```bash
-python main.py -m dev  # ou `-m test` pour faire des tests, `-m prod` pour mettre l'application sur serveur
+python main.py -m dev  # ou `-m test` pour faire des tests, `-m prod` quand on est sur serveur
 ```
 
 ### Configurations

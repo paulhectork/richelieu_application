@@ -2,8 +2,43 @@
 
 ---
 
-## Déploiement
+## Installation et utilisation
 
+### Installation
+
+```bash
+npm install npm install
+```
+
+### Utilisation (dev)
+
+L'argument `--mode` permet de changer de configuration, selon que le
+backend auquel on est connecté soit sur serveur ou sur notre machine locale.
+
+**Attention: le `--` est très important pour séparer le script npm de ses arguments**
+
+```bash
+# le backend est en local
+npm run dev -- --mode backend-local
+
+# le backend est sur serveur
+npm run dev -- --mode backend-server
+```
+
+Si on installe le frontend sur serveur et que l'on veut accéder à l'appli
+depuis un navigateur, il faut exposer l'appli avec `--host`:
+
+```bash
+# logiquement, ici on se connecte au backend qui est sur le serveur
+npm run dev -- --mode backend-server --host
+```
+
+### Utilisation (prod)
+
+TODO
+
+---
+---
 ---
 
 ## default conf
