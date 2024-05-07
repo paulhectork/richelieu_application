@@ -14,7 +14,7 @@ npm install npm install
 
 L'argument `--mode` permet de changer de configuration, selon que le
 backend auquel on est connecté soit sur serveur ou sur notre machine locale.
-Voir [la config vite](./vite.config.js) et [la documentation vite](https://vitejs.dev/config/#conditional-config)
+Voir le fichier `vite.config.js` et [la documentation vite](https://vitejs.dev/config/#conditional-config)
 pour plus d'informations.
 
 **Attention: le `--` est très important pour séparer le script npm de ses arguments**
