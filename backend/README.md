@@ -22,6 +22,8 @@ sélectionner une configuration:
 python main.py -m dev  # ou `-m test` pour faire des tests, `-m prod` pour mettre l'application sur serveur
 ```
 
+### Configurations
+
 Le fichier `app/config.py` liste toutes les configurations possibles. Chaque config
 correspond à une classe. Les identifiants de connexion aux différentes BDD se trouvent 
 dans des fichiers `json`, dans le dossier `app/utils/confidentials/`. Il faut pointer 
