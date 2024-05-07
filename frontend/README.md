@@ -18,10 +18,10 @@ backend auquel on est connecté soit sur serveur ou sur notre machine locale.
 **Attention: le `--` est très important pour séparer le script npm de ses arguments**
 
 ```bash
-# le backend est en local
+# si le backend est en local
 npm run dev -- --mode backend-local
 
-# le backend est sur serveur
+# si le backend est sur serveur
 npm run dev -- --mode backend-server
 ```
 
