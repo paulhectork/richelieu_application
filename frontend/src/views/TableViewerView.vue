@@ -69,6 +69,8 @@ onMounted(() => {
   axios.get(apiTargetListTables)
        .then((r) => {
         tableNames.value = JSON.parse(r.request.response).sort();
+      }).catch((err) => { 
+      	console.log(err); 
       })
 })
 

@@ -28,7 +28,7 @@ def config_app(cfgname:str):
 
     app.config.from_object(CONFIGS[cfgname])
     db.init_app(app)
-    CORS(app)
+    CORS(app, origins=["http://localhost:5173", "http://localhost:5000"])
     return app
 
 
