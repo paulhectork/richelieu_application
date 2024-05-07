@@ -21,7 +21,14 @@ laquelle se connecter). En ligne de commande, l'argument `-m` `--mode` permet de
 sélectionner une configuration: 
 
 ```bash
-python main.py -m dev  # ou `-m test` pour faire des tests, `-m prod` quand on est sur serveur
+# si on veut lancer l'application sur machine locale
+python main.py -m dev
+
+# si on veut lancer des tests sur machine locale
+python main.py -m test
+
+# si on veut lancer l'application sur serveur
+python main.py -m prod
 ```
 
 ### Configurations
