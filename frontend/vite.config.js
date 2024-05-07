@@ -19,7 +19,7 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
   if ( mode=="backend-server" ) {
     console.log("%%%%%%% connecting to backend server");
     constants = {
-      __API_URL__: JSON.stringify("http://172.17.1.142:5000/i"),
+      __API_URL__: JSON.stringify("http://172.17.1.142:5000"),
       __SERVER_URL__: JSON.stringify("http://richdata01.inha.fr")
     }
   } else {
