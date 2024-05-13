@@ -14,6 +14,10 @@ from ..orm import *
 # *************************************************
 
 
+
+# ******************************************
+# catalogs
+# ******************************************
 @app.route("/i/iconography")
 def catalog_iconography():
     """
@@ -69,6 +73,17 @@ def catalog_theme():
     return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
                    , mimetype="application/json"
                    , content_type="application/json")
+
+
+# ******************************************
+# main pages
+# ******************************************
+#TODO
+
+
+# ******************************************
+# table viewer
+# ******************************************
 
 
 @app.route("/i/list-tables")
