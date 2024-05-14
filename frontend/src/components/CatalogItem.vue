@@ -44,8 +44,7 @@ const props = defineProps(["item", "display"]);
   overflow: hidden;
 }
 img {
-  height: auto;
-  min-width: 120%;
+  object-fit: cover;
 }
 a {
   text-decoration-line: none;
