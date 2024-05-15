@@ -25,6 +25,10 @@ const router = createRouter({
       name: 'Thème',
       component: () => import("@views/ThemeView.vue")
     }, {
+      path: '/sujet',
+      name: 'Sujets',
+      component: () => import("@views/NamedEntityView.vue")
+    }, {
       path: '/table-viewer',
       name: 'Voir les tables',
       component: () => import("@views/TableViewerView.vue")

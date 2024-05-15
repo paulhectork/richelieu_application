@@ -1,28 +1,31 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from sqlalchemy import ForeignKey, Text, Boolean, ARRAY
 from sqlalchemy.dialects import postgresql as psql
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import func, select
 import typing as t
+import random
 
 from ..utils.strings import _validate_uuid, int4range2list
 from ..app import db
 
 
-# -----------------------------------------------------------------
-# secondary tables tables qualifying (giving extra information) on
-# other tables
+
+
+
 #
-# contains
-# ~~~~~~~~
-# * `Title`: the title of a ressource
-# * `Annotation`: an annotation on an iconographic ressource
-# * `Theme`: the theme of an iconographic ressource
-# * `NamedEntity`: the named entity referenced/represented by
-#   a ressource
-# * `Actor`: a physical or moral person represented by a ressource
-# * `PlaceGroup`: a table grouping different versions of the
-#   same place throughout time (expressed as entries in
-#   `Place`)
-# -----------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class Title(db.Model):
@@ -80,19 +83,65 @@ class Theme(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+
+
+
+
+    #
+
+
+
+
+
+
+
+
+    #
+
+
+    #
+
+
+
+    @hybrid_property
+    def count_iconography(self):
+        """
+        number of `r_iconography_theme` rows related to `self`
+        """
+        out  = len(self.r_iconography_theme)
+        return out
+
+    @count_iconography.expression
+    def count_iconography(cls):
+        return (db.select( db.func.count(R_IconographyTheme.id)
+                                  .label("count_iconography") )
+                  .filter(R_IconographyTheme.id_theme == cls.id)
+                  .label("total_rel")
+        )
+
+    def get_thumbnail(self):
+        """get a thumbnail image for the current theme"""
+        return [ f.url
+                 for f in random.choice(self.r_iconography_theme)
+                          .iconography.filename
+                 if "thumbnail" in f.url ]
+
     def get_iconography(self):
         return [ r.iconography.serialize_lite()
                  for r in self.r_iconography_theme ]
 
     def serialize_lite(self):
         return { "id_uuid": self.id_uuid,
-                 "entry_name": self.entry_name }
+                 "entry_name": self.entry_name,
+                 "thumbnail": self.get_thumbnail(),
+        }
 
     def serialize_full(self):
         return { "id_uuid": self.id_uuid,
                  "entry_name": self.entry_name,
                  "description": self.description,
-                 "iconography": self.get_iconography() }
+                 "iconography": self.get_iconography()
+        }
 
 
 class NamedEntity(db.Model):
@@ -113,19 +162,44 @@ class NamedEntity(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+    # see `Theme` for a detailed explanation
+    @hybrid_property
+    def count_iconography(self) -> int:
+        """number of `r_iconography_named_entity` rows related to `self`"""
+        return len(self.r_iconography_named_entity)
+
+    @count_iconography.expression
+    def count_iconography(cls):
+        """the same but at class/table level, to use the property in queries"""
+        return (db.select( db.func.count(R_IconographyNamedEntity.id)
+                                  .label("count_iconography") )
+                  .filter(R_IconographyNamedEntity.id_named_entity == cls.id)
+                  .label("total_rel")
+        )
+
+    def get_thumbnail(self):
+        """get a thumbnail image for the current named entity"""
+        return [ f.url
+                 for f in random.choice(self.r_iconography_named_entity)
+                          .iconography.filename
+                 if "thumbnail" in f.url ]
+
     def get_iconography(self):
         return [ r.iconography.serialize_lite()
                  for r in self.r_iconography_named_entity ]
 
     def serialize_lite(self):
         return { "id_uuid": self.id_uuid,
-                 "entry_name": self.entry_name }
+                 "entry_name": self.entry_name,
+                 "thumbnail": self.get_thumbnail()
+        }
 
     def serialize_full(self):
         return { "id_uuid": self.id_uuid,
                  "entry_name": self.entry_name,
                  "description": self.description,
-                 "iconography": self.get_iconography() }
+                 "iconography": self.get_iconography()
+        }
 
 
 class Actor(db.Model):
@@ -164,3 +238,6 @@ class Actor(db.Model):
                  "entry_name": self.entry_name,
                  "iconography_from_author": self.get_iconography_author(),
                  "iconography_from_publisher": self.get_iconography_publisher() }
+
+
+from .relationships import R_IconographyNamedEntity, R_IconographyTheme

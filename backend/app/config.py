@@ -40,7 +40,7 @@ class DEV:
     with open(os.path.join(CONFIDENTIALS, "postgresql_credentials_local.json"), mode="r") as fh:
         params = json.load(fh)
     SQLALCHEMY_DATABASE_URI = db_uri(params)
-    SQLALCHEMY_ECHO = True
+    SQLALCHEMY_ECHO = False
 
 # on production / server
 class PROD:

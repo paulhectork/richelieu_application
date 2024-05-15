@@ -102,12 +102,16 @@ li > a.selected {
 .sidebar-visual > img {
   /*max-width: 100%;*/
   min-width: 120%;
+  object-fit: center;
 }
 
 @media ( orientation: landscape ) {
   .sidebar {
     height: calc(100vh - var(--cs-navbar-height-desktop));
     width: 25vw;
+  }
+  .sidebar-menu > li > a {
+    font-size: var(--cs-fontsize-menu-desktop);
   }
 }
 </style>

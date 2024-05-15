@@ -1,6 +1,6 @@
 from flask import render_template, jsonify, Response
 from psycopg2.extras import NumericRange
-from sqlalchemy import text, select
+from sqlalchemy import text, desc, asc
 import random
 import json
 
@@ -53,23 +53,26 @@ def catalog_directory():
                     , content_type="application/json")
 
 
-@app.route("/i/named-entity")
-def catalog_named_entity():
-    """
-    get all named entity elements
-    """
-    r = db.session.execute(NamedEntity.query)
-    return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
-                   , mimetype="application/json"
-                   , content_type="application/json")
-
-
 @app.route("/i/theme")
 def catalog_theme():
     """
     get all theme elements
     """
-    r = db.session.execute(Theme.query)
+    r = (db.session.query(Theme, Theme.count_iconography)
+                   .order_by(Theme.count_iconography.desc()) )
+    # to check the result: print( [_[0].count_iconography for _ in r.all()] )
+    return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
+                   , mimetype="application/json"
+                   , content_type="application/json")
+
+
+@app.route("/i/named-entity")
+def catalog_named_entity():
+    """
+    get all named entity elements
+    """
+    r = (db.session.query(NamedEntity, NamedEntity.count_iconography)
+                   .order_by(NamedEntity.count_iconography.desc()) )
     return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
                    , mimetype="application/json"
                    , content_type="application/json")

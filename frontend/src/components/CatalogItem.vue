@@ -15,7 +15,12 @@
      :href="item.href"
      :style="{ 'background-image': `url(${item.img})` }"
   >
-    <p v-html="item.text"></p>
+    <svg>
+      <text v-html="item.text"
+            x="50%"
+            y="50%"
+      ></text>
+    </svg>
   </a>
 
 </template>
@@ -30,6 +35,9 @@ const props = defineProps(["item", "display"]);
   border: var(--cs-border);
 }
 
+/**
+ * ressource view
+ */
 .catalog-item-resource {
   display: grid;
   grid-template-columns: 100%;
@@ -55,9 +63,39 @@ p {
   height: min-content;
 }
 
+/**
+ * concept view
+ */
 .catalog-item-concept {
   display: flex;
   align-items: center;
   justify-content: center;
+
+  background-size: cover;
+  background-position: center center;
+}
+svg {
+  font-size: var(--cs-fontsize-mobile);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+text {
+  height: 100%;
+  width: 100%;
+  fill: var(--cs-main-default);
+  stroke: var(--cs-main-default-bg);
+  stroke-width: .5px;
+  stroke-linejoin: round;
+  animation: 2s pulsate infinite;
+}
+@keyframes pulsate {
+  50%{ stroke-width:1px }
+}
+
+@media( orientation: landscape ) {
+  svg {
+    font-size: var(--cs-fontsize-main-desktop);
+  }
 }
 </style>
