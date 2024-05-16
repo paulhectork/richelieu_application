@@ -104,17 +104,17 @@ class Theme(db.Model):
 
 
     @hybrid_property
-    def count_iconography(self):
+    def iconography_count(self):
         """
         number of `r_iconography_theme` rows related to `self`
         """
         out  = len(self.r_iconography_theme)
         return out
 
-    @count_iconography.expression
-    def count_iconography(cls):
+    @iconography_count.expression
+    def iconography_count(cls):
         return (db.select( db.func.count(R_IconographyTheme.id)
-                                  .label("count_iconography") )
+                                  .label("iconography_count") )
                   .filter(R_IconographyTheme.id_theme == cls.id)
                   .label("total_rel")
         )
@@ -131,16 +131,18 @@ class Theme(db.Model):
                  for r in self.r_iconography_theme ]
 
     def serialize_lite(self):
-        return { "id_uuid": self.id_uuid,
-                 "entry_name": self.entry_name,
-                 "thumbnail": self.get_thumbnail(),
+        return { "id_uuid": self.id_uuid,                     # str
+                 "entry_name": self.entry_name,               # str
+                 "thumbnail": self.get_thumbnail(),           # t.List[str]
+                 "iconography_count": self.iconography_count  # int
         }
 
     def serialize_full(self):
-        return { "id_uuid": self.id_uuid,
-                 "entry_name": self.entry_name,
-                 "description": self.description,
-                 "iconography": self.get_iconography()
+        return { "id_uuid": self.id_uuid,                     # str
+                 "entry_name": self.entry_name,               # str
+                 "description": self.description,             # str
+                 "iconography": self.get_iconography(),       # t.List[t.Dict]
+                 "iconography_count": self.iconography_count  # int
         }
 
 
@@ -164,15 +166,15 @@ class NamedEntity(db.Model):
 
     # see `Theme` for a detailed explanation
     @hybrid_property
-    def count_iconography(self) -> int:
+    def iconography_count(self) -> int:
         """number of `r_iconography_named_entity` rows related to `self`"""
         return len(self.r_iconography_named_entity)
 
-    @count_iconography.expression
-    def count_iconography(cls):
+    @iconography_count.expression
+    def iconography_count(cls):
         """the same but at class/table level, to use the property in queries"""
         return (db.select( db.func.count(R_IconographyNamedEntity.id)
-                                  .label("count_iconography") )
+                                  .label("iconography_count") )
                   .filter(R_IconographyNamedEntity.id_named_entity == cls.id)
                   .label("total_rel")
         )
@@ -189,16 +191,18 @@ class NamedEntity(db.Model):
                  for r in self.r_iconography_named_entity ]
 
     def serialize_lite(self):
-        return { "id_uuid": self.id_uuid,
-                 "entry_name": self.entry_name,
-                 "thumbnail": self.get_thumbnail()
+        return { "id_uuid": self.id_uuid,                     # str
+                 "entry_name": self.entry_name,               # str
+                 "thumbnail": self.get_thumbnail(),           # t.List[str]
+                 "iconography_count": self.iconography_count  # int
         }
 
     def serialize_full(self):
-        return { "id_uuid": self.id_uuid,
-                 "entry_name": self.entry_name,
-                 "description": self.description,
-                 "iconography": self.get_iconography()
+        return { "id_uuid": self.id_uuid,                     # str
+                 "entry_name": self.entry_name,               # str
+                 "description": self.description,             # str
+                 "iconography": self.get_iconography(),       # t.List[t.Dict]
+                 "iconography_count": self.iconography_count  # int
         }
 
 

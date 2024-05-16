@@ -53,6 +53,14 @@ function calcWindowOrientation() {
   }, 1000)
 }
 
+/** TODO
+// the browsing device allows touch (tactile screen)
+// see: https://web.dev/articles/mobile-touchandmouse
+function touchOrNot() {
+  domStore.setHasTouch();
+}
+*/
+
 // hide the mobile sidebar when changing route
 watch(route, (newRoute, oldRoute) => {
   if ( domStore.windowOrientation!== 'landscape' ) {

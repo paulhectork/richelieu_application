@@ -1,17 +1,17 @@
 <!-- IconographyView.vue
-     a view for the iconography catalogue
+     a view for the iconography index
 -->
 
 <template>
-  <h1>Iconographie</h1>
+  <h1>Index de l'iconographie</h1>
     <!-- <DataTableComponent :api-target="apiTarget"
                            :process-response="processResponse"
                            :columns-definition="columnsDefinition"
     ></DataTableComponent> -->
 
-    <Catalog :display="display"
+    <Index :display="display"
              :data="dataFilter"
-    ></Catalog>
+    ></Index>
 
 </template>
 
@@ -22,13 +22,13 @@ import axios from "axios";
 import { stringifyIconographyResource } from "@utils/stringifiers";
 import { manifestToThumbnail } from "@utils/iiif";
 import { fnToIconographyFile } from "@utils/functions";
-import Catalog from "@components/Catalog.vue";
+import Index from "@components/Index.vue";
 // import DataTableComponent from "@components/DataTableComponent.vue";
 
 const apiTarget = new URL("/i/iconography", __API_URL__);
-const dataFull = ref([]);      // the full catalog, independent of user filters
-const dataFilter = ref([]);    // the data to pass to `Catalog.vue`. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> }
-const display = "resource";   // use `CatalogItem`
+const dataFull = ref([]);      // the full index, independent of user filters
+const dataFilter = ref([]);    // the data to pass to `Index.vue`. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> }
+const display = "resource";   // use `IndexItem`
 
 
 onMounted(() => {
@@ -36,7 +36,7 @@ onMounted(() => {
 
     dataFull.value = JSON.parse(r.request.response);
     dataFilter.value = dataFull.value.map((c) => {
-      return { href : new URL(`/i/iconography/${c.id_uuid}`, __API_URL__).href,
+      return { href : new URL(`/iconographie/${c.id_uuid}`, window.location.href).href,
                img  : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
                text : stringifyIconographyResource(c) };
     })

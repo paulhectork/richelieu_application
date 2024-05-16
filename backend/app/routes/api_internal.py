@@ -16,10 +16,10 @@ from ..orm import *
 
 
 # ******************************************
-# catalogs
+# indexes
 # ******************************************
 @app.route("/i/iconography")
-def catalog_iconography():
+def index_iconography():
     """
     get all `iconography` ressources.
     we mimic `flask.jsonify` with `Response` because
@@ -32,7 +32,7 @@ def catalog_iconography():
 
 
 @app.route("/i/cartography")
-def catalog_cartography():
+def index_cartography():
     """
     get all `cartography` ressources.
     """
@@ -43,7 +43,7 @@ def catalog_cartography():
 
 
 @app.route("/i/directory")
-def catalog_directory():
+def index_directory():
     """
     get all directory ressources
     """
@@ -54,25 +54,25 @@ def catalog_directory():
 
 
 @app.route("/i/theme")
-def catalog_theme():
+def index_theme():
     """
     get all theme elements
     """
-    r = (db.session.query(Theme, Theme.count_iconography)
-                   .order_by(Theme.count_iconography.desc()) )
-    # to check the result: print( [_[0].count_iconography for _ in r.all()] )
+    r = (db.session.query(Theme, Theme.iconography_count)
+                   .order_by(Theme.iconography_count.desc()) )
+    # to check the result: print( [_[0].iconography_count for _ in r.all()] )
     return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
                    , mimetype="application/json"
                    , content_type="application/json")
 
 
 @app.route("/i/named-entity")
-def catalog_named_entity():
+def index_named_entity():
     """
     get all named entity elements
     """
-    r = (db.session.query(NamedEntity, NamedEntity.count_iconography)
-                   .order_by(NamedEntity.count_iconography.desc()) )
+    r = (db.session.query(NamedEntity, NamedEntity.iconography_count)
+                   .order_by(NamedEntity.iconography_count.desc()) )
     return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
                    , mimetype="application/json"
                    , content_type="application/json")

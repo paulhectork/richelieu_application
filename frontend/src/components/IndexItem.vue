@@ -1,6 +1,6 @@
 <template>
   <a v-if="display==='resource'"
-     class="catalog-item catalog-item-resource"
+     class="index-item index-item-resource"
      :href="item.href"
   >
     <div class="img-container">
@@ -11,16 +11,17 @@
   </a>
 
   <a v-if="display==='concept'"
-     class="catalog-item catalog-item-concept"
+     class="index-item index-item-concept"
      :href="item.href"
      :style="{ 'background-image': `url(${item.img})` }"
   >
-    <svg>
+    <p v-html="item.text"></p>
+    <!--<svg>
       <text v-html="item.text"
             x="50%"
             y="50%"
       ></text>
-    </svg>
+    </svg>-->
   </a>
 
 </template>
@@ -31,25 +32,9 @@ const props = defineProps(["item", "display"]);
 
 
 <style scoped>
-.catalog-item {
+.index-item {
   border: var(--cs-border);
-}
-
-/**
- * ressource view
- */
-.catalog-item-resource {
-  display: grid;
-  grid-template-columns: 100%;
-  grid-template-rows: 2fr auto;
-}
-.img-container {
-  /*width: 100%;
-  height: 100%;*/
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  margin: 7px;
 }
 img {
   object-fit: cover;
@@ -59,21 +44,69 @@ a {
   color: var(--cs-main-default);
 }
 p {
-  margin: 5px;
+  margin: 0;
+}
+.index-item:hover p {
+  background-color: var(--cs-main-second-bg);
+  color: var(--cs-main-second);
+}
+
+
+/**
+ * ressource view
+ */
+.index-item-resource {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 2fr auto;
+  text-align: center;
+}
+.index-item-resource .img-container {
+  /*width: 100%;
+  height: 100%;*/
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.index-item-resource p {
+  padding: 5px;
   height: min-content;
+  border-top: var(--cs-border);
 }
 
 /**
  * concept view
  */
-.catalog-item-concept {
+.index-item-concept {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
 
   background-size: cover;
   background-position: center center;
+
+  text-align: start;
 }
+.index-item-concept p {
+  width: 100%;
+  padding: 3px 3px 0px 3px;
+
+  background-color: var(--cs-main-default-bg);
+  border-top: var(--cs-border);
+  font-variant: small-caps;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+}
+/* `>>>` is a deep selector that allows to apply
+   style to elts rendered with `v-html` */
+.index-item-concept >>> span:last-child {
+  font-family: var(--cs-font-sans-serif);
+}
+/*
 svg {
   font-size: var(--cs-fontsize-mobile);
   display: flex;
@@ -98,4 +131,5 @@ text {
     font-size: var(--cs-fontsize-main-desktop);
   }
 }
+*/
 </style>

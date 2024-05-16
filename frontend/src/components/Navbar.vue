@@ -36,18 +36,19 @@ import { cleanClickOrTouchend } from "@utils/functions";
 
 
 async function toggleSidebar(e) {
-  const $tgt = $(e.target);
+  console.log("hello");
   // toggle HTML class
   console.log( domStore.mobileSidebarActive,
                domStore.mobileSidebarActive ? " : désactiver" : ": activer");
-  // domStore.mobileSidebarActive ? $tgt.removeClass("burger-cross")
-  //                              : $tgt.addClass("burger-cross");
-  // toggle the sidebarActive state
   domStore.toggleMobileSidebar();
   return
 }
 
 onMounted(() => {
+  /*******************************************TODO REWRITE
+   * (réécriture en cours avec Modernizr)
+   * this works if both `click` and `touchend` are triggered.
+   * else, it cancels everything */
   $("#burger").on("click touchend", (e) => {
     e = cleanClickOrTouchend(e);
     toggleSidebar(e);

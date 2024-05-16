@@ -43,7 +43,7 @@
    * FONT DEFINITIONS
    */
   --cs-font-serif: "ITC Galliard Std";
-  --cs-font-sans-serif: "urlaub-grotesk", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --cs-font-sans-serif: "urlaub-grotesk", "mels", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   /**
    * COLOR DEFINITIONS
@@ -130,19 +130,19 @@
   --cs-sidebar-width-mobile: 60vw;
 
   --cs-fontsize-title: max(14px, 2.5vh);
-  --cs-fontsize-main-mobile: 8pt/*max(15px, 1.5vh)*/;
-  --cs-fontsize-main-desktop: 8pt /*max(17px, 1.75vh)*/;
-  --cs-fontsize-menu-mobile: var(--cs-fontsize-main-mobile);
-  --cs-fontsize-menu-desktop: var(--cs-fontsize-main-desktop);
+  --cs-fontsize-main-mobile: 10pt/*max(15px, 1.5vh)*/;
+  --cs-fontsize-main-desktop: 10pt /*max(17px, 1.75vh)*/;
+  --cs-fontsize-menu-mobile: /*var(--cs-fontsize-main-mobile)*/;
+  --cs-fontsize-menu-desktop: 115% /*var(--cs-fontsize-main-desktop)*/;
   --cs-fontsize-legend: 125%;
 }
 
 /***********************************************
  *                global styles                *
  ***********************************************/
- *,
- *::before,
- *::after {
+*
+, *::before
+, *::after {
   box-sizing: border-box;
 }
 

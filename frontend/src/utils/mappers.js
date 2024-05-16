@@ -4,4 +4,4 @@
  *      column names                            *
  ************************************************/
 
-export const iconographyCatalog = { }
+export const iconographyIndex = { }

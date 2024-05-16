@@ -20,6 +20,12 @@
       <li><RouterLink to="/iconographie"
                       class="menu-text"
       >Iconographie</RouterLink></li>
+      <li><RouterLink to="/sujet"
+                      class="menu-text"
+      >Sujets</RouterLink></li>
+      <li><RouterLink to="/theme"
+                      class="menu-text"
+      >Thèmes</RouterLink></li>
       <li><RouterLink to="/cartographie"
                       class="menu-text"
       >Cartographie</RouterLink></li>

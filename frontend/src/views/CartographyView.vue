@@ -1,9 +1,9 @@
 <!-- CartographyView.vue
-     a view for the cartography catalogue
+     a view for the cartography index
 -->
 
 <template>
-  <h1>Cartographie</h1>
+  <h1>Index de la cartographie</h1>
   <div><DataTableComponent :api-target="apiTarget"
                            :process-response="processResponse"
                            :columns-definition="columnsDefinition"

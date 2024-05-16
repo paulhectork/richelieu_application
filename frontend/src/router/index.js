@@ -32,6 +32,10 @@ const router = createRouter({
       path: '/table-viewer',
       name: 'Voir les tables',
       component: () => import("@views/TableViewerView.vue")
+    }, {
+      path: "/:pathMatch(.*)*",
+      name: "404",
+      component: () => import("@views/NotFoundView.vue")
     }
   ]
 })

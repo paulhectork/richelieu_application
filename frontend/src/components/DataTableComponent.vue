@@ -6,7 +6,7 @@
 <template>
   <div class="datatable-container"
        @scroll="useDisplayButton">
-    <table id="datatable-catalog" class="row-border order-column"></table>
+    <table id="datatable-index" class="row-border order-column"></table>
   </div>
 
   <UpDownScroller></UpDownScroller>
@@ -172,14 +172,14 @@ function buildDataTable() {
         tableData.value = props.processResponse(r);
 
         // delete the datatable if necessary
-        if ( $.fn.dataTable.isDataTable($("#datatable-catalog")) ) {
+        if ( $.fn.dataTable.isDataTable($("#datatable-index")) ) {
           console.log("is datatable");
-          $("#datatable-catalog").DataTable().clear().destroy();
+          $("#datatable-index").DataTable().clear().destroy();
         }
-        $("#datatable-catalog").empty();
+        $("#datatable-index").empty();
 
         // create the new table
-        $("#datatable-catalog").DataTable({
+        $("#datatable-index").DataTable({
           data: tableData.value,
           columns: createColumns(),
           // width and height change on window resize
@@ -220,11 +220,11 @@ onMounted(() => {
   padding: 2px;
   border: var(--cs-border)
 }
-#datatable-catalog th {
+#datatable-index th {
   font-weight: bolder;
   font-size: 50;
 }
-#datatable-catalog td {
+#datatable-index td {
   font-weight: lighter !important;
   font-family: sans-serif;
   font-size: 12px;
@@ -233,16 +233,16 @@ onMounted(() => {
   position: relative;
   z-index: -1;
 }
-#datatable-catalog.row-border td {
+#datatable-index.row-border td {
   border-top: none;
   border-bottom: var(--cs-border);
 }
-#datatable-catalog td:has(img) {
+#datatable-index td:has(img) {
   display: table-cell;
   align-items: center;
   justify-content: center;
 }
-#datatable-catalog img {
+#datatable-index img {
   border: var(--cs-border);
 }
 

@@ -1,4 +1,6 @@
+// import Modernizr from "modernizr";
 import { reactive } from 'vue';
+import $ from "jquery";
 
 /**
  * store relative to DOM manipulation
@@ -9,8 +11,6 @@ import { reactive } from 'vue';
  * to listen to changes on stores and refs, see the link below and the `watch()` function
  * https://blog.logrocket.com/reactivity-vue-3-composition-api-ref-reactive/#watching-refs-change-watch-function
  */
-
-import $ from "jquery";
 
 
 export const domStore = reactive({
@@ -27,5 +27,16 @@ export const domStore = reactive({
   mobileSidebarActive: false,
   toggleMobileSidebar() {
     this.mobileSidebarActive = !this.mobileSidebarActive
+  },
+  /* TODO
+  // the viewer has touch events. this will change
+  // how/which click/touch events are used.
+  // see: https://web.dev/articles/mobile-touchandmouse
+  hasTouch: false,
+  setHasTouch() {
+    console.log(Modernizr);
+    this.hasTouch = true;
   }
+  */
+
 })

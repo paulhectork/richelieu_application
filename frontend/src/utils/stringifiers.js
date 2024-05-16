@@ -21,6 +21,14 @@ export function stringifyIconographyResource(i) {
   return out;
 }
 
+/**
+ * stringify a single `Theme` or `NamedEntity` object
+ * @returns string
+ */
+export function stringifyThemeOrNamedEntityResource(x) {
+  return `<span>${x.entry_name}</span><span>[${x.iconography_count}]</span>`
+}
+
 
 /**
  * transform an author array into a string
