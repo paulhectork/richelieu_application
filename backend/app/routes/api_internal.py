@@ -26,9 +26,9 @@ def index_iconography():
     the json isn't sent to the client using `jsonify`
     """
     r = db.session.execute(Iconography.query)
-    return Response(json.dumps([ _[0].serialize_lite() for _ in r.all() ])
-                    , mimetype="application/json"
-                    , content_type="application/json")
+    return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
+                   , mimetype="application/json"
+                   , content_type="application/json")
 
 
 @app.route("/i/cartography")
@@ -37,9 +37,20 @@ def index_cartography():
     get all `cartography` ressources.
     """
     r = db.session.execute(Cartography.query)
-    return Response(json.dumps([ _[0].serialize_lite() for _ in r.all() ])
-                    , mimetype="application/json"
-                    , content_type="application/json")
+    return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
+                   , mimetype="application/json"
+                   , content_type="application/json")
+
+
+@app.route("/i/place")
+def index_place():
+    """
+    get all `place` ressources
+    """
+    r = db.session.execute(Place.query)
+    return Response( json.dumps([  _[0].serialize_index() for _ in r.all() ])
+                   , mimetype="application/json"
+                   , content_type="application/json" )
 
 
 @app.route("/i/directory")

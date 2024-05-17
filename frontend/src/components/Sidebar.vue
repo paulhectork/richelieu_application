@@ -29,6 +29,9 @@
       <li><RouterLink to="/cartographie"
                       class="menu-text"
       >Cartographie</RouterLink></li>
+      <li><RouterLink to="/lieu"
+                      class="menu-text"
+      >Lieux</RouterLink></li>
       <li><RouterLink to="/table-viewer"
                       class="menu-text"
       >Voir les tables</RouterLink></li>

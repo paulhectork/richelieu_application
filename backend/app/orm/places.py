@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from sqlalchemy.dialects import postgresql as psql
 from sqlalchemy import ForeignKey, Text
+from sqlalchemy import select, and_
 import typing as t
 import intervals
 
@@ -53,7 +54,7 @@ class Place(db.Model):
         return _validate_uuid(_uuid, self.__tablename__)
 
     def get_address(self):
-        return [ r.address.to_string()
+        return [ r.address.serialize_lite()
                  for r in self.r_address_place ]
 
     def get_iconography(self):
@@ -64,13 +65,35 @@ class Place(db.Model):
         return [ r.cartography.serialize_lite()
                  for r in self.r_cartography_place ]
 
-    def get_place_group(self):
+    def get_place_group(self) -> t.Dict:
         return self.place_group.serialize_lite() if self.place_group is not None else None
+
+    def get_filename_index(self) -> t.List[str]:
+        cartography_objs = [ r.cartography for r in self.r_cartography_place
+                             if r.cartography.map_source == self.vector_source ]
+        return [ f.serialize_lite()
+                 for c in cartography_objs
+                 for f in c.filename ]
+
+    def get_address_index(self) -> t.List[t.Dict]:
+        address_objs = [ r.address for r in self.r_address_place
+                         if r.address.source == self.vector_source ]
+        return [ a.serialize_lite()
+                 for a in address_objs ]
 
     def serialize_lite(self) -> t.Dict:
         return { "id_uuid"  : self.id_uuid,      # str
                  "vector"   : self.vector,       # t.Dict
-                 "centroid" : self.centroid }    # t.Dict
+                 "centroid" : self.centroid,     # t.Dict
+        }
+
+    def serialize_index(self) -> t.Dict:
+        """object representation of `Place` for the Place index page"""
+        return { "id_uuid"  : self.id_uuid,               # str
+                 "date"     : int4range2list(self.date),  # t.List[int]
+                 "filename" : self.get_filename_index(),  # t.List[t.Dict]
+                 "address"  : self.get_address_index()    # t.List[t.Dict]
+        }
 
     def serialize_full(self) -> t.Dict:
         return { "id_uuid"       : self.id_uuid,               # str
@@ -80,7 +103,7 @@ class Place(db.Model):
                  "vector"        : self.vector,                # t.Dict
                  "vector_source" : self.vector_source,         # str
 
-                 "place_group"   : self.get_place_group(),     # t.List[t.Dict] | None
+                 "place_group"   : self.get_place_group(),     # t.List[t.Dict]
                  "address"       : self.get_address(),         # t.List[str]
                  "iconography"   : self.get_iconography(),     # t.List[t.Dict]
                  "cartography"   : self.get_iconography()      # t.List[t.Dict]
@@ -149,11 +172,11 @@ class Address(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
-    def to_string(self):
-        """
-        string representation of an address
-        """
-        return f"{self.number} {self.street}, {self.city} ({self.date})"
+    # def to_string(self):
+    #     """
+    #     string representation of an address
+    #     """
+    #     return f"{self.number} {self.street}, {self.city} ({self.date})"
 
     def get_place(self):
         return [ r.place.serialize_lite()
@@ -166,19 +189,22 @@ class Address(db.Model):
                  for d in self.directory ]
 
     def serialize_lite(self):
-        return { "id_uuid": self.id_uuid,            # str
-                 "as_string": self.to_string(),    # str
+        return { "id_uuid" : self.id_uuid,            # str
+                 "number"  : self.number,              # str
+                 "street"  : self.street,              # str
+                 "city"    : self.city,                  # str
+                 "country" : self.country,            # str
         }
 
 
     def serialize_full(self):
-        return { "id_uuid": self.id_uuid,            # str
-                 "number": self.number,              # str
-                 "street": self.street,              # str
-                 "city": self.city,                  # str
-                 "country": self.country,            # str
-                 "source": self.source,              # str
-                 "date": int4range2list(self.date),  # t.List[int]
+        return { "id_uuid" : self.id_uuid,            # str
+                 "number"  : self.number,              # str
+                 "street"  : self.street,              # str
+                 "city"    : self.city,                  # str
+                 "country" : self.country,            # str
+                 "source"  : self.source,              # str
+                 "date"    : int4range2list(self.date),  # t.List[int]
 
                  "as_string": self.to_string(),    # str
 
@@ -186,5 +212,8 @@ class Address(db.Model):
                  "directory": self.get_directory()   # t.List[t.Dict]
         }
 
+
+from .data_sources import Cartography
+from .relationships import R_CartographyPlace
 
 

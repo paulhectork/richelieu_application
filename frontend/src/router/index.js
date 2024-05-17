@@ -29,6 +29,10 @@ const router = createRouter({
       name: 'Sujets',
       component: () => import("@views/NamedEntityView.vue")
     }, {
+      path: '/lieu',
+      name: 'Lieux',
+      component: () => import("@views/PlaceView.vue")
+    }, {
       path: '/table-viewer',
       name: 'Voir les tables',
       component: () => import("@views/TableViewerView.vue")

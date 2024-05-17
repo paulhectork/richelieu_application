@@ -4,14 +4,9 @@
 
 <template>
   <h1>Index de l'iconographie</h1>
-    <!-- <DataTableComponent :api-target="apiTarget"
-                           :process-response="processResponse"
-                           :columns-definition="columnsDefinition"
-    ></DataTableComponent> -->
-
-    <Index :display="display"
-             :data="dataFilter"
-    ></Index>
+  <Index :display="display"
+           :data="dataFilter"
+  ></Index>
 
 </template>
 
@@ -35,9 +30,10 @@ onMounted(() => {
   axios.get(apiTarget).then((r) => {
 
     dataFull.value = JSON.parse(r.request.response);
+
     dataFilter.value = dataFull.value.map((c) => {
       return { href : new URL(`/iconographie/${c.id_uuid}`, window.location.href).href,
-               img  : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
+               img  : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0].url).href : null,
                text : stringifyIconographyResource(c) };
     })
 

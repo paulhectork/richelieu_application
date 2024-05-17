@@ -26,13 +26,16 @@ const display = "concept";  // define the view to use in `IndexItem`
 
 onMounted(() => {
   axios.get(apiTarget).then((r) => {
+
     dataFull.value   = JSON.parse(r.request.response);
+
     dataFilter.value = dataFull.value.map((c) => {
       return { href : new URL(`/sujet/${c.id_uuid}`, window.location.href).href,
                img  : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
                text : stringifyThemeOrNamedEntityResource(c)
       }
     })
+
   })
 })
 

@@ -15,10 +15,21 @@ export function stringifyIconographyResource(i) {
   let authors = stringifyAuthorArray(i.authors);
   let date = stringifyDate(i.date);
 
-  out += authors.length ? `${authors}, ` : " ";
+  out += authors.length ? `${authors}, ` : "";
   out += i.title.length ? `<i>${ i.title[0] }</i> ` : " ";
   out += date.length ? `(${date})` : "";
   return out;
+}
+
+/**
+ * stringify a single address object
+ */
+export function stringifyAddressResource(a) {
+  let out = "";
+  out += (a.number != null) ? `${a.number}, ` : "";
+  out += a.street.length ? `${a.street} `  : "";
+  out += "(Paris, France)"
+  return out
 }
 
 /**

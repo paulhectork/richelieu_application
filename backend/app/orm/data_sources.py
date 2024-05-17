@@ -110,7 +110,7 @@ class Iconography(db.Model):
 
     def get_thumbnail(self) -> t.List:
         """get thumbnails only"""
-        return [ f.url
+        return [ f.serialize_lite()
                  for f in self.filename
                  if "thumbnail" in f.url ]
 

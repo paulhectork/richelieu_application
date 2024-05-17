@@ -24,10 +24,24 @@
     </svg>-->
   </a>
 
+  <a v-if="display==='cartography'"
+     class="index-item index-item-cartography"
+     :href="item.href"
+  ></a>
+
 </template>
 
 <script setup>
 const props = defineProps(["item", "display"]);
+
+console.log(">", props.item);
+
+if ( props.display === "cartography" ) {
+  L = require("leaflet");
+  console.log(L);
+
+}
+
 </script>
 
 
