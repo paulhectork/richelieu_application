@@ -1,0 +1,31 @@
+{
+  "minify": true,
+  "options": [
+    "domPrefixes",
+    "prefixes",
+    "addTest",
+    "atRule",
+    "hasEvent",
+    "mq",
+    "prefixed",
+    "prefixedCSS",
+    "prefixedCSSValue",
+    "testAllProps",
+    "testProp",
+    "testStyles",
+    "html5printshiv",
+    "html5shiv",
+    "setClasses"
+  ],
+  "feature-detects": [
+    "test/canvastext",
+    "test/cors",
+    "test/eventlistener",
+    "test/forcetouch",
+    "test/geolocation",
+    "test/pointerevents",
+    "test/touchevents",
+    "test/webgl",
+    "test/workers/webworkers"
+  ]
+}

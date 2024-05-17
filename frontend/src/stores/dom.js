@@ -1,4 +1,3 @@
-// import Modernizr from "modernizr";
 import { reactive } from 'vue';
 import $ from "jquery";
 
@@ -14,7 +13,9 @@ import $ from "jquery";
 
 
 export const domStore = reactive({
-  // portrait or landscape display.
+  /**
+   * portrait or landscape display.
+   */
   windowOrientation: "portrait",
   setWindowOrientation(val) {
     if ( ! ["portrait", "landscape"].includes(val) ) {
@@ -23,20 +24,11 @@ export const domStore = reactive({
       this.windowOrientation = val;
     }
   },
-  // flag to show that the sidebar is visible on mobile displays
+  /**
+   * flag to show that the sidebar is visible on mobile displays
+   */
   mobileSidebarActive: false,
   toggleMobileSidebar() {
     this.mobileSidebarActive = !this.mobileSidebarActive
-  },
-  /* TODO
-  // the viewer has touch events. this will change
-  // how/which click/touch events are used.
-  // see: https://web.dev/articles/mobile-touchandmouse
-  hasTouch: false,
-  setHasTouch() {
-    console.log(Modernizr);
-    this.hasTouch = true;
   }
-  */
-
 })

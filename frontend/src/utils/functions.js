@@ -1,8 +1,10 @@
 /**********************************************
- *         globally useful functions          *
+ *        generally useful functions          *
  **********************************************/
 
 import $ from "jquery";
+import { domStore } from "@stores/dom.js";
+import { hasTouch } from "@globals";
 
 
 /**
@@ -41,20 +43,19 @@ export function isKindaEmpty(obj) {
 
 
 /**
- * this function avoids the double firing of the `click touchend` event,
- * used to detect click on both mobile and desktop.
+ * on touchscreen devices, "when the user touches
+ * the screen both touch and click events will occur".
+ * this means that, if `hasTouch`, 2 events are fired
+ * and we need to make it so that only a single event
+ * is processed, using `preventDefault()`.
  *
- * on touch screens, `touchend` is an equivalent for the `click`
- * DOM event => we target click on mobile+desktop by listening
- * to "click touchend" event. however, this can cause a
- * click-like event to be fired twice (once for click, once
- * for touchend).
- *
- * WARNING: can cause bugs and cancel other click events being fired.
- * see: https://stackoverflow.com/questions/25572070/javascript-touchend-versus-click-dilemma
+ * see: https://web.dev/articles/mobile-touchandmouse
+ * and: https://web.dev/articles/mobile-touchandmouse#1_-_clicking_and_tapping_-_the_natural_order_of_things
  */
 export function cleanClickOrTouchend(event) {
-  event.stopPropagation();
-  event.preventDefault();
+  if ( hasTouch ) {
+    event.stopPropagation()
+    event.preventDefault();
+  }
   return event
 }

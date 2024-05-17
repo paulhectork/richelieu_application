@@ -26,16 +26,16 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
   // console.log("%%%%%%%", command, mode, isSsrBuild, isPreview);
 
   // choose the configuration based on `mode`
-  let constants;
+  let configVariables;
   switch (mode) {
     case "backend-server":
-      constants = {
+      configVariables = {
         __API_URL__: JSON.stringify("http://172.17.1.142:5000"),
         __SERVER_URL__: JSON.stringify("http://richdata01.inha.fr")
       };
       break;
     case "backend-local":
-      constants = {
+      configVariables = {
         __API_URL__: JSON.stringify("http://localhost:5000/i"),
         __SERVER_URL__: JSON.stringify("http://richdata01.inha.fr")
       };
@@ -46,7 +46,7 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
     plugins: [
       vue(),
     ],
-    define: constants,
+    define: configVariables,
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -55,6 +55,8 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
         "@router": fileURLToPath(new URL("./src/router", import.meta.url)),
         "@stores": fileURLToPath(new URL("./src/stores", import.meta.url)),
         "@assets": fileURLToPath(new URL("./src/assets", import.meta.url)),
+        "@globals": fileURLToPath(new URL("./src/globals.js", import.meta.url)),
+        "@plugins": fileURLToPath(new URL("./src/plugins", import.meta.url)),
         "@components": fileURLToPath(new URL("./src/components", import.meta.url)),
         "@composables": fileURLToPath(new URL("./src/composables", import.meta.url))
       }

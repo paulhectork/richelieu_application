@@ -32,11 +32,11 @@ import { onMounted, onUnmounted, computed, ref } from "vue";
 import $ from "jquery";
 
 import { domStore } from "@stores/dom";
-import { cleanClickOrTouchend } from "@utils/functions";
+import { clickOrTouchEvent } from "@globals";
+import { cleanClickOrTouchend } from "@utils/functions.js";
 
 
 async function toggleSidebar(e) {
-  console.log("hello");
   // toggle HTML class
   console.log( domStore.mobileSidebarActive,
                domStore.mobileSidebarActive ? " : désactiver" : ": activer");
@@ -45,17 +45,13 @@ async function toggleSidebar(e) {
 }
 
 onMounted(() => {
-  /*******************************************TODO REWRITE
-   * (réécriture en cours avec Modernizr)
-   * this works if both `click` and `touchend` are triggered.
-   * else, it cancels everything */
-  $("#burger").on("click touchend", (e) => {
+  $("#burger").on(clickOrTouchEvent, (e) => {
     e = cleanClickOrTouchend(e);
     toggleSidebar(e);
   });
 })
 onUnmounted(() => {
-  document.removeEventListener("click touchend", toggleSidebar);
+  document.removeEventListener(clickOrTouchEvent, toggleSidebar);
 })
 </script>
 

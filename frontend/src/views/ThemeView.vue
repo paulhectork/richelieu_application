@@ -36,7 +36,7 @@ onMounted(() => {
       }
     })
   })
-  .then( console.log(dataFilter) )
+  // .then( console.log(dataFilter) )
 })
 
 

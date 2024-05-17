@@ -66,8 +66,6 @@ function loadTable(tableName) {
 // hooks
 
 onMounted(() => {
-  console.log(window.location.href);
-
   axios.get(apiTargetListTables)
        .then((r) => {
         tableNames.value = JSON.parse(r.request.response).sort();

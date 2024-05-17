@@ -38,7 +38,8 @@ function setMainWrapperClasses() {
   let classes = `${domStore.windowOrientation} `;
   if ( domStore.windowOrientation !== 'landscape' ) {
     classes += domStore.mobileSidebarActive
-               ? 'portrait-sidebar-active' : 'portrait-sidebar-hidden'
+               ? 'portrait-sidebar-active'
+               : 'portrait-sidebar-hidden'
   };
   return classes;
 }
@@ -53,11 +54,11 @@ function calcWindowOrientation() {
   }, 1000)
 }
 
-/** TODO
+/*
 // the browsing device allows touch (tactile screen)
 // see: https://web.dev/articles/mobile-touchandmouse
 function touchOrNot() {
-  domStore.setHasTouch();
+  featureDetectionStore.setHasTouch();
 }
 */
 
@@ -70,6 +71,7 @@ watch(route, (newRoute, oldRoute) => {
 
 
 onMounted(() => {
+  // touchOrNot();
   calcWindowOrientation();
   addEventListener("resize", calcWindowOrientation);
 })

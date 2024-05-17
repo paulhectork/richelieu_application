@@ -40,6 +40,20 @@ npm run dev -- --mode backend-server --host
 TODO
 
 ---
+
+## Installation de `Modernizr`
+
+On utilise un `custom build` de la librairie qui à priori est dans `src/plugins`. 
+Si on veut modifier le build (ajouter des fonctionnalités), il faut 
+[définir ses options et télécharger le fichier de conf ici](https://modernizr.com/download?setclasses)
+avant de lancer les commandes:
+
+```bash
+sudo npm -g install modernizr                                # installation globale de modernizr
+modernizr -c modernizr.config.json -d src/plugins/modernizr  # faire un build à partir de la config `modernizr.config.json`
+```
+
+---
 ---
 ---
 
