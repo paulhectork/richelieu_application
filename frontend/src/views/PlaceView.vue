@@ -49,7 +49,6 @@ onMounted(() => {
                text : c.address.length ? stringifyAddressResource(c.address[0]) : "Addresse inconnue" };
     })
 
-
   })
 })
 

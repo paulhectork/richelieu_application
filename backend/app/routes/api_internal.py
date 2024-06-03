@@ -53,6 +53,14 @@ def index_place():
                    , content_type="application/json" )
 
 
+@app.route("/i/place-lite/<place_uuid>")
+def place_lite(place_uuid:str):
+    r = db.session.execute(Place.query.filter(Place.id_uuid==place_uuid).limit(1))
+    return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
+                   , mimetype="application/json"
+                   , content_type="application/json" )
+
+
 @app.route("/i/directory")
 def index_directory():
     """
