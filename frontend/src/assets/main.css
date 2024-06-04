@@ -1,5 +1,6 @@
 @charset "UTF-8";
 @import "./fonts/galliard/stylesheet.css";
+@import "animate.css";
 
 
 /**************************************************************************
@@ -135,6 +136,12 @@
   --cs-fontsize-menu-mobile: /*var(--cs-fontsize-main-mobile)*/;
   --cs-fontsize-menu-desktop: 115% /*var(--cs-fontsize-main-desktop)*/;
   --cs-fontsize-legend: 125%;
+
+  /**
+   *  ANIMATE.CSS GLOBALS
+   */
+   --animate-duration: 1s;
+
 }
 
 /***********************************************

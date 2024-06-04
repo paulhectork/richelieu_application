@@ -7,46 +7,51 @@
 
     <div class="index-container">
       <table>
-        <tr v-for="d in data"
-        ><td>
-          <button class="text-container"
-                  v-html="d.text"
-                  :value="d.href"
-          ></button>
-          <a :href="d.href" class="button-arrow-container">
-            <ButtonArrow orient="right"></ButtonArrow>
-          </a>
-        </td></tr>
+        <tr v-for="d in data" class="animate__animated animate__bounceInUp">
+          <td>
+            <button class="text-container" v-html="d.text" :value="d.href"></button>
+            <a :href="d.href" class="button-arrow-container">
+              <ButtonArrow orient="right"></ButtonArrow>
+            </a>
+          </td>
+        </tr>
       </table>
-
     </div>
+
     <div class="map-container">
       <div id="place-map"></div>
     </div>
+
   </div>
 </template>
 
 <script setup>
 import axios from "axios";
-import { onMounted } from "vue";
-import "leaflet/dist/leaflet.css";
-import $ from "jquery"
+import { onMounted, onUpdated, onUnmounted, ref } from "vue";
+import $ from "jquery";
 import "leaflet";
+
+import "leaflet/dist/leaflet.css";
 
 import ButtonArrow from "@components/ui/ButtonArrow.vue";
 import { globalDefineMap } from "@utils/leafletUtils.js";
+import { clickOrTouchEvent } from "@globals";
+
 
 const props = defineProps(["display", "data"])
+const map = ref();  // will be defined in `onMounted`
 
 
 /**
  * when clicking a place, display it on the map
- * @param {string} placeUrl: the URL to the place's main page.
- * @param {leaflet map} _map
+ * @param {HTML Event} e: the click or touchend event
  */
-function displayVector(placeUrl, _map) {
+function displayVector(e) {
+  const placeUrl = $(e.target).val();
   const placeUuid = placeUrl.split(/\//g).at(-1);  // extract the place's UUID from the URL
   const placeUuidTarget = new URL(`/i/place-lite/${placeUuid}`, __API_URL__);
+
+  let _map = map.value;
 
   // remove the previous geojson
   _map.eachLayer((layer) => {
@@ -54,27 +59,53 @@ function displayVector(placeUrl, _map) {
   })
 
   // load the geoJson and add it to the map
-  axios.get(placeUuidTarget)
-       .then((r) => {
-        const gjPlace = L.geoJSON(
-          JSON.parse(r.request.response)[0].vector, {
-            onEachFeature: (feature, layer) => { layer.toRemove = true }  // will allow us to remove the geojson when another one is selected
+  axios
+    .get(placeUuidTarget)
+    .then((r) => {
+      const gjPlace = L.geoJSON(
+        JSON.parse(r.request.response)[0].vector,  // données geojson
+        {
+          style: { className: "place-gj" },
+          onEachFeature: (feature, layer) => {
+            // the layer will be removed
+            layer.toRemove = true;
+            // events
+            layer.on({
+              // interactive style
+              mouseover: (e) => {
+                e.target.setStyle({ fillOpacity: 1 });
+              },
+              mouseout: (e) => {
+                e.target.setStyle({ fillOpacity: 0.5 });
+              },
+              // redirect to PlaceMainView when clicking on the geojson
+              click: () => { window.location.href = placeUrl },
+              touchend: () => { window.location.href = placeUrl }
+            })
           }
-        );
-        gjPlace.addTo(_map);
-        _map.fitBounds(gjPlace.getBounds());
-        console.log("bye");
-       });
+      });
+      gjPlace.addTo(_map);
+      _map.fitBounds(gjPlace.getBounds());
+    });
+
+    map.value = _map
 
 }
 
-onMounted(() => {
-  const map = globalDefineMap("place-map");
 
-  $(".text-container").on("click", (e) => {
-    const tgt = $(e.target);
-    displayVector(tgt.val(), map);
-  })
+onMounted(() => {
+  map.value = globalDefineMap("place-map");
+})
+
+// the index has been added
+onUpdated(() => {
+  console.log("%%%", $(".text-container"));
+  $(".text-container").on(clickOrTouchEvent, displayVector);
+})
+
+onUnmounted(() => {
+  document.querySelector(".text-container")
+          .removeEventListener(clickOrTouchEvent, displayVector)
 })
 </script>
 
@@ -83,41 +114,51 @@ onMounted(() => {
   height: 100%;
   width: 100%;
   display: grid;
-  /*overflow: scroll;*/
+  overflow: scroll;
   grid-template-rows: 100%;
   grid-template-columns: 50% 50%;
+  border-top: var(--cs-border);
 }
 
 /******************************/
 
 .index-container {
-  width: 100%;
+  overflow: scroll;
 }
+
 table {
-  table-layout: fixed;
   border-spacing: 0;
-  border-collapse: collapse;
+  table-layout: fixed;
+  /*border-collapse: collapse;*/
   width: 100%;
+  border-right: var(--cs-border);
+  border-left: var(--cs-border);
 }
-tr, td {
-  border: var(--cs-border);
+
+tr,
+td {
+  border-bottom: var(--cs-border);
   /*height: 5vh;*/
   width: 100%;
 }
+
 td {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
-td > button {
+
+td>button {
   flex-grow: 3;
   flex-shrink: 1;
 }
+
 .button-arrow-container {
   flex-shrink: 2;
 }
-.button-arrow-container > button {
+
+.button-arrow-container>button {
   display: block;
   height: 5vh;
   width: 5vh;
@@ -127,15 +168,17 @@ td > button {
 
 .map-container {
   width: 100%;
+  height: 100%;
   background-color: blue;
+  align-self: start;
+  position: sticky;
+  top: 0;
 }
 #place-map {
-  height: 50vh;
+  height: 100%;
   width: 100%;
-  /*
-  position: fixed;
-  top: 0;
-  */
-
+}
+.place-gj {
+  transition: opacity 1s !important;
 }
 </style>

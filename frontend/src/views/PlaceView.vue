@@ -4,24 +4,33 @@
 
 <template>
 
-  <h1>Index des lieux</h1>
-  <p>
-    L'idée, c'est qu'on aura un viewer en deux parties.
-    À gauche, une liste de lieux, situés par leurs noms.
-    À droite, une carte leaflet. À gauche, il y aura un
-    boutton "Voir sur la carte". onClick, le vecteur et
-    le raster s'afficheront sur la carte et on zoomera
-    dessus. En cliquant sur un "Voir sur la carte" d'un
-    autre lieu, on supprimera les anciens rasters et
-    vecteurs et on affichera les nouveaux. En cliquant
-    sur le nom du lieu, on sera réorienté.e.s sur la page
-    principale de celui-ci.
-  </p>
-  <p>Pour le moment c'est un dossier en cours.</p>
-  <p>:)</p>
-  <IndexPlace :display="display"
-              :data="dataFilter"
-  ></IndexPlace>
+  <div class="index-place-container">
+
+    <div class="top-container">
+      <h1>Index des lieux</h1>
+      <p>
+        L'idée, c'est qu'on aura un viewer en deux parties.
+        À gauche, une liste de lieux, situés par leurs noms.
+        À droite, une carte leaflet. À gauche, il y aura un
+        boutton "Voir sur la carte". onClick, le vecteur et
+        le raster s'afficheront sur la carte et on zoomera
+        dessus. En cliquant sur un "Voir sur la carte" d'un
+        autre lieu, on supprimera les anciens rasters et
+        vecteurs et on affichera les nouveaux. En cliquant
+        sur le nom du lieu, on sera réorienté.e.s sur la page
+        principale de celui-ci.
+      </p>
+      <p>Pour le moment c'est un dossier en cours.</p>
+      <p>:)</p>
+    </div>
+
+    <div class="bottom-container">
+      <IndexPlace :display="display"
+                :data="dataFilter"
+      ></IndexPlace>
+    </div>
+
+  </div>
 
 </template>
 
@@ -56,5 +65,9 @@ onMounted(() => {
 
 
 <style scoped>
-
+.index-place-container {
+  display: grid;
+  grid-template-rows: 30% 70%;
+  height: 100%;
+}
 </style>
