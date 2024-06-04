@@ -4,7 +4,13 @@
      :href="item.href"
   >
     <div class="img-container">
-        <img :src="item.img"
+        <!--<div v-if="item.iiif != null"
+             :id="item.uuid"
+        ></div>-->
+        <img v-if="item.iiif"
+             :src="manifestToThumbnail(item.iiif, item.href)">
+        <img v-else
+             :src="item.img"
              class="fill-parent">
     </div>
     <p v-html="item.text"></p>
@@ -16,31 +22,18 @@
      :style="{ 'background-image': `url(${item.img})` }"
   >
     <p v-html="item.text"></p>
-    <!--<svg>
-      <text v-html="item.text"
-            x="50%"
-            y="50%"
-      ></text>
-    </svg>-->
   </a>
 
   <a v-if="display==='cartography'"
      class="index-item index-item-cartography"
      :href="item.href"
   ></a>
-
 </template>
 
 <script setup>
+import { manifestToThumbnail } from "@utils/iiif.js";
+
 const props = defineProps(["item", "display"]);
-
-console.log(">", props.item);
-
-if ( props.display === "cartography" ) {
-  L = require("leaflet");
-  console.log(L);
-
-}
 
 </script>
 

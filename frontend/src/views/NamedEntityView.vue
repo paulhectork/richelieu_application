@@ -30,7 +30,9 @@ onMounted(() => {
     dataFull.value   = JSON.parse(r.request.response);
 
     dataFilter.value = dataFull.value.map((c) => {
-      return { href : new URL(`/sujet/${c.id_uuid}`, window.location.href).href,
+      return { uuid : c.id_uuid,
+               href : new URL(`/sujet/${c.id_uuid}`, window.location.href).href,
+               iiif : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
                img  : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
                text : stringifyThemeOrNamedEntityResource(c)
       }

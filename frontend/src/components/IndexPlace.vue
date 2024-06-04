@@ -27,7 +27,7 @@
 
 <script setup>
 import axios from "axios";
-import { onMounted, onUpdated, onUnmounted, ref } from "vue";
+import { onMounted, onUpdated, onBeforeUnmount, ref } from "vue";
 import $ from "jquery";
 import "leaflet";
 
@@ -103,7 +103,7 @@ onUpdated(() => {
   $(".text-container").on(clickOrTouchEvent, displayVector);
 })
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   document.querySelector(".text-container")
           .removeEventListener(clickOrTouchEvent, displayVector)
 })
@@ -179,6 +179,6 @@ td>button {
   width: 100%;
 }
 .place-gj {
-  transition: opacity 1s !important;
+  transition: fill-opacity .2s;
 }
 </style>

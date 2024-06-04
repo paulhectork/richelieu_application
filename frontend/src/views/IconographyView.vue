@@ -23,7 +23,7 @@ import Index from "@components/Index.vue";
 const apiTarget = new URL("/i/iconography", __API_URL__);
 const dataFull = ref([]);      // the full index, independent of user filters
 const dataFilter = ref([]);    // the data to pass to `Index.vue`. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> }
-const display = "resource";   // use `IndexItem`
+const display = "resource";
 
 
 onMounted(() => {
@@ -32,7 +32,9 @@ onMounted(() => {
     dataFull.value = JSON.parse(r.request.response);
 
     dataFilter.value = dataFull.value.map((c) => {
-      return { href : new URL(`/iconographie/${c.id_uuid}`, window.location.href).href,
+      return { uuid : c.id_uuid,
+               href : new URL(`/iconographie/${c.id_uuid}`, window.location.href).href,
+               iiif : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
                img  : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0].url).href : null,
                text : stringifyIconographyResource(c) };
     })
