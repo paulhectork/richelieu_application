@@ -8,7 +8,7 @@
 
     <div class="top-container">
       <h1>Index des lieux</h1>
-      <p>
+      <!--<p>
         L'idée, c'est qu'on aura un viewer en deux parties.
         À gauche, une liste de lieux, situés par leurs noms.
         À droite, une carte leaflet. À gauche, il y aura un
@@ -22,6 +22,7 @@
       </p>
       <p>Pour le moment c'est un dossier en cours.</p>
       <p>:)</p>
+    -->
     </div>
 
     <div class="bottom-container">
@@ -53,11 +54,11 @@ onMounted(() => {
     dataFull.value   = JSON.parse(r.request.response);
 
     dataFilter.value = dataFull.value.map((c) => {
-      return { uuid : c.id_uuid,
-               href : new URL(`/lieu/${c.id_uuid}`, window.location.href).href,
-               iiif : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
-               img  : c.filename.length ? fnToCartographyFile(c.filename[0].url).href : null,
-               text : c.address.length ? stringifyAddressResource(c.address[0]) : "Addresse inconnue" };
+      return { idUuid : c.id_uuid,
+               href   : new URL(`/lieu/${c.id_uuid}`, window.location.href).href,
+               iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
+               img    : c.filename.length ? fnToCartographyFile(c.filename[0].url).href : null,
+               text   : c.address.length ? stringifyAddressResource(c.address[0]) : "Addresse inconnue" };
     })
 
   })

@@ -31,6 +31,17 @@ def index_iconography():
                    , content_type="application/json")
 
 
+@app.route("/i/iconography/<id_uuid>")
+def main_iconography(id_uuid):
+    """return an `Iconography` object based on its `id_uuid`"""
+    r = db.session.execute(Iconography
+                           .query
+                           .filter( Iconography.id_uuid == id_uuid ))
+    return Response( json.dumps([ _[0].serialize_full() for _ in r.all() ])
+                   , mimetype="application/json"
+                   , content_type="application/json" )
+
+
 @app.route("/i/cartography")
 def index_cartography():
     """

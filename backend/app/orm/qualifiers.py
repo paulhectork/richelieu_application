@@ -10,22 +10,22 @@ from ..utils.strings import _validate_uuid, int4range2list
 from ..app import db
 
 
-
-
-
+# *******************************************************************
+# secondary tables tables qualifying (giving extra information) on
+# other tables
 #
-
-
-
-
-
-
-
-
-
-
-
-
+# contains
+# ********
+# * `Title`: the title of a ressource
+# * `Annotation`: an annotation on an iconographic ressource
+# * `Theme`: the theme of an iconographic ressource
+# * `NamedEntity`: the named entity referenced/represented by
+#   a ressource
+# * `Actor`: a physical or moral person represented by a ressource
+# * `PlaceGroup`: a table grouping different versions of the
+#   same place throughout time (expressed as entries in
+#   `Place`)
+# *******************************************************************
 
 
 class Title(db.Model):
@@ -82,26 +82,6 @@ class Theme(db.Model):
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
-
-
-
-
-
-    #
-
-
-
-
-
-
-
-
-    #
-
-
-    #
-
-
 
     @hybrid_property
     def iconography_count(self):
@@ -234,6 +214,7 @@ class Actor(db.Model):
                  if r.role == "publisher" ]
 
     def serialize_lite(self):
+        print(">>", self)
         return { "id_uuid": self.id_uuid,
                  "entry_name": self.entry_name }
 

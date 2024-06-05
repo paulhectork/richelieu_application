@@ -173,6 +173,24 @@ a:visited {
   background-color: var(--cs-link-visited-bg);
 }
 
+
+table {
+  border-spacing: 0;
+  table-layout: fixed;
+  /*border-collapse: collapse;*/
+  width: 100%;
+}
+td {
+  padding: 0 5% 0 5%;
+
+}
+tr,
+td {
+  border-bottom: var(--cs-border);
+  /*height: 5vh;*/
+  width: 100%;
+}
+
 .main-default {
   color: var(--cs-main-default);
   background-color: var(--cs-main-default-bg);

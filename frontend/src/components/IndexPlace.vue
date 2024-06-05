@@ -99,8 +99,24 @@ onMounted(() => {
 
 // the index has been added
 onUpdated(() => {
-  console.log("%%%", $(".text-container"));
+  /**
+   * option1
+   * on hover, show the vector.
+   * on click, redirect to the main place page.
+   * advantages    : no need for two buttons;
+   * disadvantages : doesn't work on mobile
+   */
+  // $(".text-container").on("mouseover", displayVector);
+
+  /**
+   * option2
+   * on click of the place name, show the vector
+   * on click of the button, redirect to the main place page
+   * advantages    : this logic works on mobile and desktop
+   * disadvantages : the two button system will be confusing
+   */
   $(".text-container").on(clickOrTouchEvent, displayVector);
+
 })
 
 onBeforeUnmount(() => {
@@ -109,7 +125,7 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style>
+<style scoped>
 .index-place {
   height: 100%;
   width: 100%;
@@ -125,24 +141,14 @@ onBeforeUnmount(() => {
 .index-container {
   overflow: scroll;
 }
-
 table {
-  border-spacing: 0;
-  table-layout: fixed;
   /*border-collapse: collapse;*/
-  width: 100%;
   border-right: var(--cs-border);
   border-left: var(--cs-border);
 }
 
-tr,
 td {
-  border-bottom: var(--cs-border);
-  /*height: 5vh;*/
-  width: 100%;
-}
-
-td {
+  padding: 0;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

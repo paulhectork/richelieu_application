@@ -3,16 +3,8 @@
      class="index-item index-item-resource"
      :href="item.href"
   >
-    <div class="img-container">
-        <!--<div v-if="item.iiif != null"
-             :id="item.uuid"
-        ></div>-->
-        <img v-if="item.iiif"
-             :src="manifestToThumbnail(item.iiif, item.href)">
-        <img v-else
-             :src="item.img"
-             class="fill-parent">
-    </div>
+    <img :src="item.img"
+         class="fill-parent">
     <p v-html="item.text"></p>
   </a>
 
@@ -31,9 +23,32 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from "vue";
+// import $ from "jquery";
+
 import { manifestToThumbnail } from "@utils/iiif.js";
 
 const props = defineProps(["item", "display"]);
+// const selector = `#iiif-thumbnail-${props.item.idUuid}`;
+
+onMounted(() => {
+  /*
+  if ( props.item.iiif ) {
+    (async () => {
+      manifestToThumbnail(props.item.iiif, props.item.img)
+      .then((thumbnailUrl) => {
+        // console.log( thumbnailUrl );
+        // $(selector).attr("src", thumbnailUrl);
+        $(selector).attr("src", props.item.img)
+      })
+      .catch((e) => {
+        console.log("ERROR IN INDEXITEM", e);
+      });
+    })()
+  }
+  */
+
+})
 
 </script>
 
