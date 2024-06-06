@@ -1,7 +1,23 @@
+<!-- a generic IIIF viewer.
+
+     this IIIF viewer takes 4 inputs:
+     * osdId        : the HTML id of the IIIF viewer
+     * iiifUrl      : an URL to a IIIF presentation manifest
+     * backupImgUrl : the filename a backup static file,
+                      which is on our server. this will
+                      be displayed if an error is encountered
+     * folio        : an optional array of folio numbers, to select which
+                      canvases to show instead of the whole manfiest
+-->
+
 <template>
-  <div :id="osdId"
+  <div v-if="loadingFailed !== true"
+       :id="osdId"
        class="iiif-viewer"
   ></div>
+  <img v-else
+       :src="fnToIconographyFile(backupImgUrl)"
+       class="static-viewer">
 </template>
 
 <script setup>
@@ -10,10 +26,12 @@ import { onMounted, ref } from "vue";
 import OpenSeadragon from "openseadragon";
 
 import { manifestToTileSequence } from "@utils/iiif";
+import { fnToIconographyFile } from "@utils/functions";
 
 
-const props = defineProps(["osdId", "iiifUrl"]);
-const viewer = ref();    // OSD viewer
+const props = defineProps(["osdId", "iiifUrl", "backupImgUrl", "folio"]);
+const viewer = ref();              // OSD viewer
+const loadingFailed = ref(false);  // toggled in case of an error: will display a static image file instead of a IIIF tile sequence
 
 
 /**
@@ -25,7 +43,7 @@ const viewer = ref();    // OSD viewer
 function buildOsdViewer(tileSequence, osdId) {
   viewer.value = OpenSeadragon({
     id: osdId,
-    prefixUrl: `../assets/icons/openseadragon-icons/`,
+    // prefixUrl: `../assets/icons/openseadragon-icons/`,
     tileSources: tileSequence,
     sequenceMode: true,
     initialPage: 0,
@@ -54,7 +72,11 @@ function buildOsdViewer(tileSequence, osdId) {
 onMounted(() => {
   manifestToTileSequence(props.iiifUrl)
   .then((tileSequence) => {
-    buildOsdViewer(tileSequence, props.osdId)
+    if ( tileSequence.length ) {
+      loadingFailed.value = true;
+      console.log(props.backupImgUrl)
+      // buildOsdViewer(tileSequence, props.osdId)
+    }
   });
 })
 </script>
@@ -63,5 +85,10 @@ onMounted(() => {
 .iiif-viewer {
   height: 100%;
   width: 100%;
+}
+.static-viewer {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 </style>

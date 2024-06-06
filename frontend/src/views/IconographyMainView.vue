@@ -1,3 +1,12 @@
+<!-- main page for a single iconography item.
+     this page contains:
+     * .viewer-container: a viewer. there are 2 types of viewers and
+       we can toggle:
+       > `IiifViewer`: a IIIF viewer for the image
+       > ``: a leaflet viewer showing the places the image is connected to.
+     * .cartel-container: a table with all of the metadata
+-->
+
 <template>
   <div class="global-container"
        v-if="iconography">
@@ -16,6 +25,7 @@
           <IiifViewer v-if="iconography.iiif_url"
                       :osdId="iconography.id_uuid"
                       :iiifUrl="iconography.iiif_url"
+                      :backupImgUrl="imageUrl"
           ></IiifViewer>
           <div v-else><p>Pas d'image IIIF à montrer</p></div>
         </div>
@@ -108,13 +118,24 @@ import { stringifyActorArray
        , stringifyGenericArray
        , stringifyDate } from "@utils/stringifiers";
 
+/***************************************************/
 
 const route = useRoute();
 const idUuid = ref(route.params.idUuid);
 const iconography = ref();
+const view = ref("image");  // "image" for a IIIF viewer, "map" for a leaflet map of the place of this image
+
 const apiTarget = computed(() =>
   new URL(`/i/iconography/${idUuid.value}`, __API_URL__) );
-const view = ref("image");  // "image" for a IIIF viewer, "map" for a leaflet map of the place of this image
+const imageUrl = computed(() => {
+  // a backup image url in case the IIIF one doesn't load properly
+  return iconography.value !== undefined
+  ? iconography
+    .value
+    .filename
+    .filter( f => !f.url.match(/compress|thumbnail/) )[0].url
+  : "not yet defined" });
+
 
 function getIconographyResource() {
   axios
@@ -125,14 +146,14 @@ function getIconographyResource() {
   })
 }
 
+/***************************************************/
+
 watch(() => route.params.id_uuid, (newIdUuid, oldIdUuid) => {
   idUuid.value = newIdUuid;
 })
-
 onMounted(() => {
   getIconographyResource();
 })
-
 onUpdated(() => {
 
 })
