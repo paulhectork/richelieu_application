@@ -3,29 +3,86 @@
  *        string representations                 *
  *************************************************/
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 
 /**
- * process a IIIF manifest to extract an image
+ * process a IIIF manifest to extract tile sources
+ * from a IIIF manifest, we must get all `sequences/canvases/images/resource/@id`,
+ * and create an array of tile sequences with the structure:
+ * `[{ type: "image",
+ *     url: <url in the resource/@id>,
+ *     height: 1
+ *  }]`
  * see: https://openseadragon.github.io/examples/tilesource-iiif/
+ *
+ * @param {string} manifestUrl: the URL to the IIIF manifest
+ * @param {Array} folio: an array of canvas numbers to display.
+ *                       if `folio` is not empty, only the pages
+ *                       in `folio` will be shown
  */
-export function manifestToTileSources(manifestUrl) {
-  // TO BE ADAPED FROM : https://gitlab.inha.fr/snr/rich.data/auxiliaires/application_prototype/-/blob/main/frontend/src/app/services/iiif-manifest-processor.service.ts?ref_type=heads
-  axios.get(manifestUrl)
-       .then((r) => {
-        console.log(r);
-        const manifest = r.response;
+export async function manifestToTileSequence(manifestUrl, folio=[]) {
 
-       })
-       .catch((e) => {
-         console.log("***************\nerror\n");
-         console.log("status  : ", e.response.status)
-         console.log("headers : ", e.response.headers)
-         console.log("data    : ", e.response.data)
-         console.log("***************")
-         throw new Error(e);
-       })
+  /* HELPER FUNCTIONS */
+  // function to create a tile source from a resource in a manifest
+  // returns an object (`{}`)
+  const resourceProcessing = (theResource) => {
+    return { url:theResource["@id"], type:"image", height: 1 }
+  };
+  // build an array of tilesources from a canvas `theCanvas`
+  // returns an array (`[]`)
+  const canvasProcessing = (theCanvas) => {
+    let outputArr = [];
+    theCanvas.images.forEach((image) => {
+      outputArr.push( resourceProcessing(image.resource) );
+    })
+    return outputArr;
+  }
+  // extract all images from the IIIF manifest `theManifest`
+  // and add them to the array of tile sources `outputArr`.
+  // returns a tile sequence as an array (`[]`)
+  const manifestProcessing = (theManifest) => {
+    let outputArr = [];
+    theManifest.sequences[0].canvases.forEach((canvas) => {
+      outputArr = outputArr.concat( canvasProcessing(canvas) );
+    })
+    return outputArr;
+  }
+
+  /* LOGIC */
+  // the final output array
+  let out = [];
+
+  // fetch the manifest. we use `await` + `catch` to have specific
+  // handling of this error and another handling of other errors below
+  const manifest = await axios
+                         .get(manifestUrl)
+                         .then((r) => { return r.data })
+                         .catch((e) => {
+                          console.log("iiif.manifestToTileSequence: error fetching IIIF manifest", e); });
+
+  // assert that we're working with a v2 presentation manifest
+  if ( manifest["@context"] !== "http://iiif.io/api/presentation/2/context.json" ) {
+    throw new Error(`iiif.manifestToTileSequence: the manifest must follow the IIIF
+                     presentation v2 API, on '${manifestUrl}'`) }
+
+                     // extract the images.
+  // if extraction using folios fails, switch back to normal extraction
+  if ( folio.length ) {
+    try {
+      folio.forEach((idx) => {
+        out = out.concat( canvasProcessing( manifest.sequences[0].canvases[idx] ) );
+      })
+    } catch(e) {
+      console.log(`iiif.manifestToTileSequence: error using "folio" parameter
+                   with value ${folio} on ${manifestUrl}`)
+      out = manifestProcessing(manifest, out);
+    }
+  } else {
+    out = manifestProcessing(manifest, out);
+  }
+  console.log(out);
+  return out;
 }
 
 
@@ -53,7 +110,7 @@ export async function manifestToThumbnail(manifestUrl, backupImgUrl) {
                                  ["@id"];
           return imgUrl.includes("/full/full/")
                  ? imgUrl.replace("/full/full/", "/full/500/")  // redimension to 500px
-                 : backupImgUrl                               // can't create a thumbnail => return the callback
+                 : backupImgUrl                                 // can't create a thumbnail => return the callback
           // return backupImgUrl
          }).catch((e) => {
           console.log( "ERROR IN MANIFESTTOTHUMBNAIL"
