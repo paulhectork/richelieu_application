@@ -25,7 +25,7 @@ import { onMounted, ref } from "vue";
 
 import OpenSeadragon from "openseadragon";
 
-import { manifestToTileSequence } from "@utils/iiif";
+import { manifestToTileSequence, osdNavImages } from "@utils/iiif";
 import { fnToIconographyFile } from "@utils/functions";
 
 
@@ -43,7 +43,6 @@ const loadingFailed = ref(false);  // toggled in case of an error: will display 
 function buildOsdViewer(tileSequence, osdId) {
   viewer.value = OpenSeadragon({
     id: osdId,
-    // prefixUrl: `../assets/icons/openseadragon-icons/`,
     tileSources: tileSequence,
     sequenceMode: true,
     initialPage: 0,
@@ -64,18 +63,19 @@ function buildOsdViewer(tileSequence, osdId) {
     showNavigator: true,
     navigatorAutoFade: true,
     showRotationControl: true,
-    // navImages: globals.navImages
+    prefixUrl: new URL("/statics/openseadragon-icons/", __SERVER_URL__).href,
+    navImages: osdNavImages
   });
 }
 
 
 onMounted(() => {
   manifestToTileSequence(props.iiifUrl)
-  .then((tileSequence) => {
-    if ( tileSequence.length ) {
+  .then(([tileSequence, success]) => {
+    if ( tileSequence.length && success ) {
+      buildOsdViewer(tileSequence, props.osdId)
+    } else {
       loadingFailed.value = true;
-      console.log(props.backupImgUrl)
-      // buildOsdViewer(tileSequence, props.osdId)
     }
   });
 })

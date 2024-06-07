@@ -88,6 +88,10 @@ class Iconography(db.Model):
                  for r in self.r_iconography_actor
                  if r.role == "publisher" ]
 
+    def get_place(self) -> t.List[t.Dict]:
+        return [ r.place.serialize_lite()
+                 for r in self.r_iconography_place ]
+
     def get_theme(self) -> t.List[t.Dict]:
         return [ r.theme.serialize_lite()
                  for r in self.r_iconography_theme ]
@@ -135,6 +139,7 @@ class Iconography(db.Model):
                  "produced"         : self.produced,                     # bool
                  "represents"       : self.represents,                   # bool
 
+                 "place"            : self.get_place(),                  # t.List[t.Dict]
                  "institution"      : self.get_institution(),            # t.List[t.Dict]
                  "filename"         : self.get_filename(),               # t.List[t.Dict]
                  "author"           : self.get_author(),                 # t.List[t.Dict]

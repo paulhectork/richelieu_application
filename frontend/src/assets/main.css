@@ -105,8 +105,8 @@
   --cs-main-active: var(--cs-seagreen);
 
   /**********************/
-  --cs-contrast-main: var(--cs-lightgrey);
-  --cs-contrast-main-bg: var(--cs-darkgrey);
+  --cs-contrast-default: var(--cs-lightgrey);
+  --cs-contrast-default-bg: var(--cs-darkgrey);
 
   --cs-contrast-second: var(--cs-white);
   --cs-contrast-second-bg: var(--cs-lightgrey);
@@ -205,8 +205,8 @@ td {
 }
 
 .contrast-default {
-  color: var(--cs-contrast-default-bg);
-  background-color: var(--cs-contrast-default);
+  color: var(--cs-contrast-default) !important;
+  background-color: var(--cs-contrast-default-bg)  !important;
 }
 .contrast-second {
   background-color: var(--cs-contrast-second-bg);

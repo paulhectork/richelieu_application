@@ -4,6 +4,7 @@ from sqlalchemy import text, desc, asc
 import random
 import json
 
+from ..utils.spatial import featurelist_to_featurecollection, geometry_to_feature
 from ..app import app, db
 from ..orm import *
 
@@ -37,7 +38,23 @@ def main_iconography(id_uuid):
     r = db.session.execute(Iconography
                            .query
                            .filter( Iconography.id_uuid == id_uuid ))
-    return Response( json.dumps([ _[0].serialize_full() for _ in r.all() ])
+    out = [ _[0].serialize_full() for _ in r.all() ]
+    for icono in out:
+        # avec des boucles inline
+        icono["place"] = [ geometry_to_feature( place["vector"]
+                                              , custom_properties={"id_uuid": place["id_uuid"]} )
+                           for place in icono["place"] ]
+        icono["place"] = featurelist_to_featurecollection(icono["place"])
+
+        # la même chose, en plus verbeux:
+        # featurelist = []            # liste de features geoson
+        # for loc in icono["place"]:  # loc = le lieu associé à notre objet iconographique `icono`
+        #     loc = geometry_to_feature(loc["vector"], custom_properties={ "id_uuid": loc["id_uuid"] })
+        #     featurelist.append(loc)
+        # featurecollection = featurelist_to_featurecollection(featurelist)  # on crée notre feature collection à partir de notre liste de features
+        # icono["place"] = featurecollection   # on met à jour notre objet `icono`
+
+    return Response( json.dumps(out)
                    , mimetype="application/json"
                    , content_type="application/json" )
 

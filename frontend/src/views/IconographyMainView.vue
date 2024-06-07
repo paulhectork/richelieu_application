@@ -2,7 +2,7 @@
      this page contains:
      * .viewer-container: a viewer. there are 2 types of viewers and
        we can toggle:
-       > `IiifViewer`: a IIIF viewer for the image
+       > IiifViewer: a IIIF viewer for the image
        > ``: a leaflet viewer showing the places the image is connected to.
      * .cartel-container: a table with all of the metadata
 -->
@@ -21,15 +21,36 @@
     <div class="viewer-cartel-container">
 
       <div class="viewer-container">
-        <div v-if="view === 'image'">
-          <IiifViewer v-if="iconography.iiif_url"
-                      :osdId="iconography.id_uuid"
-                      :iiifUrl="iconography.iiif_url"
-                      :backupImgUrl="imageUrl"
-          ></IiifViewer>
-          <div v-else><p>Pas d'image IIIF à montrer</p></div>
+        <div class="viewer">
+
+          <div v-if="viewerType === 'osd'"
+               class="iiif-container"
+          >
+            <IiifViewer v-if="iconography.iiif_url"
+                        :osdId="`iiif-${iconography.id_uuid}`"
+                        :iiifUrl="iconography.iiif_url"
+                        :backupImgUrl="imageUrl"
+            ></IiifViewer>
+            <div v-else><p>Pas d'image IIIF à montrer</p></div>
+          </div>
+
+          <div v-else
+               :id="`leaflet-${iconography.id_uuid}`"
+               class="leaflet-container"
+          ></div>
         </div>
-        <div v-else><p>Leaflet</p></div>
+        <div class="viewer-selector">
+          <button :class="viewerType === 'osd' ? 'contrast-default' : ''"
+                  @click="(e) => toggleViewer(e)"
+                  @touchend="(e) => toggleViewer(e)"
+                  value="osd"
+          >Image</button>
+          <button :class="viewerType === 'leaflet' ? 'contrast-default' : ''"
+                  @click="(e) => toggleViewer(e)"
+                  @touchend="(e) => toggleViewer(e)"
+                  value="leaflet"
+          >Carte</button>
+        </div>
       </div>
 
       <div class="cartel-container">
@@ -110,6 +131,7 @@ import axios from "axios";
 import { ref, watch, onMounted, onUpdated, computed } from "vue";
 import { useRoute } from "vue-router";
 
+import { clickOrTouchEvent } from "@globals";
 import IiifViewer from "@components/IiifViewer.vue";
 import { stringifyActorArray
        , stringifyNamedEntityArray
@@ -123,7 +145,7 @@ import { stringifyActorArray
 const route = useRoute();
 const idUuid = ref(route.params.idUuid);
 const iconography = ref();
-const view = ref("image");  // "image" for a IIIF viewer, "map" for a leaflet map of the place of this image
+const viewerType = ref("osd");  // "osd" for a IIIF viewer, "leaflet" for a leaflet map of the place of this image
 
 const apiTarget = computed(() =>
   new URL(`/i/iconography/${idUuid.value}`, __API_URL__) );
@@ -144,6 +166,10 @@ function getIconographyResource() {
     iconography.value = r.data[0]
 
   })
+}
+
+function toggleViewer(e) {
+  viewerType.value = e.target.value;
 }
 
 /***************************************************/
@@ -179,7 +205,21 @@ onUpdated(() => {
 }
 
 /*************************************/
-.viewer-container > div {
+.viewer-container {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 90% 10%;
+}
+.viewer-selector {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  border-top: var(--cs-border);
+}
+.viewer-selector > button {
+  width: 50%;
+}
+.viewer-container .iiif-container {
   height: 100%;
 }
 
