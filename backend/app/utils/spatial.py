@@ -18,9 +18,9 @@ def geometry_to_feature(geometry:t.Dict, custom_properties:t.Dict=None) -> t.Dic
     here, we transform them into geoJson features. using `custom_properties`,
     we add custom data into the feature's `properties` object.
 
-    :param geometry: a valid geoJson geometry object
-    :param custom_properties: a dict containing extra data that will be useful.
-                              this is a good place to store an UUID
+    :param geometry          : a valid geoJson geometry object
+    :param custom_properties : a dict containing extra data that will be useful.
+                               this is a good place to store an UUID
     """
     # check that our data is valid
     if not isinstance(custom_properties, dict):
@@ -34,13 +34,13 @@ def geometry_to_feature(geometry:t.Dict, custom_properties:t.Dict=None) -> t.Dic
     # create the feature
     return { "type": "Feature",
              "geometry": geometry,
-             "properties": custom_properties
-    }
+             "properties": custom_properties }
 
 
 def featurelist_to_featurecollection(featurelist:t.List[t.Dict]) -> t.Dict:
     """
     transform a list of geojson features into a geojson featurecollection
+    :param featurelist: a list of valid geojson features
     """
     # check that our data is valid
     if not isinstance(featurelist, list):
