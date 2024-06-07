@@ -131,7 +131,7 @@ class Iconography(db.Model):
         return { "id_uuid"          : self.id_uuid,                      # str
                  "iiif_url"         : self.iiif_url,                     # str
                  "iiif_folio"       : self.iiif_folio,                   # t.List[int] | None
-                 "source_url"       : self.source_url,                   # str
+                 "source_url"       : self.source_url ,                   # str
                  "date"             : int4range2list(self.date),         # t.List[int]
                  "date_source"      : self.date_source,                  # str
                  "technique"        : self.technique,                    # str
