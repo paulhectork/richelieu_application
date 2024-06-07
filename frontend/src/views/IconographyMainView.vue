@@ -3,7 +3,8 @@
      * .viewer-container: a viewer. there are 2 types of viewers and
        we can toggle:
        > IiifViewer: a IIIF viewer for the image
-       > ``: a leaflet viewer showing the places the image is connected to.
+       > .leaflet-<id_uuid>: a leaflet viewer showing the
+         places the image is connected to.
      * .cartel-container: a table with all of the metadata
 -->
 
@@ -27,18 +28,21 @@
                class="iiif-container"
           >
             <IiifViewer v-if="iconography.iiif_url"
-                        :osdId="`iiif-${iconography.id_uuid}`"
+                        :osdId="`iiif-${idUuid}`"
                         :iiifUrl="iconography.iiif_url"
                         :backupImgUrl="imageUrl"
             ></IiifViewer>
             <div v-else><p>Pas d'image IIIF à montrer</p></div>
           </div>
-
           <div v-else
-               :id="`leaflet-${iconography.id_uuid}`"
                class="leaflet-container"
-          ></div>
+          >
+            <MapIconographyMain :lflId="`lfl-${idUuid}`"
+                                :placeGeoJson="iconography.place"
+            ></MapIconographyMain>
+          </div>
         </div>
+
         <div class="viewer-selector">
           <button :class="viewerType === 'osd' ? 'contrast-default' : ''"
                   @click="(e) => toggleViewer(e)"
@@ -131,8 +135,9 @@ import axios from "axios";
 import { ref, watch, onMounted, onUpdated, computed } from "vue";
 import { useRoute } from "vue-router";
 
-import { clickOrTouchEvent } from "@globals";
+import MapIconographyMain from "@components/MapIconographyMain.vue";
 import IiifViewer from "@components/IiifViewer.vue";
+import { clickOrTouchEvent } from "@globals";
 import { stringifyActorArray
        , stringifyNamedEntityArray
        , stringifyThemeArray
@@ -158,6 +163,7 @@ const imageUrl = computed(() => {
     .filter( f => !f.url.match(/compress|thumbnail/) )[0].url
   : "not yet defined" });
 
+/***************************************************/
 
 function getIconographyResource() {
   axios
@@ -176,6 +182,7 @@ function toggleViewer(e) {
 
 watch(() => route.params.id_uuid, (newIdUuid, oldIdUuid) => {
   idUuid.value = newIdUuid;
+  getIconographyResource();
 })
 onMounted(() => {
   getIconographyResource();
@@ -210,6 +217,9 @@ onUpdated(() => {
   grid-template-columns: 100%;
   grid-template-rows: 90% 10%;
 }
+.iiif-container, .leaflet-container {
+  height: 100%;
+}
 .viewer-selector {
   display: flex;
   flex-direction: row;
@@ -218,9 +228,6 @@ onUpdated(() => {
 }
 .viewer-selector > button {
   width: 50%;
-}
-.viewer-container .iiif-container {
-  height: 100%;
 }
 
 /*************************************/

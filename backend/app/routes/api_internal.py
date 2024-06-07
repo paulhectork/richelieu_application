@@ -27,11 +27,66 @@ def index_iconography():
     the json isn't sent to the client using `jsonify`
     """
     r = db.session.execute(Iconography.query)
-    return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
-                   , mimetype="application/json"
-                   , content_type="application/json")
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
 
 
+@app.route("/i/cartography")
+def index_cartography():
+    """
+    get all `cartography` ressources.
+    """
+    r = db.session.execute(Cartography.query)
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+
+
+@app.route("/i/place")
+def index_place():
+    """
+    get all `place` ressources
+    """
+    r = db.session.execute(Place.query)
+    return jsonify([  _[0].serialize_lite() for _ in r.all() ])
+
+
+@app.route("/i/place-lite/<place_uuid>")
+def place_lite(place_uuid:str):
+    r = db.session.execute(Place.query.filter(Place.id_uuid==place_uuid).limit(1))
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+
+
+@app.route("/i/directory")
+def index_directory():
+    """
+    get all directory ressources
+    """
+    r = db.session.execute(Directory.query)
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+
+
+@app.route("/i/theme")
+def index_theme():
+    """
+    get all theme elements
+    """
+    r = (db.session.query(Theme, Theme.iconography_count)
+                   .order_by(Theme.iconography_count.desc()) )
+    # to check the result: print( [_[0].iconography_count for _ in r.all()] )
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+
+
+@app.route("/i/named-entity")
+def index_named_entity():
+    """
+    get all named entity elements
+    """
+    r = (db.session.query(NamedEntity, NamedEntity.iconography_count)
+                   .order_by(NamedEntity.iconography_count.desc()) )
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+
+
+# ******************************************
+# main pages
+# ******************************************
 @app.route("/i/iconography/<id_uuid>")
 def main_iconography(id_uuid):
     """return an `Iconography` object based on its `id_uuid`"""
@@ -53,82 +108,7 @@ def main_iconography(id_uuid):
         #     featurelist.append(loc)
         # featurecollection = featurelist_to_featurecollection(featurelist)  # on crée notre feature collection à partir de notre liste de features
         # icono["place"] = featurecollection   # on met à jour notre objet `icono`
-
-    return Response( json.dumps(out)
-                   , mimetype="application/json"
-                   , content_type="application/json" )
-
-
-@app.route("/i/cartography")
-def index_cartography():
-    """
-    get all `cartography` ressources.
-    """
-    r = db.session.execute(Cartography.query)
-    return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
-                   , mimetype="application/json"
-                   , content_type="application/json")
-
-
-@app.route("/i/place")
-def index_place():
-    """
-    get all `place` ressources
-    """
-    r = db.session.execute(Place.query)
-    return Response( json.dumps([  _[0].serialize_index() for _ in r.all() ])
-                   , mimetype="application/json"
-                   , content_type="application/json" )
-
-
-@app.route("/i/place-lite/<place_uuid>")
-def place_lite(place_uuid:str):
-    r = db.session.execute(Place.query.filter(Place.id_uuid==place_uuid).limit(1))
-    return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
-                   , mimetype="application/json"
-                   , content_type="application/json" )
-
-
-@app.route("/i/directory")
-def index_directory():
-    """
-    get all directory ressources
-    """
-    r = db.session.execute(Directory.query)
-    return Response(json.dumps([ _[0].serialize_lite() for _ in r.all() ])
-                    , mimetype="application/json"
-                    , content_type="application/json")
-
-
-@app.route("/i/theme")
-def index_theme():
-    """
-    get all theme elements
-    """
-    r = (db.session.query(Theme, Theme.iconography_count)
-                   .order_by(Theme.iconography_count.desc()) )
-    # to check the result: print( [_[0].iconography_count for _ in r.all()] )
-    return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
-                   , mimetype="application/json"
-                   , content_type="application/json")
-
-
-@app.route("/i/named-entity")
-def index_named_entity():
-    """
-    get all named entity elements
-    """
-    r = (db.session.query(NamedEntity, NamedEntity.iconography_count)
-                   .order_by(NamedEntity.iconography_count.desc()) )
-    return Response( json.dumps([ _[0].serialize_lite() for _ in r.all() ])
-                   , mimetype="application/json"
-                   , content_type="application/json")
-
-
-# ******************************************
-# main pages
-# ******************************************
-#TODO
+    return jsonify(out)
 
 
 # ******************************************
@@ -144,9 +124,7 @@ def list_tables():
     r = db.session.execute(text( "SELECT table_name "
                                + "FROM information_schema.tables "
                                + "WHERE table_schema = 'public';"))
-    return Response( json.dumps([ _[0] for _ in r.all() ])
-                   , mimetype="application/json"
-                   , content_type="application/json")
+    return jsonify([ _[0] for _ in r.all() ])
 
 
 @app.route("/i/table-viewer/<tablename>")
@@ -171,13 +149,7 @@ def table_viewer(tablename:str):
     # `r.rowcount` returns the number of rows in the `CursorResult`;
     # contrary to `all()`, it doesn't close the result after being run
     r = response_process(r) if r.rowcount else [{ c:None for c in colnames }]
-    return  Response( json.dumps(r)
-                    , mimetype="application/json"
-                    , content_type="application/json")
-
-
-
-
+    return  jsonify(r)
 
 
 

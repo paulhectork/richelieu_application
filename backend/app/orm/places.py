@@ -81,18 +81,20 @@ class Place(db.Model):
         return [ a.serialize_lite()
                  for a in address_objs ]
 
-    def serialize_lite(self) -> t.Dict:
-        return { "id_uuid"  : self.id_uuid,      # str
-                 "vector"   : self.vector,       # t.Dict
-                 "centroid" : self.centroid,     # t.Dict
-        }
+    # def serialize_lite(self) -> t.Dict:
+    #     return { "id_uuid"  : self.id_uuid,      # str
+    #              "vector"   : self.vector,       # t.Dict
+    #              "centroid" : self.centroid,     # t.Dict
+    #     }
 
-    def serialize_index(self) -> t.Dict:
+    def serialize_lite(self) -> t.Dict:
         """object representation of `Place` for the Place index page"""
         return { "id_uuid"  : self.id_uuid,               # str
                  "date"     : int4range2list(self.date),  # t.List[int]
                  "filename" : self.get_filename_index(),  # t.List[t.Dict]
-                 "address"  : self.get_address_index()    # t.List[t.Dict]
+                 "address"  : self.get_address_index(),   # t.List[t.Dict]
+                 "vector"   : self.vector,                # t.Dict
+                 "centroid" : self.centroid               # t.Dict
         }
 
     def serialize_full(self) -> t.Dict:

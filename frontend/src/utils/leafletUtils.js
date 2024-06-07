@@ -102,8 +102,8 @@ export function globalDefineMap(mapId) {
     ])
     , inertia: false  // inertia does weird things with the geojson layer
     , maxBoundsViscosity: 1.0
-    , scrollWheelZoom: false
-    , zoomControl: false
+    , scrollWheelZoom: true
+    , zoomControl: true
     , minZoom: 13  // 11 for paris + region, 13 for the neighbourhood
     , zoom: 14.7
   });

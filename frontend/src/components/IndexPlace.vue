@@ -60,35 +60,34 @@ function displayVector(e) {
 
   // load the geoJson and add it to the map
   axios
-    .get(placeUuidTarget)
-    .then((r) => {
-      const gjPlace = L.geoJSON(
-        JSON.parse(r.request.response)[0].vector,  // données geojson
-        {
-          style: { className: "place-gj" },
-          onEachFeature: (feature, layer) => {
-            // the layer will be removed
-            layer.toRemove = true;
-            // events
-            layer.on({
-              // interactive style
-              mouseover: (e) => {
-                e.target.setStyle({ fillOpacity: 1 });
-              },
-              mouseout: (e) => {
-                e.target.setStyle({ fillOpacity: 0.5 });
-              },
-              // redirect to PlaceMainView when clicking on the geojson
-              click: () => { window.location.href = placeUrl },
-              touchend: () => { window.location.href = placeUrl }
-            })
-          }
-      });
-      gjPlace.addTo(_map);
-      _map.fitBounds(gjPlace.getBounds());
+  .get(placeUuidTarget)
+  .then((r) => {
+    const gjPlace = L.geoJSON(
+      JSON.parse(r.request.response)[0].vector,  // données geojson
+      {
+        style: { className: "place-gj" },
+        onEachFeature: (feature, layer) => {
+          // the layer will be removed
+          layer.toRemove = true;
+          // events
+          layer.on({
+            // interactive style
+            mouseover: (e) => {
+              e.target.setStyle({ fillOpacity: 1 });
+            },
+            mouseout: (e) => {
+              e.target.setStyle({ fillOpacity: 0.5 });
+            },
+            // redirect to PlaceMainView when clicking on the geojson
+            click: () => { window.location.href = placeUrl },
+            touchend: () => { window.location.href = placeUrl }
+          })
+        }
     });
-
-    map.value = _map
+    gjPlace.addTo(_map);
+    _map.fitBounds(gjPlace.getBounds());
+  })
+  map.value = _map
 
 }
 

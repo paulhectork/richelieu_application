@@ -191,6 +191,9 @@ td {
   width: 100%;
 }
 
+/*********************************/
+/* color schemes */
+
 .main-default {
   color: var(--cs-main-default);
   background-color: var(--cs-main-default-bg);
@@ -217,6 +220,9 @@ td {
   background-color: var(--cs-contrast-active-bg);
 }
 
+/*********************************/
+/* globally useful classes */
+
 .border-bottom {
   border-bottom: var(--cs-border);
 }
@@ -231,7 +237,9 @@ td {
   position: sticky;
 }
 
+/*********************************/
 /* generic button styling */
+
 button {
   margin: 2px;
   font-family: "mels";
@@ -257,7 +265,9 @@ button:active {
   width: fit-content;
 }
 
+/*********************************/
 /* svg */
+
 button > svg > path {
   stroke: var(--cs-main-default);
   transition: stroke 0.2s;
@@ -272,9 +282,32 @@ button:active > svg > path {
 
 }
 
+/*********************************/
+/* leaflet styles */
+
+.leaflet-popup-content-wrapper {
+  box-shadow: unset !important;
+  font-family: sans-serif;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 0 !important;
+  border: var(--cs-border) !important;
+}
+.leaflet-popup-tip {
+  border: var(--cs-border) !important;
+  box-shadow: unset !important;
+}
+.leaflet-popup a {
+  color: var(--cs-link-default) !important;
+}
+.leaflet-popup a:visited {
+  color: var(--cs-link-visited) !important;
+}
+
+/*********************************/
 /* vue transitions
- * see: https://vuejs.org/guide/built-ins/transition.html
- */
+ * see: https://vuejs.org/guide/built-ins/transition.html */
+
 .v-enter-active
 , .v-leave-active {
   transition: opacity 0.25s ease;
