@@ -16,6 +16,10 @@ const router = createRouter({
       name: 'home',
       component: () => import("@views/HomeView.vue")
     }, {
+      path: '/recherche',
+      name: 'Recherche',
+      component: () => import("@views/AdvancedSearchView.vue")
+    }, {
       path: '/iconographie',
       name: 'Iconographie',
       component: () => import("@views/IconographyView.vue")

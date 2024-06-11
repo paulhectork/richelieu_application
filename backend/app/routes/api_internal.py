@@ -48,12 +48,6 @@ def index_place():
     return jsonify([  _[0].serialize_lite() for _ in r.all() ])
 
 
-@app.route("/i/place-lite/<place_uuid>")
-def place_lite(place_uuid:str):
-    r = db.session.execute(Place.query.filter(Place.id_uuid==place_uuid).limit(1))
-    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
-
-
 @app.route("/i/directory")
 def index_directory():
     """
@@ -84,6 +78,15 @@ def index_named_entity():
     return jsonify([ _[0].serialize_lite() for _ in r.all() ])
 
 
+@app.route("/i/institution")
+def institution():
+    """
+    get all institution elements
+    """
+    r = db.session.execute(Institution.query)
+    return jsonify([ i[0].serialize_lite() for i in r.all() ])
+
+
 # ******************************************
 # main pages
 # ******************************************
@@ -109,6 +112,43 @@ def main_iconography(id_uuid):
         # featurecollection = featurelist_to_featurecollection(featurelist)  # on crée notre feature collection à partir de notre liste de features
         # icono["place"] = featurecollection   # on met à jour notre objet `icono`
     return jsonify(out)
+
+
+# ******************************************
+# utils
+# ******************************************
+@app.route("/i/place-lite/<place_uuid>")
+def place_lite(place_uuid:str):
+    """
+    get a single `place` item and return
+    its `serialize_lite()` repr
+    """
+    r = db.session.execute(Place.query.filter(Place.id_uuid==place_uuid).limit(1))
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+
+
+@app.route("/i/iconography-overall-date-range")
+def iconography_overall_date_range():
+    """
+    get the overall minimum/maximum
+    dates on the iconography table
+    """
+    r = db.session.execute(text("""(
+                                  SELECT lower(iconography.date)
+                                  FROM iconography
+                                  WHERE iconography.date IS NOT NULL
+                                  ORDER BY iconography.date ASC
+                                  LIMIT 1
+                                )
+                                UNION
+                                (
+                                  SELECT upper(iconography.date)
+                                  FROM iconography
+                                  WHERE iconography.date IS NOT NULL
+                                  ORDER BY iconography.date DESC
+                                  LIMIT 1
+                                );"""))
+    return jsonify(sorted([ d[0] for d in r.all() ]))
 
 
 # ******************************************
