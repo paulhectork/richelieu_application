@@ -31,10 +31,10 @@ export function fnToIconographyFile(fn) {
 export function isKindaEmpty(obj) {
   // for Arrays: contains no elements or only null or undefined elts
   if ( Array.isArray(obj) ) {
-    return obj.filter((o) => { return o != null }).length === 0;
+    return ! obj.filter(o => o != null  ).length;
   // for Objects: contains only
   } else if ( typeof(obj)==="object" && obj !== null ) {
-    return Object.keys(obj).length === 0;
+    return ! Object.keys(obj).length;
   // for scalars: is == null
   } else {
     return obj == null;
