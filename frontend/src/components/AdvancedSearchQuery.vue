@@ -4,10 +4,16 @@
      which are passed to the parent. the parent updates the
      URL, fetches the answer and calls another component to
      display the results
+
+     see:
+     https://vueform.com/docs/handling-form-data
 -->
 
 <template>
-  <Vueform class="advanced-search-form">
+  <Vueform ref="form$"
+           class="advanced-search-form"
+           :endpoint="onSubmit"
+  >
     <!-- full text basic info -->
     <TextElement name="title"
                  label="Titre"
@@ -27,24 +33,24 @@
       <SelectElement name="theme"
                    label="Thème"
                    placeholder="Sélectionner un thème"
-                   search="true"
-                   strict="false"
+                   :search="true"
+                   :strict="false"
                    :native="false"
                    :items="themeArray"
       ></SelectElement>
       <SelectElement name="namedEntity"
                      label="Sujet"
                      placeholder="Sélectionner un sujet"
-                     search="true"
-                     strict="false"
+                     :search="true"
+                     :strict="false"
                      :native="false"
                      :items="namedEntityArray"
       ></SelectElement>
       <SelectElement name="institution"
                      label="Institution"
                      placeholder="Sélectionner une institution de conservation"
-                     search="true"
-                     strict="false"
+                     :search="true"
+                     :strict="false"
                      :native="false"
                      :items="institutionArray"
       ></SelectElement>
@@ -60,15 +66,17 @@
                    :default="[ 1800, 1900 ]"
     ></SliderElement>
     -->
+    <!-- query dates
+         the `v-if` allows to wait for `allowedDateRange`
+         to be loaded before initializing the `rules` attributes.
+         this mimics an anync loading of the rules -->
     <GroupElement name="date"
-                  label="Date">
+                  label="Date"
+                  v-if="allowedDateRange.length">
       <RadiogroupElement view="tabs"
-                         submit="false"
+                         :submit="false"
                          default="dateRange"
-                         :items="[{ label:'Plage de dates', value:'dateRange' },
-                                  { label:'Date exacte', value:'dateExact' },
-                                  { label:'Avant', value:'dateBefore' },
-                                  { label:'Après', value:'dateAfter'}]"
+                         :items="allowedDateFilters"
                          @change="changeDateSearchType"
       ></RadiogroupElement>
       <ObjectElement name="dateRange"
@@ -78,30 +86,58 @@
       >
         <TextElement name="dateStart"
                      placeholder="1800"
+                     input-type="number"
+                     :rules="[ 'nullable'
+                             , 'numeric'
+                             , `between:${allowedDateRange[0]},${allowedDateRange[1]}` ]"
         ></TextElement>
         <TextElement name="dateEnd"
-                     placeholder="1900">
+                     placeholder="1900"
+                     input-type="number"
+                     :rules="[ 'nullable'
+                             , 'numeric'
+                             , `between:${allowedDateRange[0]},${allowedDateRange[1]}` ]"
         ></TextElement>
       </ObjectElement>
       <TextElement name="dateExact"
                    placeholder="1824 (exact)"
+                   input-type="number"
+                   :rules="[ 'nullable'
+                           , 'numeric'
+                           , `between:${allowedDateRange[0]},${allowedDateRange[1]}` ]"
                    v-else-if="dateSearchType === 'dateExact'"
       ></TextElement>
       <TextElement name="dateBefore"
                    placeholder="1824 (avant)"
+                   input-type="number"
+                   :rules="[ 'nullable'
+                           , 'numeric'
+                           , `between:${allowedDateRange[0]},${allowedDateRange[1]}` ]"
                    v-else-if="dateSearchType === 'dateBefore'"
       ></TextElement>
       <TextElement name="dateAfter"
                    placeholder="1824 (après)"
+                   input-type="number"
+                   :rules="[ 'nullable'
+                           , 'numeric'
+                           , `between:${allowedDateRange[0]},${allowedDateRange[1]}` ]"
                    v-else
       ></TextElement>
     </GroupElement>
+
+    <!-- submit -->
+    <ButtonElement name="register"
+                   button-label="Lancer la recherche"
+                   :submits="true"
+                   :full="true"
+                   size="lg"
+    ></ButtonElement>
 
   </Vueform>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 
 import { clickOrTouchEvent } from "@globals";
@@ -109,11 +145,20 @@ import { clickOrTouchEvent } from "@globals";
 
 /******************************************/
 
-const themeArray       = ref([]);  // string array
-const namedEntityArray = ref([]);  // string array
-const institutionArray = ref([]);  // string array
-const allowedDateRange = ref([]);  // int array: [minDate, maxDate]
+const form$            = ref(null);         // VueForm
+const themeArray       = ref([]);           // string array
+const namedEntityArray = ref([]);           // string array
+const institutionArray = ref([]);           // string array
+const allowedDateRange = ref([]);           // int array: [minDate, maxDate]
 const dateSearchType   = ref("dateRange");  // str: the type of date filter to display
+
+// `:items` in the html form to set the `allowedDateRanger`
+const allowedDateFilters = [ { label:'Plage de dates', value:'dateRange' }
+                           , { label:'Date exacte', value:'dateExact' }
+                           , { label:'Avant', value:'dateBefore' }
+                           , { label:'Après', value:'dateAfter'}]
+
+/******************************************/
 
 /**
  * `o` has a key `entry_name` and
@@ -125,12 +170,30 @@ function objToName(o) {
   return o.entry_name;
 }
 
+/**
+ * change the `dateSearchType` value to
+ * change the date filter to display in the form
+ * @param {string} val: the new value
+ */
 function changeDateSearchType (val) {
   dateSearchType.value = val
 }
 
+
+/**
+ *
+ * @param {*} e
+ */
+function onSubmit(formData, form) {
+  console.log(formData);
+  console.log(form);
+}
+
 // load the data from the DB
-(() => {
+
+/******************************************/
+
+onMounted(() => {
   axios.get(new URL("/i/theme", __API_URL__))
        .then(r => themeArray.value = r.data
                                       .map(objToName)
@@ -144,11 +207,8 @@ function changeDateSearchType (val) {
                                             .map(objToName)
                                             .sort() );
   axios.get(new URL("/i/iconography-overall-date-range", __API_URL__))
-       .then(r => allowedDateRange.value = r.data )
-})()
-
-/******************************************/
-
+       .then(r => allowedDateRange.value = r.data );
+})
 </script>
 
 
