@@ -99,33 +99,35 @@
       >
         <!-- if one of the 2 dates is given, the other is mandatory -->
         <TextElement name="dateStart"
+                     id="dateStart"
                      placeholder="1800"
                      input-type="number"
-                     :rules="dateRangeValidationRule('dateEnd')"
+                     :rules="dateRangeValidationRule(allowedDateRange, 'dateEnd')"
         ></TextElement>
         <TextElement name="dateEnd"
+                     id="dateEnd"
                      placeholder="1900"
                      input-type="number"
-                     :rules="dateRangeValidationRule('dateStart')"
+                     :rules="dateRangeValidationRule(allowedDateRange, 'dateStart')"
         ></TextElement>
       </ObjectElement>
       <TextElement v-else-if="dateSearchType === 'dateExact'"
                    name="date"
                    placeholder="1824 (exact)"
                    input-type="number"
-                   :rules="dateValidationRule"
+                   :rules="dateValidationRule(allowedDateRange)"
       ></TextElement>
       <TextElement v-else-if="dateSearchType === 'dateBefore'"
                    name="date"
                    placeholder="1824 (avant)"
                    input-type="number"
-                   :rules="dateValidationRule"
+                   :rules="dateValidationRule(allowedDateRange)"
       ></TextElement>
       <TextElement v-else
                    name="date"
                    placeholder="1824 (après)"
                    input-type="number"
-                   :rules="dateValidationRule"
+                   :rules="dateValidationRule(allowedDateRange)"
       ></TextElement>
     </GroupElement>
 
@@ -144,26 +146,124 @@
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 
+import $ from "jquery";
+
 import { clickOrTouchEvent } from "@globals";
 
 
 /******************************************/
 
-const form$                   = ref(null);         // VueForm
-const themeArray              = ref([]);           // string array
-const namedEntityArray        = ref([]);           // string array
-const institutionArray        = ref([]);           // string array
-const allowedDateRange        = ref([]);           // int array: [minDate, maxDate]
-const dateSearchType          = ref("dateRange");  // str: the type of date filter to display
-const dateValidationRule      = ref([]);           // string array. how dates are validated. defined as a `ref` to wait for `allowedDateRange` to load
-const dateRangeValidationRule = ref(false);           // array of string|object. how a date range is validated. defined in `onMounted` (for the same reasons as above) as a function that takes into account a `TextElement` @name and defines which fields are required
+const form$            = ref(null);         // VueForm
+const themeArray       = ref([]);           // string array
+const namedEntityArray = ref([]);           // string array
+const institutionArray = ref([]);           // string array
+const allowedDateRange = ref([]);           // int array: [minDate, maxDate]
+const dateSearchType   = ref("dateRange");  // str: the type of date filter to display
+
+/******************************************/
 
 // `items` in the html form to set the `allowedDateRanger`
 const allowedDateSearchTypes = [ { label:'Plage de dates', value:'dateRange' }
                                , { label:'Date exacte', value:'dateExact' }
                                , { label:'Avant', value:'dateBefore' }
                                , { label:'Après', value:'dateAfter'}]
-const textValidationRule = ref(['min:3']);  // minimum of 3 chars
+
+// validation rules
+/**
+ * `dateValidationRule` and `dateRangeValidationRule` are
+ * defined as functions, to allow to tweak the rules for each field
+ * we should use `nullable` and `numeric`, but
+ * if `nullable`, then `numeric` isn't applied and vice-versa....
+ * (passed through the template to make shure that `allowedDateRange`
+ * is loaded)
+ * @param {Array<Number>} dateRange: the maximum/minimum dates allowed.
+ * same as `allowedDateRange`, but passing it as an argument allows us
+ * to make sure it's loaded
+ * @param {string} otherFieldName: if `dateSearchType === 'dateRange'`,
+ * we have two fields, `dateStart` and `dateEnd`. we need to make sure
+ * thanks to that, we can require `dateStart` and `dateEnd` to be filled
+ * if the other one contains data.
+ */
+const dateValidationRule = dateRange =>
+  [ "nullable"
+  , "numeric"
+  , `between:${dateRange[0]},${dateRange[1]}` ];
+
+const dateRangeValidationRule = (dateRange, otherFieldName) => {
+  // `true` if one of the two fields contain data, false otherwise
+  /*
+  let containsData =
+    $("#dateStart, #dateEnd").length
+    ? [ $("#dateStart, #dateEnd")[0].value, $("#dateStart, #dateEnd")[1].value ]  // array of inputed values for both fields
+      .some(x => x != "")
+    : false;
+
+  // containsData works but the below doesn't
+  ///////////////////////////////////////////
+
+  // let requiredOrNullable = containsData ? "required" : "nullable";
+  // console.log(">", containsData, requiredOrNullable);
+
+  // a new upper / lowerbound defined by the input in `otherFieldName`
+  let addRule;
+  if ( containsData ) {
+    addRule = { required: () => true }
+  } else {
+    addRule = { nullable: () => true }
+  } return [ "numeric"
+           , `between:${dateRange[0]},${dateRange[1]}`
+           , addRule
+           ]
+  */
+  return [ "numeric"
+         , `between:${dateRange[0]},${dateRange[1]}`
+         , { required: (form$, Validator) => {
+              Validator.watch(["dateStart", "dateEnd"]);
+              let otherFieldValue = form$.el$(otherFieldName)?.value;
+              console.log(otherFieldValue,
+                          otherFieldValue !== undefined);
+              return otherFieldValue !== undefined //|| otherFieldValue !== ""
+           }
+         }
+         ]
+  /*
+  return [ "numeric"
+         , `between:${allowedDateRange.value[0]},${allowedDateRange.value[1]}`
+         , { required: [otherFieldName, true] }
+         , { nullable: [otherFieldName, false] } ]
+  */
+
+}
+/*
+const dateRangeValidationRule = (dateRange, otherFieldName) => {
+  let out = [ "numeric"
+    , `between:${dateRange[0]},${dateRange[1]}`
+    , { required: (form$, Validator) => {
+        Validator.watch([ "dateStart", "dateEnd" ]);
+        console.log( "required:"
+                   , otherFieldName
+                   , form$.el$(otherFieldName)?.value
+                   , form$.el$(otherFieldName)?.value != null );
+        return form$.el$(otherFieldName)?.value != null
+      }
+    }, { nullable: (form$, Validator) => {
+        Validator.watch([ "dateStart", "dateEnd" ]);
+        console.log( "nullable:"
+                   , otherFieldName
+                   , form$.el$(otherFieldName)?.value
+                   , form$.el$(otherFieldName)?.value == null );
+        return form$.el$(otherFieldName)?.value == null
+      }
+    }//[otherFieldName, true] }
+  ]//, { nullable: [otherFieldName, false] } ];
+  // console.log(out);
+  console.log("******************");
+  return out;
+}
+*/
+
+
+const textValidationRule = ref(['min:3']);
 
 /******************************************/
 
@@ -192,7 +292,6 @@ function changeDateSearchType (val) {
  * @param {*} e
  */
 function onSubmit(form, formData) {
-  /*****************************************/
   /* basic definitions */
 
   let data = form.data;
@@ -206,7 +305,6 @@ function onSubmit(form, formData) {
   // simplify a string
   const simplifyString = s => s.toLowerCase().trim().replaceAll(/\s+/g, " ");
 
-  /***************************************** /
   /* extra validation */
 
   // our form as JSON (pretty much the same structure
@@ -225,20 +323,13 @@ function onSubmit(form, formData) {
                             : [ data.date ]).map(x => scalar2null(x))  // replace `undefined` and <empty string> by `null`
   };
 
-  console.log("pre", queryData, queryData.author, queryData.date);
+  // make sure we have a valid date range (start of the range < end of the range)
+  let validDateRange = queryData.dateFilter === "dateRange"
+                       ? queryData.dateFilter[0] <= queryData.dateFilter[1]
+                       : true;
 
-  // simplify the user-inputted strings
-  Object.keys(queryData)
-        .filter(k => k !== "dateFilter")  // fields to preserve
-        .forEach(k => queryData[k] = typeof queryData[k] === "string"
-                                     ? simplifyString(queryData[k])
-                                     : Array.isArray(queryData[k])
-                                     ? queryData[k].map(x => typeof x === "string"
-                                                             ? simplifyString(x)
-                                                             : x)
-                                     : queryData[k] );
+  console.log(validDateRange)
 
-  console.log("post", queryData, queryData.author, queryData.date);
 
   // check that at least 1 of the fields has
   // been filled to be able to run the SQL query
@@ -250,23 +341,22 @@ function onSubmit(form, formData) {
                  ).every(x => x===true)
   // console.log(allEmpty)
 
-  /* in theory handled by a VueForm validator:
-   * date must contain an array of 1 or 2 valid numbers.
-  let validDateType;
-  try {
-    queryData.date = queryData.date.map(x => Number(x));
-    validDateType = true;
-  } catch {
-    validDateType = false;
-  }*/
-  // process `queryData.date`:
-  // if querying for a date range (dateFilter === 'dateRange'),
-  // `dateStart < dateEnd`
-  let validDateRange = queryData.dateFilter === "dateRange"
-                       ? queryData.dateFilter[0] <= queryData.dateFilter[1]
-                       : true;
+  // console.log("pre", queryData, queryData.author, queryData.date);
 
-  console.log(validDateType, validDateRange)
+  // simplify the user-inputted strings
+  Object.keys(queryData)
+        .filter(k => k !== "dateFilter")  // don't modify these fields
+        .forEach(k => queryData[k] = typeof queryData[k] === "string"
+                                     ? simplifyString(queryData[k])
+                                     : Array.isArray(queryData[k])
+                                     ? queryData[k].map(x => typeof x === "string"
+                                                             ? simplifyString(x)
+                                                             : x)
+                                     : queryData[k] );
+
+  // console.log("post", queryData, queryData.author, queryData.date);
+
+
 
   /*
   // queryData.date is either a scalar
@@ -319,17 +409,6 @@ onMounted(() => {
   axios.get(new URL("/i/iconography-overall-date-range", __API_URL__))
        .then(r => {
         allowedDateRange.value = r.data;
-        // we should use `nullable` and `numeric`, but
-        // if `nullable`, then `numeric` isn't applied and vice-versa....
-        dateValidationRule.value = [ //"required"
-                                    "numeric"
-                                   , `between:${allowedDateRange.value[0]},${allowedDateRange.value[1]}` ];
-        dateRangeValidationRule.value = otherFieldName =>
-          // defines wether or not one field is required based on the value of the other field
-          [ "numeric"
-          , `between:${allowedDateRange.value[0]},${allowedDateRange.value[1]}`
-          , { required: [otherFieldName, true] }
-          , { nullable: [otherFieldName, false] } ]
        });
 })
 </script>
