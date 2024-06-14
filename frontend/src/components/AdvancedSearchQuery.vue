@@ -102,13 +102,15 @@
                      id="dateStart"
                      placeholder="1800"
                      input-type="number"
-                     :rules="dateRangeValidationRule(allowedDateRange, 'dateEnd')"
+                     :debounce="500"
+                     :rules="dateRangeValidationRule(allowedDateRange, 'dateStart', 'dateEnd')"
         ></TextElement>
         <TextElement name="dateEnd"
                      id="dateEnd"
                      placeholder="1900"
                      input-type="number"
-                     :rules="dateRangeValidationRule(allowedDateRange, 'dateStart')"
+                     :debounce="500"
+                     :rules="dateRangeValidationRule(allowedDateRange, 'dateEnd', 'dateStart')"
         ></TextElement>
       </ObjectElement>
       <TextElement v-else-if="dateSearchType === 'dateExact'"
@@ -189,7 +191,7 @@ const dateValidationRule = dateRange =>
   , "numeric"
   , `between:${dateRange[0]},${dateRange[1]}` ];
 
-const dateRangeValidationRule = (dateRange, otherFieldName) => {
+const dateRangeValidationRule = (dateRange, currentFieldName, otherFieldName) => {
   // `true` if one of the two fields contain data, false otherwise
   /*
   let containsData =
@@ -215,6 +217,7 @@ const dateRangeValidationRule = (dateRange, otherFieldName) => {
            , addRule
            ]
   */
+ /*
   return [ "numeric"
          , `between:${dateRange[0]},${dateRange[1]}`
          , { required: (form$, Validator) => {
@@ -226,12 +229,60 @@ const dateRangeValidationRule = (dateRange, otherFieldName) => {
            }
          }
          ]
+  */
   /*
   return [ "numeric"
          , `between:${allowedDateRange.value[0]},${allowedDateRange.value[1]}`
          , { required: [otherFieldName, true] }
-         , { nullable: [otherFieldName, false] } ]
+         ]//, { nullable: [otherFieldName, false] } ]
   */
+  // a scalar (undefined, null, string or number) contains no data
+  const isEmptyScalar = s => s === undefined || s === null || s === "" || s.length === 0;
+
+  const isRequired = (_form, _validator) => {
+    _validator.watch(["dateStart", "dateEnd"]);
+    // let otherFieldValue = _form.el$("dateEnd")?.value;
+    // let currentFieldValue = _form.el$("dateStart")?.value;
+    let otherFieldValue = $(`#dateStart`).val();
+    let currentFieldValue = $(`#dateEnd`).val();
+
+    //console.log("***", _validator);
+    //console.log("***", _form.el$("dateEnd"));
+    console.log("required",
+                currentFieldValue, otherFieldValue,
+                !isEmptyScalar(otherFieldValue) || !isEmptyScalar(currentFieldValue));
+    return !isEmptyScalar(otherFieldValue) || !isEmptyScalar(currentFieldValue);
+  }
+  const isNullable = (_form, _validator) => {
+    _validator.watch(["dateStart", "dateEnd"]);
+    // let otherFieldValue = _form.el$("dateEnd")?.value;
+    // let currentFieldValue = _form.el$("dateStart")?.value;
+
+    let otherFieldValue = $(`#dateStart`).val();
+    let currentFieldValue = $(`#dateEnd`).val();
+    console.log("nullable",
+                currentFieldValue, otherFieldValue,
+                isEmptyScalar(otherFieldValue) && isEmptyScalar(currentFieldValue));
+    return isEmptyScalar(otherFieldValue) && isEmptyScalar(currentFieldValue);
+  }
+
+  console.log("start", currentFieldName, otherFieldName);
+  return [ "numeric"
+         , `between:${allowedDateRange.value[0]},${allowedDateRange.value[1]}`
+         , { nullable: (form$,Validator) => isNullable(form$,Validator) }
+         , { required: (form$,Validator) => isRequired(form$,Validator) }
+         /*, { required: (form$, Validator) => {
+
+              Validator.watch([otherFieldName]);
+
+              let otherFieldValue = form$.el$(otherFieldName)?.value;
+              console.log( otherFieldValue
+                         , otherFieldValue !== undefined && otherFieldValue !== "");
+              return false// otherFieldValue !== undefined && otherFieldValue !== "";
+            }
+         }*/
+        ]
+
 
 }
 /*
@@ -292,6 +343,8 @@ function changeDateSearchType (val) {
  * @param {*} e
  */
 function onSubmit(form, formData) {
+  console.log("submitted !")
+
   /* basic definitions */
 
   let data = form.data;
