@@ -10,69 +10,143 @@
 -->
 
 <template>
-  <FormKit type="form"
-           name="theForm"
-           id="advanced-search-form"
-           submit-label="Lancer la recherche"
+  <!-- :endpoint+@submit allows to disable
+       endpoint fetching in favour of our
+       own onSubmit function -->
+  <Vueform ref="form$"
+           class="advanced-search-form"
+           validate-on=""
+           :endpoint=false
+           @submit="async (form$, FormData) => onSubmit(form$, FormData)"
   >
-    <!-- free text inputs -->
-    <FormKit type="text"
-             name="title"
-             label="Titre"
-             help="Le titre de la ressource iconographique doit contenir les mots entrés ici."
-             placeholder="Ex: Le Moniteur de la Mode"
-    ></FormKit>
-    <FormKit type="text"
-             name="author"
-             label="Auteur ou autrice"
-             placeholder="Ex: Jules David"
-             help="Le nom de l'auteur ou de l'autrice doit contenir les mots entrés ici."
-    ></FormKit>
-    <FormKit type="text"
-             name="publisher"
-             label="Édition"
-             placeholder="Bellizard"
-             help="Le nom de l'éditeur ou de la maison d'édition doit contenir les mots entrés ici."
-    ></FormKit>
+    <!-- full text basic info -->
+    <GroupElement name="text-search">
+      <TextElement name="title"
+                   label="Titre"
+                   placeholder="Le Moniteur de la Mode"
+                   input-type="text"
+                   :rules="textValidationRule"
+      ></TextElement>
+      <TextElement name="author"
+                   label="Auteur ou autrice"
+                   placeholder="Jules David"
+                   :rules="textValidationRule"
+      ></TextElement>
+      <TextElement name="publisher"
+                   label="Édition"
+                   placeholder="Bellizard"
+                   :rules="textValidationRule"
+      ></TextElement>
+    </GroupElement>
 
-    <!-- select inputs -->
-    <div v-if="namedEntityArray.length && themeArray.length && institutionArray.length">
-      <FormKit type="select"
-               name="namedEntity"
-               label="Sujet"
-               placeholder="Sélectionner un sujet"
-               help="Sélectionner un sujet"
-               :options="namedEntityArray"
-      ></FormKit>
-      <FormKit type="select"
-               name="theme"
-               label="Thème"
-               placeholder="Sélectionner un thème"
-               help="Sélectionner un thème"
-               :options="themeArray"
-      ></FormKit>
-      <FormKit type="select"
-               name="institution"
-               label="Institution"
-               placeholder="Sélectionner une institution"
-               help="Sélectionner une institution"
-               :options="themeArray"
-      ></FormKit>
-    </div>
+    <!-- query structured metadata: themes, named entites -->
+    <GroupElement name="structured-search">
+      <SelectElement name="theme"
+                     label="Thème"
+                     placeholder="Sélectionner un thème"
+                     :search="true"
+                     :strict="false"
+                     :native="false"
+                     :items="themeArray"
+      ></SelectElement>
+      <SelectElement name="namedEntity"
+                     label="Sujet"
+                     placeholder="Sélectionner un sujet"
+                     :search="true"
+                     :strict="false"
+                     :native="false"
+                     :items="namedEntityArray"
+      ></SelectElement>
+      <SelectElement name="institution"
+                     label="Institution"
+                     placeholder="Sélectionner une institution de conservation"
+                     :search="true"
+                     :strict="false"
+                     :native="false"
+                     :items="institutionArray"
+      ></SelectElement>
+    </GroupElement>
 
-    <!-- date inputs -->
-    <div>
-    </div>
+    <!-- query dates -->
+    <!--
+    <SliderElement name="date"
+                   label="Date de création"
+                   merge="100"
+                   :min="allowedDateRange[0]"
+                   :max="allowedDateRange[1]"
+                   :default="[ 1800, 1900 ]"
+    ></SliderElement>
+    -->
+    <!-- query dates
+         the `v-if` allows to wait for `allowedDateRange`
+         to be loaded before initializing the `rules` attributes.
+         this mimics an anync loading of the rules -->
+    <GroupElement name="date"
+                  label="Date"
+                  v-if="allowedDateRange.length
+                        && dateValidationRule.length
+                        && dateRangeValidationRule"
+    >
+      <RadiogroupElement view="tabs"
+                         name="dateFilter"
+                         default="dateRange"
+                         :items="allowedDateSearchTypes"
+                         @change="changeDateSearchType"
+      ></RadiogroupElement>
+      <ObjectElement v-if="dateSearchType === 'dateRange'"
+                     name="date"
+                     class="date-range-form"
+                     :columns="{ container:12, wrapper:6, label:0 }"
+      >
+        <!-- if one of the 2 dates is given, the other is mandatory -->
+        <TextElement name="dateStart"
+                     id="dateStart"
+                     placeholder="1800"
+                     input-type="number"
+                     :rules="dateRangeValidationRule(allowedDateRange)"
+        ></TextElement>
+        <TextElement name="dateEnd"
+                     id="dateEnd"
+                     placeholder="1900"
+                     input-type="number"
+                     :rules="dateRangeValidationRule(allowedDateRange)"
+        ></TextElement>
+      </ObjectElement>
+      <TextElement v-else-if="dateSearchType === 'dateExact'"
+                   name="date"
+                   placeholder="1824 (exact)"
+                   input-type="number"
+                   :rules="dateValidationRule(allowedDateRange)"
+      ></TextElement>
+      <TextElement v-else-if="dateSearchType === 'dateBefore'"
+                   name="date"
+                   placeholder="1824 (avant)"
+                   input-type="number"
+                   :rules="dateValidationRule(allowedDateRange)"
+      ></TextElement>
+      <TextElement v-else
+                   name="date"
+                   placeholder="1824 (après)"
+                   input-type="number"
+                   :rules="dateValidationRule(allowedDateRange)"
+      ></TextElement>
+    </GroupElement>
 
+    <!-- submit -->
+    <ButtonElement name="register"
+                   button-label="Lancer la recherche"
+                   :submits="true"
+                   :full="true"
+                   size="lg"
+    ></ButtonElement>
 
-  </FormKit>
+  </Vueform>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 
-// import { FormKitNode } from '@formkit/core'
 import $ from "jquery";
 
 import { clickOrTouchEvent } from "@globals";
@@ -351,7 +425,7 @@ onMounted(() => {
 
 
 <style scoped>
-#advanced-search-form {
+.advanced-search-form {
   margin: 0 5%;
 }
 </style>

@@ -10,6 +10,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@formkit/vue": "^1.6.5",
     "@vueform/vueform": "^1.9.9",
     "animate.css": "^4.1.1",
     "axios": "^1.6.2",

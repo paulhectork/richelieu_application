@@ -22,27 +22,6 @@ export function fnToIconographyFile(fn) {
 
 
 /**
- * check that an object is kind of empty.
- * this is a generic function that works for scalars
- * (string, float, int) and complex types (arrays, dicts)
- * @param {any} obj
- * @returns {bool}
- */
-export function isKindaEmpty(obj) {
-  // for Arrays: contains no elements or only null or undefined elts
-  if ( Array.isArray(obj) ) {
-    return ! obj.filter(o => o != null  ).length;
-  // for Objects: contains only
-  } else if ( typeof(obj)==="object" && obj !== null ) {
-    return ! Object.keys(obj).length;
-  // for scalars: is == null
-  } else {
-    return obj == null;
-  }
-}
-
-
-/**
  * on touchscreen devices, "when the user touches
  * the screen both touch and click events will occur".
  * this means that, if `hasTouch`, 2 events are fired
@@ -59,3 +38,36 @@ export function cleanClickOrTouchend(event) {
   }
   return event
 }
+
+
+/**
+ * check that an object is kind of empty.
+ * this is a generic function that works for scalars
+ * (string, float, int) and complex types (arrays, dicts)
+ * @param {any} obj
+ * @returns {bool}
+ */
+export const isKindaEmpty = (obj) =>
+  Array.isArray(obj)                        // for Arrays: contains no elements or only null or undefined elts
+  ? !obj.filter(o => o != null  ).length
+  : typeof(obj)==="object" && obj !== null  // for Objects (dict-like): contains no keys
+  ? !Object.keys(obj).length
+  : typeof(obj)==="string"                  // for strings: has no length
+  ? obj.length === 0
+  : obj == null;                            // else: is null or undefined
+
+
+/**
+ * a scalar (undefined, null, string or number) contains no data
+ * @param {undefined | null | String | Number} s: the scalar we want to test
+ * @returns {bool}
+ */
+export const isEmptyScalar = s => s === undefined || s === null || s === "" || s.length === 0;
+
+
+/**
+ * an array is empty, or it contains only elements with no data
+ * @param {Array} s: the array we want to test
+ * @returns {bool}
+ */
+export const isEmptyArray = a => a.length === 0 || a.every(x => isEmptyScalar(x));
