@@ -6,7 +6,8 @@
      display the results
 
      see:
-     https://vueform.com/docs/handling-form-data
+     for an in-depth explanation of FormKit:
+        https://formkit.com/essentials/architecture
 -->
 
 <template>
@@ -36,7 +37,11 @@
     ></FormKit>
 
     <!-- select inputs -->
-    <div v-if="namedEntityArray.length && themeArray.length && institutionArray.length">
+    <div v-if="namedEntityArray.length
+               && themeArray.length
+               && institutionArray.length"
+    >
+      <!--
       <FormKit type="select"
                name="namedEntity"
                label="Sujet"
@@ -44,24 +49,75 @@
                help="Sélectionner un sujet"
                :options="namedEntityArray"
       ></FormKit>
-      <FormKit type="select"
+      -->
+      <FormKit type="formSelectBasic"
+               name="namedEntity"
+               label="Sujet"
+               placeholder="Sélectionner un sujet"
+               :options="namedEntityArray"
+      ></FormKit>
+      <FormKit type="formSelectBasic"
                name="theme"
                label="Thème"
-               placeholder="Sélectionner un thème"
                help="Sélectionner un thème"
+               placeholder="Sélectionner un thème"
                :options="themeArray"
       ></FormKit>
-      <FormKit type="select"
+      <FormKit type="formSelectBasic"
                name="institution"
                label="Institution"
-               placeholder="Sélectionner une institution"
                help="Sélectionner une institution"
+               placeholder="Sélectionner une institution"
                :options="themeArray"
       ></FormKit>
     </div>
 
     <!-- date inputs -->
     <div>
+      <FormKit type="formSelectTabs"
+               id="date-filter"
+               name="dateFilter"
+               label="Date"
+               help="Choisir le type de filtre pour la date"
+               value="dateRange"
+               :options="allowedDateSearchTypes"
+      ></FormKit>
+      <!--    :type="dateFilterType==='dateRange' ? 'group' : 'hidden'" -->
+      <FormKit v-if="dateFilterType==='dateRange'"
+               type="group"
+               name="date"
+               label="Date"
+               help="Choisir une tranche de dates au format AAAA-AAAA"
+      >
+        <FormKit type="number"
+                 name="dateStart"
+                 label="Date de début"
+                 placeholder="Ex: 1810"
+        ></FormKit>
+        <FormKit type="number"
+                 name="dateEnd"
+                 label="Date de fin"
+                 placeholder="Ex: 1891"
+        ></FormKit>
+      </FormKit>
+      <FormKit v-else-if="dateFilterType==='dateExact'"
+               type="number"
+               name="date"
+               label="Date exacte"
+               placeholder="Ex: 1891"
+      ></FormKit>
+      <FormKit v-else-if="dateFilterType==='dateBefore'"
+               type="number"
+               name="date"
+               label="Avant"
+               placeholder="Ex: 1891"
+      ></FormKit>
+      <FormKit v-else
+               type="number"
+               name="date"
+               label="Après"
+               placeholder="Ex: 1810"
+      ></FormKit>
     </div>
 
 
@@ -72,7 +128,7 @@
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 
-// import { FormKitNode } from '@formkit/core'
+import { useFormKitNodeById, createInput } from '@formkit/vue';
 import $ from "jquery";
 
 import { clickOrTouchEvent } from "@globals";
@@ -81,20 +137,20 @@ import { isEmptyArray, isEmptyScalar } from "@utils/functions";
 
 /******************************************/
 
-const form$            = ref(null);         // VueForm
-const themeArray       = ref([]);           // string array
-const namedEntityArray = ref([]);           // string array
-const institutionArray = ref([]);           // string array
-const allowedDateRange = ref([]);           // int array: [minDate, maxDate]
-const dateSearchType   = ref("dateRange");  // str: the type of date filter to display
+const dateFilterNode   = useFormKitNodeById("date-filter");  // useFormKitNodeById targets a FormKit node by it's HTML id and creates a vue ref.
+const themeArray       = ref([]);                            // string array
+const namedEntityArray = ref([]);                            // string array
+const institutionArray = ref([]);                            // string array
+const allowedDateRange = ref([]);                            // int array: [minDate, maxDate]
+const dateFilterType   = ref("dateRange");                   // str: the type of date filter to display
 
 /******************************************/
 
 // `items` in the html form to set the `allowedDateRanger`
 const allowedDateSearchTypes = [ { label:'Plage de dates', value:'dateRange' }
-                               , { label:'Date exacte', value:'dateExact' }
-                               , { label:'Avant', value:'dateBefore' }
-                               , { label:'Après', value:'dateAfter'}]
+                               , { label:'Date exacte'   , value:'dateExact' }
+                               , { label:'Avant'         , value:'dateBefore' }
+                               , { label:'Après'         , value:'dateAfter'}]
 
 // validation rules
 const textValidationRule = ref(['min:3']);
@@ -181,14 +237,38 @@ const dateRangeValidationRule = (dateRange, fieldName) => {
 /******************************************/
 
 /**
- * change the `dateSearchType` value to
+ * change the `dateFilterType` value to
  * change the date filter to display in the form
  * @param {string} val: the new value
  */
 function changeDateSearchType (val) {
-  dateSearchType.value = val
+  dateFilterType.value = val
 }
 
+/**
+ * transform a string into an object following the
+ * structure defined by formjit objects:
+ * { "label": <value to display>, "value": <value sent by the form> }
+ * https://formkit.com/inputs/select#array-of-objects
+ * @param {string} item
+ * @returns {Object}
+ */
+function itemToFormEntry(item) {
+  return { "label": item.entry_name, "value": item.entry_name }
+}
+
+/**
+ * sorter for an array of items created by `itemToFormEntry`
+ * see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+ * @param val1, val2: the two items to sort
+ */
+function sortByValue(val1, val2) {
+  return val1.value.toLowerCase() < val2.value.toLowerCase()
+         ? -1
+         : val1.value.toLowerCase() > val2.value.toLowerCase()
+         ? 1
+         : 0;  // val1 === val2
+}
 
 /**
  *
@@ -325,27 +405,29 @@ function onSubmit(form, formData) {
   /* send the JSON to parent */
 }
 
-// load the data from the DB
-
 /******************************************/
 
 onMounted(() => {
+  // fetch data
   axios.get(new URL("/i/theme", __API_URL__))
        .then(r => themeArray.value = r.data
-                                      .map(x => x.entry_name)
-                                      .sort() );
+                                      .map(itemToFormEntry)
+                                      .sort((a,b) => sortByValue(a,b)) );
   axios.get(new URL("/i/named-entity", __API_URL__))
        .then(r => namedEntityArray.value = r.data
-                                            .map(x => x.entry_name)
-                                            .sort() )
+                                            .map(itemToFormEntry)
+                                            .sort((a,b) => sortByValue(a,b)) )
   axios.get(new URL("/i/institution", __API_URL__))
        .then(r => institutionArray.value = r.data
-                                            .map(x => x.entry_name)
-                                            .sort() );
+                                            .map(itemToFormEntry)
+                                            .sort((a,b) => sortByValue(a,b)) );
   axios.get(new URL("/i/iconography-overall-date-range", __API_URL__))
        .then(r => {
         allowedDateRange.value = r.data;
        });
+
+  // form events
+  dateFilterNode.value.on("commit", (e) => { dateFilterType.value = e.payload; });
 })
 </script>
 
