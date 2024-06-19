@@ -41,15 +41,13 @@
                && themeArray.length
                && institutionArray.length"
     >
-      <!--
-      <FormKit type="select"
+      <FormKit type="formSelectBasic"
                name="namedEntity"
                label="Sujet"
                placeholder="Sélectionner un sujet"
                help="Sélectionner un sujet"
                :options="namedEntityArray"
       ></FormKit>
-      -->
       <FormKit type="formSelectBasic"
                name="namedEntity"
                label="Sujet"
@@ -74,6 +72,7 @@
 
     <!-- date inputs -->
     <div>
+      <!--
       <FormKit type="formSelectTabs"
                id="date-filter"
                name="dateFilter"
@@ -82,6 +81,23 @@
                value="dateRange"
                :options="allowedDateSearchTypes"
       ></FormKit>
+      -->
+      <FormKit type="radio"
+               name="dateFilter"
+               id="date-filter"
+               outer-class="radio-tabs"
+               label="Date"
+               help="Choisir un comment filtrer les dates"
+               input-class="to-hide"
+               :options="allowedDateSearchTypes"
+               :sections-schema="{ //input  : { $el: 'span' }      // hide the display of the radio button
+                                 }"
+      ></FormKit>
+      <!--
+      <FormSelectTabs :options="allowedDateSearchType"
+                      name="dateFilter"
+      ></FormSelectTabs>
+
       <!--    :type="dateFilterType==='dateRange' ? 'group' : 'hidden'" -->
       <FormKit v-if="dateFilterType==='dateRange'"
                type="group"
@@ -131,6 +147,7 @@ import axios from "axios";
 import { useFormKitNodeById, createInput } from '@formkit/vue';
 import $ from "jquery";
 
+// import FormSelectTabs from "@components/FormSelectTabs.vue";
 import { clickOrTouchEvent } from "@globals";
 import { isEmptyArray, isEmptyScalar } from "@utils/functions";
 
@@ -345,17 +362,6 @@ function onSubmit(form, formData) {
        // )  //.apppend('Prepended error', "message")
     }
   }
-  /*
-  let validDateRange = queryData.dateFilter === "dateRange"
-                       ? queryData.date.length === 2                                     // contains 2 items
-                         && ( queryData.date.filter(x => !isNaN(x)).length === 0  // that are numbers
-                            || queryData.date.every(x => x==null) )                      // or none of the 2 values are numbers
-                         && queryData.dateFilter[0] <= queryData.dateFilter[1]           // dateStart < dateEnd
-                       : true;
-
-  console.log("validDateRange", validDateRange)
-  */
-
 
   // console.log("pre", queryData, queryData.author, queryData.date);
 
@@ -371,38 +377,6 @@ function onSubmit(form, formData) {
                                      : queryData[k] );
 
   // console.log("post", queryData, queryData.author, queryData.date);
-
-
-
-  /*
-  // queryData.date is either a scalar
-  // (if `dateFilter` is one of `dateStart`, `dateEnd`, `dateExact`)
-  // or a proxy. convert it to an array of 1 or 2 items to have a plain JSON
-  queryData.date = dateFilter === "dateRange"
-                   ? [ queryData.date.dateStart, queryData.date.dateEnd ]
-                   : [ queryData.date ];  //.filter(x => x != null);
-
-  const isEmptyScalar = sca => sca == null || sca === "" || sca.length === 0;
-  const isEmptyArray = arr => arr.length === 0 || !arr.some(x => !isEmptyScalar(x));
-
-  /***************************************** /
-  /* extra validation * /
-
-
-  // have we set at least one filter?
-  let allEmptyFilters = (
-    Object
-    .keys(queryData)
-    .filter(k => k !== "dateFilter" )  // `dateFilter` gets a default value which can't help us to make a query on its own => don't take it into account
-    .map((k) => Array.isArray(queryData[k])
-                ? isEmptyArray(queryData[k])  // either array doesn't have a length or it contains only null or undefined elts
-                : isEmptyScalar(queryData[k]) )
-  )
-  console.log(allEmptyFilters);
-  */
-
-
-  /* send the JSON to parent */
 }
 
 /******************************************/
@@ -425,6 +399,46 @@ onMounted(() => {
        .then(r => {
         allowedDateRange.value = r.data;
        });
+
+  // style the tabs form. we need to use JS
+  // because FormKit overwrites basic CSS stylings
+  $(".radio-tabs ul.formkit-options")
+  .css({ listStyle     : "none",
+         paddingLeft   : 0,
+         margin        : 0,
+         display       : "flex",
+         flexDirection : "row",
+         justifyContent: "space-between",
+         alignItems    : "center" });
+  $(".radio-tabs li.formkit-option")
+  .css({ flexGrow: 1,
+         margin: "3px",
+         border: "var(--cs-border)",
+         display: "flex",
+         alignItems: "center",
+         justifyContent: "center",
+         padding: "2px",
+         fontFamily: "var(--cs-font-sans-serif)"
+  });
+  $(".radio-tabs ul.formkit-options button").css({ width: "100%" });
+  $(".radio-tabs li.formkit-option input.to-hide").css({ display: "none" });
+  $(".radio-tabs li.formkit-option").on("mouseover", (e) => {
+    $(e.currentTarget).addClass("main-second") });
+  $(".radio-tabs li.formkit-option").on("mouseout", (e) => {
+    $(e.currentTarget).removeClass("main-second") });
+
+  // events
+  $("ul.formkit-options button").on(clickOrTouchEvent, (e) => {
+    // e.preventDefault();
+    // color the selected button
+    $("button.formkit-wrapper").removeClass("contrast-default");
+    $(e.currentTarget).addClass("contrast-default");
+    /*
+    $(e.currentTarget).find(".formkit-input")
+                      .prop("checked", true)
+                      .trigger("click")
+    */
+  })
 
   // form events
   dateFilterNode.value.on("commit", (e) => { dateFilterType.value = e.payload; });

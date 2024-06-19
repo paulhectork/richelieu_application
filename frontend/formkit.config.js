@@ -9,9 +9,10 @@ const config = {
   locale: 'fr',
   inputs: {
     formSelectBasic: createInput(FormSelectBasic,
-                                { props: [ "placeholder", "options" ] }),
-    formSelectTabs: createInput(FormSelectTabs,
-                                { props: [ "options" ] }),
+                                { props: [ "placeholder", "options" ] })
+    //,
+    //formSelectTabs: createInput(FormSelectTabs,
+    //                            { props: [ "options" ] }),
   }
 }
 

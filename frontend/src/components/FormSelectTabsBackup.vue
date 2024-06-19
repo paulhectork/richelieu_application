@@ -30,7 +30,13 @@
     ></button>
   -->
 
-
+    <FormKit type="radio"
+             name=""
+             :options="optionsArray"
+             :sections-schema="{ wrapper: { $el: 'button' },
+                                 input  : { $el: 'span' }      // block the display of the radio button
+                               }"
+    ></FormKit>
 
   </div>
 
@@ -45,13 +51,9 @@ import { clickOrTouchEvent } from "@globals";
 
 /*******************************************/
 
-/*
 const props        = defineProps([ "context" ]);
 const optionsArray = props.context.options || []; // array of all the values
 console.log(optionsArray);
-*/
-const props = defineProps(["options", "name"]);
-const optionsArray = props.options;
 
 /*******************************************/
 
@@ -75,8 +77,10 @@ onMounted(() => {
     $("button.formkit-wrapper").removeClass("contrast-default");
     $(e.currentTarget).addClass("contrast-default");
   })
+
 })
 
+/*******************************************/
 </script>
 
 <style scoped>
