@@ -137,6 +137,8 @@
   --cs-fontsize-menu-desktop: 115% /*var(--cs-fontsize-main-desktop)*/;
   --cs-fontsize-legend: 125%;
 
+  --cs-color-transition: 0.25s;
+
   /**
    *  ANIMATE.CSS GLOBALS
    */
@@ -251,8 +253,8 @@ button {
   cursor: grab;
   width: auto;
 
-  transition: color 0.2s;
-  transition: background-color 0.2s;
+  transition: color var(--cs-color-transition);
+  transition: background-color var(--cs-color-transition);
 }
 button:hover {
   background-color: var(--cs-main-second-bg);
@@ -310,7 +312,7 @@ button:active > svg > path {
 
 .v-enter-active
 , .v-leave-active {
-  transition: opacity 0.25s ease;
+  transition: opacity var(--cs-color-transition) ease;
 }
 .v-enter-from
 , .v-leave-to {

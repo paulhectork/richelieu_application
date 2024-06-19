@@ -1,18 +1,18 @@
 import { fr } from '@formkit/i18n';
 import { plugin, defaultConfig, createInput } from '@formkit/vue'
 
-import FormSelectBasic from "@components/FormSelectBasic.vue";
-import FormSelectTabs from "@components/FormSelectTabs.vue";
+import FormSelect from "@components/FormSelect.vue";
+import FormRadioTabs from "@components/FormRadioTabs.vue";
 
 const config = {
   locales: { fr },
   locale: 'fr',
   inputs: {
-    formSelectBasic: createInput(FormSelectBasic,
+    formSelect: createInput(FormSelect,
                                 { props: [ "placeholder", "options" ] })
-    //,
-    //formSelectTabs: createInput(FormSelectTabs,
-    //                            { props: [ "options" ] }),
+    ,
+    formRadioTabs: createInput(FormRadioTabs,
+                                { props: [ "options", "value" ] }),
   }
 }
 

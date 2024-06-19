@@ -41,27 +41,27 @@
                && themeArray.length
                && institutionArray.length"
     >
-      <FormKit type="formSelectBasic"
+      <FormKit type="formSelect"
                name="namedEntity"
                label="Sujet"
                placeholder="Sélectionner un sujet"
                help="Sélectionner un sujet"
                :options="namedEntityArray"
       ></FormKit>
-      <FormKit type="formSelectBasic"
+      <FormKit type="formSelect"
                name="namedEntity"
                label="Sujet"
                placeholder="Sélectionner un sujet"
                :options="namedEntityArray"
       ></FormKit>
-      <FormKit type="formSelectBasic"
+      <FormKit type="formSelect"
                name="theme"
                label="Thème"
                help="Sélectionner un thème"
                placeholder="Sélectionner un thème"
                :options="themeArray"
       ></FormKit>
-      <FormKit type="formSelectBasic"
+      <FormKit type="formSelect"
                name="institution"
                label="Institution"
                help="Sélectionner une institution"
@@ -72,8 +72,7 @@
 
     <!-- date inputs -->
     <div>
-      <!--
-      <FormKit type="formSelectTabs"
+      <FormKit type="formRadioTabs"
                id="date-filter"
                name="dateFilter"
                label="Date"
@@ -81,7 +80,7 @@
                value="dateRange"
                :options="allowedDateSearchTypes"
       ></FormKit>
-      -->
+      <!--
       <FormKit type="radio"
                name="dateFilter"
                id="date-filter"
@@ -93,10 +92,7 @@
                :sections-schema="{ //input  : { $el: 'span' }      // hide the display of the radio button
                                  }"
       ></FormKit>
-      <!--
-      <FormSelectTabs :options="allowedDateSearchType"
-                      name="dateFilter"
-      ></FormSelectTabs>
+      -->
 
       <!--    :type="dateFilterType==='dateRange' ? 'group' : 'hidden'" -->
       <FormKit v-if="dateFilterType==='dateRange'"
@@ -141,13 +137,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 
 import { useFormKitNodeById, createInput } from '@formkit/vue';
 import $ from "jquery";
 
-// import FormSelectTabs from "@components/FormSelectTabs.vue";
+// import FormRadioTabs from "@components/FormRadioTabs.vue";
 import { clickOrTouchEvent } from "@globals";
 import { isEmptyArray, isEmptyScalar } from "@utils/functions";
 
@@ -160,6 +156,33 @@ const namedEntityArray = ref([]);                            // string array
 const institutionArray = ref([]);                            // string array
 const allowedDateRange = ref([]);                            // int array: [minDate, maxDate]
 const dateFilterType   = ref("dateRange");                   // str: the type of date filter to display
+
+const theDateSearchType = ref();
+
+/*************************************************
+ * ON EN EST OÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙ
+ * * j'ai créé FormRadioTabs, qui marche (enfin, je
+ *   crois)
+ * * j'essaye de récupérer la valeur dans le parent,
+ *   pour faire 2 choses: modifier le filtre `date`
+ *   en fonction de `dateFilterType`, et récupérer
+ *   le type de filtre dans le parent.
+ *   il faudrait savoir si la valeur changée dans
+ *   `FormRadioTabs` est reçue ou non par notre
+ *   formulaire FormKit. c'est un problème différent
+ *   de savoir si les données sont reçues par le formulaire
+ *   et pourquoi est-ce que le filtre `date` n'est
+ *   pas misa à jour: la maj de celui-ci dépend de
+ *   du ref `dateFilterType`.
+ *
+ * il faut ptet utiliser des watchers avec des `v-model`.
+ * Dans mes tests, `watch` fonctionne sur des `v-model`
+ * par défaut (type texte) de FormKit, mais j'ai pas
+ * réussi à les faire marcher avec mes inputs customs.
+ */
+watch(theDateSearchType, (newType, oldType) => {
+  console.log(newType, oldType);
+})
 
 /******************************************/
 
@@ -400,45 +423,6 @@ onMounted(() => {
         allowedDateRange.value = r.data;
        });
 
-  // style the tabs form. we need to use JS
-  // because FormKit overwrites basic CSS stylings
-  $(".radio-tabs ul.formkit-options")
-  .css({ listStyle     : "none",
-         paddingLeft   : 0,
-         margin        : 0,
-         display       : "flex",
-         flexDirection : "row",
-         justifyContent: "space-between",
-         alignItems    : "center" });
-  $(".radio-tabs li.formkit-option")
-  .css({ flexGrow: 1,
-         margin: "3px",
-         border: "var(--cs-border)",
-         display: "flex",
-         alignItems: "center",
-         justifyContent: "center",
-         padding: "2px",
-         fontFamily: "var(--cs-font-sans-serif)"
-  });
-  $(".radio-tabs ul.formkit-options button").css({ width: "100%" });
-  $(".radio-tabs li.formkit-option input.to-hide").css({ display: "none" });
-  $(".radio-tabs li.formkit-option").on("mouseover", (e) => {
-    $(e.currentTarget).addClass("main-second") });
-  $(".radio-tabs li.formkit-option").on("mouseout", (e) => {
-    $(e.currentTarget).removeClass("main-second") });
-
-  // events
-  $("ul.formkit-options button").on(clickOrTouchEvent, (e) => {
-    // e.preventDefault();
-    // color the selected button
-    $("button.formkit-wrapper").removeClass("contrast-default");
-    $(e.currentTarget).addClass("contrast-default");
-    /*
-    $(e.currentTarget).find(".formkit-input")
-                      .prop("checked", true)
-                      .trigger("click")
-    */
-  })
 
   // form events
   dateFilterNode.value.on("commit", (e) => { dateFilterType.value = e.payload; });

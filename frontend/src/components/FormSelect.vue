@@ -27,7 +27,7 @@
 
      usage example:
      ```
-     <FormKit type="formSelectBasic"
+     <FormKit type="formSelect"
               name="namedEntity"
               label="Sujet"
               placeholder="Sélectionner un sujet"
