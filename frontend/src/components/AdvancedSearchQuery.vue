@@ -15,11 +15,13 @@
            name="theForm"
            id="advanced-search-form"
            submit-label="Lancer la recherche"
+           @submit="onSubmit"
   >
     <!-- free text inputs -->
     <FormKit type="text"
              name="title"
              label="Titre"
+             :validation="textValidationRule"
              help="Le titre de la ressource iconographique doit contenir les mots entrés ici."
              placeholder="Ex: Le Moniteur de la Mode"
     ></FormKit>
@@ -49,12 +51,6 @@
                :options="namedEntityArray"
       ></FormKit>
       <FormKit type="formSelect"
-               name="namedEntity"
-               label="Sujet"
-               placeholder="Sélectionner un sujet"
-               :options="namedEntityArray"
-      ></FormKit>
-      <FormKit type="formSelect"
                name="theme"
                label="Thème"
                help="Sélectionner un thème"
@@ -80,21 +76,7 @@
                value="dateRange"
                :options="allowedDateSearchTypes"
       ></FormKit>
-      <!--
-      <FormKit type="radio"
-               name="dateFilter"
-               id="date-filter"
-               outer-class="radio-tabs"
-               label="Date"
-               help="Choisir un comment filtrer les dates"
-               input-class="to-hide"
-               :options="allowedDateSearchTypes"
-               :sections-schema="{ //input  : { $el: 'span' }      // hide the display of the radio button
-                                 }"
-      ></FormKit>
-      -->
 
-      <!--    :type="dateFilterType==='dateRange' ? 'group' : 'hidden'" -->
       <FormKit v-if="dateFilterType==='dateRange'"
                type="group"
                name="date"
@@ -105,30 +87,46 @@
                  name="dateStart"
                  label="Date de début"
                  placeholder="Ex: 1810"
+
+                 validation="dateRangeValidator"
+                 :validation-rules="dateValidationRule"
         ></FormKit>
         <FormKit type="number"
                  name="dateEnd"
                  label="Date de fin"
                  placeholder="Ex: 1891"
+
+                 validation="dateRangeValidator"
+                 :validation-rules="dateValidationRule"
         ></FormKit>
       </FormKit>
+
       <FormKit v-else-if="dateFilterType==='dateExact'"
                type="number"
                name="date"
                label="Date exacte"
                placeholder="Ex: 1891"
+
+               validation="dateValidator"
+               :validation-rules="dateValidationRule"
       ></FormKit>
       <FormKit v-else-if="dateFilterType==='dateBefore'"
                type="number"
                name="date"
                label="Avant"
                placeholder="Ex: 1891"
+
+               validation="dateValidator"
+               :validation-rules="dateValidationRule"
       ></FormKit>
       <FormKit v-else
                type="number"
                name="date"
                label="Après"
                placeholder="Ex: 1810"
+
+               validation="dateValidator"
+               :validation-rules="dateValidationRule"
       ></FormKit>
     </div>
 
@@ -137,7 +135,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 
 import { useFormKitNodeById, createInput } from '@formkit/vue';
@@ -145,7 +143,7 @@ import $ from "jquery";
 
 // import FormRadioTabs from "@components/FormRadioTabs.vue";
 import { clickOrTouchEvent } from "@globals";
-import { isEmptyArray, isEmptyScalar } from "@utils/functions";
+import { isEmptyArray, isEmptyScalar, isNumberInRange, isValidNumberRange } from "@utils/functions";
 
 
 /******************************************/
@@ -157,133 +155,58 @@ const institutionArray = ref([]);                            // string array
 const allowedDateRange = ref([]);                            // int array: [minDate, maxDate]
 const dateFilterType   = ref("dateRange");                   // str: the type of date filter to display
 
-const theDateSearchType = ref();
-
-/*************************************************
- * ON EN EST OÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙÙ
- * * j'ai créé FormRadioTabs, qui marche (enfin, je
- *   crois)
- * * j'essaye de récupérer la valeur dans le parent,
- *   pour faire 2 choses: modifier le filtre `date`
- *   en fonction de `dateFilterType`, et récupérer
- *   le type de filtre dans le parent.
- *   il faudrait savoir si la valeur changée dans
- *   `FormRadioTabs` est reçue ou non par notre
- *   formulaire FormKit. c'est un problème différent
- *   de savoir si les données sont reçues par le formulaire
- *   et pourquoi est-ce que le filtre `date` n'est
- *   pas misa à jour: la maj de celui-ci dépend de
- *   du ref `dateFilterType`.
- *
- * il faut ptet utiliser des watchers avec des `v-model`.
- * Dans mes tests, `watch` fonctionne sur des `v-model`
- * par défaut (type texte) de FormKit, mais j'ai pas
- * réussi à les faire marcher avec mes inputs customs.
- */
-watch(theDateSearchType, (newType, oldType) => {
-  console.log(newType, oldType);
-})
-
-/******************************************/
 
 // `items` in the html form to set the `allowedDateRanger`
 const allowedDateSearchTypes = [ { label:'Plage de dates', value:'dateRange' }
                                , { label:'Date exacte'   , value:'dateExact' }
-                               , { label:'Avant'         , value:'dateBefore' }
-                               , { label:'Après'         , value:'dateAfter'}]
-
-// validation rules
-const textValidationRule = ref(['min:3']);
-/**
- * `dateValidationRule` and `dateRangeValidationRule` are
- * defined as functions, to allow to tweak the rules for each field
- * we should use `nullable` and `numeric`, but
- * if `nullable`, then `numeric` isn't applied and vice-versa....
- * (passed through the template to make shure that `allowedDateRange`
- * is loaded)
- * @param {Array<Number>} dateRange: the maximum/minimum dates allowed.
- * same as `allowedDateRange`, but passing it as an argument allows us
- * to make sure it's loaded
- */
-const dateValidationRule = dateRange =>
-  [ "nullable"
-  , "numeric"
-  , `between:${dateRange[0]},${dateRange[1]}` ];
-const dateRangeValidationRule = (dateRange, fieldName) => {
-  // basic date validation. see below for a
-  // long version which doesn't work
-  return [ "nullable"
-         , "numeric"
-         , `between:${dateRange[0]},${dateRange[1]}` ];
-
-  /**
-   * set dynamically the `required` and `nullable` fields.
-   * on my end, it works (`isRequired` and `isNullable` return
-   * the proper values), but:
-   * 1) in some cases, it doesn't work, so post-submit verifications
-   *    are still needed
-   * 2) more importantly, using `nullable` is disables the effect
-   *    of the `numeric` rule, which allows the user to submit a
-   *    form with invalid data.
-   *
-   * TLDR: it is too much work for it to work and we still need to
-   * do background validation. so we switch back to a simple validation.
-   *
-   * the idea is that:
-   * for date ranges, we have two fields, `dateStart` and `dateEnd`.
-   * either both must be filled, or none must be filled. this function
-   * checks wether the two fields contain data, and sets the `required`
-   * and `nullable` fields based on that.
-   * it works for most cases, but not all (don't know why), so some
-   * extra validation will be necessary in `onSubmit`
-   */
-  // const isRequired = () => {
-  //   // yes the values must be targeted within
-  //   // the functions, else they aren't updated
-  //   // when the validation is triggered.
-  //   let dateStartValue = $(`#dateStart`).val();
-  //   let dateEndValue = $(`#dateEnd`).val();
-  //   /*
-  //   console.log("required",
-  //               dateEndValue, dateStartValue,
-  //               !isEmptyScalar(dateStartValue) || !isEmptyScalar(dateEndValue));
-  //   */
-  //   return !isEmptyScalar(dateStartValue) || !isEmptyScalar(dateEndValue);
-  // }
-  // const isNullable = () => {
-  //   let dateStartValue = $(`#dateStart`).val();
-  //   let dateEndValue = $(`#dateEnd`).val();
-  //   /*
-  //   console.log("nullable",
-  //               dateEndValue, dateStartValue,
-  //               isEmptyScalar(dateStartValue) && isEmptyScalar(dateEndValue));
-  //   */
-  //   return isEmptyScalar(dateStartValue) && isEmptyScalar(dateEndValue);
-  // }
-  // /***************************************************************************
-  //  ***************************************************************************
-  //  * `NUMERIC` IS NOT APPLIED WHEN
-  //  * `nullable` IS SET => THIS FUNCTION
-  //  * UNAPPLIES `numeric` !!!!!!!!!!!!!!
-  //  ***************************************************************************
-  //  ***************************************************************************/
-  // return [ "numeric"
-  //        , `between:${dateRange[0]},${dateRange[1]}`
-  //        , { nullable: isNullable }
-  //        , { required: isRequired }
-  //        ]
-}
+                               , { label:'Avant'         , value:'dateBefore'}
+                               , { label:'Après'         , value:'dateAfter' }]
 
 /******************************************/
 
-/**
- * change the `dateFilterType` value to
- * change the date filter to display in the form
- * @param {string} val: the new value
- */
-function changeDateSearchType (val) {
-  dateFilterType.value = val
-}
+// validation rules
+// see: https://formkit.com/essentials/validation#custom-rules
+// and: https://stackoverflow.com/a/76391706/17915803
+
+/** shorthand to access the array `allowedDateRange` */
+const allowedDateRangeCurrent = () =>
+  allowedDateRange.value.length
+  ? [ allowedDateRange.value[0], allowedDateRange.value[1] ]
+  : [];
+
+const dateValidationRule = {
+  dateValidator: (node) =>
+    isNumberInRange(node.value, allowedDateRangeCurrent()),
+
+  // need to find a way to run `isValidNumberRange` only on submit?
+  // or at least, to rerun it on submit
+  dateRangeValidator: (node) => {
+    let parent = node.at("$parent");
+    if ( parent.value ) {
+      let dateRange = [ parent.value.dateStart, parent.value.dateEnd ];
+
+      // if the 2 fields are filled, we check that our range is valid
+      if ( dateRange.every(x => x!=null) ) {
+        return dateRange.every(x => isNumberInRange(x, allowedDateRangeCurrent()) )  // every number is in the allowed range
+               && isValidNumberRange(dateRange)                                            // dateStart < dateEnd
+
+      // if only `node` is filled, we check that
+      // this node is in the allowed range
+      } else {
+        return isNumberInRange(node.value, allowedDateRangeCurrent())
+      }
+
+    }
+    // only validate the number if `node.value` isn't undefined
+    return node.value != null
+           ? isNumberInRange(node.value, allowedDateRangeCurrent())
+           : true;
+
+  }
+};
+const textValidationRule = [ ["length", 3] ];  // more than 3 chars
+
+/******************************************/
 
 /**
  * transform a string into an object following the
@@ -311,36 +234,40 @@ function sortByValue(val1, val2) {
 }
 
 /**
- *
+ * handle a form submission
  * @param {*} e
  */
-function onSubmit(form, formData) {
+function onSubmit(formData) {
   console.log("submitted !")
+  console.log(formData);
+  return
+
 
   /* basic definitions */
 
-  let data = form.data;
-  // replace scalar `s` by `null` if the scalar `s` contains no data.
+  // replace scalar `s` by `null` if the scalar `s` contains no formData.
   const scalar2null = s => isEmptyScalar(s) ? null : s;
   // simplify a string
   const simplifyString = s => s.toLowerCase().trim().replaceAll(/\s+/g, " ");
 
   /* extra validation */
 
+  // USELESS??????????????????????????????????????????
+  // MAKES THINGS EXPLICIT BUT THAT'S PRETTY MUCH IT
   // our form as JSON (pretty much the same structure
-  // as `form.data`, but we make its structure explicit here).
-  // we set `null` as default value when no data is provided
+  // as `form.formData`, but we make its structure explicit here).
+  // we set `null` as default value when no formData is provided
   // for a field
-  const queryData = { title: scalar2null(data.title),
-                      author: scalar2null(data.author),
-                      publisher: scalar2null(data.publisher),
-                      theme: scalar2null(data.theme),
-                      namedEntity: scalar2null(data.namedEntity),
-                      institution: scalar2null(data.institution),
-                      dateFilter: data.dateFilter,
-                      date: (data.dateFilter === "dateRange"
-                            ? [ data.date.dateStart, data.date.dateEnd ]
-                            : [ data.date ]).map(scalar2null)  // replace `undefined` and <empty string> by `null`
+  const queryData = { title: scalar2null(formData.title),
+                      author: scalar2null(formData.author),
+                      publisher: scalar2null(formData.publisher),
+                      theme: scalar2null(formData.theme),
+                      namedEntity: scalar2null(formData.namedEntity),
+                      institution: scalar2null(formData.institution),
+                      dateFilter: formData.dateFilter,
+                      date: (formData.dateFilter === "dateRange"
+                            ? [ formData.date.dateStart, formData.date.dateEnd ]
+                            : [ formData.date ]).map(scalar2null)  // replace `undefined` and <empty string> by `null`
   };
 
   // check that at least 1 of the fields has
@@ -352,41 +279,6 @@ function onSubmit(form, formData) {
                                   : queryData[k] === null )
                  ).every(x => x===true)
   console.log("allEmpty", allEmpty)
-
-  // make sure we have valid dates
-  // (a date is a 4-digit number,
-  // a date range is 2 4-digit numbers, start of the range <= end of the range)
-  if ( ! queryData.date.every(x => x==null) ) {
-    // it's a valid date, but not a date range
-    let hasValidDate = queryData.dateFilter !== "dateRange"     // not a date range
-                       && queryData.date.every(x => !isNaN(x)); // the date is a valid number
-    // it's a date range, with 2 numbers
-    let hasDateRange = queryData.dateFilter==="dateRange"
-                       && queryData.date.length === 2           // has 2 items
-                       && queryData.date.every(x => !isNaN(x)); // all values are numbers
-    // it's a valid date range (start date is lower than end date)
-    let hasValidDateRange = queryData.dateFilter==="dateRange"
-                           && Number(queryData.date[0]) <= Number(queryData.date[1]);
-
-    /**
-     * LE PROBLÈME: AVEC NUMERIC, SI IL Y A DES CARACTÈRES NON-NUMÉRIQUES,
-     * ALORS ILS NE SONT PAS RENVOYÉS ICI ET ON A UNDEFINED. DONC ON NE PEUT
-     * PAS AFFICHER QUE LA DATE EST INVALIDE, MAIS EN TOUT CAS LES DONNÉES
-     * NE SONT PAS RÉCUPÉRÉES
-     */
-    if ( !hasValidDate || !hasDateRange || !hasValidDateRange ) {
-      // display error message
-      console.log("noooo");
-      //console.log(
-        form$.value.el$("date").messageBag
-                                          .prepends
-                                          .errors
-                                          .push("hello")
-       // )  //.apppend('Prepended error', "message")
-    }
-  }
-
-  // console.log("pre", queryData, queryData.author, queryData.date);
 
   // simplify the user-inputted strings
   Object.keys(queryData)
@@ -420,9 +312,7 @@ onMounted(() => {
                                             .sort((a,b) => sortByValue(a,b)) );
   axios.get(new URL("/i/iconography-overall-date-range", __API_URL__))
        .then(r => {
-        allowedDateRange.value = r.data;
-       });
-
+        allowedDateRange.value = r.data; });
 
   // form events
   dateFilterNode.value.on("commit", (e) => { dateFilterType.value = e.payload; });

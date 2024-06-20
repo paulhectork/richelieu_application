@@ -1,25 +1,48 @@
-<!-- FormKit plugin with tabs-like selection
+<!-- FormKit custom plugin with tabs-like selection
 
     the parent can pass 2 props to this component:
+    * `value`  : the default value in one of our options.
     * `options`: the different options for this select.
                  defaults to an empty array.
                  options must be an array of objects,
                  following the structure:
-                 https://formkit.com/inputs/select#array-of-objects,
-                 with a `value` key containing the form data and a
-                 `label` key containing the displayed data.
-                 (of course, `label` and `value` can be the same)
+                 [
+                  { 'value': <value1>, 'label': <label1> },  // object 1
+                  { 'value': <value2>, 'label': <label2> }   // object 2
+                 ]
+                 https://formkit.com/inputs/select#array-of-objects.
+
+    our custom input doesn't check all the things in the checklist
+    as they're not needed by the project.
+
+    help:
+    the trick to getting the value of a custom input is to use
+    the `@input` with an input handler, event, either `node.input(value)`
+    or `context.handlers.DOMInput `, as described in the link below !!
 
     see:
+    https://formkit.com/essentials/custom-inputs#global-custom-inputs
+    https://formkit.com/essentials/custom-inputs#input-checklist#input-checklist
     https://formkit.com/guides/create-a-custom-input
     https://formkit.com/api-reference/context
 
     usage example:
     ```
+    <FormKit type="formRadioTabs"
+             id="date-filter"
+             name="dateFilter"
+             label="Date"
+             help="Choisir le type de filtre pour la date"
+             value="dateRange"
+             :options="[{ value: 'a', label: 'Sujet 1' },
+                         { value: 'b', label: 'Sujet 2' },
+                         { value: 'c', label: 'Sujet 3' }]"
+    ></FormKit>
     ```
 -->
 
 <template>
+
   <div class="form-radio-tabs-wrapper"
        :id="htmlId">
     <fieldset>
@@ -28,9 +51,10 @@
            :class="{ 'form-radio-option-selected': checkedInput===o.value }"
       >
         <input type="radio"
-               :value="o.value"
                :name="`fieldset-${htmlId}`"
                :id="`form-radio-tabs-${o.value}`"
+               :value="o.value"
+               @input="context.handlers.DOMInput"
                v-model="checkedInput"
 
         ></input>
@@ -46,10 +70,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
 
-import $ from "jquery";
-
-import { clickOrTouchEvent } from "@globals";
-
 /*******************************************/
 
 const props = defineProps([ "context" ]);
@@ -61,9 +81,6 @@ const defaultValue = props.context.value
                      : undefined;
 const htmlId = `form-radio-tabs-${window.crypto.randomUUID()}`;
 const checkedInput = ref(defaultValue);  // `v-model` on the `input`, that helps us to track the currently checked item
-
-/*******************************************/
-
 
 /*******************************************/
 onMounted(() => {

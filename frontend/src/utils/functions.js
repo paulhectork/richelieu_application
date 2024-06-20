@@ -71,3 +71,24 @@ export const isEmptyScalar = s => s === undefined || s === null || s === "" || s
  * @returns {bool}
  */
 export const isEmptyArray = a => a.length === 0 || a.every(x => isEmptyScalar(x));
+
+
+/**
+ * assert that `num` can be contained in the array `numRange`
+ * @param {string|undefined} num: a string that must be serializable as a number
+ * @param {Array<Number>} rangeArray: the array into which `num` must be comprised. length=2
+ */
+export const isNumberInRange = (num, rangeArray) =>
+  !isNaN(num)
+  && Number(num) >= rangeArray[0]
+  && Number(num) <= rangeArray[1];
+
+/**
+ * check `numRange` is an array of 2 strings that can be represented
+ * as numbers, with `numRange[0] <= numRange[1]`
+ * @param {Array<string>} numRange: an array of 2 strings that are expected to be numbers
+ */
+export const isValidNumberRange = (numRange) =>
+  numRange.every(x => !isNaN(x))
+  && Number(numRange[0]) <= Number(numRange[1]);
+

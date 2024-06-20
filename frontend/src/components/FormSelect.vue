@@ -24,6 +24,7 @@
      https://select2.org/
      https://formkit.com/guides/create-a-custom-input
      https://formkit.com/api-reference/context
+     https://formkit.com/essentials/architecture#setting-values
 
      usage example:
      ```
@@ -39,6 +40,7 @@
 -->
 
 <template>
+
   <div class="form-select-basic-wrapper">
     <select :id="selectId"
             class="form-select-basic"
@@ -50,9 +52,11 @@
               selected disabled hidden
       ></option>
       <option v-for="o in optionsArray"
-              :value="o.value">{{ o.label }}</option>
+              :value="o.value"
+      >{{ o.label }}</option>
     </select>
   </div>
+
 </template>
 
 
@@ -69,8 +73,10 @@ select2($);
 
 /****************************************/
 
-const selectId     = `form-select-basic-${window.crypto.randomUUID()}`;  // HTML ID of this select
 const props        = defineProps([ "context" ]);
+
+const selectId     = `form-select-basic-${window.crypto.randomUUID()}`;  // HTML ID of this select
+const selectNode   = props.context.node;                // formkit node for the current FormKit @type='formSelect' input. see: https://formkit.com/essentials/architecture#node
 const optionsArray = props.context.options || [];       // array of all the possible options
 const placeholder  = props.context.placeholder != null
                      ? props.context.placeholder
@@ -79,7 +85,26 @@ const placeholder  = props.context.placeholder != null
 /****************************************/
 
 onMounted(() => {
-  $(`#${selectId}`).select2();
+  $(`#${selectId}`).select2({
+    // by default the formkit input's value is not changed when
+    // a new value is selected here, even if the selected item
+    // is displayed in the HTML page's `<select>`, so this component
+    // is useless.
+    // so, we need to set the value for this formkit input
+    // programatically, so that it can be picked up by formkit
+    // and outputted to the form.
+    // see: https://formkit.com/essentials/architecture#setting-values
+    templateSelection: (data, container) => {
+
+      // templateSelection is fired on init, so we need
+      // to check that an item has indeed been selected.
+      if (! data.disabled ) {
+        selectNode.input(data.text)
+        // .then(() => console.log(props.context.node.value));
+      }
+      return data.text;
+    }
+  });
 })
 </script>
 

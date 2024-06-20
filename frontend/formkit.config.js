@@ -8,11 +8,8 @@ const config = {
   locales: { fr },
   locale: 'fr',
   inputs: {
-    formSelect: createInput(FormSelect,
-                                { props: [ "placeholder", "options" ] })
-    ,
-    formRadioTabs: createInput(FormRadioTabs,
-                                { props: [ "options", "value" ] }),
+    formSelect: createInput(FormSelect, { props: ["placeholder", "options"] }),
+    formRadioTabs: createInput(FormRadioTabs, { props: ["options", "value"] })
   }
 }
 
