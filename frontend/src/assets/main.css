@@ -307,6 +307,45 @@ button:active > svg > path {
 }
 
 /*********************************/
+/* formkit styles */
+
+.formkit-outer {
+  margin-bottom: min(2vh, 10px);
+}
+.formkit-label {
+  font-weight: bold;
+}
+.formkit-messages {
+  list-style: none;
+  color: var(--cs-plum);
+  font-family: var(--cs-font-sans-serif);
+}
+.formkit-inner {
+  border: none;
+}
+.formkit-inner > input {
+  width: 100%;
+  border: var(--cs-border);
+}
+.form-submit-input {
+  margin-top: min(3vh, 15%);
+  width: 100%;
+  background-color: var(--cs-seagreen);
+}
+
+/*********************************/
+/* select2 styles */
+
+.select2-selection {
+  border: var(--cs-border) !important;
+  border-radius: 0 !important;
+}
+.select2-results__option--highlighted {
+  background-color: var(--cs-contrast-default-bg) !important;
+  color: var(--cs-contrast-default) !important;
+}
+
+/*********************************/
 /* vue transitions
  * see: https://vuejs.org/guide/built-ins/transition.html */
 

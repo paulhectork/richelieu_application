@@ -13,8 +13,12 @@
 <template>
   <FormKit type="form"
            name="theForm"
+           :actions="true"
            id="advanced-search-form"
            submit-label="Lancer la recherche"
+           :submit-attrs="{ inputClass  : 'form-submit-input',
+                            wrapperClass: 'form-submit-wrapper',
+                            outerClass  : 'form-submit-outer' }"
            @submit="onSubmit"
   >
     <!-- free text inputs -->
@@ -29,12 +33,14 @@
              name="author"
              label="Auteur ou autrice"
              placeholder="Ex: Jules David"
+             :validation="textValidationRule"
              help="Le nom de l'auteur ou de l'autrice doit contenir les mots entrés ici."
     ></FormKit>
     <FormKit type="text"
              name="publisher"
              label="Édition"
              placeholder="Bellizard"
+             :validation="textValidationRule"
              help="Le nom de l'éditeur ou de la maison d'édition doit contenir les mots entrés ici."
     ></FormKit>
 
@@ -62,7 +68,7 @@
                label="Institution"
                help="Sélectionner une institution"
                placeholder="Sélectionner une institution"
-               :options="themeArray"
+               :options="institutionArray"
       ></FormKit>
     </div>
 
@@ -83,22 +89,27 @@
                label="Date"
                help="Choisir une tranche de dates au format AAAA-AAAA"
       >
-        <FormKit type="number"
-                 name="dateStart"
-                 label="Date de début"
-                 placeholder="Ex: 1810"
-
-                 validation="dateRangeValidator"
-                 :validation-rules="dateValidationRule"
-        ></FormKit>
-        <FormKit type="number"
-                 name="dateEnd"
-                 label="Date de fin"
-                 placeholder="Ex: 1891"
-
-                 validation="dateRangeValidator"
-                 :validation-rules="dateValidationRule"
-        ></FormKit>
+        <div class="date-range"
+        >
+          <FormKit type="number"
+                   name="dateStart"
+                   label="Date de début"
+                   placeholder="Ex: 1810"
+                   validation="dateRangeValidator"
+                   :validation-rules="dateValidationRule"
+                   :validation-messages="{ dateRangeValidator: dateRangeValidationMessage }"
+                   validation-visibility="submit"
+          ></FormKit>
+          <FormKit type="number"
+                   name="dateEnd"
+                   label="Date de fin"
+                   placeholder="Ex: 1891"
+                   validation="dateRangeValidator"
+                   :validation-rules="dateValidationRule"
+                   :validation-messages="{ dateRangeValidator: dateRangeValidationMessage }"
+                   validation-visibility="submit"
+          ></FormKit>
+        </div>
       </FormKit>
 
       <FormKit v-else-if="dateFilterType==='dateExact'"
@@ -106,30 +117,35 @@
                name="date"
                label="Date exacte"
                placeholder="Ex: 1891"
-
                validation="dateValidator"
                :validation-rules="dateValidationRule"
+               :validation-messages="{ dateValidator: dateValidationMessage }"
       ></FormKit>
       <FormKit v-else-if="dateFilterType==='dateBefore'"
                type="number"
                name="date"
                label="Avant"
                placeholder="Ex: 1891"
-
                validation="dateValidator"
                :validation-rules="dateValidationRule"
+               :validation-messages="{ dateValidator: dateValidationMessage }"
       ></FormKit>
       <FormKit v-else
                type="number"
                name="date"
                label="Après"
                placeholder="Ex: 1810"
-
                validation="dateValidator"
                :validation-rules="dateValidationRule"
+               :validation-messages="{ dateValidator: dateValidationMessage }"
       ></FormKit>
     </div>
 
+    <!-- the submit button
+    <FormKit type="submit"
+             id="form-submit"
+    >Lancer la recherche</FormKit>
+    -->
 
   </FormKit>
 </template>
@@ -138,7 +154,7 @@
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 
-import { useFormKitNodeById, createInput } from '@formkit/vue';
+import { useFormKitNodeById, FormKitMessages } from '@formkit/vue';
 import $ from "jquery";
 
 // import FormRadioTabs from "@components/FormRadioTabs.vue";
@@ -148,13 +164,14 @@ import { isEmptyArray, isEmptyScalar, isNumberInRange, isValidNumberRange } from
 
 /******************************************/
 
+const emit = defineEmits(['query-params']);  // to send the query params to the parent
+
 const dateFilterNode   = useFormKitNodeById("date-filter");  // useFormKitNodeById targets a FormKit node by it's HTML id and creates a vue ref.
 const themeArray       = ref([]);                            // string array
 const namedEntityArray = ref([]);                            // string array
 const institutionArray = ref([]);                            // string array
 const allowedDateRange = ref([]);                            // int array: [minDate, maxDate]
 const dateFilterType   = ref("dateRange");                   // str: the type of date filter to display
-
 
 // `items` in the html form to set the `allowedDateRanger`
 const allowedDateSearchTypes = [ { label:'Plage de dates', value:'dateRange' }
@@ -178,33 +195,33 @@ const dateValidationRule = {
   dateValidator: (node) =>
     isNumberInRange(node.value, allowedDateRangeCurrent()),
 
-  // need to find a way to run `isValidNumberRange` only on submit?
-  // or at least, to rerun it on submit
+  // need to find a way to run `isValidNumberRange`
+  // only on submit? or at least, to rerun it on submit
   dateRangeValidator: (node) => {
     let parent = node.at("$parent");
     if ( parent.value ) {
       let dateRange = [ parent.value.dateStart, parent.value.dateEnd ];
 
-      // if the 2 fields are filled, we check that our range is valid
-      if ( dateRange.every(x => x!=null) ) {
-        return dateRange.every(x => isNumberInRange(x, allowedDateRangeCurrent()) )  // every number is in the allowed range
-               && isValidNumberRange(dateRange)                                            // dateStart < dateEnd
-
-      // if only `node` is filled, we check that
-      // this node is in the allowed range
-      } else {
-        return isNumberInRange(node.value, allowedDateRangeCurrent())
-      }
-
+      // if at least one field is filled, we check that our range is valid
+      // else, both our fields are empty, so it's valid
+      return dateRange.some(x => x!=null)
+             ? dateRange.every(x => isNumberInRange(x, allowedDateRangeCurrent()) )  // every number is in the allowed range
+               && isValidNumberRange(dateRange)                                      // dateStart < dateEnd
+             : true;
     }
-    // only validate the number if `node.value` isn't undefined
-    return node.value != null
-           ? isNumberInRange(node.value, allowedDateRangeCurrent())
-           : true;
-
+    return true;
   }
 };
+
 const textValidationRule = [ ["length", 3] ];  // more than 3 chars
+
+const dateValidationMessage = computed(() =>
+  `La date doit être au format 'AAAA' et comprise entre
+  ${allowedDateRangeCurrent()[0]} et ${allowedDateRangeCurrent()[1]}`);
+
+const dateRangeValidationMessage = computed(() =>
+  `La tranche de dates doit composée de deux dates au format 'AAAA',
+   comprises entre ${allowedDateRangeCurrent()[0]} et ${allowedDateRangeCurrent()[1]}`);
 
 /******************************************/
 
@@ -234,64 +251,77 @@ function sortByValue(val1, val2) {
 }
 
 /**
- * handle a form submission
- * @param {*} e
+ * handle a form submission. there are 3 steps:
+ * - restructure slightly formData and replace all empty-ish values by undefined
+ * - assert that at least 1 field has been filled (so that we can run a query)
+ * - if `formData` isn't empty, update `queryParams` so that the parent
+ *   can run the query. else, update the form to display an error message
+ * @param {Object} formData: the form data as a JSON
+ * @param {Object} formNode: the FormKit core node
  */
-function onSubmit(formData) {
-  console.log("submitted !")
-  console.log(formData);
-  return
+function onSubmit(formData, formNode) {
 
+  // remove possible errrors that are shown by a previous submission
+  formNode.clearErrors();
 
-  /* basic definitions */
-
-  // replace scalar `s` by `null` if the scalar `s` contains no formData.
-  const scalar2null = s => isEmptyScalar(s) ? null : s;
+  // replace scalar `s` by `undefined` if the scalar `s` contains no data.
+  const scalar2undefined = s => isEmptyScalar(s) ? undefined : s;
   // simplify a string
   const simplifyString = s => s.toLowerCase().trim().replaceAll(/\s+/g, " ");
 
   /* extra validation */
 
-  // USELESS??????????????????????????????????????????
-  // MAKES THINGS EXPLICIT BUT THAT'S PRETTY MUCH IT
-  // our form as JSON (pretty much the same structure
-  // as `form.formData`, but we make its structure explicit here).
-  // we set `null` as default value when no formData is provided
-  // for a field
-  const queryData = { title: scalar2null(formData.title),
-                      author: scalar2null(formData.author),
-                      publisher: scalar2null(formData.publisher),
-                      theme: scalar2null(formData.theme),
-                      namedEntity: scalar2null(formData.namedEntity),
-                      institution: scalar2null(formData.institution),
-                      dateFilter: formData.dateFilter,
-                      date: (formData.dateFilter === "dateRange"
-                            ? [ formData.date.dateStart, formData.date.dateEnd ]
-                            : [ formData.date ]).map(scalar2null)  // replace `undefined` and <empty string> by `null`
+  // simplify the form. we replace all undefined-ish scalars
+  // by `undefined` to simplify further processing. the only
+  // item that's really changed is `date`, which is transformed
+  // into an array of strings (2 if `dateFilter==='dateRange'`, 1 otherwise)
+  formData = { title: scalar2undefined(formData.title),
+               author: scalar2undefined(formData.author),
+               publisher: scalar2undefined(formData.publisher),
+               theme: scalar2undefined(formData.theme),
+               namedEntity: scalar2undefined(formData.namedEntity),
+               institution: scalar2undefined(formData.institution),
+               dateFilter: formData.dateFilter,
+               date: (formData.dateFilter === "dateRange"
+                     ? [ formData.date.dateStart, formData.date.dateEnd ]
+                     : [ formData.date ]).map(scalar2undefined)  // replace `undefined` and <empty string> by `null`
   };
 
   // check that at least 1 of the fields has
   // been filled to be able to run the SQL query
-  let allEmpty = (Object.keys(queryData)
+  let allEmpty = (Object.keys(formData)
                         .filter(k =>  k !== "dateFilter")  // dateFilter has a default value but is useless if a date isn't submitted => remove it
-                        .map(k => queryData[k] instanceof Array
-                                  ? isEmptyArray(queryData[k])
-                                  : queryData[k] === null )
+                        .map(k => formData[k] instanceof Array
+                                  ? isEmptyArray(formData[k])
+                                  : formData[k] === undefined )
                  ).every(x => x===true)
-  console.log("allEmpty", allEmpty)
 
-  // simplify the user-inputted strings
-  Object.keys(queryData)
-        .filter(k => k !== "dateFilter")  // don't modify these fields
-        .forEach(k => queryData[k] = typeof queryData[k] === "string"
-                                     ? simplifyString(queryData[k])
-                                     : Array.isArray(queryData[k])
-                                     ? queryData[k].map(x => typeof x === "string"
-                                                             ? simplifyString(x)
-                                                             : x)
-                                     : queryData[k] );
+  // display an error message if no input data has been added
+  if ( allEmpty ) {
+    // submitErrors.value.push("Au moins un champ doit être rempli pour lancer une recherche.")
+    formNode.setErrors(["Au moins un champ doit être rempli pour lancer une recherche."])
+    return false;
 
-  // console.log("post", queryData, queryData.author, queryData.date);
+  } else {
+    // simplify the user-inputted strings:
+    // simplify the strings, convert the dates to number
+    Object.keys(formData)
+          // don't modify these fields: they contain normalized data
+          .filter(k => !["theme", "institution", "namedEntity", "dateFilter"].includes(k))
+          // simplify all other fields
+          .forEach(k =>
+            formData[k] = typeof formData[k] === "string"
+                          ? simplifyString(formData[k])
+                          : Array.isArray(formData[k])
+                          ? formData[k].map(x =>
+                              typeof x === "string" && !isNaN(x)
+                              ? Number(x)              // if it's not NaN, convert it to number
+                              : typeof x === "string"
+                              ? simplifyString(x)      // if it's another kind of string, simplify it
+                              : x)                     // if it's another type (shouldn't happen), simply return it
+                          : formData[k] );
+    emit("query-params", formData);
+  }
 }
 
 /******************************************/
@@ -312,7 +342,14 @@ onMounted(() => {
                                             .sort((a,b) => sortByValue(a,b)) );
   axios.get(new URL("/i/iconography-overall-date-range", __API_URL__))
        .then(r => {
-        allowedDateRange.value = r.data; });
+         allowedDateRange.value = r.data; })
+       .catch(e => {
+         console.log("AdvancedSearchQuery: axios error on `allowedDateRange`", e);
+         allowedDateRange.value = [ 1700,2100 ];
+       });
+
+  // else, on `mousedown` on the submit button, it is redimensionned...
+  $("#advanced-search-form .form-submit-input").css({width: "100%"});
 
   // form events
   dateFilterNode.value.on("commit", (e) => { dateFilterType.value = e.payload; });
@@ -323,5 +360,19 @@ onMounted(() => {
 <style scoped>
 #advanced-search-form {
   margin: 0 5%;
+}
+.date-range {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: start;
+  width: 100%;
+}
+.date-range > * {
+  width: 100%;
+  margin: 0 1vw 1vw 1vw;
+}
+.formkit-actions {
+  margin-top: 2vh;
 }
 </style>

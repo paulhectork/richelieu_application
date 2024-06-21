@@ -96,17 +96,19 @@ onMounted(() => {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding-left: 0;
   margin: 0;
+  border: var(--cs-border);
+  padding: 0;
 }
 .form-radio-option {
   flex-grow: 1;
   margin: 3px;
   border: var(--cs-border);
   display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  padding: 2px;
+  justify-content: flex-start;
+  padding: 2px 0px;
   font-family: var(--cs-font-sans-serif);
 
   transition: background-color var(--cs-color-transition)
@@ -132,6 +134,10 @@ onMounted(() => {
   width: 0;
   padding: 0;
   margin: 0;
+}
+.form-radio-option label {
+  width: 100%;
+  text-align: center;
 }
 ul.formkit-options {
   display: flex;

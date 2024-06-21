@@ -62,7 +62,8 @@ export const isKindaEmpty = (obj) =>
  * @param {undefined | null | String | Number} s: the scalar we want to test
  * @returns {bool}
  */
-export const isEmptyScalar = s => s === undefined || s === null || s === "" || s.length === 0;
+export const isEmptyScalar = s =>
+  s === undefined || s === null || s === "" || s.length === 0;
 
 
 /**
@@ -88,7 +89,7 @@ export const isNumberInRange = (num, rangeArray) =>
  * as numbers, with `numRange[0] <= numRange[1]`
  * @param {Array<string>} numRange: an array of 2 strings that are expected to be numbers
  */
-export const isValidNumberRange = (numRange) =>
+export const isValidNumberRange = numRange =>
   numRange.every(x => !isNaN(x))
   && Number(numRange[0]) <= Number(numRange[1]);
 
