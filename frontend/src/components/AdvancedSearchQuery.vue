@@ -251,7 +251,9 @@ function sortByValue(val1, val2) {
 }
 
 /**
- * handle a form submission.
+ * handle a form submission. basically we clean the input data,
+ * make sure that at least 1 field has been filled out, and pass
+ * the query data to the parent.
  * the heavy work is handled by `IconographyQueryParams`
  * @param {Object} formData: the form data as a JSON
  * @param {Object} formNode: the FormKit core node
