@@ -55,6 +55,7 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
         "@router": fileURLToPath(new URL("./src/router", import.meta.url)),
         "@stores": fileURLToPath(new URL("./src/stores", import.meta.url)),
         "@assets": fileURLToPath(new URL("./src/assets", import.meta.url)),
+        "@modules": fileURLToPath(new URL("./src/modules", import.meta.url)),
         "@globals": fileURLToPath(new URL("./src/globals.js", import.meta.url)),
         "@plugins": fileURLToPath(new URL("./src/plugins", import.meta.url)),
         "@components": fileURLToPath(new URL("./src/components", import.meta.url)),

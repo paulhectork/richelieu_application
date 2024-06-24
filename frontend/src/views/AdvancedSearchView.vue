@@ -12,17 +12,40 @@
      the current query parameters, once those results have
      been received.
 
-     an extra fancy feature of this component is to read
-     query parameters from the URL, to be able to re-run
-     a query based on what's in the URL without having to
-     fill the form again. usefull on page reload.
+     a reactive object `queryParams` stores the query parameters.
+     changing it triggers a watcher that updates the route's query
+     and sends a request to the backend in order to fetch relevant data.
+
+     query parameters are read either:
+     * from a form, using `updateQueryParamsFromForm()`,
+       when a form is submitted in `AdvancedSearchQuery`
+     * from a URL query, using `updateQueryParamsFromForm()`,
+       which is useful when reloading a page with URL parameters,
+       or to access the query results directly by loading a URL
+     this is handled by transforming all our query data into an
+     IconographyQueryData` object.
+
+     lifecycle:
+     **********
+
+     page load
+        => are there query params in the page URL?
+          => yes: update `queryParams` ref
+          => no: when a valid form is submitted in
+             `AdvancedSearchQuery.vue`, `queryParams is updated.
+     queryParams changes
+        => the watcher is triggered
+        => the route URL is updated and a backend query is run
+        => results from the backend query are passed to
+           AdvancedSearchResults.vue``
+
 -->
 
 <template>
   <h1>Recherche avancée</h1>
 
   <div class="query-container">
-    <AdvancedSearchQuery @query-params="updateQueryParams"
+    <AdvancedSearchQuery @query-params="updateQueryParamsFromForm"
     ></AdvancedSearchQuery>
   </div>
 
@@ -40,6 +63,7 @@ import { useRouter, useRoute } from 'vue-router';
 
 import _ from "lodash";
 
+import { IconographyQueryParams } from "@modules/iconographyQueryParams";
 import AdvancedSearchQuery from "@components/AdvancedSearchQuery.vue";
 import AdvancedSearchResults from "@components/AdvancedSearchResults.vue";
 
@@ -51,62 +75,55 @@ const targetUrl = new URL("/i/avanced-search-iconography/", __API_URL__);
 const route          = useRoute();  // the current route
 const router         = useRouter(); // the full router
 const displayResults = ref(false);  // toggled to True once a query has been run
-const queryParams    = ref({});     // query params defined by the user in `AdvancedSearchQuery`
+const queryParams    = ref();       // an IconographyQueryParams object with query params defined by the user in `AdvancedSearchQuery`, or query params visible in the URL
 const queryResults   = ref([]);     // results of a query to the server
 
 /***************************************/
 
 /**
- * when receiving from `AdvancedSearchQuery` new query
- * parameters, update `queryParams` and the router.
+ * when receiving new query parameters from
+ * `AdvancedSearchQuery`, update `queryParams`.
  * `_.isEqual` performs deep comparison and allows us
  * to only update `queryParams` if the new query parameters
  * are different from the previous oness
  * @param {Object} newQueryParams: a dict of query parameters.
  *   see AdvancedSearchQuery.onSubmit() for its structure.
  */
-function updateQueryParams(newQueryParams) {
-  if ( !_.isEqual(newQueryParams, queryParams.value) ) {
+function updateQueryParamsFromForm(newQueryParams) {
+  if ( !_.isEqual(newQueryParams.toJson(), queryParams.value?.toJson()) ) {
     queryParams.value = newQueryParams;
-    router.push({ path:"/recherche", query: queryParams.value });
   }
 }
 
-
 /**
- * when reloading the page, the query params are still in the URL
- * but `queryParams` is empty, and no results are displayed. repopulate
- * `queryParams` based on the query params in the URL, which will trigger
- * to rerun the query.
- * @param {Object} routeQueryParams: the query params, as specifiec by `route.query`
+ * when reloading the page, the query params are still in
+ * the URL but `queryParams` is empty, and no results are
+ * displayed. repopulate `queryParams` based on the query
+ * params in the URL, which will trigger to rerun the query.
+ * @param {Object} routeQueryParams: the query params, as
+ *  specified by `route.query`
  */
 function updateQueryParamsFromRoute(routeQueryParams) {
-  console.log(routeQueryParams);
-  queryParams.value = { title: routeQueryParams.title || undefined,
-                        author: routeQueryParams.author || undefined,
-                        publisher: routeQueryParams.publisher || undefined,
-                        theme: routeQueryParams.theme || undefined,
-                        namedEntity: routeQueryParams.namedEntity || undefined,
-                        institution: routeQueryParams.institution || undefined,
-                        dateFilter: routeQueryParams.dateFilter || undefined,  // dateFilter even if no date is set?
-                        date: routeQueryParams.date?.filter(x => x!=null) || []
-  };
+  queryParams.value = new IconographyQueryParams(routeQueryParams, "route")
 }
 
 /**
- * when `queryParams` is updated, run a new query
- * on the server and update `queryResults`
+ * when `queryParams` is updated, update the route,
+ * run a new query on the server and update `queryResults`
  */
-watch(queryParams, (newParams, oldParams) => {
-  console.log("params changed !");
-  console.log(newParams);
+watch(queryParams, async (newParams, oldParams) => {
+  router
+  .push({ path:"/recherche", query: queryParams.value.toRouteParams() })
+  .then(() => {
+    // debug prints
+    // console.log("watchQueryParams: params changed !");
+    // console.log("watchQueryParams: params in route:", new IconographyQueryParams(route.query, "route"));
+    // console.log("watchQueryParams: params in `queryParams`", queryParams.value);
 
-  axios.get(targetUrl, { params: newParams.value });
-
-
+    axios.get(targetUrl, { params: newParams.value });
+  });
 })
 
-//
 /***************************************/
 
 onMounted(() => {

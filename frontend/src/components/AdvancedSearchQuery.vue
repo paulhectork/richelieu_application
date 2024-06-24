@@ -159,8 +159,8 @@ import $ from "jquery";
 
 // import FormRadioTabs from "@components/FormRadioTabs.vue";
 import { clickOrTouchEvent } from "@globals";
+import { IconographyQueryParams } from "@modules/iconographyQueryParams";
 import { isEmptyArray, isEmptyScalar, isNumberInRange, isValidNumberRange } from "@utils/functions";
-
 
 /******************************************/
 
@@ -251,11 +251,8 @@ function sortByValue(val1, val2) {
 }
 
 /**
- * handle a form submission. there are 3 steps:
- * - restructure slightly formData and replace all empty-ish values by undefined
- * - assert that at least 1 field has been filled (so that we can run a query)
- * - if `formData` isn't empty, update `queryParams` so that the parent
- *   can run the query. else, update the form to display an error message
+ * handle a form submission.
+ * the heavy work is handled by `IconographyQueryParams`
  * @param {Object} formData: the form data as a JSON
  * @param {Object} formNode: the FormKit core node
  */
@@ -264,63 +261,17 @@ function onSubmit(formData, formNode) {
   // remove possible errrors that are shown by a previous submission
   formNode.clearErrors();
 
-  // replace scalar `s` by `undefined` if the scalar `s` contains no data.
-  const scalar2undefined = s => isEmptyScalar(s) ? undefined : s;
-  // simplify a string
-  const simplifyString = s => s.toLowerCase().trim().replaceAll(/\s+/g, " ");
+  const queryParams = new IconographyQueryParams(formData, "form");
 
-  /* extra validation */
-
-  // simplify the form. we replace all undefined-ish scalars
-  // by `undefined` to simplify further processing. the only
-  // item that's really changed is `date`, which is transformed
-  // into an array of strings (2 if `dateFilter==='dateRange'`, 1 otherwise)
-  formData = { title: scalar2undefined(formData.title),
-               author: scalar2undefined(formData.author),
-               publisher: scalar2undefined(formData.publisher),
-               theme: scalar2undefined(formData.theme),
-               namedEntity: scalar2undefined(formData.namedEntity),
-               institution: scalar2undefined(formData.institution),
-               dateFilter: formData.dateFilter,
-               date: (formData.dateFilter === "dateRange"
-                     ? [ formData.date.dateStart, formData.date.dateEnd ]
-                     : [ formData.date ]).map(scalar2undefined)  // replace `undefined` and <empty string> by `null`
-  };
-
-  // check that at least 1 of the fields has
-  // been filled to be able to run the SQL query
-  let allEmpty = (Object.keys(formData)
-                        .filter(k =>  k !== "dateFilter")  // dateFilter has a default value but is useless if a date isn't submitted => remove it
-                        .map(k => formData[k] instanceof Array
-                                  ? isEmptyArray(formData[k])
-                                  : formData[k] === undefined )
-                 ).every(x => x===true)
-
-  // display an error message if no input data has been added
-  if ( allEmpty ) {
-    // submitErrors.value.push("Au moins un champ doit être rempli pour lancer une recherche.")
+  // if no input data has been added, display an error message
+  // else, submit the form.
+  if ( queryParams.allEmpty() ) {
     formNode.setErrors(["Au moins un champ doit être rempli pour lancer une recherche."])
     return false;
 
   } else {
-    // simplify the user-inputted strings:
-    // simplify the strings, convert the dates to number
-    Object.keys(formData)
-          // don't modify these fields: they contain normalized data
-          .filter(k => !["theme", "institution", "namedEntity", "dateFilter"].includes(k))
-          // simplify all other fields
-          .forEach(k =>
-            formData[k] = typeof formData[k] === "string"
-                          ? simplifyString(formData[k])
-                          : Array.isArray(formData[k])
-                          ? formData[k].map(x =>
-                              typeof x === "string" && !isNaN(x)
-                              ? Number(x)              // if it's not NaN, convert it to number
-                              : typeof x === "string"
-                              ? simplifyString(x)      // if it's another kind of string, simplify it
-                              : x)                     // if it's another type (shouldn't happen), simply return it
-                          : formData[k] );
-    emit("query-params", formData);
+    emit("query-params", queryParams);
+    return true;
   }
 }
 
