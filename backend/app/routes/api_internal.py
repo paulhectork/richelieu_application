@@ -4,6 +4,7 @@ from sqlalchemy import text, desc, asc
 import random
 import json
 
+from ..search.search_iconography import sanitize_params, make_params, make_query
 from ..utils.spatial import featurelist_to_featurecollection, geometry_to_feature
 from ..app import app, db
 from ..orm import *
@@ -122,18 +123,12 @@ def main_iconography(id_uuid):
 def advanced_search_iconography():
     """
     """
-    queryParams = { "title": request.args.get("title", None),
-                    "author": request.args.get("author", None),
-                    "publisher": request.args.get("publisher", None),
-                    "theme": request.args.get("theme", None),
-                    "named_entity": request.args.get("namedEntity", None),
-                    "institution": request.args.get("institution", None),
-                    "date_filter": request.args.get("dateFilter", None),
-                    "date": request.args.get("date", None),
-    }
-    # ALL PARAMS ARE EMPTY. WHY IS THAT ?
-    # LA REQUÊTE ARRIVE MAIS J'ARRIVE PAS TROP À RÉCUPÉRER MES PARAMÈTRES
-    print(queryParams)
+    params = make_params(request.args)
+    params, valid = sanitize_params(params)
+    if valid:
+        results = make_query(params)
+    else:
+        print("INVALID QUERY PARAMETERS !!!!")
     return jsonify([])
 
 

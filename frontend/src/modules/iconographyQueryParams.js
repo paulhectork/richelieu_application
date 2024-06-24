@@ -84,19 +84,23 @@ export class IconographyQueryParams {
                  // .map(x => console.log(x, x === "string" && !isNaN(x)) && x);
   }
   /**
-   * serialize an instance of `IconographyQueryParams` to JSON
+   * serialize an instance of `IconographyQueryParams` to JSON.
+   * using `JSON.parse(JSON.stringify)` ensures we end up with a
+   * JSON, not a weird proxy object
    * @returns {object}: the json. the structure is always the
    *  same. if there is no data for a field, it is `undefined`
    */
   toJson() {
-    return { title       : this.title,
-             author      : this.author,
-             publisher   : this.publisher,
-             theme       : this.theme,
-             namedEntity : this.namedEntity,
-             institution : this.institution,
-             dateFilter  : this.dateFilter,
-             date        : this.date }
+    return JSON.parse(JSON.stringify(
+      { title       : this.title,
+        author      : this.author,
+        publisher   : this.publisher,
+        theme       : this.theme,
+        namedEntity : this.namedEntity,
+        institution : this.institution,
+        dateFilter  : this.dateFilter,
+        date        : this.date }
+    ))
   }
   /**
    * populate the object from a route's query params.
@@ -112,18 +116,25 @@ export class IconographyQueryParams {
    *  vue-router's `useRoute().query`.
    */
   fromRouteParams(data) {
-    data.date = Array.isArray(data.date) ? data.date : [ data.date ];  // retype date to array
+    // hand-manipulation of a URL string can lead to types that we defined
+    // as scalars (like `title`) to have multiple values, and be interpreted
+    // by vue-router as arrays; and the contrary: we expect a field to be
+    // an array (like `date`), but a single value is in the URL and
+    // vue-router interprets it as a scalar. here, we enforce our types
+    // to avoid typeerrors down the road
+    const ensureIsScalar = x => Array.isArray(x) ? x[0] || undefined : x;
+    const ensureIsArray = x => Array.isArray(x) ? x : [x] ;
 
-    this.title       = this.scalar2undefined(data.title) || undefined,
-    this.author      = this.scalar2undefined(data.author) || undefined,
-    this.publisher   = this.scalar2undefined(data.publisher) || undefined,
+    this.title       = this.scalar2undefined(ensureIsScalar(data.title)) || undefined,
+    this.author      = this.scalar2undefined(ensureIsScalar(data.author)) || undefined,
+    this.publisher   = this.scalar2undefined(ensureIsScalar(data.publisher)) || undefined,
     // select and radio fields don't need simplification
-    this.theme       = this.scalar2undefined(data.theme) || undefined,
-    this.namedEntity = this.scalar2undefined(data.namedEntity) || undefined,
-    this.institution = this.scalar2undefined(data.institution) || undefined,
+    this.theme       = this.scalar2undefined(ensureIsScalar(data.theme)) || undefined,
+    this.namedEntity = this.scalar2undefined(ensureIsScalar(data.namedEntity)) || undefined,
+    this.institution = this.scalar2undefined(ensureIsScalar(data.institution)) || undefined,
     this.dateFilter  = data.dateFilter,
     // dates are converted to numbers. we remove `undefined` items.
-    this.date = data.date.map(this.string2number) || [];
+    this.date = ensureIsArray(data.date).map(this.string2number) || [];
   }
   /**
    * return an object of query parameters to update the router

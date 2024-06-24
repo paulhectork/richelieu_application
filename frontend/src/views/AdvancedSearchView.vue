@@ -27,18 +27,16 @@
 
      lifecycle:
      **********
-
-     page load
+     on page load
         => are there query params in the page URL?
           => yes: update `queryParams` ref
           => no: when a valid form is submitted in
              `AdvancedSearchQuery.vue`, `queryParams is updated.
-     queryParams changes
+     when queryParams changes
         => the watcher is triggered
         => the route URL is updated and a backend query is run
         => results from the backend query are passed to
            AdvancedSearchResults.vue``
-
 -->
 
 <template>
@@ -113,14 +111,15 @@ function updateQueryParamsFromRoute(routeQueryParams) {
  */
 watch(queryParams, async (newParams, oldParams) => {
   router
-  .push({ path:"/recherche", query: queryParams.value.toRouteParams() })
+  .push({ path:"/recherche", query: newParams.toRouteParams() })
   .then(() => {
     // debug prints
     // console.log("watchQueryParams: params changed !");
     // console.log("watchQueryParams: params in route:", new IconographyQueryParams(route.query, "route"));
     // console.log("watchQueryParams: params in `queryParams`", queryParams.value);
 
-    axios.get(targetUrl, { params: newParams.value });
+    console.log("going out !", { params: newParams.toJson() });
+    axios.get(targetUrl.href, { params: newParams.toJson() });
   });
 })
 
