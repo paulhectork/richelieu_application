@@ -4,7 +4,8 @@ from sqlalchemy.dialects import postgresql as psql
 import typing as t
 import intervals
 
-from ..utils.strings import _validate_uuid, int4range2list
+from ..utils.converters import int4range2list
+from ..utils.strings import _validate_uuid
 from ..app import db
 
 
@@ -273,7 +274,7 @@ class Directory(db.Model):
                  "entry_name" : self.entry_name,
                  "occupation" : self.occupation,
                  "date"       : self.date,
-                 "address"    : self.address.to_string() }
+                 "address"    : self.address.serialize_lite() }  # address.to_string() }
 
     def serialize_full(self):
         return { "id_uuid"      : self.id_uuid,

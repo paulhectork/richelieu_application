@@ -6,7 +6,8 @@ from sqlalchemy import func, select
 import typing as t
 import random
 
-from ..utils.strings import _validate_uuid, int4range2list
+from ..utils.converters import int4range2list
+from ..utils.strings import _validate_uuid
 from ..app import db
 
 
@@ -214,7 +215,6 @@ class Actor(db.Model):
                  if r.role == "publisher" ]
 
     def serialize_lite(self):
-        print(">>", self)
         return { "id_uuid": self.id_uuid,
                  "entry_name": self.entry_name }
 

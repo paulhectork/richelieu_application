@@ -5,7 +5,8 @@ from sqlalchemy import select, and_
 import typing as t
 import intervals
 
-from ..utils.strings import _validate_uuid, int4range2list
+from ..utils.converters import int4range2list
+from ..utils.strings import _validate_uuid
 from ..app import db
 
 
@@ -208,7 +209,7 @@ class Address(db.Model):
                  "source"  : self.source,              # str
                  "date"    : int4range2list(self.date),  # t.List[int]
 
-                 "as_string": self.to_string(),    # str
+                 # "as_string": self.to_string(),    # str
 
                  "place": self.get_place(),          # t.List[t.Dict]
                  "directory": self.get_directory()   # t.List[t.Dict]

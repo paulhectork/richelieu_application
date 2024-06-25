@@ -123,13 +123,14 @@ def main_iconography(id_uuid):
 def advanced_search_iconography():
     """
     """
+    results = []
     params = make_params(request.args)
     params, valid = sanitize_params(params)
     if valid:
-        results = make_query(params)
+        results = make_query(params).all()
     else:
         print("INVALID QUERY PARAMETERS !!!!")
-    return jsonify([])
+    return jsonify([ r[0].serialize_lite() for r in results ])
 
 
 # ******************************************
