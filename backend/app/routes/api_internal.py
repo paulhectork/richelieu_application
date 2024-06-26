@@ -122,14 +122,25 @@ def main_iconography(id_uuid):
 @app.route("/i/avanced-search-iconography/")
 def advanced_search_iconography():
     """
+    allowed parameters:
+    * `title`       :
+    * `author`      :
+    * `publisher`   :
+    * `theme`       :
+    * `namedEntity` :
+    * `institution` :
+    * `dateFilter`  :
+    * `date[]`      :
+
     """
     results = []
-    params = make_params(request.args)
+    params, valid = make_params(request.args)
+    if not valid:
+        return "Internal server error", 500
     params, valid = sanitize_params(params)
-    if valid:
-        results = make_query(params).all()
-    else:
-        print("INVALID QUERY PARAMETERS !!!!")
+    if not valid:
+        return "Internal server error", 500
+    results = make_query(params).all()
     return jsonify([ r[0].serialize_lite() for r in results ])
 
 

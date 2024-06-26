@@ -30,13 +30,16 @@ class TestQueries(unittest.TestCase):
         expected to be received from the frontend, and the
         raw SQL queries are written to mimic their SQLAlchemy
         equivalents (with ILIKE etc).
+
+        '%' is a special character in python strings, so we need to prefix
+        strings that contain it with 'r'.
         """
         route = "/i/avanced-search-iconography/"
 
-        # query_params is an array of [ <route params>, <raw sql query> ]
-        query_params = [
+        # queries is an array of [ <route params>, <raw sql query> ]
+        queries = [
             [ { "title": "galerie colbert, rue vivienne, 2ème arrondissement, paris" },
-              """
+              r"""
               SELECT * FROM iconography
               JOIN title
               ON iconography.id = title.id_iconography
@@ -45,7 +48,7 @@ class TestQueries(unittest.TestCase):
             ]
             ,
             [ { "author": "achille devéria" },
-              """
+              r"""
               SELECT * FROM iconography
               JOIN r_iconography_actor
               ON iconography.id = r_iconography_actor.id_iconography
@@ -57,7 +60,7 @@ class TestQueries(unittest.TestCase):
             ]
             ,
             [ { "publisher": "aubert & cie" },
-              """
+              r"""
               SELECT *
               FROM iconography
               JOIN r_iconography_actor
@@ -69,8 +72,8 @@ class TestQueries(unittest.TestCase):
               """
             ]
             ,
-            [ { "theme": "mobilier urbain" }
-            , """
+            [ { "theme": "mobilier urbain" },
+              """
               SELECT *
               FROM iconography
               JOIN r_iconography_theme
@@ -81,8 +84,8 @@ class TestQueries(unittest.TestCase):
               """
             ]
             ,
-            [ { "namedEntity": "Palais-Royal" }
-            , """
+            [ { "namedEntity": "Palais-Royal" },
+              """
               SELECT *
               FROM iconography
               JOIN r_iconography_named_entity
@@ -93,8 +96,8 @@ class TestQueries(unittest.TestCase):
               """
             ]
             ,
-            [ { "institution": "Musée Carnavalet" }
-            , """
+            [ { "institution": "Musée Carnavalet" },
+              """
               SELECT *
               FROM iconography
               JOIN r_institution
@@ -105,32 +108,32 @@ class TestQueries(unittest.TestCase):
               """
             ]
             ,
-            [ { "dateFilter": "dateRange", "date[]": [1800,1810] }
-            , """
+            [ { "dateFilter": "dateRange", "date[]": [1800,1810] },
+              """
               SELECT *
               FROM iconography
               WHERE NOT isempty( iconography.date * int4range(1800,1810+1) );
               """
             ]
             ,
-            [ { "dateFilter": "dateExact", "date[]": [1829] }
-            , """
+            [ { "dateFilter": "dateExact", "date[]": [1829] },
+              """
               SELECT *
               FROM iconography
               WHERE iconography.date = int4range(1829,1829+1);
               """
             ]
             ,
-            [ { "dateFilter": "dateBefore", "date[]": [1829] }
-            , """
+            [ { "dateFilter": "dateBefore", "date[]": [1829] },
+              """
               SELECT *
               FROM iconography
               WHERE lower(iconography.date) <= 1829
               """
             ]
             ,
-            [ { "dateFilter": "dateAfter", "date[]": [1829] }
-            , """
+            [ { "dateFilter": "dateAfter", "date[]": [1829] },
+              """
               SELECT *
               FROM iconography
               WHERE upper(iconography.date) >= 1829
@@ -139,7 +142,7 @@ class TestQueries(unittest.TestCase):
 
         ]
         with self.app.app_context():  # avoid RuntimeError
-            for ( http_params, raw_sql ) in query_params:
+            for ( http_params, raw_sql ) in queries:
                 r_http = self.client.get(route, query_string=http_params)
                 r_sql = self.db.session.execute(text(raw_sql))
                 r_http_count = len(r_http.json)
@@ -159,5 +162,109 @@ class TestQueries(unittest.TestCase):
         test the combination of different params
         in `/i/avanced-search-iconography/` route
         """
+        route = "/i/avanced-search-iconography/"
+
+        queries = [
+            [ { "namedEntity": "Galerie Vivienne", "theme": "boutique" },
+              """
+              SELECT iconography.id_uuid
+                     , iconography.date
+                     , theme.entry_name AS theme
+                     , named_entity.entry_name AS named_entity
+              FROM iconography
+              JOIN r_iconography_named_entity
+              ON r_iconography_named_entity.id_iconography = iconography.id
+              JOIN named_entity
+              ON named_entity.id = r_iconography_named_entity.id_named_entity
+              AND named_entity.entry_name = 'Galerie Vivienne'
+              JOIN r_iconography_theme
+              ON r_iconography_theme.id_iconography = iconography.id
+              JOIN theme
+              ON theme.id = r_iconography_theme.id_theme
+              AND theme.entry_name = 'boutique';
+              """
+            ]
+            ,
+            [ { "author": "daumier", "dateFilter": "dateAfter", "date[]": [1855] },
+              r"""
+              SELECT iconography.date
+              FROM iconography
+              JOIN r_iconography_actor
+              ON r_iconography_actor.id_iconography = iconography.id
+              AND r_iconography_actor.role = 'author'
+              JOIN actor
+              ON actor.id = r_iconography_actor.id_actor
+              AND actor.entry_name ILIKE '%daumier%'
+              WHERE upper(iconography.date) >= 1855;
+              """
+            ]
+            ,
+            [ { "publisher": "martinet", "dateFilter": "dateExact", "date[]": [1833] },
+              r"""
+              SELECT *
+              FROM iconography
+              JOIN r_iconography_actor
+              ON r_iconography_actor.id_iconography = iconography.id
+              AND r_iconography_actor.role = 'publisher'
+              JOIN actor
+              ON actor.id = r_iconography_actor.id_actor
+              AND actor.entry_name ILIKE '%martinet%'
+              WHERE iconography.date = INT4RANGE(1833,1833+1);
+              """
+            ]
+            ,
+            [ { "theme": "édition", "dateFilter": "dateRange", "date[]": [1850,1860] },
+              """
+              SELECT theme.entry_name, iconography.date
+              FROM theme
+              JOIN r_iconography_theme
+              ON r_iconography_theme.id_theme = theme.id
+              AND theme.entry_name = 'édition'
+              JOIN iconography
+              ON r_iconography_theme.id_iconography = iconography.id
+              AND iconography.date IS NOT NULL
+              AND NOT isempty( iconography.date * INT4RANGE(1850,1861) )
+              ORDER BY iconography.date DESC;
+              """
+            ]
+        ]
+
+        # the queries change but the tests are the same as in the previous function
+        with self.app.app_context():  # avoid RuntimeError
+            for ( http_params, raw_sql ) in queries:
+                r_http = self.client.get(route, query_string=http_params)
+                r_sql = self.db.session.execute(text(raw_sql))
+                r_http_count = len(r_http.json)
+                r_sql_count = r_sql.rowcount
+
+                self.assertEqual(r_http.status_code, 200)
+                self.assertEqual( r_http_count, r_sql_count
+                                , f"a different number of results was returned "
+                                + f"by HTTP ({r_http_count}) and SQL ({r_sql_count}) for params {http_params}")
+                self.assertTrue( r_http_count > 0 and r_sql_count > 0
+                               , f"queries must return at least 1 result, "
+                               + f"got {r_http_count} (HTTP) and {r_sql_count} (SQL) for params {http_params}"  )
+
         return self
 
+
+    def test_expected_problems(self):
+        """
+        test that expected problems happen: when passing invalid
+        parameters, or invalid parameter values, we except an HTTP
+        error to be raised.
+        here, we don't need to check for raw SQL or anything.
+        """
+        route = "/i/avanced-search-iconography/"
+
+        queries = [ { "this should raise an error": "Dale Cooper" }    # unallowed parameter
+                  , { "date[]": [1800,1900] }                          # dateFilter is missing
+                  , { "dateFilter": "dateExact", "date[]": ["aaaaa"] } # `date[]` must be an integer array
+                  , { "dateFilter": "dateRange", "date[]": [1900] }    # with `dateRange`, we must have 2 values
+        ]
+
+        with self.app.app_context():
+            for http_params in queries:
+                r = self.client.get(route, query_string=http_params )
+                self.assertEqual(r.status_code, 500)
+        return self
