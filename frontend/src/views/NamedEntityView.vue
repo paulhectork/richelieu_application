@@ -13,8 +13,9 @@
 import { onMounted, ref } from "vue";
 import axios from "axios";
 
-import { stringifyThemeOrNamedEntityResource } from "@utils/stringifiers";
-import { fnToIconographyFile } from "@utils/functions";
+// import { stringifyThemeOrNamedEntityResource } from "@utils/stringifiers";
+// import { fnToIconographyFile } from "@utils/functions";
+import { indexDataFormatterNamedEntity } from "@utils/indexDataFormatter";
 import Index from "@components/Index.vue";
 
 const apiTarget = new URL("/i/named-entity", __API_URL__);
@@ -25,18 +26,8 @@ const display = "concept";  // define the view to use in `IndexItem`
 
 onMounted(() => {
   axios.get(apiTarget).then((r) => {
-
     dataFull.value   = JSON.parse(r.request.response);
-
-    dataFilter.value = dataFull.value.map((c) => {
-      return { idUuid : c.id_uuid,
-               href   : new URL(`/sujet/${c.id_uuid}`, window.location.href).href,
-               iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
-               img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
-               text   : stringifyThemeOrNamedEntityResource(c)
-      }
-    })
-
+    dataFilter.value = indexDataFormatterNamedEntity(dataFull.value);
   })
 })
 

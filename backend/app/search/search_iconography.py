@@ -1,7 +1,6 @@
 from sqlalchemy.engine.result import ChunkedIteratorResult
 from psycopg2.extras import NumericRange
-# import sqlalchemy.dialects.postgresql as psql
-from sqlalchemy.sql.expression import and_, or_
+from sqlalchemy.sql.expression import and_
 from sqlalchemy import select, func
 from flask import current_app
 import typing as t
@@ -93,11 +92,11 @@ def sanitize_params(params:t.Dict) -> t.Tuple[t.Dict, bool]:
     elif params["date_filter"] == "dateExact" and len(params["date"]) == 1:
         params["date"] = list2int4range([ params["date"][0], params["date"][0] ])
 
+    #TODO add a try...except to catch problems here
+
     # add wildcards (%) to values that will be researched with
     # `ILIKE` or `LIKE`. '%' is a special char in python strings,
     # so we need the strings to be raw, with `r""`
-
-    #TODO add a try...except to catch problems here
     ilike = [ "title", "author", "publisher" ]
     params = { k:rf"%{v}%" if isinstance(v, str) and k in ilike else v
                for k,v in params.items() }

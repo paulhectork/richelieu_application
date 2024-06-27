@@ -134,7 +134,7 @@ export class IconographyQueryParams {
     this.institution = this.scalar2undefined(ensureIsScalar(data.institution)) || undefined,
     this.dateFilter  = data.dateFilter,
     // dates are converted to numbers. we remove `undefined` items.
-    this.date = ensureIsArray(data.date).map(this.string2number) || [];
+    this.date        = ensureIsArray(data.date).filter(x => x!=null).map(this.string2number) || [];
   }
   /**
    * return an object of query parameters to update the router

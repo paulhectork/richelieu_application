@@ -24,7 +24,7 @@ class TestQueries(unittest.TestCase):
 
     def test_advanced_search_iconography_individual(self):
         """
-        test the individual search params in `/i/avanced-search-iconography/` route.
+        test the individual search params in `/i/iconography/search` route.
 
         query arguments are written pretty much like they are
         expected to be received from the frontend, and the
@@ -34,7 +34,7 @@ class TestQueries(unittest.TestCase):
         '%' is a special character in python strings, so we need to prefix
         strings that contain it with 'r'.
         """
-        route = "/i/avanced-search-iconography/"
+        route = "/i/iconography/search"
 
         # queries is an array of [ <route params>, <raw sql query> ]
         queries = [
@@ -139,8 +139,8 @@ class TestQueries(unittest.TestCase):
               WHERE upper(iconography.date) >= 1829
               """
             ]
-
         ]
+
         with self.app.app_context():  # avoid RuntimeError
             for ( http_params, raw_sql ) in queries:
                 r_http = self.client.get(route, query_string=http_params)
@@ -160,9 +160,9 @@ class TestQueries(unittest.TestCase):
     def test_advanced_search_iconography_combined(self):
         """
         test the combination of different params
-        in `/i/avanced-search-iconography/` route
+        in `/i/iconography/search` route
         """
-        route = "/i/avanced-search-iconography/"
+        route = "/i/iconography/search"
 
         queries = [
             [ { "namedEntity": "Galerie Vivienne", "theme": "boutique" },
@@ -248,14 +248,14 @@ class TestQueries(unittest.TestCase):
         return self
 
 
-    def test_expected_problems(self):
+    def test_advanced_search_iconography_expected_problems(self):
         """
         test that expected problems happen: when passing invalid
         parameters, or invalid parameter values, we except an HTTP
         error to be raised.
         here, we don't need to check for raw SQL or anything.
         """
-        route = "/i/avanced-search-iconography/"
+        route = "/i/iconography/search"
 
         queries = [ { "this should raise an error": "Dale Cooper" }    # unallowed parameter
                   , { "date[]": [1800,1900] }                          # dateFilter is missing
@@ -268,3 +268,12 @@ class TestQueries(unittest.TestCase):
                 r = self.client.get(route, query_string=http_params )
                 self.assertEqual(r.status_code, 500)
         return self
+
+
+
+
+
+
+
+
+

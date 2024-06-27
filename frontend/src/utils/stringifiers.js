@@ -54,7 +54,6 @@ export function stringifyDate(d) {
 export function stringifyIconographyResource(i) {
   let out = "";
   let authors = stringifyActorArray(i.authors);
-  console.log(authors);
   let date = stringifyDate(i.date);
 
   out += authors.length ? `${authors}, ` : "";
@@ -93,8 +92,10 @@ export function stringifyThemeOrNamedEntityResource(x) {
  * @returns str
  */
 export function stringifyActorArray(actorArray, hyperlink=false) {
-  const doHyperlink = (actor) => `<a href="${ new URL(`/acteur/${actor.id_uuid}`, window.location.href).href }"
-                                     >${actor.entry_name}</a>`
+  const doHyperlink = actor =>
+    `<a href="${ new URL(`/acteur/${actor.id_uuid}`, window.location.href).href }"
+    >${actor.entry_name}</a>`;
+
   let out = "";
   if ( actorArray != null && actorArray.length ) {
     actorArray.filter(a => a.entry_name != null).map((a, idx) => {

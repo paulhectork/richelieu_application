@@ -115,14 +115,15 @@ def main_iconography(id_uuid):
     return jsonify(out)
 
 
-
 # ******************************************
 # advanced search
 # ******************************************
-@app.route("/i/avanced-search-iconography/")
+@app.route("/i/iconography/search")
 def advanced_search_iconography():
     """
-    allowed parameters:
+    the heavy work is done in `../search/search_iconography.py`
+
+    allowed query parameters:
     * `title`       :
     * `author`      :
     * `publisher`   :

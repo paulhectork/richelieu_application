@@ -41,8 +41,7 @@
 import { onMounted, ref } from "vue";
 import axios from "axios";
 
-import { stringifyAddressResource } from "@utils/stringifiers";
-import { fnToCartographyFile } from "@utils/functions";
+import { indexDataFormatterCartography } from "@utils/indexDataFormatter";
 import IndexPlace from "@components/IndexPlace.vue";
 
 const apiTarget  = new URL("/i/place", __API_URL__);
@@ -52,17 +51,8 @@ const display    = "resource";  // which display style to use
 
 onMounted(() => {
   axios.get(apiTarget).then((r) => {
-
     dataFull.value   = JSON.parse(r.request.response);
-
-    dataFilter.value = dataFull.value.map((c) => {
-      return { idUuid : c.id_uuid,
-               href   : new URL(`/lieu/${c.id_uuid}`, window.location.href).href,
-               iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
-               img    : c.filename.length ? fnToCartographyFile(c.filename[0].url).href : null,
-               text   : c.address.length ? stringifyAddressResource(c.address[0]) : "Addresse inconnue" };
-    })
-
+    dataFilter.value = indexDataFormatterCartography(dataFull.value);
   })
 })
 

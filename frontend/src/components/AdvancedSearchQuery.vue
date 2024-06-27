@@ -151,7 +151,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import axios from "axios";
 
 import { useFormKitNodeById, FormKitMessages } from '@formkit/vue';
@@ -164,6 +164,7 @@ import { isEmptyArray, isEmptyScalar, isNumberInRange, isValidNumberRange } from
 
 /******************************************/
 
+const props = defineProps(["queryError"]);   // an error occured while fetching data from the backend
 const emit = defineEmits(['query-params']);  // to send the query params to the parent
 
 const dateFilterNode   = useFormKitNodeById("date-filter");  // useFormKitNodeById targets a FormKit node by it's HTML id and creates a vue ref.
@@ -276,6 +277,21 @@ function onSubmit(formData, formNode) {
     return true;
   }
 }
+
+/**
+ * if a query on the backend fails, `AdvancedSearchView` passes
+ * to this component a `queryError` with value `true`. in this
+ * case, display an error message on the form.
+ */
+watch(props, (newProps, oldProps) => {
+  if ( newProps.queryError ) {
+    useFormKitNodeById("advanced-search-form", (formNode) => {
+      formNode.setErrors(["Le serveur a rencontré une erreur."])
+    });
+
+  };
+
+})
 
 /******************************************/
 
