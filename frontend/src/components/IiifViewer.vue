@@ -11,6 +11,8 @@
 -->
 
 <template>
+  <LoaderComponent v-if="!isLoaded"></LoaderComponent>
+
   <div v-if="loadingFailed !== true"
        :id="osdId"
        class="iiif-viewer"
@@ -18,6 +20,7 @@
   <img v-else
        :src="fnToIconographyFile(backupImgUrl)"
        class="static-viewer">
+
 </template>
 
 <script setup>
@@ -27,20 +30,27 @@ import OpenSeadragon from "openseadragon";
 
 import { manifestToTileSequence, osdNavImages } from "@utils/iiif";
 import { fnToIconographyFile } from "@utils/functions";
+import LoaderComponent from "@components/ui/LoaderComponent.vue";
 
+/********************************************/
 
-const props = defineProps(["osdId", "iiifUrl", "backupImgUrl", "folio"]);
-const viewer = ref();              // OSD viewer
+const props         = defineProps(["osdId", "iiifUrl", "backupImgUrl", "folio"]);
+const viewer        = ref();       // OSD viewer
 const loadingFailed = ref(false);  // toggled in case of an error: will display a static image file instead of a IIIF tile sequence
+const isLoaded      = ref(false);  // switched to true once a IIIF viewer has loaded. hides the loader, shows the viewer
 
+/********************************************/
 
 /**
- * build an openseadragon viewer using `tileSequence`
+ * build an openseadragon viewer using `tileSequence`.
+ * it is anync: we wait for the viewer to be rendered
+ * before returning and switching `isLoaded` to false.
  *
  * @param {Array} tileSequence: the tiles to display in the viewer
- * @param {string} osdId: the openseadragon id of the tile
+ * @param {string} osdId      : the openseadragon id of the tile
  */
-function buildOsdViewer(tileSequence, osdId) {
+async function buildOsdViewer(tileSequence, osdId) {
+  console.log(osdId);
   viewer.value = OpenSeadragon({
     id: osdId,
     tileSources: tileSequence,
@@ -66,14 +76,19 @@ function buildOsdViewer(tileSequence, osdId) {
     prefixUrl: new URL("/statics/openseadragon-icons/", __SERVER_URL__).href,
     navImages: osdNavImages
   });
+  return viewer.value.addOnceHandler("open", () => { return });  // await for loading to be ready to return
 }
 
+/********************************************/
 
-onMounted(() => {
+onMounted(async () => {
+
   manifestToTileSequence(props.iiifUrl)
-  .then(([tileSequence, success]) => {
+  .then( ([tileSequence, success]) => {
     if ( tileSequence.length && success ) {
       buildOsdViewer(tileSequence, props.osdId)
+      .then(isLoaded.value = true);
+
     } else {
       loadingFailed.value = true;
     }

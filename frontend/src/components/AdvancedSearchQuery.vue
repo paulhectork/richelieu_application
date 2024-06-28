@@ -21,6 +21,46 @@
                             outerClass  : 'form-submit-outer' }"
            @submit="onSubmit"
   >
+
+    <!-- reset the form on click -->
+    <div class="reset-button-wrapper">
+      <FormKit type="button"
+               name="resetButton"
+               id="reset-button"
+               @click="resetForm"
+      >Réinitialiser les paramètres</FormKit>
+    </div>
+
+    <!-- select inputs -->
+    <div v-if="namedEntityArray.length
+               && themeArray.length
+               && institutionArray.length"
+    >
+
+      <FormKit type="formSelect"
+               name="theme"
+               label="Thème"
+               help="Sélectionner un thème"
+               placeholder="Sélectionner un thème"
+               :options="themeArray"
+      ></FormKit>
+      <FormKit type="formSelect"
+               name="namedEntity"
+               label="Sujet"
+               placeholder="Sélectionner un sujet"
+               help="Sélectionner un sujet"
+               :options="namedEntityArray"
+      ></FormKit>
+      <FormKit type="formSelect"
+               name="institution"
+               label="Institution"
+               help="Sélectionner une institution"
+               placeholder="Sélectionner une institution"
+               :options="institutionArray"
+      ></FormKit>
+    </div>
+
+
     <!-- free text inputs -->
     <FormKit type="text"
              name="title"
@@ -44,34 +84,6 @@
              help="Le nom de l'éditeur ou de la maison d'édition doit contenir les mots entrés ici."
     ></FormKit>
 
-    <!-- select inputs -->
-    <div v-if="namedEntityArray.length
-               && themeArray.length
-               && institutionArray.length"
-    >
-      <FormKit type="formSelect"
-               name="namedEntity"
-               label="Sujet"
-               placeholder="Sélectionner un sujet"
-               help="Sélectionner un sujet"
-               :options="namedEntityArray"
-      ></FormKit>
-      <FormKit type="formSelect"
-               name="theme"
-               label="Thème"
-               help="Sélectionner un thème"
-               placeholder="Sélectionner un thème"
-               :options="themeArray"
-      ></FormKit>
-      <FormKit type="formSelect"
-               name="institution"
-               label="Institution"
-               help="Sélectionner une institution"
-               placeholder="Sélectionner une institution"
-               :options="institutionArray"
-      ></FormKit>
-    </div>
-
     <!-- date inputs -->
     <div>
       <FormKit type="formRadioTabs"
@@ -80,6 +92,7 @@
                label="Date"
                help="Choisir le type de filtre pour la date"
                value="dateRange"
+               default="dateRange"
                :options="allowedDateSearchTypes"
       ></FormKit>
 
@@ -154,6 +167,7 @@
 import { ref, onMounted, computed, watch } from "vue";
 import axios from "axios";
 
+import { reset } from "@formkit/core";
 import { useFormKitNodeById, FormKitMessages } from '@formkit/vue';
 import $ from "jquery";
 
@@ -227,6 +241,19 @@ const dateRangeValidationMessage = computed(() =>
 /******************************************/
 
 /**
+ * when clicking on `#reset-button`, reset all values in the form.
+ * custom formkit components must be reset manually
+ *
+ * PROBLEM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * THE RESETTING ISN'T DONE ON CUSTOM FORMKIT INPUTS !!!!!!!!!!!!!!!
+ * PROBLEM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ *
+ */
+function resetForm() {
+  useFormKitNodeById("advanced-search-form", (formNode) => formNode.reset() );
+}
+
+/**
  * transform a string into an object following the
  * structure defined by formjit objects:
  * { "label": <value to display>, "value": <value sent by the form> }
@@ -285,10 +312,8 @@ function onSubmit(formData, formNode) {
  */
 watch(props, (newProps, oldProps) => {
   if ( newProps.queryError ) {
-    useFormKitNodeById("advanced-search-form", (formNode) => {
-      formNode.setErrors(["Le serveur a rencontré une erreur."])
-    });
-
+    useFormKitNodeById("advanced-search-form", (formNode) =>
+      formNode.setErrors(["Le serveur a rencontré une erreur."]) );
   };
 
 })
@@ -343,5 +368,14 @@ onMounted(() => {
 }
 .formkit-actions {
   margin-top: 2vh;
+}
+.reset-button-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+
+}
+.reset-button-wrapper button {
+  background-color: blue;
 }
 </style>

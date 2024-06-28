@@ -51,7 +51,7 @@
   -->
   <Transition name="slideInOut">
   <div class="query-container"
-       v-show="queryVisible">
+       v-show="displayQuery">
     <AdvancedSearchQuery @query-params="updateQueryParamsFromForm"
                          :query-error="queryError"
     ></AdvancedSearchQuery>
@@ -60,11 +60,14 @@
 
   <div class="show-hide">
     <button @click="hideOrShowQuery"
-    >{{ queryVisible ? "Masquer" : "Afficher" }} la recherche</button>
+    >{{ displayQuery ? "Masquer" : "Afficher" }} la recherche</button>
   </div>
 
+  <LoaderComponent v-if="displayResults === 'loading'"
+                   class="results-loader"></LoaderComponent>
+
   <div class="results-container"
-       v-if="displayResults"
+       v-if="displayResults === 'yes'"
   >
     <AdvancedSearchResults :query-results="queryResults"
     ></AdvancedSearchResults>
@@ -81,6 +84,7 @@ import _ from "lodash";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams";
 import AdvancedSearchQuery from "@components/AdvancedSearchQuery.vue";
 import AdvancedSearchResults from "@components/AdvancedSearchResults.vue";
+import LoaderComponent from "@components/ui/LoaderComponent.vue";
 
 
 /***************************************/
@@ -91,9 +95,9 @@ const route          = useRoute();  // the current route
 const router         = useRouter(); // the full router
 const queryParams    = ref();       // an IconographyQueryParams object with query params defined by the user in `AdvancedSearchQuery`, or query params visible in the URL
 const queryResults   = ref([]);     // results of a query to the server
-const displayResults = ref(false);  // INUTILE???? toggled to True once a query has been run
 const queryError     = ref(false);  // switched to true if a backend internal server error occurs
-const queryVisible   = ref(true);   // when switched to false, the AdvancedSearchQuery block is hidden using the `slideInOut` transition
+const displayResults = ref("no");   // `no|loading|yes`. controls the display of `AdvancedSearchResults` and `LoaderComponent`. when the value is 'no', neither are shown. when it is 'loading', `LoaderComponent` is shown. when 'yes', `LoaderComponent` is not shown and `AdvancedSearchResults` is shown.
+const displayQuery   = ref(true);   // when switched to false, the AdvancedSearchQuery block is hidden using the `slideInOut` transition
 
 /***************************************/
 
@@ -101,7 +105,7 @@ const queryVisible   = ref(true);   // when switched to false, the AdvancedSearc
  * when clicking on `.hide-show`, toggle the visiblity of the query
  */
 function hideOrShowQuery() {
-  queryVisible.value = !queryVisible.value;
+  displayQuery.value = !displayQuery.value;
 }
 
 /**
@@ -116,7 +120,7 @@ function hideOrShowQuery() {
  function updateQueryParamsFromForm(newQueryParams) {
   if ( !_.isEqual(newQueryParams.toJson(), queryParams.value?.toJson()) ) {
     queryParams.value = newQueryParams;
-    queryVisible.value = false;  // to hide the query and show only the results
+    displayQuery.value = false;  // to hide the query and show only the results
   }
 }
 
@@ -149,12 +153,12 @@ watch(queryParams, async (newParams, oldParams) => {
     // console.log("watchQueryParams: params in `queryParams`", queryParams.value);
 
     console.log("going out !", { params: newParams.toJson() });
-    displayResults.value = false;
+    displayResults.value = "loading";
 
     axios
     .get(targetUrl.href, { params: newParams.toJson() })
     .then(r => { queryResults.value = r.data;
-                 displayResults.value = true; })
+                 displayResults.value = "yes"; })
     .catch(e => { console.log("AdvancedSearchView: backend error on query:", newParams.toJson());
                   console.log("AdvancedSearchView: error dump:", e);
                   queryError.value = true;
@@ -183,9 +187,11 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
 }
-
 .show-hide > button {
   transform: translateY(-60%);
+}
+.results-loader {
+  height: 10vh;
 }
 
 </style>

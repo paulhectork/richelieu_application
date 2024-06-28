@@ -21,27 +21,35 @@ const router = createRouter({
       component: () => import("@views/AdvancedSearchView.vue")
     }, {
       path: '/iconographie',
-      name: 'Iconographie',
+      name: 'Index iconographique',
       component: () => import("@views/IconographyView.vue")
     }, {
       path: '/iconographie/:idUuid',
-      name: 'Iconographie / main',
+      name: 'Ressource iconographique',
       component: () => import("@views/IconographyMainView.vue")
     }, {
       path: '/cartographie',
-      name: 'Cartographie',
+      name: 'Index cartographique',
       component: () => import("@views/CartographyView.vue")
     }, {
       path: '/theme',
-      name: 'Thème',
+      name: 'Index des thèmes',
       component: () => import("@views/ThemeView.vue")
     }, {
+      path: '/theme/:idUuid',
+      name: 'Thème',
+      component: () => import("@views/ThemeMainView.vue")
+    }, {
       path: '/sujet',
-      name: 'Sujets',
+      name: 'Index des sujets',
       component: () => import("@views/NamedEntityView.vue")
     }, {
+      path: '/sujet/:idUuid',
+      name: 'Sujet',
+      component: () => import("@views/NamedEntityMainView.vue")
+    }, {
       path: '/lieu',
-      name: 'Lieux',
+      name: 'Index des lieux',
       component: () => import("@views/PlaceView.vue")
     }, {
       path: '/table-viewer',

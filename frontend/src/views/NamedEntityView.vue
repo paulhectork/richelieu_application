@@ -4,9 +4,13 @@
 <template>
   <h1>Index des sujets</h1>
   <p>Les sujets sont des points d'intérêt découverts dans chacune des images.</p>
-  <Index :display="display"
+
+  <LoaderComponent v-if="!isLoaded"></LoaderComponent>
+  <Index v-else
+         :display="display"
          :data="dataFilter"
   ></Index>
+
 </template>
 
 <script setup>
@@ -16,18 +20,21 @@ import axios from "axios";
 // import { stringifyThemeOrNamedEntityResource } from "@utils/stringifiers";
 // import { fnToIconographyFile } from "@utils/functions";
 import { indexDataFormatterNamedEntity } from "@utils/indexDataFormatter";
+import LoaderComponent from "@components/ui/LoaderComponent.vue";
 import Index from "@components/Index.vue";
 
-const apiTarget = new URL("/i/named-entity", __API_URL__);
-const dataFull = ref([]);   // the full index, independent of user filters
-const dataFilter = ref([]); // the data to pass to `Index.vue`. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> }
-const display = "concept";  // define the view to use in `IndexItem`
+const apiTarget  = new URL("/i/named-entity", __API_URL__);
+const dataFull   = ref([]);     // the full index, independent of user filters
+const dataFilter = ref([]);     // the data to pass to `Index.vue`. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> }
+const display    = "concept";   // define the view to use in `IndexItem`
+const isLoaded   = ref(false);  // toggled to true once data has loaded. will hide the loader and show the index
 
 
 onMounted(() => {
   axios.get(apiTarget).then((r) => {
     dataFull.value   = JSON.parse(r.request.response);
     dataFilter.value = indexDataFormatterNamedEntity(dataFull.value);
+    isLoaded.value = true;
   })
 })
 

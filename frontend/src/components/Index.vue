@@ -1,5 +1,5 @@
 <template>
-  <div class="index-container">
+  <div class="index-container animate__animated animate__slideInLeft">
     <IndexItem v-for="d in data"
                :item="d"
                :display="display"
@@ -22,6 +22,5 @@ const props = defineProps([ "display"  // which component to use for rendering a
   display: grid;
   grid-auto-rows: 40vh;
   grid-template-columns: repeat(3, 33%);
-  /*grid-gap: 10px;*/
 }
 </style>

@@ -96,7 +96,7 @@ def main_iconography(id_uuid):
     """return an `Iconography` object based on its `id_uuid`"""
     r = db.session.execute(Iconography
                            .query
-                           .filter( Iconography.id_uuid == id_uuid ))
+                           .filter(Iconography.id_uuid == id_uuid))
     out = [ _[0].serialize_full() for _ in r.all() ]
     for icono in out:
         # avec des boucles inline
@@ -113,6 +113,20 @@ def main_iconography(id_uuid):
         # featurecollection = featurelist_to_featurecollection(featurelist)  # on crée notre feature collection à partir de notre liste de features
         # icono["place"] = featurecollection   # on met à jour notre objet `icono`
     return jsonify(out)
+
+
+@app.route("/i/theme/<id_uuid>")
+def main_theme(id_uuid):
+    """fetch all iconographic resources related to a theme"""
+    r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
+    return jsonify([ t[0].serialize_full() for t in r.all() ])
+
+
+@app.route("/i/named-entity/<id_uuid>")
+def main_named_entity(id_uuid):
+    """fetch all iconographic resources related to a named entity"""
+    r = db.session.execute(NamedEntity.query.filter( NamedEntity.id_uuid == id_uuid ))
+    return jsonify([ n[0].serialize_full() for n in r.all() ])
 
 
 # ******************************************
@@ -158,6 +172,26 @@ def place_lite(place_uuid:str):
     return jsonify([ _[0].serialize_lite() for _ in r.all() ])
 
 
+@app.route("/i/theme-name/<id_uuid>")
+def main_theme_name(id_uuid):
+    """
+    get the name of a theme from its UUID.
+    used in the main page for a theme.
+    """
+    r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
+    return jsonify([ t[0].entry_name for t in r.all() ])
+
+
+@app.route("/i/named-entity-name/<id_uuid>")
+def main_named_entity_name(id_uuid):
+    """
+    get the name of a named entity from its UUID
+    used in the main pages for a named entity.
+    """
+    r = db.session.execute(NamedEntity.query.filter( NamedEntity.id_uuid == id_uuid ))
+    return jsonify([ n[0].entry_name for n in r.all() ])
+
+
 @app.route("/i/iconography-overall-date-range")
 def iconography_overall_date_range():
     """
@@ -180,6 +214,7 @@ def iconography_overall_date_range():
                                   LIMIT 1
                                 );"""))
     return jsonify(sorted([ d[0] for d in r.all() ]))
+
 
 
 # ******************************************

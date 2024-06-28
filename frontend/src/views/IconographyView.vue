@@ -4,7 +4,10 @@
 
 <template>
   <h1>Index de l'iconographie</h1>
-  <Index :display="display"
+
+  <LoaderComponent v-if="!isLoaded"></LoaderComponent>
+  <Index v-else
+         :display="display"
          :data="dataFilter"
   ></Index>
 
@@ -14,20 +17,24 @@
 import { onMounted, ref } from "vue";
 import axios from "axios";
 
-import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import Index from "@components/Index.vue";
-// import DataTableComponent from "@components/DataTableComponent.vue";
+import LoaderComponent from "@components/ui/LoaderComponent.vue";
+import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
+
+/******************************************/
 
 const apiTarget = new URL("/i/iconography", __API_URL__);
 const dataFull = ref([]);      // the full index, independent of user filters
 const dataFilter = ref([]);    // the data to pass to `Index.vue`. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> }
 const display = "resource";
+const isLoaded = ref(false);   // switched to true when the data is loaded, will hide the loader and show the index
 
 
 onMounted(() => {
   axios.get(apiTarget).then((r) => {
     dataFull.value = JSON.parse(r.request.response);
     dataFilter.value = indexDataFormatterIconography(dataFull.value);
+    isLoaded.value = true;
   })
 })
 </script>
