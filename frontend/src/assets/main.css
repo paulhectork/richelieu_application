@@ -357,3 +357,23 @@ button:active > svg > path {
 , .v-leave-to {
   opacity: 0;
 }
+
+/* slideInOut: slide in and out an element */
+.slideInOut-enter-from
+, .slideInOut-leave-to {
+  max-height: 0;
+  visibility: hidden;
+  overflow: hidden;
+}
+.slideInOut-enter-to
+, .slideInOut-leave-from {
+  max-height: 150%;
+  visibility: visible;
+  overflow: hidden;
+}
+.slideInOut-enter-active {
+  transition: max-height .7s ease-in-out, visibility .7s ease-in-out;
+}
+.slideInOut-leave-active {
+  transition: max-height .7s ease-in-out, visibility .7s ease-in-out;
+}

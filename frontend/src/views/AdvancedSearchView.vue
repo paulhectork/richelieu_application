@@ -49,15 +49,18 @@
        :class="queryHidden ? 'hidden' : 'shown'"
   >
   -->
-  <div class="query-container">
+  <Transition name="slideInOut">
+  <div class="query-container"
+       v-show="queryVisible">
     <AdvancedSearchQuery @query-params="updateQueryParamsFromForm"
                          :query-error="queryError"
     ></AdvancedSearchQuery>
   </div>
+  </Transition>
 
   <div class="show-hide">
     <button @click="hideOrShowQuery"
-    >{{ queryHidden ? "Afficher" : "Masquer" }} la recherche</button>
+    >{{ queryVisible ? "Masquer" : "Afficher" }} la recherche</button>
   </div>
 
   <div class="results-container"
@@ -73,7 +76,6 @@ import axios from "axios";
 import { ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from 'vue-router';
 
-import $ from "jquery";
 import _ from "lodash";
 
 import { IconographyQueryParams } from "@modules/iconographyQueryParams";
@@ -91,9 +93,16 @@ const queryParams    = ref();       // an IconographyQueryParams object with que
 const queryResults   = ref([]);     // results of a query to the server
 const displayResults = ref(false);  // INUTILE???? toggled to True once a query has been run
 const queryError     = ref(false);  // switched to true if a backend internal server error occurs
-const queryHidden    = ref(false);  // when switched to true, the AdvancedSearchQuery block is hidden
+const queryVisible   = ref(true);   // when switched to false, the AdvancedSearchQuery block is hidden using the `slideInOut` transition
 
 /***************************************/
+
+/**
+ * when clicking on `.hide-show`, toggle the visiblity of the query
+ */
+function hideOrShowQuery() {
+  queryVisible.value = !queryVisible.value;
+}
 
 /**
  * when receiving new query parameters from
@@ -104,13 +113,13 @@ const queryHidden    = ref(false);  // when switched to true, the AdvancedSearch
  * @param {Object} newQueryParams: a dict of query parameters.
  *   see AdvancedSearchQuery.onSubmit() for its structure.
  */
-function updateQueryParamsFromForm(newQueryParams) {
+ function updateQueryParamsFromForm(newQueryParams) {
   if ( !_.isEqual(newQueryParams.toJson(), queryParams.value?.toJson()) ) {
     queryParams.value = newQueryParams;
-
-    hideQuery();  // to hide the query and show only the results
+    queryVisible.value = false;  // to hide the query and show only the results
   }
 }
+
 
 /**
  * when reloading the page, the query params are still in
@@ -123,70 +132,6 @@ function updateQueryParamsFromForm(newQueryParams) {
 function updateQueryParamsFromRoute(routeQueryParams) {
   const routeParams = new IconographyQueryParams(routeQueryParams, "route");
   queryParams.value = routeParams.allEmpty() ? queryParams.value : routeParams;  // only update `queryParams` if `routeParams` is not empty
-}
-
-
-/**
- * ON EST OÙ ??????????????????????????????????????
- * L'ANIMATION EST LÀ, ELLE MARCHE QUAND ON CLIQUE
- * LE BOUTON. LE PETIT +, CE SERAIT DE FERMER LA RECHERCHE
- * À FILTRES QUAND DES RÉSULTATS S'AFFICHENT (QUAND
- * LA REQUÊTE DANS LE watch RÉUSSIT), MAIS PAS QUAND ON
- * RÉCUPÈRE LES PARAMÈTRES DE L'URL.
- *
- * ESSAYER DE METTRE UN FLAG DE LOAD INITIAL DANS
- * updateQueryParamsFromRoute QUI SOIT VÉRIFIÉ DANS
- * LE WATCH ?
- */
-
-/**
- * functions hideQuery and showQuery animate the sliding in
- * and out of `AdvancedSearchQuery`.
- *
- * hiding the query container:
- * 1 `.query-container` is visible: this is the default
- * 2 the content of `.query-container` slides out by adding `.animate__slideOutUp`
- * 3 the height of `.query-container` is animated from 100% to 0 by adding `.height-zero`
- * 4 `.query-container` is hidden and invisible by adding class `.hidden`
- *
- * showing the query container:
- * 1 `.query-container` is made invisible by removing `.hidden`
- * 2 the height of `.query-container` is animated from 0 to 100% by removing `.height-zero`
- * 3 the content of `.query-container` slides in by adding `.animate_slideInDown`
- * 4 `.query container` is visible at height 100%.
- *
- * the `setTimeout` allows to wait for one animation to finish before the other starts.
- */
-function hideQuery() {
-  queryHidden.value = true;
-  $(".query-container").addClass("animate__animated animate__slideOutUp");
-  setTimeout(() => {
-    $(".query-container").removeClass( "animate__animated animate__slideOutUp")
-                         .addClass("hidden height-zero");
-    console.log(queryHidden.value);
-  }, 200)
-}
-function showQuery() {
-  queryHidden.value = false;
-  // `.pre-slide-down` is a small helper that makes sure that
-  // `.query-container` is invisible before sliding it in
-  $(".query-container").addClass("pre-slide-down")
-                       .removeClass("hidden height-zero")
-  setTimeout(() => {
-    $(".query-container").removeClass("pre-slide-down")
-                         .addClass("animate__animated animate__slideInDown");
-  }, 400)
-  setTimeout(() => {
-    $(".query-container").removeClass( "animate__animated animate__slideInDown");
-    console.log(queryHidden.value);
-  }, 1000)
-}
-
-/**
- * toggle the visibility of the `AdvancedSearchQuery` block
- */
-function hideOrShowQuery() {
-  queryHidden.value ? showQuery() : hideQuery();
 }
 
 
@@ -228,22 +173,8 @@ onMounted(() => {
 
 <style scoped>
 .query-container {
-  visibility: visible;
   height: auto;
-  max-height: 130%;  /* setting to to just 100% messes up the position of following siblings */
-  transition: max-height var(--animate-duration);
-  animation-duration: .2s;  /* animate.css duration! */
 }
-.query-container.height-zero {
-  max-height: 0;
-}
-.query-container.pre-slide-down {
-  transform: translateX(-100vh);
-}
-.query-container.hidden {
-  visibility: hidden;
-}
-
 .show-hide {
   margin: 3vh 5%;
   border-top: var(--cs-border);
