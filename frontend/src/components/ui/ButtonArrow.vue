@@ -1,3 +1,8 @@
+<!-- ButtonArrow.vue: an HTML button containing an SVG arrow
+
+     the arrow button can be rotated based on the value
+     of `props.orient` ("up", "down", "left", "right") -->
+
 <template>
   <button>
     <svg width="100%"
@@ -22,11 +27,6 @@
 
 <script setup>
 import { onMounted } from 'vue';
-
-/**
- * an arrow button that can be rotated based on
- * the value of `props.orient` ("up", "down", "left", "right")
- */
 
 const props = defineProps([ "orient" ]);
 

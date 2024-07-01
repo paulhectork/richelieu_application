@@ -159,10 +159,12 @@ watch(queryParams, async (newParams, oldParams) => {
     .get(targetUrl.href, { params: newParams.toJson() })
     .then(r => { queryResults.value = r.data;
                  displayResults.value = "yes"; })
-    .catch(e => { console.log("AdvancedSearchView: backend error on query:", newParams.toJson());
-                  console.log("AdvancedSearchView: error dump:", e);
-                  queryError.value = true;
-   });
+    .catch(e => { queryError.value = true;
+                  console.error( "AdvancedSearchView: backend error on query:"
+                               , newParams.toJson()
+                               , "error dump:"
+                               , e);
+    });
   });
 })
 

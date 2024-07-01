@@ -22,6 +22,11 @@
            @submit="onSubmit"
   >
 
+    <FormKit type="formRepeatableText"
+             name="it-is-a-test"
+             id="it-is-a-test">
+    </FormKit>
+
     <!-- reset the form on click -->
     <div class="reset-button-wrapper">
       <FormKit type="button"
@@ -287,6 +292,7 @@ function sortByValue(val1, val2) {
  * @param {Object} formNode: the FormKit core node
  */
 function onSubmit(formData, formNode) {
+  console.log("formData", formData)
 
   // remove possible errrors that are shown by a previous submission
   formNode.clearErrors();
@@ -338,7 +344,7 @@ onMounted(() => {
        .then(r => {
          allowedDateRange.value = r.data; })
        .catch(e => {
-         console.log("AdvancedSearchQuery: axios error on `allowedDateRange`", e);
+         console.error("AdvancedSearchQuery: axios error on `allowedDateRange`", e);
          allowedDateRange.value = [ 1700,2100 ];
        });
 

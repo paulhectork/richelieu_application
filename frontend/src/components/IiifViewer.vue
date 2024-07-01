@@ -83,16 +83,23 @@ async function buildOsdViewer(tileSequence, osdId) {
 
 onMounted(async () => {
 
-  manifestToTileSequence(props.iiifUrl)
-  .then( ([tileSequence, success]) => {
-    if ( tileSequence.length && success ) {
-      buildOsdViewer(tileSequence, props.osdId)
-      .then(isLoaded.value = true);
+  if ( props.iiifUrl ) {
+    manifestToTileSequence(props.iiifUrl)
+    .then( ([tileSequence, success]) => {
+      if ( tileSequence.length && success ) {
+        buildOsdViewer(tileSequence, props.osdId)
+        .then(isLoaded.value = true);
 
-    } else {
-      loadingFailed.value = true;
-    }
-  });
+      } else {
+        loadingFailed.value = true;
+      }
+    });
+  } else {
+    console.warn( "IiifViewer.vue: no IIIF for resource:"
+                , window.location.href.match(/qr1[a-z0-9]+/g)[0] )
+     loadingFailed.value = true;
+    isLoaded.value = true;
+  }
 })
 </script>
 

@@ -65,14 +65,14 @@ export async function manifestToTileSequence(manifestUrl, folio=[]) {
                          .get(manifestUrl)
                          .then((r) => { return r.data })
                          .catch((e) => {
-                          console.log("iiif.manifestToTileSequence: error fetching IIIF manifest", e);
+                          console.error("iiif.manifestToTileSequence: error fetching IIIF manifest", e);
                           success = false;
                          })
 
   // assert that we're working with a v2 presentation manifest
   if ( manifest["@context"] !== "http://iiif.io/api/presentation/2/context.json" ) {
-    console.log(`iiif.manifestToTileSequence: the manifest must follow the IIIF
-                 presentation v2 API, on '${manifestUrl}'`);
+    console.error(`iiif.manifestToTileSequence: the manifest must follow the IIIF
+                   presentation v2 API, on '${manifestUrl}'`);
     success = false;
   }
 
@@ -84,8 +84,8 @@ export async function manifestToTileSequence(manifestUrl, folio=[]) {
         out = out.concat( canvasProcessing( manifest.sequences[0].canvases[idx] ) );
       })
     } catch(e) {
-      console.log(`iiif.manifestToTileSequence: error using "folio" parameter
-                   with value ${folio}`)
+      console.error(`iiif.manifestToTileSequence: error using "folio" parameter
+                     with value ${folio}`)
       out = manifestProcessing(manifest, out);
     }
   } else {
@@ -121,10 +121,10 @@ export async function manifestToThumbnail(manifestUrl, backupImgUrl) {
                  : backupImgUrl                                 // can't create a thumbnail => return the callback
           // return backupImgUrl
          }).catch((e) => {
-          console.log( "ERROR IN MANIFESTTOTHUMBNAIL"
-                     , ": " + manifestUrl
-                     , e
-                     , e.config.url);
+          console.error( "iiif.manifestToThumbnail"
+                       , ": " + manifestUrl
+                       , e
+                       , e.config.url);
          })
 }
 

@@ -3,13 +3,15 @@ import { plugin, defaultConfig, createInput } from '@formkit/vue'
 
 import FormSelect from "@components/FormSelect.vue";
 import FormRadioTabs from "@components/FormRadioTabs.vue";
+import FormRepeatableText from "@components/FormRepeatableText.vue";
 
 const config = {
   locales: { fr },
   locale: 'fr',
   inputs: {
     formSelect: createInput(FormSelect, { props: ["placeholder", "options"] }),
-    formRadioTabs: createInput(FormRadioTabs, { props: ["options", "value"] })
+    formRadioTabs: createInput(FormRadioTabs, { props: ["options", "value"] }),
+    formRepeatableText: createInput(FormRepeatableText, { props: ["placeholder"] })
   }
 }
 

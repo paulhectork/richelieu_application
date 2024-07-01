@@ -13,7 +13,7 @@
   <LoaderComponent v-if="!backendLoaded"></LoaderComponent>
   <div v-else>
     <p><strong>{{ namedEntity.iconography_count }}</strong>
-      ressources iconographiques sont associées à ce thème.</p>
+      ressources iconographiques sont associées à ce sujet.</p>
 
     <Index :data="dataFilter"
            display="resource"

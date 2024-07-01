@@ -27,12 +27,18 @@
           <div v-if="viewerType === 'osd'"
                class="iiif-container"
           >
+            <!--
             <IiifViewer v-if="iconography.iiif_url"
                         :osdId="`iiif-${idUuid}`"
                         :iiifUrl="iconography.iiif_url"
                         :backupImgUrl="imageUrl"
             ></IiifViewer>
             <div v-else><p>Pas d'image IIIF à montrer</p></div>
+            -->
+            <IiifViewer :osdId="`iiif-${idUuid}`"
+                        :iiifUrl="iconography.iiif_url"
+                        :backupImgUrl="imageUrl"
+            ></IiifViewer>
           </div>
           <div v-else
                class="leaflet-container"
@@ -154,8 +160,8 @@ const viewerType = ref("osd");  // "osd" for a IIIF viewer, "leaflet" for a leaf
 
 const apiTarget = computed(() =>
   new URL(`/i/iconography/${idUuid.value}`, __API_URL__) );
+// a backup image url in case the IIIF one doesn't load properly
 const imageUrl = computed(() => {
-  // a backup image url in case the IIIF one doesn't load properly
   return iconography.value !== undefined
   ? iconography
     .value
@@ -169,9 +175,7 @@ function getIconographyResource() {
   axios
   .get(apiTarget.value)
   .then((r) => {
-    iconography.value = r.data[0]
-
-  })
+    iconography.value = r.data[0] })
 }
 
 function toggleViewer(e) {
@@ -196,7 +200,7 @@ onUpdated(() => {
 <style scoped>
 .global-container {
   display: grid;
-  grid-template-rows: 15% 85%;
+  grid-template-rows: 1fr 85%;
   width: 100%;
   height: 100%;
 }

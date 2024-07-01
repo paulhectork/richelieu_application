@@ -4,7 +4,9 @@
      :href="item.href"
   >
     <img :src="item.img"
-         class="fill-parent">
+         class="fill-parent"
+         loading="lazy"
+         >
     <p v-html="item.text"></p>
   </a>
 
@@ -42,7 +44,7 @@ onMounted(() => {
         $(selector).attr("src", props.item.img)
       })
       .catch((e) => {
-        console.log("ERROR IN INDEXITEM", e);
+        console.error("ERROR IN INDEXITEM", e);
       });
     })()
   }
