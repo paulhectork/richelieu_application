@@ -22,11 +22,6 @@
            @submit="onSubmit"
   >
 
-    <FormKit type="formRepeatableText"
-             name="it-is-a-test"
-             id="it-is-a-test">
-    </FormKit>
-
     <!-- reset the form on click -->
     <div class="reset-button-wrapper">
       <FormKit type="button"
@@ -67,6 +62,7 @@
 
 
     <!-- free text inputs -->
+    <!--
     <FormKit type="text"
              name="title"
              label="Titre"
@@ -74,19 +70,29 @@
              help="Le titre de la ressource iconographique doit contenir les mots entrés ici."
              placeholder="Ex: Le Moniteur de la Mode"
     ></FormKit>
-    <FormKit type="text"
-             name="author"
-             label="Auteur ou autrice"
-             placeholder="Ex: Jules David"
-             :validation="textValidationRule"
-             help="Le nom de l'auteur ou de l'autrice doit contenir les mots entrés ici."
+    -->
+    <FormKit type="formRepeatableText"
+             name="title"
+             id="title"
+             labelText="Titre"
+             help="Le titre de la ressource iconographique doit contenir les mots entrés ici."
+             placeholder="Ex: Le Moniteur de la Mode"
+             validation="textArrayValidator"
     ></FormKit>
-    <FormKit type="text"
+
+    <FormKit type="formRepeatableText"
+             name="author"
+             labelText="Auteur ou autrice"
+             placeholder="Ex: Jules David"
+             help="Le nom de l'auteur ou de l'autrice doit contenir les mots entrés ici."
+             validation="textArrayValidator"
+    ></FormKit>
+    <FormKit type="formRepeatableText"
              name="publisher"
-             label="Édition"
+             labelText="Maison d'édition"
              placeholder="Bellizard"
-             :validation="textValidationRule"
              help="Le nom de l'éditeur ou de la maison d'édition doit contenir les mots entrés ici."
+             validation="textArrayValidator"
     ></FormKit>
 
     <!-- date inputs -->
@@ -107,25 +113,20 @@
                label="Date"
                help="Choisir une tranche de dates au format AAAA-AAAA"
       >
-        <div class="date-range"
-        >
+        <div class="date-range">
           <FormKit type="number"
                    name="dateStart"
                    label="Date de début"
                    placeholder="Ex: 1810"
+                   :data-allowedDateRange="allowedDateRange"
                    validation="dateRangeValidator"
-                   :validation-rules="dateValidationRule"
-                   :validation-messages="{ dateRangeValidator: dateRangeValidationMessage }"
-                   validation-visibility="submit"
           ></FormKit>
           <FormKit type="number"
                    name="dateEnd"
                    label="Date de fin"
                    placeholder="Ex: 1891"
+                   :data-allowedDateRange="allowedDateRange"
                    validation="dateRangeValidator"
-                   :validation-rules="dateValidationRule"
-                   :validation-messages="{ dateRangeValidator: dateRangeValidationMessage }"
-                   validation-visibility="submit"
           ></FormKit>
         </div>
       </FormKit>
@@ -135,27 +136,24 @@
                name="date"
                label="Date exacte"
                placeholder="Ex: 1891"
+               :data-allowedDateRange="allowedDateRange"
                validation="dateValidator"
-               :validation-rules="dateValidationRule"
-               :validation-messages="{ dateValidator: dateValidationMessage }"
       ></FormKit>
       <FormKit v-else-if="dateFilterType==='dateBefore'"
                type="number"
                name="date"
                label="Avant"
                placeholder="Ex: 1891"
+               :data-allowedDateRange="allowedDateRange"
                validation="dateValidator"
-               :validation-rules="dateValidationRule"
-               :validation-messages="{ dateValidator: dateValidationMessage }"
       ></FormKit>
       <FormKit v-else
                type="number"
                name="date"
                label="Après"
                placeholder="Ex: 1810"
+               :data-allowedDateRange="allowedDateRange"
                validation="dateValidator"
-               :validation-rules="dateValidationRule"
-               :validation-messages="{ dateValidator: dateValidationMessage }"
       ></FormKit>
     </div>
 
@@ -179,7 +177,7 @@ import $ from "jquery";
 // import FormRadioTabs from "@components/FormRadioTabs.vue";
 import { clickOrTouchEvent } from "@globals";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams";
-import { isEmptyArray, isEmptyScalar, isNumberInRange, isValidNumberRange } from "@utils/functions";
+// import { isEmptyArray, isEmptyScalar, isNumberInRange, isValidNumberRange } from "@utils/functions";
 
 /******************************************/
 
@@ -198,50 +196,6 @@ const allowedDateSearchTypes = [ { label:'Plage de dates', value:'dateRange' }
                                , { label:'Date exacte'   , value:'dateExact' }
                                , { label:'Avant'         , value:'dateBefore'}
                                , { label:'Après'         , value:'dateAfter' }]
-
-/******************************************/
-
-// validation rules
-// see: https://formkit.com/essentials/validation#custom-rules
-// and: https://stackoverflow.com/a/76391706/17915803
-
-/** shorthand to access the array `allowedDateRange` */
-const allowedDateRangeCurrent = () =>
-  allowedDateRange.value.length
-  ? [ allowedDateRange.value[0], allowedDateRange.value[1] ]
-  : [];
-
-const dateValidationRule = {
-  dateValidator: (node) =>
-    isNumberInRange(node.value, allowedDateRangeCurrent()),
-
-  // need to find a way to run `isValidNumberRange`
-  // only on submit? or at least, to rerun it on submit
-  dateRangeValidator: (node) => {
-    let parent = node.at("$parent");
-    if ( parent.value ) {
-      let dateRange = [ parent.value.dateStart, parent.value.dateEnd ];
-
-      // if at least one field is filled, we check that our range is valid
-      // else, both our fields are empty, so it's valid
-      return dateRange.some(x => x!=null)
-             ? dateRange.every(x => isNumberInRange(x, allowedDateRangeCurrent()) )  // every number is in the allowed range
-               && isValidNumberRange(dateRange)                                      // dateStart < dateEnd
-             : true;
-    }
-    return true;
-  }
-};
-
-const textValidationRule = [ ["length", 3] ];  // more than 3 chars
-
-const dateValidationMessage = computed(() =>
-  `La date doit être au format 'AAAA' et comprise entre
-  ${allowedDateRangeCurrent()[0]} et ${allowedDateRangeCurrent()[1]}`);
-
-const dateRangeValidationMessage = computed(() =>
-  `La tranche de dates doit composée de deux dates au format 'AAAA',
-   comprises entre ${allowedDateRangeCurrent()[0]} et ${allowedDateRangeCurrent()[1]}`);
 
 /******************************************/
 

@@ -12,29 +12,32 @@
     <ul class="repeatable-text-group">
       <li v-for="[htmlId, val] in Object.entries(inputFields)">
 
-        <input type="text"
-               :id="htmlId"
-               :name="htmlId"
-               :data-key="htmlId"
-               :placeholder="placeholder"
-               :value="val"
-               class="text-input"
-               @input="inputHandler"
-        ></input>
+        <label :for="htmlId" v-html="positionnedLabelText(htmlId)"></label>
 
-        <div class="button-container">
-          <ButtonCross v-if="displayButtonCross(htmlId)"
-                       type="button"
-                       @click="popField(htmlId)"
-                       @touchEnd="popField(htmlId)"
-          ></ButtonCross>
-          <ButtonPlus v-if="displayButtonPlus(htmlId)"
-                      type="button"
-                      @click="addField"
-                      @touchEnd="addField"
-          ></ButtonPlus>
+        <div class="input-wrapper">
+          <input type="text"
+                 :id="htmlId"
+                 :name="htmlId"
+                 :data-key="htmlId"
+                 :placeholder="placeholder"
+                 :value="val"
+                 class="text-input"
+                 @input="inputHandler"
+          ></input>
+          <div class="button-container">
+            <ButtonCross v-if="displayButtonCross(htmlId)"
+                         type="button"
+                         @click="popField(htmlId)"
+                         @touchEnd="popField(htmlId)"
+            ></ButtonCross>
+            <ButtonPlus v-if="displayButtonPlus(htmlId)"
+                        type="button"
+                        @click="addField"
+                        @touchEnd="addField"
+            ></ButtonPlus>
+          </div>
+
         </div>
-
       </li>
     </ul>
   </div>
@@ -49,9 +52,10 @@ import ButtonPlus from "@components/ui/ButtonPlus.vue";
 
 /******************************************/
 
-const props = defineProps(["context"]);
-const placeholder = props.context.placeholder ? props.context.placeholder : "Écrire une valeur..."
-const inputFields = ref({});   // { <html id>: <value> }. this stores our data, while at the same time defining the HTML.
+const props            = defineProps(["context"]);
+const placeholder      = props.context.placeholder ? props.context.placeholder : "Écrire une valeur..."
+const genericLabelText = props.context.labelText ? props.context.labelText : "Valeur";  // base value for the label, which will be augmented using `positionnedLabelText()`
+const inputFields      = ref({});   // { <html id>: <value> }. this stores our data, while at the same time defining the HTML.
 
 /******************************************/
 
@@ -59,6 +63,16 @@ const inputFields = ref({});   // { <html id>: <value> }. this stores our data, 
  * generate a unique name, html id...
  */
 const makeId = () => `form-repeatable-text-${window.crypto.randomUUID()}`;
+
+/**
+ * take the generic value `labelText` and add `n°1`, `n°2`...
+ * based on the position of the input in the input list.
+ * @param {string} htmlId: the html ID and name of the current input
+ */
+ const positionnedLabelText = (htmlId) =>
+  Object.keys(inputFields.value).length > 1
+  ? `${genericLabelText} n°${Object.keys(inputFields.value).indexOf(htmlId) + 1}`
+  : genericLabelText;
 
 /**
  * add a field to the repeatable text field.
@@ -118,13 +132,11 @@ const displayButtonPlus = (htmlId) =>
 const displayButtonCross = (htmlId) =>
   Object.keys(inputFields.value).length > 1;
 
-
 /******************************************/
 
 onMounted(() => {
   addField();
 })
-
 </script>
 
 
@@ -132,15 +144,20 @@ onMounted(() => {
 ul {
   list-style: none;
   padding-left: 0;
+  margin-bottom: 0;
 }
-li {
+label {
+  font-weight: bold;
+}
+.input-wrapper {
   display: flex;
 }
-li > input {
+input {
   margin: .5% 0;
   flex-grow: 2;
+  border: var(--cs-border);
 }
-li > .button-container > button {
+.button-container > button {
   display: inline-table;
   width: 30px;
   height: 30px;
