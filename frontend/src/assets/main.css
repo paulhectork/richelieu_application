@@ -334,15 +334,28 @@ button:active > svg > path {
 }
 
 /*********************************/
+.form-field-outer-wrapper {
+  display: grid;
+  grid-template-columns: 15% 85%;
+}
+.form-field-outer-wrapper > * {
+  margin: 3px;
+}
+
+/*********************************/
 /* select2 styles */
 
 .select2-selection {
   border: var(--cs-border) !important;
   border-radius: 0 !important;
+  height: 100% !important;
 }
 .select2-results__option--highlighted {
   background-color: var(--cs-contrast-default-bg) !important;
   color: var(--cs-contrast-default) !important;
+}
+.form-boolean-flag-wrapper .select2-container {
+  height: 100% !important
 }
 
 /*********************************/

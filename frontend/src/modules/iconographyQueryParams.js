@@ -22,14 +22,14 @@ export class IconographyQueryParams {
   /**
    * our data fields, undefined by default
    */
-  title       = undefined;
-  author      = undefined;
-  publisher   = undefined;
-  theme       = undefined;
-  namedEntity = undefined;
-  institution = undefined;
-  dateFilter  = undefined;
-  date        = [];  // we prefer our types to always stay the same. `date` will thus always be an array, of length 0 if no data is submitted.
+  title       = [];         // Array<String> || []
+  author      = [];         // Array<String> || []
+  publisher   = [];         // Array<String> || []
+  theme       = [];         // Array<string> || []
+  namedEntity = [];         // Array<string> || []
+  institution = [];         // Array<string> || []
+  dateFilter  = undefined;  // Array<string> || undefined
+  date        = [];         // Array<Number> || []. we prefer our types to always stay the same. `date` will thus always be an array, of length 0 if no data is submitted.
 
   /**
    * create the `IconographyQueryParams`
@@ -45,12 +45,16 @@ export class IconographyQueryParams {
   constructor(data, from) {
     const allowed = ["form","route"];
     if ( !allowed.includes(from) ) {
-      throw new Error(`iconographyQueryData.constructor: invalid value for 'from'.
+      throw new Error(`iconographyQueryParams.constructor: invalid value for 'from'.
                        expected one of ${allowed}, got ${from}`)
     }
     if ( from==="form" ) { this.fromJson(data) }
     else                 { this.fromRouteParams(data)  };
   }
+
+  /*********************************************/
+  /* main methods */
+
   /**
    * populate the object from a JSON sent from the
    * `AdvancedSearchQuery` form. this includes
@@ -58,21 +62,16 @@ export class IconographyQueryParams {
    * @param {Object} data: the JSON
    */
   fromJson(data) {
-    // simplify a string
-    const simplifyString = s =>
-      s !== undefined
-      ? s.toLowerCase().trim().replaceAll(/\s+/g, " ")
-      : s;
-
-    // all null-ish values are converted to undefined.
-    // raw text fields are simplified
-    this.title     = simplifyString( this.scalar2undefined(data.title) ),
-    this.author    = simplifyString( this.scalar2undefined(data.author) ),
-    this.publisher = simplifyString( this.scalar2undefined(data.publisher) ),
-    // select and radio fields don't need simplification
-    this.theme       = this.scalar2undefined(data.theme),
-    this.namedEntity = this.scalar2undefined(data.namedEntity),
-    this.institution = this.scalar2undefined(data.institution),
+    // repeatable text fields are of type Array<String>, with simplified values
+    // (no undefined or null-ish values, simplified strings)
+    this.title     = this.stringArrayCleanerSimplifier(data.title),
+    this.author    = this.stringArrayCleanerSimplifier(data.author),
+    this.publisher = this.stringArrayCleanerSimplifier(data.publisher),
+    // select fields are of type Array<string>, without simplified values
+    // (only the null-ish values are removed)
+    this.theme       = this.stringArrayCleaner(data.theme),
+    this.namedEntity = this.stringArrayCleaner(data.namedEntity),
+    this.institution = this.stringArrayCleaner(data.institution),
     this.dateFilter  = data.dateFilter,
     // dates are converted to numbers. we remove `undefined` items.
     this.date = (data.dateFilter === "dateRange"
@@ -81,13 +80,12 @@ export class IconographyQueryParams {
                 ).map(this.scalar2undefined)
                  .filter(x => x !== undefined)
                  .map(this.string2number)
-                 // .map(x => console.log(x, x === "string" && !isNaN(x)) && x);
   }
   /**
    * serialize an instance of `IconographyQueryParams` to JSON.
    * using `JSON.parse(JSON.stringify)` ensures we end up with a
    * JSON, not a weird proxy object
-   * @returns {object}: the json. the structure is always the
+   * @returns {Object}: the json. the structure is always the
    *  same. if there is no data for a field, it is `undefined`
    */
   toJson() {
@@ -116,25 +114,28 @@ export class IconographyQueryParams {
    *  vue-router's `useRoute().query`.
    */
   fromRouteParams(data) {
-    // hand-manipulation of a URL string can lead to types that we defined
-    // as scalars (like `title`) to have multiple values, and be interpreted
-    // by vue-router as arrays; and the contrary: we expect a field to be
-    // an array (like `date`), but a single value is in the URL and
-    // vue-router interprets it as a scalar. here, we enforce our types
-    // to avoid typeerrors down the road
-    const ensureIsScalar = x => Array.isArray(x) ? x[0] || undefined : x;
-    const ensureIsArray = x => Array.isArray(x) ? x : [x] ;
+    // why re-clean data from RouteParams when it has aldready
+    // been cleaned in `this.fromJson()` ?
+    // hand-manipulation of a URL string can lead to incoherences:
+    // we expect a field to be an array (like `date`), but a single
+    // value is in the URL and vue-router interprets it as a scalar.
+    // here, we enforce our types and clean our data
+    // to avoid errors down the road
 
-    this.title       = this.scalar2undefined(ensureIsScalar(data.title)) || undefined,
-    this.author      = this.scalar2undefined(ensureIsScalar(data.author)) || undefined,
-    this.publisher   = this.scalar2undefined(ensureIsScalar(data.publisher)) || undefined,
-    // select and radio fields don't need simplification
-    this.theme       = this.scalar2undefined(ensureIsScalar(data.theme)) || undefined,
-    this.namedEntity = this.scalar2undefined(ensureIsScalar(data.namedEntity)) || undefined,
-    this.institution = this.scalar2undefined(ensureIsScalar(data.institution)) || undefined,
+    // repeatable text fields are of type Array<String>, with simplified values
+    this.title       = this.stringArrayCleanerSimplifier(data.title) || [],
+    this.author      = this.stringArrayCleanerSimplifier(data.author) || [],
+    this.publisher   = this.stringArrayCleanerSimplifier(data.publisher) || [],
+    // select fields are of type Array<string>, but don't need simplification
+    this.theme       = this.stringArrayCleaner(data.theme) || [],
+    this.namedEntity = this.stringArrayCleaner(data.namedEntity) || [],
+    this.institution = this.stringArrayCleaner(data.institution) || [],
+    // dateFilter does not need simplification either, and is a string
     this.dateFilter  = data.dateFilter,
     // dates are converted to numbers. we remove `undefined` items.
-    this.date        = ensureIsArray(data.date).filter(x => x!=null).map(this.string2number) || [];
+    this.date        = this.ensureIsArray(data.date)
+                           .filter(x => x!=null)
+                           .map(this.string2number) || [];
   }
   /**
    * return an object of query parameters to update the router
@@ -156,6 +157,44 @@ export class IconographyQueryParams {
                             : data[k] === undefined )
     ).every(x => x===true)
   }
+
+  /*********************************************/
+  /* helper functions */
+
+  /**
+   * clean a flat string array (that is, an array made only
+   * of scalars) by removing values that are null or undefined
+   * AND simplifying the string values
+   */
+  stringArrayCleanerSimplifier = arr =>
+    this.ensureIsArray(arr)
+    .map(this.scalar2undefined)
+    .filter(x => x !== undefined)
+    .map(this.simplifyString);
+  /**
+   * clean a flat string array (that is, an array made only
+   * of scalars) by removing values that are null or undefined
+   * WITHOUT simplifying the string values
+   */
+  stringArrayCleaner = arr =>
+    this.ensureIsArray(arr)
+    .map(this.scalar2undefined)
+    .filter(x => x !== undefined);
+  /**
+   * ensure `x` is a scalar. returns `undefined` if these is no `x[0]`
+   */
+  ensureIsScalar = x => Array.isArray(x) ? x[0] || undefined : x;
+  /**
+   * ensure `x` is an array.
+   */
+  ensureIsArray = x => Array.isArray(x) ? x : [x] ;
+  /**
+   * simplify the string `s`
+   */
+  simplifyString = s =>
+    s !== undefined
+    ? s.toLowerCase().trim().replaceAll(/\s+/g, " ")
+    : s;
   /**
    * replace scalar `s` by `undefined` if the scalar `s` contains no data.
    */

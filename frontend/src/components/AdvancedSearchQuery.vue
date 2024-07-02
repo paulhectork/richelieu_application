@@ -36,7 +36,6 @@
                && themeArray.length
                && institutionArray.length"
     >
-
       <FormKit type="formSelect"
                name="theme"
                label="Thème"
@@ -60,28 +59,20 @@
       ></FormKit>
     </div>
 
-
     <!-- free text inputs -->
-    <!--
-    <FormKit type="text"
-             name="title"
-             label="Titre"
-             :validation="textValidationRule"
-             help="Le titre de la ressource iconographique doit contenir les mots entrés ici."
-             placeholder="Ex: Le Moniteur de la Mode"
-    ></FormKit>
-    -->
+
     <FormKit type="formRepeatableText"
              name="title"
              id="title"
+             label="Titre"
              labelText="Titre"
              help="Le titre de la ressource iconographique doit contenir les mots entrés ici."
              placeholder="Ex: Le Moniteur de la Mode"
              validation="textArrayValidator"
     ></FormKit>
-
     <FormKit type="formRepeatableText"
              name="author"
+             label="Auteur ou autrice"
              labelText="Auteur ou autrice"
              placeholder="Ex: Jules David"
              help="Le nom de l'auteur ou de l'autrice doit contenir les mots entrés ici."
@@ -89,6 +80,7 @@
     ></FormKit>
     <FormKit type="formRepeatableText"
              name="publisher"
+             label="Maison d'édition"
              labelText="Maison d'édition"
              placeholder="Bellizard"
              help="Le nom de l'éditeur ou de la maison d'édition doit contenir les mots entrés ici."
@@ -246,12 +238,14 @@ function sortByValue(val1, val2) {
  * @param {Object} formNode: the FormKit core node
  */
 function onSubmit(formData, formNode) {
-  console.log("formData", formData)
+  // console.log("formData", formData)
 
   // remove possible errrors that are shown by a previous submission
   formNode.clearErrors();
 
   const queryParams = new IconographyQueryParams(formData, "form");
+
+  console.log("AdvancedSearchQuery.onSubmit.formData.allEmpty() :", queryParams.allEmpty())
 
   // if no input data has been added, display an error message
   // else, submit the form.
@@ -260,7 +254,7 @@ function onSubmit(formData, formNode) {
     return false;
 
   } else {
-    emit("query-params", queryParams);
+    // emit("query-params", queryParams);
     return true;
   }
 }
@@ -314,6 +308,11 @@ onMounted(() => {
 <style scoped>
 #advanced-search-form {
   margin: 0 5%;
+}
+.form-field-wrapper {
+  display: grid;
+  grid-template-columns: 15% 85%;
+  grid-template-rows: 100%;
 }
 .date-range {
   display: flex;

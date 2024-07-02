@@ -96,7 +96,7 @@ const validateText = (txt) =>
  * @returns {boolean}
  */
 export function textValidator(node) {
-  return validateText(node.value);
+  return validateText(node.value.data);
 }
 /**
  * validate a repeatable text element
@@ -104,7 +104,7 @@ export function textValidator(node) {
  * @returns {boolean}
  */
 export function textArrayValidator(node) {
-  return node.value.every(validateText);
+  return node.value.data.every(validateText);
 }
 
 
@@ -115,13 +115,13 @@ export function textArrayValidator(node) {
 export const textValidatorMessage = "La valeur entrée doit comporter au moins 3 caractères."
 
 // for a single date
-export const dateValidatorMessage = ([name, args, node]) => {
+export const dateValidatorMessage = ({name, args, node}) => {
   let allowedDateRange = getAllowedDateRange(node);
   return `La date doit être au format 'AAAA' et comprise entre
           ${allowedDateRange[0]} et ${allowedDateRange[1]}`};
 
 // for a date range
-export const dateRangeValidatorMessage = ([name, args, node]) => {
+export const dateRangeValidatorMessage = ({name, args, node}) => {
   let allowedDateRange = getAllowedDateRange(node);
   return `La tranche de dates doit composée de deux dates au format 'AAAA',
           comprises entre ${allowedDateRange[0]} et ${allowedDateRange[1]}` };

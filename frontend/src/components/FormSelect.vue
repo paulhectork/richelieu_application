@@ -41,31 +41,29 @@
 
 <template>
 
-  <div class="form-select-basic-wrapper">
-    <select :id="selectId"
-            class="form-select-basic"
-            style="width: 100%;
-                   border-radius: 0;"
-    >
-      <option v-html="placeholder"
-              value=""
-              selected disabled hidden
-      ></option>
-      <option v-for="o in optionsArray"
-              :value="o.value"
-      >{{ o.label }}</option>
-    </select>
+  <div class="form-field-outer-wrapper">
+    <FormBooleanOp @boolean-op="updateBooleanOp"
+    ></FormBooleanOp>
+    <div class="form-field-input-wrapper">
+      <select :id="selectId"
+              class="form-select-basic"
+              style="width: 100%;
+                     border-radius: 0;"
+      ></select>
+    </div>
   </div>
 
 </template>
 
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 
 import select2 from "select2";
 import "select2/dist/css/select2.css";
 import $ from "jquery";
+
+import FormBooleanOp from "@components/FormBooleanOp.vue";
 
 // hook the select2 plugin to jquery.
 // not shown in the doc, see: https://stackoverflow.com/a/49722514/17915803
@@ -81,28 +79,45 @@ const optionsArray = props.context.options || [];       // array of all the poss
 const placeholder  = props.context.placeholder != null
                      ? props.context.placeholder
                      : "Sélectionner une valeur";
+const booleanOp = ref("and");
+
+/****************************************/
+
+/**
+ * update the `booleanOp` based on what's sent
+ * from `FormBooleanOp`
+ * @param {} val
+ */
+function updateBooleanOp(val) {
+  if ( ["and","or","not"].includes(val) ) {
+    booleanOp.value = val;
+  } else {
+    console.error("FormSelect.updateBooleanOp: expected one of ['and', 'or', 'not'], got", val)
+  }
+}
 
 /****************************************/
 
 onMounted(() => {
   $(`#${selectId}`).select2({
-    // by default the formkit input's value is not changed when
-    // a new value is selected here, even if the selected item
-    // is displayed in the HTML page's `<select>`, so this component
-    // is useless.
-    // so, we need to set the value for this formkit input
-    // programatically, so that it can be picked up by formkit
-    // and outputted to the form.
+    multiple: true,
+    placeholder: placeholder,
+    data: optionsArray.map((o, idx) => { return { id: `${selectId}-data-${idx}`,
+                                                  value: o.value,
+                                                  text: o.label }
+    }),
+    // propagate the selected values to FormKit.
+    // triggered when adding / removing an element from the selection
     // see: https://formkit.com/essentials/architecture#setting-values
+    // and: https://select2.org/programmatic-control/retrieving-selections#using-the-data-method
     templateSelection: (data, container) => {
-
-      // templateSelection is fired on init, so we need
-      // to check that an item has indeed been selected.
-      if (! data.disabled ) {
-        selectNode.input(data.text)
-        // .then(() => console.log(props.context.node.value));
-      }
-      return data.text;
+      selectNode.input({
+        relation : booleanOp.value,
+        data     : $(`#${selectId}`).select2("data")           // $(`#${selectId}`).select2("data") returns an array of selected values
+                                    .filter(x => !x.disabled)  // placeholder is disabled => remove it
+                                    .map(x => x.value)         // retrieve the @value attribute of the selected options
+        });
+        return data.text;
     }
   });
 })
