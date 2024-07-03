@@ -5,6 +5,17 @@
      URL, fetches the answer and calls another component to
      display the results
 
+     structure of each field:
+     each field is made of a boolean operator (and,or,not)
+     and of the actual input field (FormRadioTabs, FormRepeatableText...).
+     the structure can be manipulated using the <div> containers
+     for each part of the field:
+
+     <div class="form-field-outer-wrapper">              <=== the wrapper around the whole field
+      <div class="form-field-boolean-op-wrapper"></div>  <=== the wrapper around the FormBooleanOp
+      <div class="form-field-input-wrapper"></div>       <=== the wrapper around the actual input
+     </div>
+
      see:
      for an in-depth explanation of FormKit:
         https://formkit.com/essentials/architecture
@@ -36,56 +47,90 @@
                && themeArray.length
                && institutionArray.length"
     >
-      <FormKit type="formSelect"
-               name="theme"
-               label="Thème"
-               help="Sélectionner un thème"
-               placeholder="Sélectionner un thème"
-               :options="themeArray"
-      ></FormKit>
-      <FormKit type="formSelect"
-               name="namedEntity"
-               label="Sujet"
-               placeholder="Sélectionner un sujet"
-               help="Sélectionner un sujet"
-               :options="namedEntityArray"
-      ></FormKit>
-      <FormKit type="formSelect"
-               name="institution"
-               label="Institution"
-               help="Sélectionner une institution"
-               placeholder="Sélectionner une institution"
-               :options="institutionArray"
-      ></FormKit>
+      <div class="form-field-outer-wrapper">
+        <FormKit type="formBooleanOp"
+                 id="themeBooleanOp"
+                 name="themeBooleanOp"
+        ></FormKit>
+        <FormKit type="formSelect"
+                 name="theme"
+                 label="Thème"
+                 help="Sélectionner un thème"
+                 placeholder="Sélectionner un thème"
+                 :options="themeArray"
+        ></FormKit>
+      </div>
+      <div class="form-field-outer-wrapper">
+        <FormKit type="formBooleanOp"
+                 name="namedEntityBooleanOp"
+                 id="namedEntityBooleanOp"
+        ></FormKit>
+        <FormKit type="formSelect"
+                 name="namedEntity"
+                 label="Sujet"
+                 placeholder="Sélectionner un sujet"
+                 help="Sélectionner un sujet"
+                 :options="namedEntityArray"
+        ></FormKit>
+      </div>
+      <div class="form-field-outer-wrapper">
+        <FormKit type="formBooleanOp"
+                 name="institutionBooleanOp"
+                 id="institutionBooleanOp"
+        ></FormKit>
+        <FormKit type="formSelect"
+                 name="institution"
+                 label="Institution"
+                 help="Sélectionner une institution"
+                 placeholder="Sélectionner une institution"
+                 :options="institutionArray"
+        ></FormKit>
+      </div>
     </div>
 
     <!-- free text inputs -->
 
-    <FormKit type="formRepeatableText"
-             name="title"
-             id="title"
-             label="Titre"
-             labelText="Titre"
-             help="Le titre de la ressource iconographique doit contenir les mots entrés ici."
-             placeholder="Ex: Le Moniteur de la Mode"
-             validation="textArrayValidator"
-    ></FormKit>
-    <FormKit type="formRepeatableText"
-             name="author"
-             label="Auteur ou autrice"
-             labelText="Auteur ou autrice"
-             placeholder="Ex: Jules David"
-             help="Le nom de l'auteur ou de l'autrice doit contenir les mots entrés ici."
-             validation="textArrayValidator"
-    ></FormKit>
-    <FormKit type="formRepeatableText"
-             name="publisher"
-             label="Maison d'édition"
-             labelText="Maison d'édition"
-             placeholder="Bellizard"
-             help="Le nom de l'éditeur ou de la maison d'édition doit contenir les mots entrés ici."
-             validation="textArrayValidator"
-    ></FormKit>
+    <div class="form-field-outer-wrapper">
+      <FormKit type="formBooleanOp"
+               name="titleBooleanOp"
+               id="titleBooleanOp"
+      ></FormKit>
+      <FormKit type="formRepeatableText"
+               name="title"
+               id="title"
+               label="Titre"
+               labelText="Titre"
+               help="Le titre de la ressource iconographique doit contenir les mots entrés ici."
+               placeholder="Ex: Le Moniteur de la Mode"
+               validation="textArrayValidator"
+      ></FormKit>
+    </div>
+    <div class="form-field-outer-wrapper">
+      <FormKit type="formBooleanOp"
+               name="authorBooleanOp"
+               id="authorBooleanOp"
+      ></FormKit>
+      <FormKit type="formRepeatableText"
+               name="author"
+               label="Auteur ou autrice"
+               placeholder="Ex: Jules David"
+               help="Le nom de l'auteur ou de l'autrice doit contenir les mots entrés ici."
+               validation="textArrayValidator"
+      ></FormKit>
+    </div>
+    <div class="form-field-outer-wrapper">
+      <FormKit type="formBooleanOp"
+               name="publisherBooleanOp"
+               id="publisherBooleanOp"
+      ></FormKit>
+      <FormKit type="formRepeatableText"
+               name="publisher"
+               label="Maison d'édition"
+               placeholder="Bellizard"
+               help="Le nom de l'éditeur ou de la maison d'édition doit contenir les mots entrés ici."
+               validation="textArrayValidator"
+      ></FormKit>
+    </div>
 
     <!-- date inputs -->
     <div>
@@ -245,7 +290,8 @@ function onSubmit(formData, formNode) {
 
   const queryParams = new IconographyQueryParams(formData, "form");
 
-  console.log("AdvancedSearchQuery.onSubmit.formData.allEmpty() :", queryParams.allEmpty())
+  console.log("AdvancedSearchQuery.onSubmit.queryParams.toJson()   :", queryParams.toJson() );
+  console.log("AdvancedSearchQuery.onSubmit.queryParams.allEmpty() :", queryParams.allEmpty());
 
   // if no input data has been added, display an error message
   // else, submit the form.
@@ -254,7 +300,7 @@ function onSubmit(formData, formNode) {
     return false;
 
   } else {
-    // emit("query-params", queryParams);
+    emit("query-params", queryParams);
     return true;
   }
 }

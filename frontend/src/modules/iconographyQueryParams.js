@@ -22,14 +22,23 @@ export class IconographyQueryParams {
   /**
    * our data fields, undefined by default
    */
-  title       = [];         // Array<String> || []
-  author      = [];         // Array<String> || []
-  publisher   = [];         // Array<String> || []
-  theme       = [];         // Array<string> || []
-  namedEntity = [];         // Array<string> || []
-  institution = [];         // Array<string> || []
-  dateFilter  = undefined;  // Array<string> || undefined
-  date        = [];         // Array<Number> || []. we prefer our types to always stay the same. `date` will thus always be an array, of length 0 if no data is submitted.
+  // actual data inputs
+  title                = [];         // Array<String> || []
+  author               = [];         // Array<String> || []
+  publisher            = [];         // Array<String> || []
+  theme                = [];         // Array<string> || []
+  namedEntity          = [];         // Array<string> || []
+  institution          = [];         // Array<string> || []
+  dateFilter           = undefined;  // Array<string> || undefined
+  date                 = [];         // Array<Number> || []. we prefer our types to always stay the same. `date` will thus always be an array, of length 0 if no data is submitted.
+  // boolean operators for each input
+  titleBooleanOp       = "and";  // "and"|"or"|"not"
+  authorBooleanOp      = "and";  // "and"|"or"|"not"
+  publisherBooleanOp   = "and";  // "and"|"or"|"not"
+  themeBooleanOp       = "and";  // "and"|"or"|"not"
+  namedEntityBooleanOp = "and";  // "and"|"or"|"not"
+  institutionBooleanOp = "and";  // "and"|"or"|"not"
+  dateBooleanOp        = "and";  // "and"|"or"|"not"
 
   /**
    * create the `IconographyQueryParams`
@@ -58,10 +67,23 @@ export class IconographyQueryParams {
   /**
    * populate the object from a JSON sent from the
    * `AdvancedSearchQuery` form. this includes
-   * simplifying the raw, user-inputted values
+   * simplifying the raw, user-inputted values.
+   * basically, the processing is:
+   * - the boolean operators are left as is
+   * - retyping every actual input field to list
+   * - cleaning the free text inputs
    * @param {Object} data: the JSON
    */
   fromJson(data) {
+    // boolean ops should always be defined in the form.
+    // if for some reasonthey aren't, reverd to the default value
+    this.titleBooleanOp       = this.booleanOpCleaner(data.titleBooleanOp);
+    this.authorBooleanOp      = this.booleanOpCleaner(data.authorBooleanOp);
+    this.publisherBooleanOp   = this.booleanOpCleaner(data.publisherBooleanOp);
+    this.themeBooleanOp       = this.booleanOpCleaner(data.themeBooleanOp);
+    this.namedEntityBooleanOp = this.booleanOpCleaner(data.namedEntityBooleanOp);
+    this.institutionBooleanOp = this.booleanOpCleaner(data.institutionBooleanOp);
+    this.dateBooleanOp        = this.booleanOpCleaner(data.dateBooleanOp);
     // repeatable text fields are of type Array<String>, with simplified values
     // (no undefined or null-ish values, simplified strings)
     this.title     = this.stringArrayCleanerSimplifier(data.title),
@@ -83,21 +105,30 @@ export class IconographyQueryParams {
   }
   /**
    * serialize an instance of `IconographyQueryParams` to JSON.
-   * using `JSON.parse(JSON.stringify)` ensures we end up with a
+   * using `JSON.parse(JSON.stringify(...))` ensures we end up with a
    * JSON, not a weird proxy object
    * @returns {Object}: the json. the structure is always the
    *  same. if there is no data for a field, it is `undefined`
    */
   toJson() {
     return JSON.parse(JSON.stringify(
-      { title       : this.title,
-        author      : this.author,
-        publisher   : this.publisher,
-        theme       : this.theme,
-        namedEntity : this.namedEntity,
-        institution : this.institution,
-        dateFilter  : this.dateFilter,
-        date        : this.date }
+      { title                : this.title,
+        author               : this.author,
+        publisher            : this.publisher,
+        theme                : this.theme,
+        namedEntity          : this.namedEntity,
+        institution          : this.institution,
+        dateFilter           : this.dateFilter,
+        date                 : this.date,
+
+        titleBooleanOp       : this.titleBooleanOp,
+        authorBooleanOp      : this.authorBooleanOp,
+        publisherBooleanOp   : this.publisherBooleanOp,
+        themeBooleanOp       : this.themeBooleanOp,
+        namedEntityBooleanOp : this.namedEntityBooleanOp,
+        institutionBooleanOp : this.institutionBooleanOp,
+        dateBooleanOp        : this.dateBooleanOp
+      }
     ))
   }
   /**
@@ -122,10 +153,18 @@ export class IconographyQueryParams {
     // here, we enforce our types and clean our data
     // to avoid errors down the road
 
+    // booleanOps are pretty easy
+    this.titleBooleanOp       = this.booleanOpCleaner(data.titleBooleanOp);
+    this.authorBooleanOp      = this.booleanOpCleaner(data.authorBooleanOp);
+    this.publisherBooleanOp   = this.booleanOpCleaner(data.publisherBooleanOp);
+    this.themeBooleanOp       = this.booleanOpCleaner(data.themeBooleanOp);
+    this.namedEntityBooleanOp = this.booleanOpCleaner(data.namedEntityBooleanOp);
+    this.institutionBooleanOp = this.booleanOpCleaner(data.institutionBooleanOp);
+    this.dateBooleanOp        = this.booleanOpCleaner(data.dateBooleanOp);
     // repeatable text fields are of type Array<String>, with simplified values
-    this.title       = this.stringArrayCleanerSimplifier(data.title) || [],
-    this.author      = this.stringArrayCleanerSimplifier(data.author) || [],
-    this.publisher   = this.stringArrayCleanerSimplifier(data.publisher) || [],
+    this.title     = this.stringArrayCleanerSimplifier(data.title) || [],
+    this.author    = this.stringArrayCleanerSimplifier(data.author) || [],
+    this.publisher = this.stringArrayCleanerSimplifier(data.publisher) || [],
     // select fields are of type Array<string>, but don't need simplification
     this.theme       = this.stringArrayCleaner(data.theme) || [],
     this.namedEntity = this.stringArrayCleaner(data.namedEntity) || [],
@@ -151,7 +190,7 @@ export class IconographyQueryParams {
   allEmpty() {
     const data = this.toJson();
     return (Object.keys(data)
-                  .filter(k =>  k !== "dateFilter")  // dateFilter has a default value but is useless if a date isn't submitted => remove it
+                  .filter(k =>  k !== "dateFilter" && !k.match(/BooleanOp/g))  // dateFilter and boolean ops have default values but are useless if extra data isn't submitted => remove them
                   .map(k => Array.isArray(data[k])
                             ? isEmptyArray(data[k])
                             : data[k] === undefined )
@@ -161,6 +200,10 @@ export class IconographyQueryParams {
   /*********************************************/
   /* helper functions */
 
+  /**
+   * clean a booleanOp parameter. if it's not valid, revert to the default "and"
+   */
+  booleanOpCleaner = x => ["and","or","not"].includes(x) ? x : "and";
   /**
    * clean a flat string array (that is, an array made only
    * of scalars) by removing values that are null or undefined

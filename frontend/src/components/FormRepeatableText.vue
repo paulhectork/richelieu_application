@@ -10,53 +10,43 @@
 
 <template>
 
-  <div class="form-field-outer-wrapper">
-
-    <FormBooleanOp @boolean-op="updateBooleanOp"
-    ></FormBooleanOp>
-
-    <div class="form-field-input-wrapper">
-      <ul class="repeatable-text-group">
-        <li v-for="[htmlId, val] in Object.entries(inputFields)">
-
-          <label :for="htmlId" v-html="positionnedLabelText(htmlId)"></label>
-
-          <div class="input-wrapper">
-            <input type="text"
-                   :id="htmlId"
-                   :name="htmlId"
-                   :data-key="htmlId"
-                   :placeholder="placeholder"
-                   :value="val"
-                   class="text-input"
-                   @input="inputHandler"
-            ></input>
-            <div class="button-container">
-              <ButtonCross v-if="displayButtonCross(htmlId)"
-                          type="button"
-                          @click="popField(htmlId)"
-                          @touchEnd="popField(htmlId)"
-              ></ButtonCross>
-              <ButtonPlus v-if="displayButtonPlus(htmlId)"
-                          type="button"
-                          @click="addField"
-                          @touchEnd="addField"
-              ></ButtonPlus>
-            </div>
-
+  <div class="form-field-input-wrapper">
+    <ul class="repeatable-text-group">
+      <li v-for="[htmlId, val] in Object.entries(inputFields)">
+        <label :for="htmlId" v-html="positionnedLabelText(htmlId)" hidden></label>
+        <div class="input-wrapper">
+          <input type="text"
+                 :id="htmlId"
+                 :name="htmlId"
+                 :data-key="htmlId"
+                 :placeholder="placeholder"
+                 :value="val"
+                 class="text-input"
+                 @input="inputHandler"
+          ></input>
+          <div class="button-container">
+            <ButtonCross v-if="displayButtonCross(htmlId)"
+                        type="button"
+                        @click="popField(htmlId)"
+                        @touchEnd="popField(htmlId)"
+            ></ButtonCross>
+            <ButtonPlus v-if="displayButtonPlus(htmlId)"
+                        type="button"
+                        @click="addField"
+                        @touchEnd="addField"
+            ></ButtonPlus>
           </div>
-        </li>
-      </ul>
-    </div>
-
+        </div>
+      </li>
+    </ul>
   </div>
+
 </template>
 
 
 <script setup>
 import { ref, onMounted } from "vue";
 
-import FormBooleanOp from "@components/FormBooleanOp.vue";
 import ButtonCross from "@components/ui/ButtonCross.vue";
 import ButtonPlus from "@components/ui/ButtonPlus.vue";
 
@@ -66,22 +56,8 @@ const props            = defineProps(["context"]);
 const placeholder      = props.context.placeholder ? props.context.placeholder : "Écrire une valeur..."
 const genericLabelText = props.context.labelText ? props.context.labelText : "Valeur";  // base value for the label, which will be augmented using `positionnedLabelText()`
 const inputFields      = ref({});   // { <html id>: <value> }. this stores our data, while at the same time defining the HTML.
-const booleanOp  = ref("and");
 
 /******************************************/
-
-/**
- * update the `booleanOp` based on what's sent
- * from `FormBooleanOp`
- * @param {string} val: the boolean value
- */
- function updateBooleanOp(val) {
-  if ( ["and","or","not"].includes(val) ) {
-    booleanOp.value = val;
-  } else {
-    console.error("FormSelect.updateBooleanOp: expected one of ['and', 'or', 'not'], got", val)
-  }
-}
 
 /**
  * generate a unique name, html id...
@@ -130,8 +106,7 @@ const reinitFields = () => {
  */
 function inputHandler(e) {
   inputFields.value[e.originalTarget.id] = e.srcElement.value;  // update `inputFields`
-  props.context.node.input({ relation : booleanOp.value,  // update the formkit node input
-                             data     : Object.values(inputFields.value) });
+  props.context.node.input( Object.values(inputFields.value) );
 }
 
 /**

@@ -96,7 +96,7 @@ const validateText = (txt) =>
  * @returns {boolean}
  */
 export function textValidator(node) {
-  return validateText(node.value.data);
+  return validateText(node.value);
 }
 /**
  * validate a repeatable text element
@@ -104,7 +104,7 @@ export function textValidator(node) {
  * @returns {boolean}
  */
 export function textArrayValidator(node) {
-  return node.value.data.every(validateText);
+  return node.value.every(validateText);
 }
 
 

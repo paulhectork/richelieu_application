@@ -3,7 +3,7 @@ import { plugin, defaultConfig, createInput } from '@formkit/vue'
 
 import FormSelect from "@components/FormSelect.vue";
 import FormRadioTabs from "@components/FormRadioTabs.vue";
-// import FormBooleanFlag from "@components/FormBooleanFlag.vue";
+import FormBooleanOp from "@components/FormBooleanOp.vue";
 import FormRepeatableText from "@components/FormRepeatableText.vue";
 import { textValidatorMessage
        , dateValidatorMessage
@@ -19,8 +19,8 @@ const config = {
   inputs: {
     formSelect         : createInput(FormSelect, { props: ["placeholder", "options"] }),
     formRadioTabs      : createInput(FormRadioTabs, { props: ["options", "value"] }),
-    formRepeatableText : createInput(FormRepeatableText, { props: ["placeholder", "labelText"] }),
-    // formBooleanFlag    : createInput(FormBooleanFlag, { props: ["id"] })
+    formBooleanOp      : createInput(FormBooleanOp, { props: ["id"] }),
+    formRepeatableText : createInput(FormRepeatableText, { props: ["placeholder", "labelText"] })
   },
   rules: { textValidator
          , textArrayValidator

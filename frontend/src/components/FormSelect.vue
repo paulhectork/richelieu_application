@@ -41,16 +41,12 @@
 
 <template>
 
-  <div class="form-field-outer-wrapper">
-    <FormBooleanOp @boolean-op="updateBooleanOp"
-    ></FormBooleanOp>
-    <div class="form-field-input-wrapper">
-      <select :id="selectId"
-              class="form-select-basic"
-              style="width: 100%;
-                     border-radius: 0;"
-      ></select>
-    </div>
+  <div class="form-field-input-wrapper">
+    <select :id="selectId"
+            class="form-select-basic"
+            style="width: 100%;
+                   border-radius: 0;"
+    ></select>
   </div>
 
 </template>
@@ -62,8 +58,6 @@ import { onMounted, ref } from "vue";
 import select2 from "select2";
 import "select2/dist/css/select2.css";
 import $ from "jquery";
-
-import FormBooleanOp from "@components/FormBooleanOp.vue";
 
 // hook the select2 plugin to jquery.
 // not shown in the doc, see: https://stackoverflow.com/a/49722514/17915803
@@ -79,22 +73,8 @@ const optionsArray = props.context.options || [];       // array of all the poss
 const placeholder  = props.context.placeholder != null
                      ? props.context.placeholder
                      : "Sélectionner une valeur";
-const booleanOp = ref("and");
 
 /****************************************/
-
-/**
- * update the `booleanOp` based on what's sent
- * from `FormBooleanOp`
- * @param {} val
- */
-function updateBooleanOp(val) {
-  if ( ["and","or","not"].includes(val) ) {
-    booleanOp.value = val;
-  } else {
-    console.error("FormSelect.updateBooleanOp: expected one of ['and', 'or', 'not'], got", val)
-  }
-}
 
 /****************************************/
 
@@ -111,13 +91,10 @@ onMounted(() => {
     // see: https://formkit.com/essentials/architecture#setting-values
     // and: https://select2.org/programmatic-control/retrieving-selections#using-the-data-method
     templateSelection: (data, container) => {
-      selectNode.input({
-        relation : booleanOp.value,
-        data     : $(`#${selectId}`).select2("data")           // $(`#${selectId}`).select2("data") returns an array of selected values
-                                    .filter(x => !x.disabled)  // placeholder is disabled => remove it
-                                    .map(x => x.value)         // retrieve the @value attribute of the selected options
-        });
-        return data.text;
+      selectNode.input( $(`#${selectId}`).select2("data")           // $(`#${selectId}`).select2("data") returns an array of selected values
+                                         .filter(x => !x.disabled)  // placeholder is disabled => remove it
+                                         .map(x => x.value) )       // retrieve the @value attribute of the selected options
+      return data.text;
     }
   });
 })
