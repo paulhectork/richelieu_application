@@ -1,0 +1,250 @@
+<!-- FormDate.vue
+
+     a component with a repeatable date search field.
+     this component can encapsulate several date fields
+     of different types: dateExact, dateBefore, dateAfter,
+     dateRange. it is a distinct component for clarity.
+
+     this component contains an <ul>, where each <li>
+     is a complete date field. this date field contains:
+     - a date filter, which helps us to use the kind of date search
+       (dateStart, dateBefore, dateAfter, dateExact)
+     - a date input, with either one or two number fields.
+ -->
+
+<template>
+
+  <div class="form-field-input-wrapper">
+    <FormKit type="group"
+             name="date"
+             @input.deep=""
+    >
+
+      <ul class="list-invisible">
+        <li v-for="[htmlId, dateField] in Object.entries(inputFields)"
+            :id="htmlId"
+            style="border: 1px solid red;"
+        >
+          <p>{{ htmlId.slice(-5) }}</p>
+          <!-- the actual date input -->
+          <div class="input-wrapper">
+            <!-- select the date filter type -->
+            <FormKit type="fkRadioTabs"
+                     :id="`${htmlId}-date-filter`"
+                     :name="`${htmlId}-date-filter`"
+                     label="Date"
+                     help="Choisir le type de filtre pour la date"
+                     value="dateRange"
+                     default="dateRange"
+                     :options="allowedDateSearchTypes"
+                     @input="newInput => updateDateFilter(newInput, htmlId)"
+            ></FormKit>
+
+            <!-- date range -->
+            <FormKit v-if="inputFields[htmlId].filter==='dateRange'"
+                     type="group"
+                     :name="`${htmlId}-name`"
+                     label="Date"
+                     help="Choisir une tranche de dates au format AAAA-AAAA"
+            >
+              <div class="date-range">
+                <FormKit type="number"
+                         :name="`${htmlId}-dateStart`"
+                         label="Date de début"
+                         placeholder="Ex: 1810"
+                         :data-allowedDateRange="allowedDateRange"
+                         validation="dateRangeValidator"
+                         @input="newInput => updateDateData(newInput, htmlId, 0)"
+                ></FormKit>
+                <FormKit type="number"
+                         :name="`${htmlId}-dateEnd`"
+                         label="Date de fin"
+                         placeholder="Ex: 1891"
+                         :data-allowedDateRange="allowedDateRange"
+                         validation="dateRangeValidator"
+                         @input="newInput => updateDateData(newInput, htmlId, 1)"
+                ></FormKit>
+              </div>
+            </FormKit>
+
+            <!-- exact date -->
+            <FormKit v-else-if="inputFields[htmlId].filter==='dateExact'"
+                     type="number"
+                     :name="`${htmlId}-date`"
+                     label="Date exacte"
+                     placeholder="Ex: 1891"
+                     :data-allowedDateRange="allowedDateRange"
+                     validation="dateValidator"
+                     @input="newInput => updateDateData(newInput, htmlId, 0)"
+            ></FormKit>
+
+            <!-- before -->
+            <FormKit v-else-if="inputFields[htmlId].filter==='dateBefore'"
+                     type="number"
+                     :name="`${htmlId}-date`"
+                     label="Avant"
+                     placeholder="Ex: 1891"
+                     :data-allowedDateRange="allowedDateRange"
+                     validation="dateValidator"
+                     @input="newInput => updateDateData(newInput, htmlId, 0)"
+            ></FormKit>
+
+            <!-- after -->
+            <FormKit v-else
+                     type="number"
+                     :name="`${htmlId}-date`"
+                     label="Après"
+                     placeholder="Ex: 1810"
+                     :data-allowedDateRange="allowedDateRange"
+                     validation="dateValidator"
+                     @input="newInput => updateDateData(newInput, htmlId, 0)"
+            ></FormKit>
+          </div>
+
+          <!-- add/delete buttons -->
+          <div class="button-container">
+            <ButtonCross v-if="displayButtonCross(htmlId)"
+                        type="button"
+                        @click="popField(htmlId)"
+                        @touchEnd="popField(htmlId)"
+            ></ButtonCross>
+            <ButtonPlus v-if="displayButtonPlus(htmlId)"
+                        type="button"
+                        @click="addField"
+                        @touchEnd="addField"
+            ></ButtonPlus>
+          </div>
+
+        </li>
+      </ul>
+
+    </FormKit>
+
+  </div>
+
+</template>
+
+
+<script setup>
+import { onMounted, ref } from "vue"
+import axios from "axios";
+
+import ButtonCross from "@components/ui/ButtonCross.vue";
+import ButtonPlus from "@components/ui/ButtonPlus.vue";
+
+/****************************************/
+
+// const dateFilterNode   = useFormKitNodeById("date-filter");  // useFormKitNodeById targets a FormKit node by it's HTML id and creates a vue ref.
+// const dateFilterType   = ref({});                            // str: the type of date filter to display
+const allowedDateRange = ref([]);                            // int array: [minDate, maxDate]
+const inputFields      = ref({});                            // // { <html id>: { filter: <type of date filter>, data: [<array of dates>] } }. this stores our data, while defining our html
+
+// `items` in the html form to set the `allowedDateRanger`
+const allowedDateSearchTypes = [ { label:'Plage de dates', value:'dateRange' }
+                               , { label:'Date exacte'   , value:'dateExact' }
+                               , { label:'Avant'         , value:'dateBefore'}
+                               , { label:'Après'         , value:'dateAfter' }]
+
+/****************************************/
+
+/**
+ * generate a unique name, html id...
+ */
+const makeId = () => `form-repeatable-date-${window.crypto.randomUUID()}`;
+
+/**
+ * add a field to the repeatable date field.
+ * we add `[undefined, undefined]` to `data` since the
+ */
+const addField = () => {
+  inputFields.value[makeId()] = { filter:"dateRange", data:[undefined, undefined] };
+}
+
+/**
+ * delete a field based on its html id
+ */
+const popField = (htmlId) => {
+  if ( Object.keys(inputFields.value).includes(htmlId) ) {
+    delete inputFields.value[htmlId]
+  }
+}
+
+/**
+ * display or hide the buttons in `.button-container`
+ */
+const displayButtonPlus = (htmlId) =>
+  Object.keys(inputFields.value).indexOf(htmlId)
+  === Object.keys(inputFields.value).length - 1;
+
+const displayButtonCross = () =>
+  Object.keys(inputFields.value).length > 1;
+
+
+/**
+ * update the date `filter` key of an input field.
+ * this also includes updating the `data` with default values.
+ * @param {string} input: the new date filter
+ * @param {string} htmlId: the id of the FormKitRadioTabs element,
+ *  to be able to add the values to the proper entry of `inputFields`
+ */
+function updateDateFilter(input, htmlId) {
+  /////////////////////////////////////////////////
+  /////////////////////////////////////////////////
+  //  LE PROBLÈME: ON CONSIDÈRE QUE C'EST        //
+  //  TOUJOURS LE MÊME HTMLID (CELUI DU PREMIER  //
+  //  <LI>) QUI EST REÇU. PROBLÈME DANS LA       //
+  //  MANIÈRE PAS TRÈS CATHOLIQUE DONT IL        //
+  //  EST ACCÉDÉ DANS MA TEMPLATE????????        //
+  /////////////////////////////////////////////////
+  /////////////////////////////////////////////////
+  console.log(htmlId.slice(-5));
+  inputFields.value[htmlId].filter = input;
+  inputFields.value[htmlId].data = input==="dateRange"
+                                   ? [undefined,undefined]
+                                   : [undefined];
+}
+
+function updateDateData(input, htmlId, inputPosition=0) {
+  if ( ![0,1].includes(inputPosition) ) {
+    console.error("FormRepeatableDate.updateDateData(): inputPosition must be 0 or 1, got", inputPosition)
+  }
+  inputFields.value[htmlId].data[inputPosition] = input;
+}
+
+
+/****************************************/
+
+onMounted(() => {
+  // fetch necessary data
+  axios.get(new URL("/i/iconography-overall-date-range", __API_URL__))
+       .then(r => {
+         allowedDateRange.value = r.data; })
+       .catch(e => {
+         console.error("AdvancedSearchQuery: axios error on `allowedDateRange`", e);
+         allowedDateRange.value = [ 1700,2100 ];  });
+
+  addField();
+
+  // form events
+  // dateFilterNode.value.on("commit", (e) => { dateFilterType.value = e.payload; });
+})
+
+</script>
+
+<style scoped>
+li {
+  display: grid;
+  grid-template-columns: 2fr auto;
+}
+.date-range {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: start;
+  width: 100%;
+}
+.date-range > * {
+  width: 100%;
+  margin: 0 1vw 1vw 1vw;
+}
+</style>

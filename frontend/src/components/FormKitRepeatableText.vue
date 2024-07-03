@@ -11,7 +11,7 @@
 <template>
 
   <div class="form-field-input-wrapper">
-    <ul class="repeatable-text-group">
+    <ul class="repeatable-text-group list-invisible">
       <li v-for="[htmlId, val] in Object.entries(inputFields)">
         <label :for="htmlId" v-html="positionnedLabelText(htmlId)" hidden></label>
         <div class="input-wrapper">
@@ -141,12 +141,14 @@ onMounted(() => {
 
 
 <style scoped>
+/*
 ul {
   list-style: none;
   padding-left: 0;
   margin-bottom: 0;
   margin-top: 0;
 }
+*/
 label {
   font-weight: bold;
 }

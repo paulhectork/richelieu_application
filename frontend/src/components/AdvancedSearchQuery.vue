@@ -133,72 +133,13 @@
     </div>
 
     <!-- date inputs -->
-    <div>
-      <FormKit type="fkRadioTabs"
-               id="date-filter"
-               name="dateFilter"
-               label="Date"
-               help="Choisir le type de filtre pour la date"
-               value="dateRange"
-               default="dateRange"
-               :options="allowedDateSearchTypes"
+    <div class="form-field-outer-wrapper">
+      <FormKit type="fkBooleanOp"
+               name="dateBooleanOp"
+               id="dateBooleanOp"
       ></FormKit>
-
-      <FormKit v-if="dateFilterType==='dateRange'"
-               type="group"
-               name="date"
-               label="Date"
-               help="Choisir une tranche de dates au format AAAA-AAAA"
-      >
-        <div class="date-range">
-          <FormKit type="number"
-                   name="dateStart"
-                   label="Date de début"
-                   placeholder="Ex: 1810"
-                   :data-allowedDateRange="allowedDateRange"
-                   validation="dateRangeValidator"
-          ></FormKit>
-          <FormKit type="number"
-                   name="dateEnd"
-                   label="Date de fin"
-                   placeholder="Ex: 1891"
-                   :data-allowedDateRange="allowedDateRange"
-                   validation="dateRangeValidator"
-          ></FormKit>
-        </div>
-      </FormKit>
-
-      <FormKit v-else-if="dateFilterType==='dateExact'"
-               type="number"
-               name="date"
-               label="Date exacte"
-               placeholder="Ex: 1891"
-               :data-allowedDateRange="allowedDateRange"
-               validation="dateValidator"
-      ></FormKit>
-      <FormKit v-else-if="dateFilterType==='dateBefore'"
-               type="number"
-               name="date"
-               label="Avant"
-               placeholder="Ex: 1891"
-               :data-allowedDateRange="allowedDateRange"
-               validation="dateValidator"
-      ></FormKit>
-      <FormKit v-else
-               type="number"
-               name="date"
-               label="Après"
-               placeholder="Ex: 1810"
-               :data-allowedDateRange="allowedDateRange"
-               validation="dateValidator"
-      ></FormKit>
+      <FormRepeatableDate></FormRepeatableDate>
     </div>
-
-    <!-- the submit button
-    <FormKit type="submit"
-             id="form-submit"
-    >Lancer la recherche</FormKit>
-    -->
 
   </FormKit>
 </template>
@@ -211,28 +152,17 @@ import { reset } from "@formkit/core";
 import { useFormKitNodeById, FormKitMessages } from '@formkit/vue';
 import $ from "jquery";
 
-// import FormKitRadioTabs from "@components/FormKitRadioTabs.vue";
-import { clickOrTouchEvent } from "@globals";
+import FormRepeatableDate from "@components/FormRepeatableDate.vue";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams";
-// import { isEmptyArray, isEmptyScalar, isNumberInRange, isValidNumberRange } from "@utils/functions";
 
 /******************************************/
 
 const props = defineProps(["queryError"]);   // an error occured while fetching data from the backend
 const emit = defineEmits(['query-params']);  // to send the query params to the parent
 
-const dateFilterNode   = useFormKitNodeById("date-filter");  // useFormKitNodeById targets a FormKit node by it's HTML id and creates a vue ref.
 const themeArray       = ref([]);                            // string array
 const namedEntityArray = ref([]);                            // string array
 const institutionArray = ref([]);                            // string array
-const allowedDateRange = ref([]);                            // int array: [minDate, maxDate]
-const dateFilterType   = ref("dateRange");                   // str: the type of date filter to display
-
-// `items` in the html form to set the `allowedDateRanger`
-const allowedDateSearchTypes = [ { label:'Plage de dates', value:'dateRange' }
-                               , { label:'Date exacte'   , value:'dateExact' }
-                               , { label:'Avant'         , value:'dateBefore'}
-                               , { label:'Après'         , value:'dateAfter' }]
 
 /******************************************/
 
@@ -287,6 +217,7 @@ function onSubmit(formData, formNode) {
 
   // remove possible errrors that are shown by a previous submission
   formNode.clearErrors();
+  console.log(formData);
 
   const queryParams = new IconographyQueryParams(formData, "form");
 
@@ -334,19 +265,10 @@ onMounted(() => {
        .then(r => institutionArray.value = r.data
                                             .map(itemToFormEntry)
                                             .sort((a,b) => sortByValue(a,b)) );
-  axios.get(new URL("/i/iconography-overall-date-range", __API_URL__))
-       .then(r => {
-         allowedDateRange.value = r.data; })
-       .catch(e => {
-         console.error("AdvancedSearchQuery: axios error on `allowedDateRange`", e);
-         allowedDateRange.value = [ 1700,2100 ];
-       });
 
   // else, on `mousedown` on the submit button, it is redimensionned...
   $("#advanced-search-form .form-submit-input").css({width: "100%"});
 
-  // form events
-  dateFilterNode.value.on("commit", (e) => { dateFilterType.value = e.payload; });
 })
 </script>
 
@@ -360,17 +282,6 @@ onMounted(() => {
   grid-template-columns: 15% 85%;
   grid-template-rows: 100%;
 }
-.date-range {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: start;
-  width: 100%;
-}
-.date-range > * {
-  width: 100%;
-  margin: 0 1vw 1vw 1vw;
-}
 .formkit-actions {
   margin-top: 2vh;
 }
@@ -380,7 +291,10 @@ onMounted(() => {
   align-items: end;
 
 }
-.reset-button-wrapper button {
-  background-color: blue;
+.form-field-outer-wrapper {
+  border-top: var(--cs-border);
+}
+.form-field-outer-wrapper:first-child {
+  border-top: none;
 }
 </style>

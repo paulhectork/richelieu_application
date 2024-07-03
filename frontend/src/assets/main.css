@@ -238,6 +238,13 @@ td {
   top: 0;
   position: sticky;
 }
+.list-invisible {   /* to have an <ul> with no list-specific style elements */
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+  margin-top: 0;
+
+}
 
 /*********************************/
 /* generic button styling */
@@ -341,6 +348,12 @@ button:active > svg > path {
 .form-field-outer-wrapper > * {
   margin: 3px;
 }
+.button-container > button {
+  display: inline-table;
+  width: 30px;
+  height: 30px;
+}
+
 
 /*********************************/
 /* select2 styles */
