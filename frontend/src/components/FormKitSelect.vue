@@ -1,4 +1,4 @@
-<!-- FormKit plugin with fancier select.
+<!-- FormKit custom input with fancier select.
 
      FormKit only offers basic selects.
      this custom component offers a fancier select
@@ -28,7 +28,7 @@
 
      usage example:
      ```
-     <FormKit type="formSelect"
+     <FormKit type="fkSelect"
               name="namedEntity"
               label="Sujet"
               placeholder="Sélectionner un sujet"
@@ -68,7 +68,7 @@ select2($);
 const props        = defineProps([ "context" ]);
 
 const selectId     = `form-select-basic-${window.crypto.randomUUID()}`;  // HTML ID of this select
-const selectNode   = props.context.node;                // formkit node for the current FormKit @type='formSelect' input. see: https://formkit.com/essentials/architecture#node
+const selectNode   = props.context.node;                // formkit node for the current FormKit @type='fkSelect' input. see: https://formkit.com/essentials/architecture#node
 const optionsArray = props.context.options || [];       // array of all the possible options
 const placeholder  = props.context.placeholder != null
                      ? props.context.placeholder

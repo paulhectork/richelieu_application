@@ -1,4 +1,4 @@
-<!-- FormKit custom plugin with tabs-like selection
+<!-- FormKit custom component with tabs-like selection
 
     the parent can pass 2 props to this component:
     * `value`  : the default value in one of our options.
@@ -28,7 +28,7 @@
 
     usage example:
     ```
-    <FormKit type="formRadioTabs"
+    <FormKit type="fkRadioTabs"
              id="date-filter"
              name="dateFilter"
              label="Date"

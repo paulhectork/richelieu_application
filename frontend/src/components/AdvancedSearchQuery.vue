@@ -7,12 +7,12 @@
 
      structure of each field:
      each field is made of a boolean operator (and,or,not)
-     and of the actual input field (FormRadioTabs, FormRepeatableText...).
+     and of the actual input field (FormKitRadioTabs, FormKitRepeatableText...).
      the structure can be manipulated using the <div> containers
      for each part of the field:
 
      <div class="form-field-outer-wrapper">              <=== the wrapper around the whole field
-      <div class="form-field-boolean-op-wrapper"></div>  <=== the wrapper around the FormBooleanOp
+      <div class="form-field-boolean-op-wrapper"></div>  <=== the wrapper around the FormKitBooleanOp
       <div class="form-field-input-wrapper"></div>       <=== the wrapper around the actual input
      </div>
 
@@ -48,11 +48,11 @@
                && institutionArray.length"
     >
       <div class="form-field-outer-wrapper">
-        <FormKit type="formBooleanOp"
+        <FormKit type="fkBooleanOp"
                  id="themeBooleanOp"
                  name="themeBooleanOp"
         ></FormKit>
-        <FormKit type="formSelect"
+        <FormKit type="fkSelect"
                  name="theme"
                  label="Thème"
                  help="Sélectionner un thème"
@@ -61,11 +61,11 @@
         ></FormKit>
       </div>
       <div class="form-field-outer-wrapper">
-        <FormKit type="formBooleanOp"
+        <FormKit type="fkBooleanOp"
                  name="namedEntityBooleanOp"
                  id="namedEntityBooleanOp"
         ></FormKit>
-        <FormKit type="formSelect"
+        <FormKit type="fkSelect"
                  name="namedEntity"
                  label="Sujet"
                  placeholder="Sélectionner un sujet"
@@ -74,11 +74,11 @@
         ></FormKit>
       </div>
       <div class="form-field-outer-wrapper">
-        <FormKit type="formBooleanOp"
+        <FormKit type="fkBooleanOp"
                  name="institutionBooleanOp"
                  id="institutionBooleanOp"
         ></FormKit>
-        <FormKit type="formSelect"
+        <FormKit type="fkSelect"
                  name="institution"
                  label="Institution"
                  help="Sélectionner une institution"
@@ -91,11 +91,11 @@
     <!-- free text inputs -->
 
     <div class="form-field-outer-wrapper">
-      <FormKit type="formBooleanOp"
+      <FormKit type="fkBooleanOp"
                name="titleBooleanOp"
                id="titleBooleanOp"
       ></FormKit>
-      <FormKit type="formRepeatableText"
+      <FormKit type="fkRepeatableText"
                name="title"
                id="title"
                label="Titre"
@@ -106,11 +106,11 @@
       ></FormKit>
     </div>
     <div class="form-field-outer-wrapper">
-      <FormKit type="formBooleanOp"
+      <FormKit type="fkBooleanOp"
                name="authorBooleanOp"
                id="authorBooleanOp"
       ></FormKit>
-      <FormKit type="formRepeatableText"
+      <FormKit type="fkRepeatableText"
                name="author"
                label="Auteur ou autrice"
                placeholder="Ex: Jules David"
@@ -119,11 +119,11 @@
       ></FormKit>
     </div>
     <div class="form-field-outer-wrapper">
-      <FormKit type="formBooleanOp"
+      <FormKit type="fkBooleanOp"
                name="publisherBooleanOp"
                id="publisherBooleanOp"
       ></FormKit>
-      <FormKit type="formRepeatableText"
+      <FormKit type="fkRepeatableText"
                name="publisher"
                label="Maison d'édition"
                placeholder="Bellizard"
@@ -134,7 +134,7 @@
 
     <!-- date inputs -->
     <div>
-      <FormKit type="formRadioTabs"
+      <FormKit type="fkRadioTabs"
                id="date-filter"
                name="dateFilter"
                label="Date"
@@ -211,7 +211,7 @@ import { reset } from "@formkit/core";
 import { useFormKitNodeById, FormKitMessages } from '@formkit/vue';
 import $ from "jquery";
 
-// import FormRadioTabs from "@components/FormRadioTabs.vue";
+// import FormKitRadioTabs from "@components/FormKitRadioTabs.vue";
 import { clickOrTouchEvent } from "@globals";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams";
 // import { isEmptyArray, isEmptyScalar, isNumberInRange, isValidNumberRange } from "@utils/functions";

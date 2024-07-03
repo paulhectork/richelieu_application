@@ -1,10 +1,10 @@
-<!-- FormBooleanOp.vue:
+<!-- FormKitBooleanOp.vue:
      a Select2 component to choose a boolean operator
      ("AND", "OR", "NOT"), defaulting to "AND".
 
      props:
      * context: the FormKit context
-     * id: the html ID and name of the current FormBooleanOp component
+     * id: the html ID and name of the current FormKitBooleanOp component
  -->
 
 

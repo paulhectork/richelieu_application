@@ -1,4 +1,4 @@
-<!-- a repeatable text field as a custom FormKit input
+<!-- custom FormKit input for a repeatable text field
 
      props:
      * placeholder: the placeholder to display.

@@ -1,10 +1,10 @@
 import { fr } from '@formkit/i18n';
 import { plugin, defaultConfig, createInput } from '@formkit/vue'
 
-import FormSelect from "@components/FormSelect.vue";
-import FormRadioTabs from "@components/FormRadioTabs.vue";
-import FormBooleanOp from "@components/FormBooleanOp.vue";
-import FormRepeatableText from "@components/FormRepeatableText.vue";
+import FormKitSelect from "@components/FormKitSelect.vue";
+import FormKitRadioTabs from "@components/FormKitRadioTabs.vue";
+import FormKitBooleanOp from "@components/FormKitBooleanOp.vue";
+import FormKitRepeatableText from "@components/FormKitRepeatableText.vue";
 import { textValidatorMessage
        , dateValidatorMessage
        , dateRangeValidatorMessage
@@ -17,10 +17,10 @@ const config = {
   locales: { fr },
   locale: 'fr',
   inputs: {
-    formSelect         : createInput(FormSelect, { props: ["placeholder", "options"] }),
-    formRadioTabs      : createInput(FormRadioTabs, { props: ["options", "value"] }),
-    formBooleanOp      : createInput(FormBooleanOp, { props: ["id"] }),
-    formRepeatableText : createInput(FormRepeatableText, { props: ["placeholder", "labelText"] })
+    fkSelect         : createInput(FormKitSelect, { props: ["placeholder", "options"] }),
+    fkRadioTabs      : createInput(FormKitRadioTabs, { props: ["options", "value"] }),
+    fkBooleanOp      : createInput(FormKitBooleanOp, { props: ["id"] }),
+    fkRepeatableText : createInput(FormKitRepeatableText, { props: ["placeholder", "labelText"] })
   },
   rules: { textValidator
          , textArrayValidator
