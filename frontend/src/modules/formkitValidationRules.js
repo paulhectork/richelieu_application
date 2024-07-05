@@ -73,11 +73,22 @@ export function dateRangeValidator(node) {
   let parent = node.at("$parent");
 
   if ( parent.value ) {
-    let dateRange = [ parent.value.dateStart, parent.value.dateEnd ];
-    return dateRange.some(x => x!=null)
-           ? dateRange.every(x => isNumberInRange(x, allowedDateRange) )  // every number is in the allowed range
-             && isValidNumberRange(dateRange)                             // dateStart < dateEnd
-           : true;
+    // in the forms, the @name of each date input can be
+    // prefixed by an UUID on top of the `dateStart` and `dateEnd`
+    // => match the `dateStart` and `dateEnd` validators using regexes.
+    let dateStartKey = Object.keys(parent.value).filter(x => x.match(/dateStart/g))
+    let dateEndKey  = Object.keys(parent.value).filter(x => x.match(/dateEnd/g));
+
+    if ( ! [ dateStartKey, dateEndKey ].every(x => x.length===1) ) {
+      console.error("formkitValidationRules.dateRangeValidator: several `dateStart` or `dateEnd` items matched !", parent.value)
+
+    } else {
+      let dateRange = [ parent.value[dateStartKey], parent.value[dateEndKey] ];
+      return dateRange.some(x => x!=null)
+            ? dateRange.every(x => isNumberInRange(x, allowedDateRange) )  // every number is in the allowed range
+              && isValidNumberRange(dateRange)                             // dateStart < dateEnd
+            : true;
+    }
   }
   return true;
 }

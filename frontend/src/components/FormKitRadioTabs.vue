@@ -51,14 +51,13 @@
            :class="{ 'form-radio-option-selected': checkedInput===o.value }"
       >
         <input type="radio"
-               :name="`fieldset-${htmlId}`"
-               :id="`form-radio-tabs-${o.value}`"
+               :name="`${htmlId}-input-${o.value}`"
+               :id="`${htmlId}-input-${o.value}`"
                :value="o.value"
                @input="context.handlers.DOMInput"
                v-model="checkedInput"
-
         ></input>
-        <label :for="`form-radio-tabs-${o.value}`"
+        <label :for="`${htmlId}-input-${o.value}`"
                v-html="o.label"
         ></label>
       </div>
@@ -82,6 +81,12 @@ const defaultValue = props.context.value
                      : undefined;
 const htmlId = `form-radio-tabs-${window.crypto.randomUUID()}`;
 const checkedInput = ref(defaultValue);  // `v-model` on the `input`, that helps us to track the currently checked item
+
+function propagateInputToFormKit(e) {
+  console.log(props.context);
+  props.context.node.input(e.target.value);
+
+}
 
 /*******************************************/
 onMounted(() => {

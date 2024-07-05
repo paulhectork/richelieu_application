@@ -10,6 +10,24 @@
      - a date filter, which helps us to use the kind of date search
        (dateStart, dateBefore, dateAfter, dateExact)
      - a date input, with either one or two number fields.
+
+     output structure:
+     *****************
+     the form returns a dict where each date search is identified
+     by an UUID which serves as the root for the different keys of the
+     dict: <uuid-date-filter> targets the date filter, <uuid-date-dateStart>
+     the first date of a range.
+     if we're filtering by a date range the structure is:
+      {
+        <uuid>-date-filter: "dateRange",
+        <uuid>-date: {
+          <uuid>-date-dateStart: <1st date of the range>,
+          <uuid>-date-dateEnd: <2nd date of the range>
+        }
+      }
+     else:
+      { <uuid>-date-filter: "dateExact|dateBefore|dateAfter",
+        <uuid>-date: <the date> }
  -->
 
 <template>
@@ -17,15 +35,15 @@
   <div class="form-field-input-wrapper">
     <FormKit type="group"
              name="date"
-             @input.deep=""
+             id="form-repeatable-date"
     >
 
       <ul class="list-invisible">
         <li v-for="[htmlId, dateField] in Object.entries(inputFields)"
             :id="htmlId"
-            style="border: 1px solid red;"
         >
-          <p>{{ htmlId.slice(-5) }}</p>
+          <!-- <p>{{ htmlId.slice(-5) }}</p> -->
+
           <!-- the actual date input -->
           <div class="input-wrapper">
             <!-- select the date filter type -->
@@ -43,7 +61,7 @@
             <!-- date range -->
             <FormKit v-if="inputFields[htmlId].filter==='dateRange'"
                      type="group"
-                     :name="`${htmlId}-name`"
+                     :name="`${htmlId}-date`"
                      label="Date"
                      help="Choisir une tranche de dates au format AAAA-AAAA"
             >
@@ -129,21 +147,23 @@
 import { onMounted, ref } from "vue"
 import axios from "axios";
 
+import $ from "jquery";
+import { useFormKitNodeById } from "@formkit/vue";
+
 import ButtonCross from "@components/ui/ButtonCross.vue";
 import ButtonPlus from "@components/ui/ButtonPlus.vue";
 
 /****************************************/
 
-// const dateFilterNode   = useFormKitNodeById("date-filter");  // useFormKitNodeById targets a FormKit node by it's HTML id and creates a vue ref.
-// const dateFilterType   = ref({});                            // str: the type of date filter to display
-const allowedDateRange = ref([]);                            // int array: [minDate, maxDate]
-const inputFields      = ref({});                            // // { <html id>: { filter: <type of date filter>, data: [<array of dates>] } }. this stores our data, while defining our html
+const allowedDateRange = ref([]);                               // int array: [minDate, maxDate]
+const inputFields      = ref({});                               // { <html id>: { filter: <type of date filter>, data: [<array of dates>] } }. this stores our data, while defining our html
+const repeatableDateNode = useFormKitNodeById("form-repeatable-date");
 
 // `items` in the html form to set the `allowedDateRanger`
 const allowedDateSearchTypes = [ { label:'Plage de dates', value:'dateRange' }
                                , { label:'Date exacte'   , value:'dateExact' }
                                , { label:'Avant'         , value:'dateBefore'}
-                               , { label:'Après'         , value:'dateAfter' }]
+                               , { label:'Après'         , value:'dateAfter' }];
 
 /****************************************/
 
@@ -188,29 +208,30 @@ const displayButtonCross = () =>
  *  to be able to add the values to the proper entry of `inputFields`
  */
 function updateDateFilter(input, htmlId) {
-  /////////////////////////////////////////////////
-  /////////////////////////////////////////////////
-  //  LE PROBLÈME: ON CONSIDÈRE QUE C'EST        //
-  //  TOUJOURS LE MÊME HTMLID (CELUI DU PREMIER  //
-  //  <LI>) QUI EST REÇU. PROBLÈME DANS LA       //
-  //  MANIÈRE PAS TRÈS CATHOLIQUE DONT IL        //
-  //  EST ACCÉDÉ DANS MA TEMPLATE????????        //
-  /////////////////////////////////////////////////
-  /////////////////////////////////////////////////
-  console.log(htmlId.slice(-5));
+  // $("li").css({ backgroundColor: "var(--cs-main-default-bg)" });
+  // $(`#${htmlId}`).css({ backgroundColor: "var(--cs-plum)" });
   inputFields.value[htmlId].filter = input;
   inputFields.value[htmlId].data = input==="dateRange"
                                    ? [undefined,undefined]
                                    : [undefined];
 }
 
+/**
+ * update the `data` key of an input field, based on
+ * this input field's HTML ID.
+ * @param {string} input: the new date data
+ * @param {string} htmlId: the html ID of the new input
+ * @param {Number} position: the position at which to insert `input`.
+ *  useful when, for an input `filter==='dateRange'`: `data` is an
+ *  array, the start date is at position 0, the end date at position 1.
+ */
 function updateDateData(input, htmlId, inputPosition=0) {
   if ( ![0,1].includes(inputPosition) ) {
-    console.error("FormRepeatableDate.updateDateData(): inputPosition must be 0 or 1, got", inputPosition)
+    console.error(`FormRepeatableDate.updateDateData(): inputPosition
+                   must be 0 or 1, got", ${inputPosition}`)
   }
   inputFields.value[htmlId].data[inputPosition] = input;
 }
-
 
 /****************************************/
 
@@ -224,9 +245,6 @@ onMounted(() => {
          allowedDateRange.value = [ 1700,2100 ];  });
 
   addField();
-
-  // form events
-  // dateFilterNode.value.on("commit", (e) => { dateFilterType.value = e.payload; });
 })
 
 </script>

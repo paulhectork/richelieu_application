@@ -15,6 +15,8 @@
  * * check if the user inputted data is empty
  */
 
+import _ from "lodash";
+
 import { isEmptyArray, isEmptyScalar, isNumberInRange, isValidNumberRange } from "@utils/functions";
 
 
@@ -75,6 +77,7 @@ export class IconographyQueryParams {
    * @param {Object} data: the JSON
    */
   fromJson(data) {
+
     // boolean ops should always be defined in the form.
     // if for some reasonthey aren't, reverd to the default value
     this.titleBooleanOp       = this.booleanOpCleaner(data.titleBooleanOp);
@@ -96,12 +99,7 @@ export class IconographyQueryParams {
     this.institution = this.stringArrayCleaner(data.institution),
     this.dateFilter  = data.dateFilter,
     // dates are converted to numbers. we remove `undefined` items.
-    this.date = (data.dateFilter === "dateRange"
-                ? [ data.date.dateStart, data.date.dateEnd ]
-                : [ data.date ]
-                ).map(this.scalar2undefined)
-                 .filter(x => x !== undefined)
-                 .map(this.string2number)
+    this.date = this.extractCleanDate(data.date)
   }
   /**
    * serialize an instance of `IconographyQueryParams` to JSON.
@@ -200,6 +198,61 @@ export class IconographyQueryParams {
   /*********************************************/
   /* helper functions */
 
+  /**
+   * extract a clean date from what is sent by the form.
+   * `FormRepeatableDate` is quite complex: it's a repeatable block of 2 inputs.
+   * formDate's structure is:
+   * {
+   *   <uuid>-date-filter: "dateRange",
+   *   <uuid>-date: {
+   *     <uuid>-date-dateStart: <1st date of the range>,
+   *     <uuid>-date-dateEnd: <2nd date of the range
+   *   }
+   * }
+   * or:
+   * {
+   *   <uuid>-date-filter: "dateExact|dateBefore|dateAfter",
+   *   <uuid>-date: <the date>
+   * }
+   * retype it to:
+   * [ { filter: <the date filter>, data: <the date, as an array of 1 or 2 numbers> }  # 1st date filter
+   * , { filter: <the date filter>, data: <the date, as an array of 1 or 2 numbers> }  # 2nd date filter and so on.
+   * ]
+   * Array<{ filter: string, data: Array<number> }>
+   * the output contains no elts with
+   * @param {*} formDate: the date, as returned by FormRepeatableDate.vue
+   * @returns { Array<{ filter: string, data: Array<number> }> }: the clean date
+   */
+  extractCleanDate = (formDate) => {
+    // the output date object
+    let dateOut = [];
+    // unique UUIDs, with 1 uuid per date search.
+    let dateUuidArray =
+      [... new Set(Object.keys(formDate)
+                         .map(x => x.replaceAll(/-date-filter$/g, "")
+                                    .replaceAll(/-date$/g, "")) )];
+
+    // extract the `date-filter` part of `formDate`.
+    const extractDateFilter = (_uuid, _formDate) =>
+    _formDate[`${_uuid}-date-filter`];
+    const extractDateData = (_uuid, _formDate) =>
+      _formDate[`${_uuid}-date-filter`] === "dateRange"
+      ? Object.values(_formDate[`${_uuid}-date`])  // if it's a range, then the date is a dict => extract the values
+      : [ _formDate[`${_uuid}-date`] ];            // else, it's a (possibly empty) string.
+
+    // build the basic dateOut
+    dateUuidArray.map(x => dateOut.push({ filter: extractDateFilter(x, formDate),
+                                          data  : extractDateData(x, formDate) }) );
+
+    // find which entries are empty (the `data` key contains only undefined elts, aka there is no inputted date)
+    let toDelete = [];  // array of indexes of `dateOut` that we must remove
+    dateOut.map((x, idx) => isEmptyArray(x.data) ? toDelete.push(idx) : false );
+
+    // delete the empty entries ; retype `data` in non-empty entries to `Number`
+    dateOut = dateOut.filter((x,idx) => !toDelete.includes(idx))
+                     .map(x => { return { filter: x.filter, data: x.data.map(Number) } })
+    return dateOut;
+  }
   /**
    * clean a booleanOp parameter. if it's not valid, revert to the default "and"
    */
