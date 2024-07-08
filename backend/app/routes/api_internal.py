@@ -132,7 +132,7 @@ def main_named_entity(id_uuid):
 # ******************************************
 # advanced search
 # ******************************************
-@app.route("/i/iconography/search")
+@app.route("/i/iconography/search", methods=["GET", "POST"])
 def advanced_search_iconography():
     """
     the heavy work is done in `../search/search_iconography.py`
@@ -148,15 +148,16 @@ def advanced_search_iconography():
     * `date[]`      :
 
     """
-    results = []
-    params, valid = make_params(request.args)
-    if not valid:
-        return "Internal server error", 500
-    params, valid = sanitize_params(params)
-    if not valid:
-        return "Internal server error", 500
-    results = make_query(params).all()
-    return jsonify([ r[0].serialize_lite() for r in results ])
+    if request.method == "POST" and request.is_json:
+        results = []
+        params, valid = make_params(request.get_json(cache=True))
+        if not valid:
+            return "Internal server error at `make_params`", 500
+        params, valid = sanitize_params(params)
+        if not valid:
+            return "Internal server error at `sanitize_params`", 500
+        results = make_query(params).all()
+        return jsonify([ r[0].serialize_lite() for r in results ])
 
 
 # ******************************************

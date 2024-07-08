@@ -139,7 +139,7 @@ function updateQueryParamsFromRoute(routeQueryParams) {
  * run a new query on the server and update `queryResults`
  */
 watch(queryParams, async (newParams, oldParams) => {
-  // console.log("AdvancedSearchView.watch(queryParams): query params changed", newParams.toJson(), newParams.toRouteParams());
+  console.log("AdvancedSearchView.watch(queryParams): query params changed", newParams.toRouteParams(), newParams.toJson());
   router
   .push({ path:"/recherche", query: newParams.toRouteParams() })
   .then(() => {
@@ -148,7 +148,7 @@ watch(queryParams, async (newParams, oldParams) => {
     displayResults.value = "loading";
 
     axios
-    .get(targetUrl.href, { params: newParams.toJson() })
+    .post(targetUrl.href, newParams.toJson() )
     .then(r => { queryResults.value = r.data;
                  displayResults.value = "yes"; })
     .catch(e => { queryError.value = true;

@@ -22,33 +22,45 @@ from ..app import db
 # *******************************************************
 
 
-def make_params(args: t.List[t.Tuple]) -> t.Tuple[t.Dict, bool]:
+def make_params(args: t.Dict) -> t.Tuple[t.Dict, bool]:
     """
     build a dict of query params from the `flask.request.args` object.
     this function also ensures that we only entered valid params
     (keys of `args`).
 
-    :param args     : the ImmutableDict sent by Flask.
+    :param args     : the dict sent from the frontend.
     :returns params : a t.Dict of query parameters
     :reutrns valid  : a bool that is False if unallowed params were passed
     """
     valid = True
     params = {}
     allowed_params = [ "title", "author", "publisher", "theme"
-                     , "namedEntity", "institution", "dateFilter", "date[]" ]
+                     , "namedEntity", "institution", "date"
+                     , "titleBooleanOp", "authorBooleanOp"
+                     , "publisherBooleanOp", "themeBooleanOp", "namedEntityBooleanOp"
+                     , "institutionBooleanOp", "dateBooleanOp" ]
 
     # check that only allowed params were passed
-    if any( a not in allowed_params for a in args ):
+    if any( k not in allowed_params for k in args.keys() ):
         valid = False
     else:
-         params = { "title"        : args.get("title", None),
-                    "author"       : args.get("author", None),
-                    "publisher"    : args.get("publisher", None),
-                    "theme"        : args.get("theme", None),
-                    "named_entity" : args.get("namedEntity", None),
-                    "institution"  : args.get("institution", None),
-                    "date_filter"  : args.get("dateFilter", None),
-                    "date"         : args.getlist("date[]") }
+        params = { "title"        : args["title"]       if "author" in args.keys() else [],
+                   "author"       : args["author"]      if "author" in args.keys() else [],
+                   "publisher"    : args["publisher"]   if "publisher" in args.keys() else [],
+                   "theme"        : args["theme"]       if "theme" in args.keys() else [],
+                   "named_entity" : args["namedEntity"] if "namedEntity" in args.keys() else [],
+                   "institution"  : args["institution"] if "institution" in args.keys() else [],
+                   "date"         : args["date"]        if "date" in args.keys() else [],
+
+                   "title_boolean_op"        : args["titleBooleanOp"]       if "titleBooleanOp" in args.keys() else "and",
+                   "author_boolean_op"       : args["authorBooleanOp"]      if   "authorBooleanOp" in args.keys() else "and",
+                   "publisher_boolean_op"    : args["publisherBooleanOp"]   if "publisherBooleanOp" in args.keys() else "and",
+                   "theme_boolean_op"        : args["themeBooleanOp"]       if "themeBooleanOp" in args.keys() else "and",
+                   "named_entity_boolean_op" : args["namedEntityBooleanOp"] if "namedEntityBooleanOp" in args.keys() else "and",
+                   "institution_boolean_op"  : args["institutionBooleanOp"] if "institutionBooleanOp" in args.keys() else "and",
+                   "date_boolean_op"         : args["dateBooleanOp"]        if "dateBooleanOp" in args.keys() else "and"
+        }
+
     return params, valid
 
 
@@ -69,13 +81,26 @@ def sanitize_params(params:t.Dict) -> t.Tuple[t.Dict, bool]:
 
     valid = True
 
-    # assert that the date is valid.
+    ######################################################
+    # ON EN EST LÀ
+    ######################################################
 
-    # retype to int. if there's an error, then params["date"] contains
-    # stuff that can't be retyped to date.
+    # assert that the date is valid.
+    # 1) validate the structure of each date object: { "filter": <...>, "data": [...] }
+    valid_date_structure = lambda x: ( len(x.keys()) == 2
+                                       and "filter" in x.keys()
+                                       and "data" in x.keys()
+                                       and type(x["data"]) == list )
+    if not all([ valid_date_structure(d) for d in params["date"] ]):
+        return params, False
+    # retype all dates to int. if there's an error, then params["date"] contains
+    # stuff that can't be retyped to date, and is invalid
     try:
-        params["date"] = [ int(d) for d in params["date"] ]
+        for d in params["date"]:
+            d["data"] = sorted([ int(d) for d in d["data"] ])
+        print(params["date"])
     except ValueError:
+        print("oh, no")
         return params, False
     # there is a "date", but no "date_filter" => don't know how to filter it
     if len(params["date"]) and "date_filter" not in params.keys():
