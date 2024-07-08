@@ -44,11 +44,6 @@
 <template>
   <h1>Recherche avancée</h1>
 
-  <!--
-  <div class="query-container"
-       :class="queryHidden ? 'hidden' : 'shown'"
-  >
-  -->
   <Transition name="slideInOut">
   <div class="query-container"
        v-show="displayQuery">
@@ -63,12 +58,12 @@
     >{{ displayQuery ? "Masquer" : "Afficher" }} la recherche</button>
   </div>
 
-  <LoaderComponent v-if="displayResults === 'loading'"
-                   class="results-loader"></LoaderComponent>
+  <LoaderComponent v-if="displayResults==='loading'"
+                   class="results-loader"
+  ></LoaderComponent>
 
   <div class="results-container"
-       v-if="displayResults === 'yes'"
-  >
+       v-if="displayResults === 'yes'">
     <AdvancedSearchResults :query-results="queryResults"
     ></AdvancedSearchResults>
   </div>
@@ -111,7 +106,7 @@ function hideOrShowQuery() {
 /**
  * when receiving new query parameters from
  * `AdvancedSearchQuery`, update `queryParams`.
- * `_.isEqual` performs deep comparison and allows us
+ * `_.isEqual()` performs deep comparison and allows us
  * to only update `queryParams` if the new query parameters
  * are different from the previous oness
  * @param {Object} newQueryParams: a dict of query parameters.
@@ -144,15 +139,12 @@ function updateQueryParamsFromRoute(routeQueryParams) {
  * run a new query on the server and update `queryResults`
  */
 watch(queryParams, async (newParams, oldParams) => {
+  // console.log("AdvancedSearchView.watch(queryParams): query params changed", newParams.toJson(), newParams.toRouteParams());
   router
   .push({ path:"/recherche", query: newParams.toRouteParams() })
   .then(() => {
-    // debug prints
-    // console.log("watchQueryParams: params changed !");
-    // console.log("watchQueryParams: params in route:", new IconographyQueryParams(route.query, "route"));
-    // console.log("watchQueryParams: params in `queryParams`", queryParams.value);
 
-    console.log("going out !", { params: newParams.toJson() });
+    console.log("AdvancedSearchView.watch(queryParams): going out !", { params: newParams.toJson() });
     displayResults.value = "loading";
 
     axios
@@ -160,7 +152,9 @@ watch(queryParams, async (newParams, oldParams) => {
     .then(r => { queryResults.value = r.data;
                  displayResults.value = "yes"; })
     .catch(e => { queryError.value = true;
-                  console.error( "AdvancedSearchView: backend error on query:"
+                  displayResults.value = "no";
+                  displayQuery.value = true;
+                  console.error( "AdvancedSearchView.watch(queryParams): backend error on query:"
                                , newParams.toJson()
                                , "error dump:"
                                , e);

@@ -13,10 +13,10 @@
 
      output structure:
      *****************
-     the form returns a dict where each date search is identified
-     by an UUID which serves as the root for the different keys of the
-     dict: <uuid-date-filter> targets the date filter, <uuid-date-dateStart>
-     the first date of a range.
+     the form returns a dict where each date search (each <li> in the HTML)
+     is identified by an UUID which serves as the root for the different
+     keys of the dict: <uuid>-date-filter targets the date filter,
+     <uuid>-date-dateStart the first date of a range.
      if we're filtering by a date range the structure is:
       {
         <uuid>-date-filter: "dateRange",
@@ -26,8 +26,25 @@
         }
       }
      else:
-      { <uuid>-date-filter: "dateExact|dateBefore|dateAfter",
+      { <uuid>-date-filter: "dateExact"|"dateBefore"|"dateAfter",
         <uuid>-date: <the date> }
+
+    output example:
+    ***************
+    {
+      // input 1
+      "form-repeatable-date-11de98a2-9cce-4d3b-909a-ec683af1bf87-date-filter": "dateRange",
+      "form-repeatable-date-11de98a2-9cce-4d3b-909a-ec683af1bf87-date": {
+        "form-repeatable-date-11de98a2-9cce-4d3b-909a-ec683af1bf87-dateStart": "1920",
+        "form-repeatable-date-11de98a2-9cce-4d3b-909a-ec683af1bf87-dateEnd": "1930"
+      },
+      // input 2
+      "form-repeatable-date-0a1b675a-7bf2-42d4-b565-9f4d0fc7b4af-date-filter": "dateBefore",
+      "form-repeatable-date-0a1b675a-7bf2-42d4-b565-9f4d0fc7b4af-date": "1801",
+      // input 3
+      "form-repeatable-date-b9c62d68-631f-4d17-9c3e-bbda7e8c5caa-date-filter": "dateAfter",
+      "form-repeatable-date-b9c62d68-631f-4d17-9c3e-bbda7e8c5caa-date": "1872"
+    }
  -->
 
 <template>

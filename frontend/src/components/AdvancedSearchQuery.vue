@@ -217,7 +217,6 @@ function onSubmit(formData, formNode) {
 
   // remove possible errrors that are shown by a previous submission
   formNode.clearErrors();
-  console.log( Object.keys(formData.date) );
 
   const queryParams = new IconographyQueryParams(formData, "form");
 
@@ -231,7 +230,7 @@ function onSubmit(formData, formNode) {
     return false;
 
   } else {
-    // emit("query-params", queryParams);
+    emit("query-params", queryParams);
     return true;
   }
 }
