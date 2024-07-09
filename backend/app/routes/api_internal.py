@@ -156,6 +156,7 @@ def advanced_search_iconography():
         params, valid = sanitize_params(params)
         if not valid:
             return "Internal server error at `sanitize_params`", 500
+        print(r"%%%%% let's rock")
         results = make_query(params).all()
         return jsonify([ r[0].serialize_lite() for r in results ])
 

@@ -154,7 +154,8 @@ watch(queryParams, async (newParams, oldParams) => {
     .catch(e => { queryError.value = true;
                   displayResults.value = "no";
                   displayQuery.value = true;
-                  console.error( "AdvancedSearchView.watch(queryParams): backend error on query:"
+                  console.error( `AdvancedSearchView.watch(queryParams): backend error (${e.response.data})`
+                               , "on query:"
                                , newParams.toJson()
                                , "error dump:"
                                , e);
