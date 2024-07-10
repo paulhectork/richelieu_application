@@ -11,6 +11,72 @@ from .. import orm
 # `app.search`
 # *******************************************
 
+"""
+-- title
+SELECT DISTINCT iconography.id_uuid
+FROM iconography
+JOIN title
+ON title.id_iconography = iconography.id
+AND title.entry_name ILIKE ANY(ARRAY['%bourse%', '%théâtre%']);
+
+-- author
+SELECT DISTINCT(iconography.id_uuid)
+FROM iconography
+JOIN r_iconography_actor
+ON r_iconography_actor.id_iconography = iconography.id
+AND r_iconography_actor.role = 'author'
+JOIN actor
+ON r_iconography_actor.id_actor = actor.id
+AND actor.entry_name ILIKE ANY(ARRAY['%daumier%', '%atget%']);
+
+-- publisher
+SELECT DISTINCT(iconography.id_uuid)
+FROM iconography
+JOIN r_iconography_actor
+ON r_iconography_actor.id_iconography = iconography.id
+AND r_iconography_actor.role = 'publisher'
+JOIN actor
+ON r_iconography_actor.id_actor = actor.id
+AND actor.entry_name ILIKE ANY(ARRAY['%Aubert%', '%Martinet%']);
+
+-- named entity
+SELECT iconography.id_uuid, named_entity.entry_name
+FROM iconography
+JOIN r_iconography_named_entity
+ON r_iconography_named_entity.id_iconography = iconography.id
+JOIN named_entity
+ON r_iconography_named_entity.id_named_entity = named_entity.id
+AND named_entity.entry_name IN ('Martinet éditeur', 'Lecointe architecte');
+
+-- theme
+SELECT DISTINCT(iconography.id_uuid)
+FROM iconography
+JOIN r_iconography_theme
+ON r_iconography_theme.id_iconography = iconography.id
+JOIN theme
+ON r_iconography_theme.id_theme = theme.id
+AND theme.entry_name IN ('architecture', 'actualité');
+
+-- institution
+SELECT DISTINCT(iconography.id_uuid)
+FROM iconography
+JOIN r_institution
+ON r_institution.id_iconography = iconography.id
+JOIN institution
+ON r_institution.id_institution = institution.id
+AND institution.entry_name IN ('Bibliothèque nationale de France', 'Paris Musées');
+
+-- date
+SELECT * FROM iconography
+WHERE
+  NOT isempty(iconography.date * '[1815,1821)'::int4range)
+  OR iconography.date = '[1826,1827)'::int4range
+  OR (NOT isempty(iconography.date) AND lower(iconography.date) <= 1800)
+  OR (NOT isempty(iconography.date) AND upper(iconography.date) >= 1900)
+;
+
+"""
+
 
 class TestQueries(unittest.TestCase):
     def setUp(self):

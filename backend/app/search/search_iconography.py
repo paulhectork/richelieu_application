@@ -1,8 +1,9 @@
 from sqlalchemy.engine.result import ChunkedIteratorResult
 from sqlalchemy.sql.expression import and_, any_, or_
 from psycopg2.extras import NumericRange
-from sqlalchemy import select, func
-from flask import current_app
+from sqlalchemy import select, func, union
+from sqlalchemy.orm import aliased
+from flask import ctx, current_app
 import typing as t
 
 import sqlparse
@@ -230,56 +231,102 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
     # test query:
     # SELECT count (*) FROM iconography JOIN title ON title.id_iconography = iconography.id AND title.entry_name ILIKE '%le moniteur de la mode%' JOIN r_iconography_actor ON r_iconography_actor.id_iconography = iconography.id AND r_iconography_actor.role = 'author' JOIN actor ON r_iconography_actor.id_actor = actor.id AND actor.entry_name ILIKE '%jules david%'
 
-    iq = select(Iconography)
+    iq = select(Iconography)  # the base query object
+    subqueries = {}  #  { <filter name>: [ <sql filter>, <boolean op> ] }. dict of subqueries, which will be added at the end
 
-    # at each `if`, `iq` is updated
+    # 1) build the different query parameters.
+    #
+    # in this step, if boolean op is "and", `iq` is completed
+    # with extra query parameters: we don't need to do subqueries.
+    # else (booleanop is 'or' or 'not'), we'll need to do subqueries.
+    # in that case, we add it to `subqueries`.
+    # the final, complete query will be built in the end using `iq` and `subqueries`.
     if len(params["title"]):
-        # WARNING *****************************************
-        # we can get different results in sqlalchemy and
-        # pure sql because sqlalchemy returns the number
-        # of iconography objects, while pure sql duplicates
-        # rows when there are several titles.
-        iq = iq.join(Iconography
+        # sqlbuilder builds an sql expression and applies it to `ctx`.
+        # this is because the SQL filter is the same no matter the boolean op,
+        # but the object to which the filter is applied changes: if `author_boolean_op`
+        # is "and", it is applied to the base query `iq`. else, to `select(Iconography)`,
+        # to make a subquery. `sqlbuilder` avoids to repeat the sql filter.
+        # :param ctx : the object to which to apply the sql filter
+        # :returns   : an sqlalchemy sql statement.
+        sqlbuilder = lambda ctx: (
+            ctx.join(Iconography
                      .title
-                     .and_( Title.entry_name.ilike(any_(params['title']))))
+                     .and_( Title.entry_name.ilike(any_(params['title'])) )))
+        if params["title_boolean_op"] == "and":
+            iq = sqlbuilder(iq)
+        else:
+            subqueries["title"] = [ sqlbuilder(select(Iconography.id))
+                                  , params["title_boolean_op"] ]
+
     if len(params["author"]):
-        iq = (iq.join(Iconography
-                      .r_iconography_actor
-                      .and_( R_IconographyActor.role == "author" ))
-                .join(R_IconographyActor
-                      .actor
-                      .and_( Actor.entry_name.ilike(any_(params['author'])))))
+        sqlbuilder = lambda ctx: (
+            ctx.join(Iconography
+                    .r_iconography_actor
+                    .and_( R_IconographyActor.role == "author" ))
+               .join(R_IconographyActor
+                    .actor
+                    .and_( Actor.entry_name.ilike(any_(params['author'])))))
+        if params["author_boolean_op"] == "and":
+            iq = sqlbuilder(iq)
+        else:
+            subqueries["author"] = [ sqlbuilder(select(Iconography.id))
+                                   , params["author_boolean_op"] ]
+
     if len(params["publisher"]):
-        iq = (iq.join(Iconography
-                      .r_iconography_actor
-                      .and_( R_IconographyActor.role == "publisher" ))
-                .join(R_IconographyActor
-                      .actor
-                      .and_( Actor.entry_name.ilike(any_(params['publisher'])))))
+        sqlbuilder = lambda ctx: (
+            ctx.join(Iconography
+                    .r_iconography_actor
+                    .and_( R_IconographyActor.role == "publisher" ))
+               .join(R_IconographyActor
+                    .actor
+                    .and_( Actor.entry_name.ilike(any_(params['publisher'])))))
+
+        if params["publisher_boolean_op"] == "and":
+            iq = sqlbuilder(iq)
+            subqueries["publisher"] = [ sqlbuilder(select(Iconography.id))
+                                      , params["publisher_boolean_op"] ]
+
     if len(params["named_entity"]):
-        iq = (iq.join(Iconography
-                      .r_iconography_named_entity)
-                .join(R_IconographyNamedEntity
+        sqlbuilder = lambda ctx: (
+            ctx.join( Iconography.r_iconography_named_entity )
+               .join( R_IconographyNamedEntity
                       .named_entity
-                      .and_( NamedEntity.entry_name.in_(params["named_entity"]))))
+                      .and_( NamedEntity.entry_name.in_(params["named_entity"])) ))
+        if params["named_entity_boolean_op"] == "and":
+            iq = sqlbuilder(iq)
+        else:
+            sqlbuilder(select(Iconography))
+        subqueries["named_entity"] = [ sqlbuilder(select(Iconography.id)), params["named_entity_boolean_op"]  ]
+
     if len(params["theme"]):
-        iq = (iq.join(Iconography
-                      .r_iconography_theme)
-                .join(R_IconographyTheme
+        sqlbuilder = lambda ctx: (
+            ctx.join( Iconography.r_iconography_theme )
+               .join( R_IconographyTheme
                       .theme
-                      .and_( Theme.entry_name.in_(params["theme"]))))
+                      .and_( Theme.entry_name.in_(params["theme"])) ))
+        if params["theme_boolean_op"] == "and":
+            iq = sqlbuilder(iq)
+        else:
+            subqueries["theme"] = [ sqlbuilder(select(Iconography.id))
+                                  , params["theme_boolean_op"] ]
+
     if len(params["institution"]):
-        iq = (iq.join(Iconography
-                      .r_institution )
-                .join(R_Institution
+        sqlbuilder = lambda ctx: (
+            ctx.join( Iconography.r_institution )
+               .join( R_Institution
                       .institution
-                      .and_( Institution.entry_name.in_(params["institution"]))))
+                      .and_( Institution.entry_name.in_(params["institution"]))) )
+        if params["institution_boolean_op"] == "and":
+            iq = sqlbuilder(iq)
+        else:
+            subqueries["institution"] = [ sqlbuilder(select(Iconography.id))
+                                        , params["institution_boolean_op"] ]
 
     # date filter expression builder. in all `*_expr`
     # functions below, x is the date array or numeric range
-    date_range_expr  = lambda x: ~func.isempty(Iconography  # ~ works the same as SQL NOT or SQLAlchemy `func.not_()`
-                                               .date
-                                               .intersection(x))
+    # ~ works the same as SQL NOT or SQLAlchemy `func.not_()`
+    date_range_expr  = lambda x: ~func.isempty( Iconography.date.intersection(x) )
     date_exact_expr  = lambda x: Iconography.date == x
     date_before_expr = lambda x: and_( ~func.isempty(Iconography.date)
                                      , func.lower(Iconography.date) <= x[0] )
@@ -288,23 +335,40 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
 
     # depending on the `filter` type used, decide which function above to use
     # dateobj is an item in our `params['date']` array.
-    date_expr_builder = lambda dateobj: (date_range_expr(dateobj["data"])
-                                         if dateobj["filter"]=="dateRange"
+    date_expr_builder = lambda dateobj: (date_range_expr(dateobj["data"]) if dateobj["filter"]=="dateRange"
                                          else date_exact_expr(dateobj["data"]) if dateobj["filter"]=="dateExact"
                                          else date_before_expr(dateobj["data"]) if dateobj["filter"]=="dateBefore"
                                          else date_after_expr(dateobj["data"]) if dateobj["filter"]=="dateAfter"
                                          else None)  # a final else is necessary, None will be removed below
 
     if len(params["date"]):
-        # print(params["date"])
         date_filters = [ date_expr_builder(date) for date in params["date"] ]
         date_filters = [ f for f in date_filters if f is not None ]
-        # for d in date_filters:
-        #     print(">", d)
-        # assert len(params["date"]) == len(date_filters)
-        iq = iq.filter(or_(*date_filters))
+        if params["date_boolean_op"] == "and":
+            iq = iq.filter(or_(*date_filters))
+        else:
+            subqueries["date"] = select(Iconography.id).filter(or_(*date_filters))
 
-    r = db.session.execute(iq.distinct())
+    # 2) build the complete sql queries by combining all parameters
+    full_query = iq
+    if len(subqueries.keys()):
+        stmt_or  = [ v[0] for v in subqueries.values() if v[1] == "or" ]
+        stmt_not = [ v[0] for v in subqueries.values() if v[1] == "not" ]
+        full_query = union(full_query, *[ s for s in stmt_or ])
+        # not -> or works, but not the contrary or when mixing or and nots.
+        for s in stmt_not:
+            # for some obscure reason, using `s.subquery()` throws a warning:
+            # there's no need to transform `s` into a subquery.
+            # full_query = iq.filter(Iconography.id.in_( s ))  # works, but `full_query` is not updated at each iteration
+            full_query = select(full_query.subquery()).filter(Iconography.id.in_( s ))
+
+    print(sqlparse.format( str(select(Iconography).from_statement(full_query))
+                         , reindent=True
+                         , keyword_case="upper" ))
+
+    r = db.session.execute(select(Iconography).from_statement(full_query))
+
+    # r = db.session.execute(iq.distinct())
     if current_app.config["TESTING"]:
         # `.all()` closes the transaction, which means that we won't be able
         # to access the query results down the road, which will raise unecessary
