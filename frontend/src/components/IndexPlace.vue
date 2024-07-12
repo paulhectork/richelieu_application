@@ -94,6 +94,9 @@ function displayVector(e) {
 
 onMounted(() => {
   map.value = globalDefineMap("place-map");
+
+  console.log(clickOrTouchEvent);
+  $(".text-container").on(clickOrTouchEvent, displayVector);
 })
 
 // the index has been added
@@ -114,6 +117,7 @@ onUpdated(() => {
    * advantages    : this logic works on mobile and desktop
    * disadvantages : the two button system will be confusing
    */
+  // onUpdated isn't fired, so i put the thing in `onMounted`.
   $(".text-container").on(clickOrTouchEvent, displayVector);
 
 })

@@ -30,15 +30,15 @@ def sanitize_date(date: t.List[t.Dict]) -> t.Tuple[ t.List[t.Dict], bool ]:
 
     :example input:
     >>> [ {'filter': 'dateRange', 'data': [1850, 1860]}
-        , {'filter': 'dateExact', 'data': [1871]}
-        , {'filter': 'dateBefore', 'data': [1800]}
-        , {'filter': 'dateAfter', 'data': [1900]} ]
+    ... , {'filter': 'dateExact', 'data': [1871]}
+    ... , {'filter': 'dateBefore', 'data': [1800]}
+    ... , {'filter': 'dateAfter', 'data': [1900]} ]
 
     :example output:
     >>> [ {'filter': 'dateRange', 'data': NumericRange(1850, 1861, '[)')}
-        , {'filter': 'dateExact', 'data': NumericRange(1871, 1872, '[)')}
-        , {'filter': 'dateBefore', 'data': [1800]}
-        , {'filter': 'dateAfter', 'data': [1900]} ]
+    ... , {'filter': 'dateExact', 'data': NumericRange(1871, 1872, '[)')}
+    ... , {'filter': 'dateBefore', 'data': [1800]}
+    ... , {'filter': 'dateAfter', 'data': [1900]} ]
 
     :param date: the "date" field in the parameters dictionnary
     :returns: 2 values:
@@ -211,6 +211,55 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
     parameters `params`. at each `if`, `iq` (our query) is updated.
     date filtering is inclusive by default.
 
+    the way the different parameters are processed varies depending on
+    the value of the booleanOp related to that parameter ("title" and
+    "title_boolean_op", for ex.) . the `and`, `or`, `not` may need to
+    be done on a JOIN, and not on a WHERE. this requires an SQL
+    subquery. if the booleanOp is `and`, then we only need to update
+    an SQL query with the new parameter. else, we'll need to do subqueries
+    (see examples below).
+
+    process:
+    - the aim is to get a list of all of the Iconography.id that
+      match `params`. from this list, we'll query `Iconography` to
+      get all the related objects.
+    - to do so, we will populate two objects and then combine them
+      to build the final query:
+      - `base_query` is an sqlalchemy.Select. we add to base_query
+        all fields with an `and` booleanOp: those don't need subqueries
+      - `subqueries` is a dict of: { <field_name>: [ <sql_query>, <boolean_op> ] }.
+        basically, it's a dict of subqueries when booleanOps are `or` or `not`.
+    - first, we get read all of the user parameters. depending on
+      the booleanOp, we either add data to `base_query` or to `subqueries`.
+    - then, we build the final query.
+      - all `and` parameters are in `base_query`. it needs to be integrated
+        into the final sql query by adding the parameters in `subqueries`.
+      - `or` parameters are added by using an SQL UNION:
+        >>> SELECT base_query UNION other_query
+      - `and` parameters are added by using an SQL WHERE on a subquery
+        of ids to reject:
+        >>> SELECT * FROM base_query AS icn WHERE icn.id NOT IN ( other_query ).
+
+    raw sql not:
+    >>> SELECT q1.id
+    ... FROM
+    ...   ( SELECT iconography.id FROM iconography
+    ...     WHERE iconography.id IN (1,2,3) ) AS q1
+    ... WHERE q1.id NOT IN
+    ...   ( SELECT iconography.id FROM iconography
+    ...     WHERE iconography.id IN (2,5,6) );
+
+    raw sql or:
+    >>> SELECT *
+    ... FROM
+    ...   ( SELECT iconography.id FROM iconography
+    ...     WHERE iconography.id IN (1,2,3) ) AS q1
+    ... UNION
+    ...   ( SELECT iconography.id FROM iconography
+    ...     WHERE iconography.id IN (2,5,6) )
+    ... ORDER BY "id" ASC;
+
+    help:
     the date queries as raw sql:
         https://gitlab.inha.fr/snr/rich.data/documentation/-/blob/main/technologies/postgresql/queries/date_range_operations.sql?ref_type=heads
     sqlalchemy query structure:
@@ -231,30 +280,25 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
     # test query:
     # SELECT count (*) FROM iconography JOIN title ON title.id_iconography = iconography.id AND title.entry_name ILIKE '%le moniteur de la mode%' JOIN r_iconography_actor ON r_iconography_actor.id_iconography = iconography.id AND r_iconography_actor.role = 'author' JOIN actor ON r_iconography_actor.id_actor = actor.id AND actor.entry_name ILIKE '%jules david%'
 
-    iq = select(Iconography)  # the base query object
-    subqueries = {}  #  { <filter name>: [ <sql filter>, <boolean op> ] }. dict of subqueries, which will be added at the end
+    # the base query object. for now, we only query the `id`,
+    # which will make unions and whatnot easier.
+    base_query = select(Iconography.id)
+    # dict of subqueries o complete `base_query` with. structure:
+    #  { <filter name>: [ <sql filter>, <boolean op> ] }.
+    subqueries = {}
 
     # 1) build the different query parameters.
-    #
-    # in this step, if boolean op is "and", `iq` is completed
-    # with extra query parameters: we don't need to do subqueries.
-    # else (booleanop is 'or' or 'not'), we'll need to do subqueries.
-    # in that case, we add it to `subqueries`.
-    # the final, complete query will be built in the end using `iq` and `subqueries`.
     if len(params["title"]):
-        # sqlbuilder builds an sql expression and applies it to `ctx`.
-        # this is because the SQL filter is the same no matter the boolean op,
-        # but the object to which the filter is applied changes: if `author_boolean_op`
-        # is "and", it is applied to the base query `iq`. else, to `select(Iconography)`,
-        # to make a subquery. `sqlbuilder` avoids to repeat the sql filter.
-        # :param ctx : the object to which to apply the sql filter
-        # :returns   : an sqlalchemy sql statement.
+        # `sqlbuilder` builds an sql expression and applies it to `ctx`.
+        # the expression is always the same, only the `ctx` to which it is
+        # used changes: if booleanOp is `and`, then it is added to `base_query`.
+        # else, it is added to a subquery.
         sqlbuilder = lambda ctx: (
             ctx.join(Iconography
                      .title
                      .and_( Title.entry_name.ilike(any_(params['title'])) )))
         if params["title_boolean_op"] == "and":
-            iq = sqlbuilder(iq)
+            base_query = sqlbuilder(base_query)
         else:
             subqueries["title"] = [ sqlbuilder(select(Iconography.id))
                                   , params["title_boolean_op"] ]
@@ -268,7 +312,7 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
                     .actor
                     .and_( Actor.entry_name.ilike(any_(params['author'])))))
         if params["author_boolean_op"] == "and":
-            iq = sqlbuilder(iq)
+            base_query = sqlbuilder(base_query)
         else:
             subqueries["author"] = [ sqlbuilder(select(Iconography.id))
                                    , params["author_boolean_op"] ]
@@ -283,7 +327,7 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
                     .and_( Actor.entry_name.ilike(any_(params['publisher'])))))
 
         if params["publisher_boolean_op"] == "and":
-            iq = sqlbuilder(iq)
+            base_query = sqlbuilder(base_query)
             subqueries["publisher"] = [ sqlbuilder(select(Iconography.id))
                                       , params["publisher_boolean_op"] ]
 
@@ -294,7 +338,7 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
                       .named_entity
                       .and_( NamedEntity.entry_name.in_(params["named_entity"])) ))
         if params["named_entity_boolean_op"] == "and":
-            iq = sqlbuilder(iq)
+            base_query = sqlbuilder(base_query)
         else:
             sqlbuilder(select(Iconography))
         subqueries["named_entity"] = [ sqlbuilder(select(Iconography.id)), params["named_entity_boolean_op"]  ]
@@ -306,7 +350,7 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
                       .theme
                       .and_( Theme.entry_name.in_(params["theme"])) ))
         if params["theme_boolean_op"] == "and":
-            iq = sqlbuilder(iq)
+            base_query = sqlbuilder(base_query)
         else:
             subqueries["theme"] = [ sqlbuilder(select(Iconography.id))
                                   , params["theme_boolean_op"] ]
@@ -318,7 +362,7 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
                       .institution
                       .and_( Institution.entry_name.in_(params["institution"]))) )
         if params["institution_boolean_op"] == "and":
-            iq = sqlbuilder(iq)
+            base_query = sqlbuilder(base_query)
         else:
             subqueries["institution"] = [ sqlbuilder(select(Iconography.id))
                                         , params["institution_boolean_op"] ]
@@ -345,28 +389,96 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
         date_filters = [ date_expr_builder(date) for date in params["date"] ]
         date_filters = [ f for f in date_filters if f is not None ]
         if params["date_boolean_op"] == "and":
-            iq = iq.filter(or_(*date_filters))
+            base_query = base_query.filter(or_(*date_filters))
         else:
-            subqueries["date"] = select(Iconography.id).filter(or_(*date_filters))
+            subqueries["date"] = [ select(Iconography.id).filter(or_(*date_filters))
+                                 , params["date_boolean_op"] ]
 
     # 2) build the complete sql queries by combining all parameters
-    full_query = iq
+    #
+    # all of the `and` fields constitute the base `base_query`.
+    # here, `base_query` is completed by the `or` and `not` fields
+    full_query = base_query
     if len(subqueries.keys()):
-        stmt_or  = [ v[0] for v in subqueries.values() if v[1] == "or" ]
+        # do the NOT statements
         stmt_not = [ v[0] for v in subqueries.values() if v[1] == "not" ]
-        full_query = union(full_query, *[ s for s in stmt_or ])
-        # not -> or works, but not the contrary or when mixing or and nots.
         for s in stmt_not:
             # for some obscure reason, using `s.subquery()` throws a warning:
             # there's no need to transform `s` into a subquery.
-            # full_query = iq.filter(Iconography.id.in_( s ))  # works, but `full_query` is not updated at each iteration
-            full_query = select(full_query.subquery()).filter(Iconography.id.in_( s ))
+            full_query = full_query.filter(~Iconography.id.in_( s ))
+        # do the OR statements
+        stmt_or  = [ v[0] for v in subqueries.values() if v[1] == "or" ]
+        full_query = union(full_query, *[ s for s in stmt_or ])
 
-    print(sqlparse.format( str(select(Iconography).from_statement(full_query))
+    print("%%%%%%%%%%%%%%%%")
+    print(sqlparse.format( str(full_query)
                          , reindent=True
                          , keyword_case="upper" ))
+    print("%%%%%%%%%%%%%%%%")
+    print("\n".join(f"{k.upper()} _ {v}" for k,v in params.items()))
+    print("%%%%%%%%%%%%%%%%")
 
-    r = db.session.execute(select(Iconography).from_statement(full_query))
+    r = db.session.execute(select( Iconography ).filter( Iconography.id.in_(full_query) ))
+
+    """
+    -- examples
+    -- NOT. returns (1,3)
+    SELECT q1.id
+    FROM
+      ( SELECT iconography.id FROM iconography
+        WHERE iconography.id IN (1,2,3) ) AS q1
+    WHERE q1.id NOT IN
+      ( SELECT iconography.id FROM iconography
+        WHERE iconography.id IN (2,5,6) );
+
+    -- OR. returns (1,2,3,5,6)
+    SELECT *
+    FROM
+      ( SELECT iconography.id FROM iconography
+        WHERE iconography.id IN (1,2,3) ) AS q1
+    UNION
+      ( SELECT iconography.id FROM iconography
+        WHERE iconography.id IN (2,5,6) )
+    ORDER BY "id" ASC;
+
+    -- AND
+    SELECT iconography.id
+    FROM iconography
+    WHERE iconography.id IN (1,2,3)
+    AND iconography.id IN (2,5,6);
+
+    -- AND as inner join between subqueries
+    SELECT *
+    FROM
+      ( SELECT iconography.id FROM iconography
+        WHERE iconography.id IN (1,2,3) ) AS q1
+    INNER JOIN
+      ( SELECT iconography.id FROM iconography
+        WHERE iconography.id IN (2,5,6) ) AS q2
+    ON q1.id = q2.id;
+
+
+    -- theme OR named_entity
+    SELECT q1.id
+    FROM
+      ( SELECT iconography.id FROM iconography
+        JOIN r_iconography_named_entity ON iconography.id = r_iconography_named_entity.id_iconography
+        JOIN named_entity ON named_entity.id = r_iconography_named_entity.id_named_entity
+        AND named_entity.entry_name IN ('Agence Fournier')
+      ) AS q1
+    UNION
+      ( SELECT iconography.id FROM iconography
+        JOIN r_iconography_theme ON iconography.id = r_iconography_theme.id_iconography
+        JOIN theme ON theme.id = r_iconography_theme.id_theme
+        AND theme.entry_name IN ('architecture')
+      )
+    UNION
+      ( SELECT iconography.id FROM iconography
+        JOIN r_institution ON r_institution.id_iconography = iconography.id
+        JOIN institution ON r_institution.id_institution = institution.id
+        AND institution.entry_name IN ('Bibliothèques spécialisées de la Ville de Paris')
+      );
+    """
 
     # r = db.session.execute(iq.distinct())
     if current_app.config["TESTING"]:

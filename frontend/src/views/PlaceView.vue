@@ -28,6 +28,8 @@
 import { onMounted, ref } from "vue";
 import axios from "axios";
 
+import $ from "jquery";
+
 import { indexDataFormatterCartography } from "@utils/indexDataFormatter";
 import LoaderComponent from "@components/ui/LoaderComponent.vue";
 import IndexPlace from "@components/IndexPlace.vue";
@@ -44,6 +46,9 @@ onMounted(() => {
     dataFilter.value = indexDataFormatterCartography(dataFull.value);
     isLoaded.value = true;
   })
+
+  // quick fix for the height/scrolling of `.bottom-container`
+  $(".bottom-container").css({ maxHeight: $(window).height() - $(".bottom-container")[0].getBoundingClientRect().top })
 })
 
 </script>

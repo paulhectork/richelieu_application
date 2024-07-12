@@ -26,9 +26,14 @@
       <li><RouterLink to="/theme"
                       class="menu-text"
       >Thèmes</RouterLink></li>
+      <!--
       <li><RouterLink to="/cartographie"
                       class="menu-text"
       >Cartographie</RouterLink></li>
+      -->
+      <li><RouterLink to="/recherche"
+                      class="menu-text"
+      >Recherche avancée</RouterLink></li>
       <li><RouterLink to="/lieu"
                       class="menu-text"
       >Lieux</RouterLink></li>
