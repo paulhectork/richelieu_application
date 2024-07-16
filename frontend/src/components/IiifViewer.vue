@@ -35,6 +35,7 @@ import LoaderComponent from "@components/ui/LoaderComponent.vue";
 /********************************************/
 
 const props         = defineProps(["osdId", "iiifUrl", "backupImgUrl", "folio"]);
+const emit          = defineEmits(["osd-viewer"]);
 const viewer        = ref();       // OSD viewer
 const loadingFailed = ref(false);  // toggled in case of an error: will display a static image file instead of a IIIF tile sequence
 const isLoaded      = ref(false);  // switched to true once a IIIF viewer has loaded. hides the loader, shows the viewer
@@ -76,7 +77,7 @@ async function buildOsdViewer(tileSequence, osdId) {
     prefixUrl: new URL("/statics/openseadragon-icons/", __SERVER_URL__).href,
     navImages: osdNavImages
   });
-  return viewer.value.addOnceHandler("open", () => { return });  // await for loading to be ready to return
+  return viewer.value.addOnceHandler("open", () => { emit("osd-viewer", viewer); return });  // await for loading to be ready to return
 }
 
 /********************************************/
