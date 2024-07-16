@@ -6,7 +6,7 @@
      display the results
 
      structure of each field:
-     each field is made of a boolean operator (and,or,not)
+     each field is made of a boolean operator (and,not)
      and of the actual input field (FormKitRadioTabs, FormKitRepeatableText...).
      the structure can be manipulated using the <div> containers
      for each part of the field:

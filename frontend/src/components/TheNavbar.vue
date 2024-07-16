@@ -1,4 +1,4 @@
-<!-- Navbar.vue
+<!-- TheNavbar.vue
      a navbar that is always displayed on top
      of the viewport.
 
@@ -16,8 +16,7 @@
     </h1>
 
     <div id="burger"
-         v-if="domStore.windowOrientation!=='landscape'"
-         :class="domStore.mobileSidebarActive ? 'burger-cross' : ''">
+         :class="domStore.sidebarActive ? 'burger-cross' : ''">
       <span></span>
       <span></span>
       <span></span>
@@ -36,10 +35,10 @@ import { clickOrTouchEvent } from "@globals";
 import { cleanClickOrTouchend } from "@utils/functions.js";
 
 
-async function toggleSidebar(e) {
+async function toggleSidebar() {
   // toggle HTML class
-  console.log( domStore.mobileSidebarActive,
-               domStore.mobileSidebarActive ? " : désactiver" : ": activer");
+  console.log( domStore.sidebarActive,
+               domStore.sidebarActive ? " : désactiver" : ": activer");
   domStore.toggleMobileSidebar();
   return
 }

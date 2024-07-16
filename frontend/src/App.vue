@@ -1,7 +1,7 @@
 <template>
   <div class="app-wrapper main-default">
     <!-- navbar -->
-    <Navbar/>
+    <TheNavbar/>
     <div class="main-wrapper fill-parent"
          :class="setMainWrapperClasses()">
       <!-- main content: pages -->
@@ -11,11 +11,14 @@
       <!-- sidebar -->
       <div>
         <!--<Transition name="sidebar">-->
-          <Sidebar v-if="domStore.mobileSidebarActive || domStore.windowOrientation==='landscape'"/>
         <!--</Transition>-->
+        <TheVisualBar></TheVisualBar>
+
       </div>
     </div>
   </div>
+
+  <TheMenu v-if="domStore.sidebarActive"></TheMenu>
 </template>
 
 
@@ -25,8 +28,9 @@ import { RouterView, useRoute, useRouter } from 'vue-router';
 import $ from "jquery";
 
 import { domStore } from "@stores/dom.js";
-import Navbar from '@components/Navbar.vue';
-import Sidebar from "@components/Sidebar.vue";
+import TheNavbar from '@components/TheNavbar.vue';
+import TheMenu from "@components/TheMenu.vue";
+import TheVisualBar from "@components/TheVisualBar.vue";
 
 
 const route = useRoute();
@@ -37,7 +41,7 @@ const route = useRoute();
 function setMainWrapperClasses() {
   let classes = `${domStore.windowOrientation} `;
   if ( domStore.windowOrientation !== 'landscape' ) {
-    classes += domStore.mobileSidebarActive
+    classes += domStore.sidebarActive
                ? 'portrait-sidebar-active'
                : 'portrait-sidebar-hidden'
   };
@@ -65,7 +69,7 @@ function touchOrNot() {
 // hide the mobile sidebar when changing route
 watch(route, (newRoute, oldRoute) => {
   if ( domStore.windowOrientation!== 'landscape' ) {
-    domStore.mobileSidebarActive = false;
+    domStore.sidebarActive = false;
   }
 })
 
@@ -101,19 +105,21 @@ onUnmounted(() => {
   overflow-y: scroll;
   overflow-x: hidden;
 
+  /* on mobile, TheVisualBar is on the bottom of the page
+     with a height of 15vh; on desktop, it is on the side
+     of the page width a width of 10vw.
+   */
   display: grid;
-  grid-template-rows: 100%;
+  grid-template-columns: 100vw;
+  grid-template-rows: 85vh 15vh;
+
   margin-top: var(--cs-navbar-height-mobile);
   height: calc(100vh - var(--cs-navbar-height-mobile));
 }
-
-.main-wrapper.portrait-sidebar-hidden {
-  grid-template-columns: 100vw 0vw;
-}
-.main-wrapper.portrait-sidebar-active {
-  grid-template-columns: 100vw var(--cs-sidebar-width-mobile);
-  width: 100vw;
-
+main {
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
 }
 
 @media ( orientation: landscape ) {
@@ -124,8 +130,12 @@ onUnmounted(() => {
   .main-wrapper {
     margin-top: var(--cs-navbar-height-desktop);
     height: calc(100vh - var(--cs-navbar-height-desktop));
+    /*
     grid-template-columns: calc(100vw - var(--cs-sidebar-width-desktop))
                            var(--cs-sidebar-width-desktop);
+    */
+    grid-template-columns: 90vw 10vw;
+    grid-template-rows: 100%;
   }
 }
 

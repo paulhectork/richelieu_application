@@ -1,20 +1,9 @@
-<!-- Sidebar.vue
-     the sidebar displayed on the website.
-     hidden by default on mobile versions,
-     when:
-
-    `@media ( orientation: landscape )`
+<!-- TheMenu.vue
+     the menu for the website.
  -->
 
 <template>
   <div class="sidebar fill-parent">
-
-    <!-- button to hide the sidebar
-    <div class="fill-parent border-bottom sidebar-masquer">
-      <button @click="domStore.toggleSidebar"
-      >Masquer</button>
-    </div>
-    -->
 
     <ul class="sidebar-menu fill-parent border-bottom">
       <li><RouterLink to="/iconographie"
@@ -26,11 +15,6 @@
       <li><RouterLink to="/theme"
                       class="menu-text"
       >Thèmes</RouterLink></li>
-      <!--
-      <li><RouterLink to="/cartographie"
-                      class="menu-text"
-      >Cartographie</RouterLink></li>
-      -->
       <li><RouterLink to="/recherche"
                       class="menu-text"
       >Recherche avancée</RouterLink></li>
@@ -60,28 +44,18 @@ const menuCropPath = "../src/assets/media/menu_crop.jpg";
 
 <style scoped>
 .sidebar {
-  position: fixed;
+  position: absolute;
+  top: var(--cs-navbar-height-mobile);
   height: calc(100vh - var(--cs-navbar-height-mobile));
+  width: 100vw;
+
   display: grid;
-  width: 60vw;
   grid-template-rows: 60% 40%;
   z-index: 10;
 
   color: var(--cs-main-default);
   background-color: var(--cs-main-default-bg);
   border-left: var(--cs-border);
-}
-.sidebar-masquer {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: start;
-}
-.sidebar-masquer > button {
-  margin: 0;
-  height: 100%;
-  border: unset;
-  border-right: var(--cs-border);
 }
 .sidebar-menu {
   display: flex;
@@ -122,7 +96,7 @@ li > a.selected {
 @media ( orientation: landscape ) {
   .sidebar {
     height: calc(100vh - var(--cs-navbar-height-desktop));
-    width: 25vw;
+    top: var(--cs-navbar-height-desktop);
   }
   .sidebar-menu > li > a {
     font-size: var(--cs-fontsize-menu-desktop);

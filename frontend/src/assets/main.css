@@ -127,8 +127,10 @@
 
   --cs-navbar-height-mobile: 7vh;
   --cs-navbar-height-desktop: 9vh;
+  /*
   --cs-sidebar-width-desktop: 25vw;
   --cs-sidebar-width-mobile: 60vw;
+  */
 
   --cs-fontsize-title: max(14px, 2.5vh);
   --cs-fontsize-main-mobile: 10pt/*max(15px, 1.5vh)*/;
