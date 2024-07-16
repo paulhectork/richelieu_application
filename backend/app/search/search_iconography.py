@@ -415,12 +415,9 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
     #                      , reindent=True
     #                      , keyword_case="upper" ))
     # print("%%%%%%%%%%%%%%%%")
-    # print("\n".join(f"{k.upper()} _ {v}" for k,v in params.items()))
-    # print("%%%%%%%%%%%%%%%%")
 
     r = db.session.execute(select( Iconography ).filter( Iconography.id.in_(full_query) ))
 
-    # r = db.session.execute(iq.distinct())
     if current_app.config["TESTING"]:
         # `.all()` closes the transaction, which means that we won't be able
         # to access the query results down the road, which will raise unecessary
@@ -428,9 +425,9 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
         params_filtered = { k:v for k,v in params.items()
                             if isinstance(v, NumericRange)
                             or (v is not None and len(v)) }
-        r_count = len( db.session.execute(full_query.distinct()).all() )
+        r_count = len( db.session.execute(full_query).all() )
         print(f">>>>>>>> {r_count} rows were found")
         print(f">>>>>>>> for params (empty params removed):\n{params_filtered}")
-        print(f">>>>>>>> for query: \n{sqlparse.format(str(iq), reindent=True, keyword_case='upper')}")
+        print(f">>>>>>>> for query: \n{sqlparse.format( str(full_query), reindent=True, keyword_case='upper')}")
     return r
 

@@ -159,6 +159,8 @@ def advanced_search_iconography():
         print(r"%%%%% let's rock")
         results = make_query(params).all()
         return jsonify([ r[0].serialize_lite() for r in results ])
+    else:
+        return "This route only accepts HTTP with JSON parameters", 400
 
 
 # ******************************************

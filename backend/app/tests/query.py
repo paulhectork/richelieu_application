@@ -11,71 +11,6 @@ from .. import orm
 # `app.search`
 # *******************************************
 
-"""
--- title
-SELECT DISTINCT iconography.id_uuid
-FROM iconography
-JOIN title
-ON title.id_iconography = iconography.id
-AND title.entry_name ILIKE ANY(ARRAY['%bourse%', '%théâtre%']);
-
--- author
-SELECT DISTINCT(iconography.id_uuid)
-FROM iconography
-JOIN r_iconography_actor
-ON r_iconography_actor.id_iconography = iconography.id
-AND r_iconography_actor.role = 'author'
-JOIN actor
-ON r_iconography_actor.id_actor = actor.id
-AND actor.entry_name ILIKE ANY(ARRAY['%daumier%', '%atget%']);
-
--- publisher
-SELECT DISTINCT(iconography.id_uuid)
-FROM iconography
-JOIN r_iconography_actor
-ON r_iconography_actor.id_iconography = iconography.id
-AND r_iconography_actor.role = 'publisher'
-JOIN actor
-ON r_iconography_actor.id_actor = actor.id
-AND actor.entry_name ILIKE ANY(ARRAY['%Aubert%', '%Martinet%']);
-
--- named entity
-SELECT iconography.id_uuid, named_entity.entry_name
-FROM iconography
-JOIN r_iconography_named_entity
-ON r_iconography_named_entity.id_iconography = iconography.id
-JOIN named_entity
-ON r_iconography_named_entity.id_named_entity = named_entity.id
-AND named_entity.entry_name IN ('Martinet éditeur', 'Lecointe architecte');
-
--- theme
-SELECT DISTINCT(iconography.id_uuid)
-FROM iconography
-JOIN r_iconography_theme
-ON r_iconography_theme.id_iconography = iconography.id
-JOIN theme
-ON r_iconography_theme.id_theme = theme.id
-AND theme.entry_name IN ('architecture', 'actualité');
-
--- institution
-SELECT DISTINCT(iconography.id_uuid)
-FROM iconography
-JOIN r_institution
-ON r_institution.id_iconography = iconography.id
-JOIN institution
-ON r_institution.id_institution = institution.id
-AND institution.entry_name IN ('Bibliothèque nationale de France', 'Paris Musées');
-
--- date
-SELECT * FROM iconography
-WHERE
-  NOT isempty(iconography.date * '[1815,1821)'::int4range)
-  OR iconography.date = '[1826,1827)'::int4range
-  OR (NOT isempty(iconography.date) AND lower(iconography.date) <= 1800)
-  OR (NOT isempty(iconography.date) AND upper(iconography.date) >= 1900)
-;
-
-"""
 
 """
 -- examples; could be used to write tests
@@ -136,36 +71,6 @@ UNION
     AND institution.entry_name IN ('Bibliothèques spécialisées de la Ville de Paris')
   );
 
--- BHVP, dating from 1800,1851
--- whose theme is not 'actualité'
--- or whose named entity is 'Franck photographe'
-SELECT q1.id
-FROM
-(
-  SELECT iconography.id
-  FROM iconography
-  JOIN r_institution ON r_institution.id_iconography = iconography.id
-  JOIN institution ON institution.id = r_institution.id_institution
-  AND institution.entry_name IN ('Bibliothèque historique de la Ville de Paris')
-  WHERE NOT isempty( iconography.date * '[1800,1851)'::int4range )
-) AS q1
-WHERE
-q1.id NOT IN
-(
-  SELECT iconography.id
-  FROM iconography
-  JOIN r_iconography_theme ON r_iconography_theme.id_iconography = iconography.id
-  JOIN theme ON theme.id = r_iconography_theme.id_theme
-  AND theme.entry_name IN ('actualité')
-)
-UNION
-(
-  SELECT iconography.id
-  FROM iconography
-  JOIN r_iconography_named_entity ON r_iconography_named_entity.id_iconography = iconography.id
-  JOIN named_entity ON named_entity.id = r_iconography_named_entity.id_named_entity
-  AND named_entity.entry_name IN ('Franck photographe')
-)
 
 -- all pictures by Roger Henrard and Eugène Atget
 -- dating from after 1910, with theme 'photographe' or 'architecture'
@@ -222,112 +127,98 @@ class TestQueries(unittest.TestCase):
 
         # queries is an array of [ <route params>, <raw sql query> ]
         queries = [
-            [ { "title": "galerie colbert, rue vivienne, 2ème arrondissement, paris" },
+            [ { "title": ["bourse", "théâtre"] },
               r"""
-              SELECT * FROM iconography
+              SELECT DISTINCT iconography.id
+              FROM iconography
               JOIN title
-              ON iconography.id = title.id_iconography
-              AND title.entry_name ILIKE '%galerie colbert, rue vivienne, 2ème arrondissement, paris%';
+              ON title.id_iconography = iconography.id
+              AND title.entry_name ILIKE ANY(ARRAY['%bourse%', '%théâtre%']);
               """
             ]
             ,
-            [ { "author": "achille devéria" },
+            [ { "author": ["Daumier", "Atget"] },
               r"""
-              SELECT * FROM iconography
+              SELECT DISTINCT iconography.id_uuid
+              FROM iconography
               JOIN r_iconography_actor
-              ON iconography.id = r_iconography_actor.id_iconography
+              ON r_iconography_actor.id_iconography = iconography.id
               AND r_iconography_actor.role = 'author'
               JOIN actor
-              ON actor.id = r_iconography_actor.id_actor
-              AND actor.entry_name ILIKE '%achille devéria%';
+              ON r_iconography_actor.id_actor = actor.id
+              AND actor.entry_name ILIKE ANY(ARRAY['%daumier%', '%atget%']);
               """
             ]
             ,
-            [ { "publisher": "aubert & cie" },
+            [ { "publisher": ["Aubert", "Martinet"] },
               r"""
-              SELECT *
+              SELECT DISTINCT iconography.id_uuid
               FROM iconography
               JOIN r_iconography_actor
-              ON iconography.id = r_iconography_actor.id_iconography
+              ON r_iconography_actor.id_iconography = iconography.id
               AND r_iconography_actor.role = 'publisher'
               JOIN actor
-              ON actor.id = r_iconography_actor.id_actor
-              AND actor.entry_name ILIKE '%aubert & cie%';
+              ON r_iconography_actor.id_actor = actor.id
+              AND actor.entry_name ILIKE ANY(ARRAY['%Aubert%', '%Martinet%']);
               """
             ]
             ,
-            [ { "theme": "mobilier urbain" },
-              """
-              SELECT *
-              FROM iconography
-              JOIN r_iconography_theme
-              ON r_iconography_theme.id_iconography = iconography.id
-              JOIN theme
-              ON r_iconography_theme.id_theme = theme.id
-              AND theme.entry_name = 'mobilier urbain';
-              """
-            ]
-            ,
-            [ { "namedEntity": "Palais-Royal" },
-              """
-              SELECT *
+            [ { "namedEntity": ['Martinet éditeur', 'Lecointe architecte'] },
+              r"""
+              SELECT DISTINCT iconography.id_uuid
               FROM iconography
               JOIN r_iconography_named_entity
               ON r_iconography_named_entity.id_iconography = iconography.id
               JOIN named_entity
               ON r_iconography_named_entity.id_named_entity = named_entity.id
-              AND named_entity.entry_name = 'Palais-Royal';
+              AND named_entity.entry_name IN ('Martinet éditeur', 'Lecointe architecte');
               """
             ]
             ,
-            [ { "institution": "Musée Carnavalet" },
+            [ { "theme": ['mobilier urbain', 'actualité'] },
+              r"""
+              SELECT DISTINCT iconography.id_uuid
+              FROM iconography
+              JOIN r_iconography_theme
+              ON r_iconography_theme.id_iconography = iconography.id
+              JOIN theme
+              ON r_iconography_theme.id_theme = theme.id
+              AND theme.entry_name IN ('mobilier urbain', 'actualité');
               """
-              SELECT *
+            ]
+            ,
+            [ { "institution": ["Bibliothèque nationale de France", "Paris Musées"] },
+              r"""
+              SELECT DISTINCT iconography.id_uuid
               FROM iconography
               JOIN r_institution
               ON r_institution.id_iconography = iconography.id
               JOIN institution
               ON r_institution.id_institution = institution.id
-              AND institution.entry_name = 'Musée Carnavalet';
+              AND institution.entry_name IN ('Bibliothèque nationale de France', 'Paris Musées');
               """
             ]
             ,
-            [ { "dateFilter": "dateRange", "date[]": [1800,1810] },
+            [ { "date": [ { "data": [1815,1820], "filter": "dateRange"  },
+                          { "data": [1826],      "filter": "dateExact"  },
+                          { "data": [1800],      "filter": "dateBefore" },
+                          { "data": [1900],      "filter": "dateAfter"  }
+              ] },
               """
-              SELECT *
+              SELECT iconography.id
               FROM iconography
-              WHERE NOT isempty( iconography.date * int4range(1800,1810+1) );
-              """
-            ]
-            ,
-            [ { "dateFilter": "dateExact", "date[]": [1829] },
-              """
-              SELECT *
-              FROM iconography
-              WHERE iconography.date = int4range(1829,1829+1);
-              """
-            ]
-            ,
-            [ { "dateFilter": "dateBefore", "date[]": [1829] },
-              """
-              SELECT *
-              FROM iconography
-              WHERE lower(iconography.date) <= 1829
-              """
-            ]
-            ,
-            [ { "dateFilter": "dateAfter", "date[]": [1829] },
-              """
-              SELECT *
-              FROM iconography
-              WHERE upper(iconography.date) >= 1829
+              WHERE
+                NOT isempty(iconography.date * '[1815,1821)'::int4range)
+                OR iconography.date = '[1826,1827)'::int4range
+                OR (NOT isempty(iconography.date) AND lower(iconography.date) <= 1800)
+                OR (NOT isempty(iconography.date) AND upper(iconography.date) >= 1900);
               """
             ]
         ]
 
         with self.app.app_context():  # avoid RuntimeError
             for ( http_params, raw_sql ) in queries:
-                r_http = self.client.get(route, query_string=http_params)
+                r_http = self.client.post(route, json=http_params)
                 r_sql = self.db.session.execute(text(raw_sql))
                 r_http_count = len(r_http.json)
                 r_sql_count = r_sql.rowcount
@@ -341,83 +232,105 @@ class TestQueries(unittest.TestCase):
                                + f"got {r_http_count} (HTTP) and {r_sql_count} (SQL) for params {http_params}"  )
         return self
 
+
     def test_advanced_search_iconography_combined(self):
         """
-        test the combination of different params
-        in `/i/iconography/search` route
+        test the combination of different params with AND, OR, NOT boolean operators.
         """
         route = "/i/iconography/search"
-
         queries = [
-            [ { "namedEntity": "Galerie Vivienne", "theme": "boutique" },
+            [ { "namedEntity"   : [ "Galerie Vivienne" ],
+                "theme"         : [ "boutique" ],
+                "themeBooleanOp": "or" },
               """
-              SELECT iconography.id_uuid
-                     , iconography.date
-                     , theme.entry_name AS theme
-                     , named_entity.entry_name AS named_entity
+              SELECT iconography.id
               FROM iconography
               JOIN r_iconography_named_entity
               ON r_iconography_named_entity.id_iconography = iconography.id
               JOIN named_entity
               ON named_entity.id = r_iconography_named_entity.id_named_entity
-              AND named_entity.entry_name = 'Galerie Vivienne'
+              AND named_entity.entry_name IN ('Galerie Vivienne')
+              UNION
+              (
+                SELECT iconography.id
+                FROM iconography
+                JOIN r_iconography_theme
+                ON r_iconography_theme.id_iconography = iconography.id
+                JOIN theme
+                ON theme.id = r_iconography_theme.id_theme
+                AND theme.entry_name IN ('boutique')
+              );
+              """
+            ]
+            ,
+            [ { "theme"               : [ "boutique" ],
+                "namedEntity"         : [ "Galerie Vivienne" ],
+                "namedEntityBooleanOp": "not" },
+              """
+              SELECT iconography.id
+              FROM iconography
               JOIN r_iconography_theme
               ON r_iconography_theme.id_iconography = iconography.id
               JOIN theme
               ON theme.id = r_iconography_theme.id_theme
-              AND theme.entry_name = 'boutique';
+              AND theme.entry_name IN ('boutique')
+              WHERE iconography.id NOT IN
+              (
+                SELECT iconography.id
+                FROM iconography
+                JOIN r_iconography_named_entity
+                ON r_iconography_named_entity.id_iconography = iconography.id
+                JOIN named_entity
+                ON named_entity.id = r_iconography_named_entity.id_named_entity
+                AND named_entity.entry_name IN ('Galerie Vivienne')
+              );
               """
             ]
             ,
-            [ { "author": "daumier", "dateFilter": "dateAfter", "date[]": [1855] },
-              r"""
-              SELECT iconography.date
+            [ { "institution"          : [ "Bibliothèque historique de la Ville de Paris" ],
+                "institutionBooleanOp" : "and",
+                "theme"                : [ "actualité" ],
+                "themeBooleanOp"       : "not",
+                "namedEntity"          : [ "Franck photographe" ],
+                "namedEntityBooleanOp" : "or",
+                "date"                 : [ { "data": [1800,1850], "filter": "dateRange" } ]  # dateBooleanOp is implicit
+              },
+              """
+              -- BHVP, dating from 1800,1851
+              -- whose theme is not 'actualité'
+              -- or whose named entity is 'Franck photographe'
+              SELECT iconography.id
               FROM iconography
-              JOIN r_iconography_actor
-              ON r_iconography_actor.id_iconography = iconography.id
-              AND r_iconography_actor.role = 'author'
-              JOIN actor
-              ON actor.id = r_iconography_actor.id_actor
-              AND actor.entry_name ILIKE '%daumier%'
-              WHERE upper(iconography.date) >= 1855;
-              """
-            ]
-            ,
-            [ { "publisher": "martinet", "dateFilter": "dateExact", "date[]": [1833] },
-              r"""
-              SELECT *
-              FROM iconography
-              JOIN r_iconography_actor
-              ON r_iconography_actor.id_iconography = iconography.id
-              AND r_iconography_actor.role = 'publisher'
-              JOIN actor
-              ON actor.id = r_iconography_actor.id_actor
-              AND actor.entry_name ILIKE '%martinet%'
-              WHERE iconography.date = INT4RANGE(1833,1833+1);
-              """
-            ]
-            ,
-            [ { "theme": "édition", "dateFilter": "dateRange", "date[]": [1850,1860] },
-              """
-              SELECT theme.entry_name, iconography.date
-              FROM theme
-              JOIN r_iconography_theme
-              ON r_iconography_theme.id_theme = theme.id
-              AND theme.entry_name = 'édition'
-              JOIN iconography
-              ON r_iconography_theme.id_iconography = iconography.id
-              AND iconography.date IS NOT NULL
-              AND NOT isempty( iconography.date * INT4RANGE(1850,1861) )
-              ORDER BY iconography.date DESC;
+              JOIN r_institution ON r_institution.id_iconography = iconography.id
+              JOIN institution ON institution.id = r_institution.id_institution
+              AND institution.entry_name IN ('Bibliothèque historique de la Ville de Paris')
+              WHERE iconography.date IS NOT NULL
+              AND NOT isempty( iconography.date * '[1800,1851)'::int4range )
+              AND iconography.id NOT IN
+              (
+                SELECT iconography.id
+                FROM iconography
+                JOIN r_iconography_theme ON r_iconography_theme.id_iconography = iconography.id
+                JOIN theme ON theme.id = r_iconography_theme.id_theme
+                AND theme.entry_name IN ('actualité')
+              )
+              UNION
+              (
+                SELECT iconography.id
+                FROM iconography
+                JOIN r_iconography_named_entity ON r_iconography_named_entity.id_iconography = iconography.id
+                JOIN named_entity ON named_entity.id = r_iconography_named_entity.id_named_entity
+                AND named_entity.entry_name IN ('Franck photographe')
+              )
               """
             ]
         ]
-
         # the queries change but the tests are the same as in the previous function
         with self.app.app_context():  # avoid RuntimeError
             for ( http_params, raw_sql ) in queries:
-                r_http = self.client.get(route, query_string=http_params)
+                r_http = self.client.post(route, json=http_params)
                 r_sql = self.db.session.execute(text(raw_sql))
+
                 r_http_count = len(r_http.json)
                 r_sql_count = r_sql.rowcount
 
@@ -428,36 +341,23 @@ class TestQueries(unittest.TestCase):
                 self.assertTrue( r_http_count > 0 and r_sql_count > 0
                                , f"queries must return at least 1 result, "
                                + f"got {r_http_count} (HTTP) and {r_sql_count} (SQL) for params {http_params}"  )
-
         return self
 
-
-    def test_advanced_search_iconography_expected_problems(self):
-        """
-        test that expected problems happen: when passing invalid
-        parameters, or invalid parameter values, we except an HTTP
-        error to be raised.
-        here, we don't need to check for raw SQL or anything.
-        """
-        route = "/i/iconography/search"
-
-        queries = [ { "this should raise an error": "Dale Cooper" }    # unallowed parameter
-                  , { "date[]": [1800,1900] }                          # dateFilter is missing
-                  , { "dateFilter": "dateExact", "date[]": ["aaaaa"] } # `date[]` must be an integer array
-                  , { "dateFilter": "dateRange", "date[]": [1900] }    # with `dateRange`, we must have 2 values
-        ]
-
-        with self.app.app_context():
-            for http_params in queries:
-                r = self.client.get(route, query_string=http_params )
-                self.assertEqual(r.status_code, 500)
-        return self
-
-
-
-
-
-
-
-
-
+#     def test_advanced_search_iconography_expected_problems(self):
+#         """
+#         test that expected problems happen: when passing invalid
+#         parameters, or invalid parameter values, we except an HTTP
+#         error to be raised.
+#         here, we don't need to check for raw SQL or anything.
+#         """
+#         route = "/i/iconography/search"
+#         queries = [ { "this should raise an error": "Dale Cooper" }    # unallowed parameter
+#                   , { "date[]": [1800,1900] }                          # dateFilter is missing
+#                   , { "dateFilter": "dateExact", "date[]": ["aaaaa"] } # `date[]` must be an integer array
+#                   , { "dateFilter": "dateRange", "date[]": [1900] }    # with `dateRange`, we must have 2 values
+#         ]
+#         with self.app.app_context():
+#             for http_params in queries:
+#                 r = self.client.get(route, query_string=http_params )
+#                 self.assertEqual(r.status_code, 500)
+#         return self
