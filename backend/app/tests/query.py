@@ -77,6 +77,124 @@ WHERE
 
 """
 
+"""
+-- examples; could be used to write tests
+-- NOT. returns (1,3)
+SELECT q1.id
+FROM
+  ( SELECT iconography.id FROM iconography
+    WHERE iconography.id IN (1,2,3) ) AS q1
+WHERE q1.id NOT IN
+  ( SELECT iconography.id FROM iconography
+    WHERE iconography.id IN (2,5,6) );
+
+-- OR. returns (1,2,3,5,6)
+SELECT *
+FROM
+  ( SELECT iconography.id FROM iconography
+    WHERE iconography.id IN (1,2,3) ) AS q1
+UNION
+  ( SELECT iconography.id FROM iconography
+    WHERE iconography.id IN (2,5,6) )
+ORDER BY "id" ASC;
+
+-- AND
+SELECT iconography.id
+FROM iconography
+WHERE iconography.id IN (1,2,3)
+AND iconography.id IN (2,5,6);
+
+-- AND as inner join between subqueries
+SELECT *
+FROM
+  ( SELECT iconography.id FROM iconography
+    WHERE iconography.id IN (1,2,3) ) AS q1
+INNER JOIN
+  ( SELECT iconography.id FROM iconography
+    WHERE iconography.id IN (2,5,6) ) AS q2
+ON q1.id = q2.id;
+
+
+-- theme OR named_entity
+SELECT q1.id
+FROM
+  ( SELECT iconography.id FROM iconography
+    JOIN r_iconography_named_entity ON iconography.id = r_iconography_named_entity.id_iconography
+    JOIN named_entity ON named_entity.id = r_iconography_named_entity.id_named_entity
+    AND named_entity.entry_name IN ('Agence Fournier')
+  ) AS q1
+UNION
+  ( SELECT iconography.id FROM iconography
+    JOIN r_iconography_theme ON iconography.id = r_iconography_theme.id_iconography
+    JOIN theme ON theme.id = r_iconography_theme.id_theme
+    AND theme.entry_name IN ('architecture')
+  )
+UNION
+  ( SELECT iconography.id FROM iconography
+    JOIN r_institution ON r_institution.id_iconography = iconography.id
+    JOIN institution ON r_institution.id_institution = institution.id
+    AND institution.entry_name IN ('Bibliothèques spécialisées de la Ville de Paris')
+  );
+
+-- BHVP, dating from 1800,1851
+-- whose theme is not 'actualité'
+-- or whose named entity is 'Franck photographe'
+SELECT q1.id
+FROM
+(
+  SELECT iconography.id
+  FROM iconography
+  JOIN r_institution ON r_institution.id_iconography = iconography.id
+  JOIN institution ON institution.id = r_institution.id_institution
+  AND institution.entry_name IN ('Bibliothèque historique de la Ville de Paris')
+  WHERE NOT isempty( iconography.date * '[1800,1851)'::int4range )
+) AS q1
+WHERE
+q1.id NOT IN
+(
+  SELECT iconography.id
+  FROM iconography
+  JOIN r_iconography_theme ON r_iconography_theme.id_iconography = iconography.id
+  JOIN theme ON theme.id = r_iconography_theme.id_theme
+  AND theme.entry_name IN ('actualité')
+)
+UNION
+(
+  SELECT iconography.id
+  FROM iconography
+  JOIN r_iconography_named_entity ON r_iconography_named_entity.id_iconography = iconography.id
+  JOIN named_entity ON named_entity.id = r_iconography_named_entity.id_named_entity
+  AND named_entity.entry_name IN ('Franck photographe')
+)
+
+-- all pictures by Roger Henrard and Eugène Atget
+-- dating from after 1910, with theme 'photographe' or 'architecture'
+-- not conserved by the BnF.
+SELECT iconography.id
+FROM iconography
+JOIN r_iconography_actor
+ON r_iconography_actor.id_iconography = iconography.id
+AND r_iconography_actor.role = 'author'
+JOIN actor ON actor.id = r_iconography_actor.id_actor
+AND actor.entry_name ILIKE ANY(ARRAY['%atget%', '%henrard%'])
+JOIN r_iconography_theme ON r_iconography_theme.id_iconography = iconography.id
+JOIN theme ON theme.id = r_iconography_theme.id_theme
+AND theme.entry_name IN ('architecture', 'photographe')
+WHERE NOT isempty(iconography.date) AND upper(iconography.date) >= 1910
+AND iconography.id NOT IN
+(
+  SELECT iconography.id
+  FROM iconography
+  JOIN r_institution
+  ON r_institution.id_iconography = iconography.id
+  JOIN institution
+  ON institution.id = r_institution.id_institution
+  AND institution.entry_name IN ('Paris Musées')
+)
+;
+"""
+
+
 
 class TestQueries(unittest.TestCase):
     def setUp(self):

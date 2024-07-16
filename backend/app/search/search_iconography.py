@@ -282,7 +282,7 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
 
     # the base query object. for now, we only query the `id`,
     # which will make unions and whatnot easier.
-    base_query = select(Iconography.id)
+    base_query = select(func.distinct(Iconography.id))
     # dict of subqueries o complete `base_query` with. structure:
     #  { <filter name>: [ <sql filter>, <boolean op> ] }.
     subqueries = {}
@@ -291,7 +291,7 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
     if len(params["title"]):
         # `sqlbuilder` builds an sql expression and applies it to `ctx`.
         # the expression is always the same, only the `ctx` to which it is
-        # used changes: if booleanOp is `and`, then it is added to `base_query`.
+        # used changes: if booleanOp is `and`, then it is added to `base_qusery`.
         # else, it is added to a subquery.
         sqlbuilder = lambda ctx: (
             ctx.join(Iconography
@@ -410,75 +410,15 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
         stmt_or  = [ v[0] for v in subqueries.values() if v[1] == "or" ]
         full_query = union(full_query, *[ s for s in stmt_or ])
 
-    print("%%%%%%%%%%%%%%%%")
-    print(sqlparse.format( str(full_query)
-                         , reindent=True
-                         , keyword_case="upper" ))
-    print("%%%%%%%%%%%%%%%%")
-    print("\n".join(f"{k.upper()} _ {v}" for k,v in params.items()))
-    print("%%%%%%%%%%%%%%%%")
+    # print("%%%%%%%%%%%%%%%%")
+    # print(sqlparse.format( str(full_query)
+    #                      , reindent=True
+    #                      , keyword_case="upper" ))
+    # print("%%%%%%%%%%%%%%%%")
+    # print("\n".join(f"{k.upper()} _ {v}" for k,v in params.items()))
+    # print("%%%%%%%%%%%%%%%%")
 
     r = db.session.execute(select( Iconography ).filter( Iconography.id.in_(full_query) ))
-
-    """
-    -- examples
-    -- NOT. returns (1,3)
-    SELECT q1.id
-    FROM
-      ( SELECT iconography.id FROM iconography
-        WHERE iconography.id IN (1,2,3) ) AS q1
-    WHERE q1.id NOT IN
-      ( SELECT iconography.id FROM iconography
-        WHERE iconography.id IN (2,5,6) );
-
-    -- OR. returns (1,2,3,5,6)
-    SELECT *
-    FROM
-      ( SELECT iconography.id FROM iconography
-        WHERE iconography.id IN (1,2,3) ) AS q1
-    UNION
-      ( SELECT iconography.id FROM iconography
-        WHERE iconography.id IN (2,5,6) )
-    ORDER BY "id" ASC;
-
-    -- AND
-    SELECT iconography.id
-    FROM iconography
-    WHERE iconography.id IN (1,2,3)
-    AND iconography.id IN (2,5,6);
-
-    -- AND as inner join between subqueries
-    SELECT *
-    FROM
-      ( SELECT iconography.id FROM iconography
-        WHERE iconography.id IN (1,2,3) ) AS q1
-    INNER JOIN
-      ( SELECT iconography.id FROM iconography
-        WHERE iconography.id IN (2,5,6) ) AS q2
-    ON q1.id = q2.id;
-
-
-    -- theme OR named_entity
-    SELECT q1.id
-    FROM
-      ( SELECT iconography.id FROM iconography
-        JOIN r_iconography_named_entity ON iconography.id = r_iconography_named_entity.id_iconography
-        JOIN named_entity ON named_entity.id = r_iconography_named_entity.id_named_entity
-        AND named_entity.entry_name IN ('Agence Fournier')
-      ) AS q1
-    UNION
-      ( SELECT iconography.id FROM iconography
-        JOIN r_iconography_theme ON iconography.id = r_iconography_theme.id_iconography
-        JOIN theme ON theme.id = r_iconography_theme.id_theme
-        AND theme.entry_name IN ('architecture')
-      )
-    UNION
-      ( SELECT iconography.id FROM iconography
-        JOIN r_institution ON r_institution.id_iconography = iconography.id
-        JOIN institution ON r_institution.id_institution = institution.id
-        AND institution.entry_name IN ('Bibliothèques spécialisées de la Ville de Paris')
-      );
-    """
 
     # r = db.session.execute(iq.distinct())
     if current_app.config["TESTING"]:
@@ -488,7 +428,7 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
         params_filtered = { k:v for k,v in params.items()
                             if isinstance(v, NumericRange)
                             or (v is not None and len(v)) }
-        r_count = len( db.session.execute(iq.distinct()).all() )
+        r_count = len( db.session.execute(full_query.distinct()).all() )
         print(f">>>>>>>> {r_count} rows were found")
         print(f">>>>>>>> for params (empty params removed):\n{params_filtered}")
         print(f">>>>>>>> for query: \n{sqlparse.format(str(iq), reindent=True, keyword_case='upper')}")
