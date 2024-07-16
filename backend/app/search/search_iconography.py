@@ -23,12 +23,14 @@ from ..app import db
 # *******************************************************
 
 
-def sanitize_date(date: t.List[t.Dict]) -> t.Tuple[ t.List[t.Dict], bool ]:
+def sanitize_date(date: t.List[t.Dict] | t.Any) -> t.Tuple[ t.List[t.Dict], bool ]:
     """
     helper function to assert that the date is valid and pre-process it
-    so that it can be usable by `make_query`
+    so that it can be usable by `make_query`.
+    if unclean input (see example below) is given, the date is invalid,
+    which will stop running the query.
 
-    :example input:
+    :example clean input:
     >>> [ {'filter': 'dateRange', 'data': [1850, 1860]}
     ... , {'filter': 'dateExact', 'data': [1871]}
     ... , {'filter': 'dateBefore', 'data': [1800]}
@@ -40,11 +42,18 @@ def sanitize_date(date: t.List[t.Dict]) -> t.Tuple[ t.List[t.Dict], bool ]:
     ... , {'filter': 'dateBefore', 'data': [1800]}
     ... , {'filter': 'dateAfter', 'data': [1900]} ]
 
-    :param date: the "date" field in the parameters dictionnary
-    :returns: 2 values:
+    :param date: the "date" field in the parameters dictionnary.
+        it is expected to be an array: [{"data": [int], "filter": str}],
+        but it can be something else if the user passes invalid data.
+
+    :returns:
         1) the processed and cleaned date
         2) a boolean that is True if the date is valid, False if there was an error
     """
+    # check that the basic types are valid: we have an array of dicts.
+    if not (isinstance(date, list) and all(isinstance(d, dict) for d in date)):
+        return date, False
+
     # 1) validate the structure of each date object: { "filter": <...>, "data": [...] }
     # print(">>> input  :\n", date)
     valid_date_structure = lambda x: ( len(x.keys()) == 2
@@ -79,10 +88,11 @@ def sanitize_date(date: t.List[t.Dict]) -> t.Tuple[ t.List[t.Dict], bool ]:
     # print(">>> output :\n", date)
     return date, True
 
+
 def sanitize_array(params: t.Dict) -> t.Tuple[ t.Dict, bool ]:
     """
     all of our fields (except boolean ops) are expected to be arrays
-    :returns: 2 values:
+    :returns:
         1) the params
         2) a boolean that is True if the expected array fields are arrays, False otherwise
     """
@@ -92,12 +102,52 @@ def sanitize_array(params: t.Dict) -> t.Tuple[ t.Dict, bool ]:
 def sanitize_op(params: t.Dict) -> t.Tuple[ t.Dict , bool ]:
     """
     helper function to make sure that all our boolean operators
-    are valid (one of 'and', 'or', 'not')
-    :returns: 2 values:
+    are valid (one of 'and', 'or', 'not') and that at least one
+    of the boolean operators is 'and'.
+
+    in `params`, we have couples of [<filter_value>, <boolean_op>]
+    (ex: "date" and "date_boolean_op", "theme" and "theme_boolean_op").
+    if all params that are not empty also have the boolean op `or`,
+    the first of those boolean op is replaced by `and`.
+
+    this is because, by default, our query begins with
+    >>> SELECT * FROM iconography;
+    before adding filters. if we only have `or` parameters, there are
+    no filters, so our final query will be :
+    >>> SELECT * FROM iconography
+    ... UNION (<subquery on iconography>);
+    not only this is useless, it will return meaningless results
+    (we will be doing a union between a full table and a subset
+    of this full table).
+
+    transforming the first `or` by an `and` will change the query to:
+    >>> SELECT * FROM iconography
+    ... WHERE <first parameter>
+    ... UNION (<other OR filters on iconography>);
+    in logical terms, it will mean we will be doing:
+    `<subset of iconography 1> UNION <subset of iconography 2>`
+
+    :returns:
         1) the params
         2) a boolean that is True if boolean operators are valid, False otherwise
     """
-    return params, all( v in ["and", "or", "not"] for k,v in params.items() if "boolean_op" in k )  # True if the data is valid, false otherwise
+    # True if all the boolean ops are valid, false otherwise
+    valid = all( v in ["and", "or", "not"] for k,v in params.items() if "boolean_op" in k )
+
+    # if necessary, replace the first "or" by an "and".
+    # 1) create a list of boolean operators, where the
+    #    associated parameter is not empty.
+    nonempty = [ f"{k}_boolean_op" for k,v in params.items()
+                 if "_boolean_op" not in k
+                 and len(v) ]
+    # 2) if all non-empty parameters have the boolean op "or",
+    #    replace the 1st "or" by an "and"
+    if all( params[n] == "or" for n in nonempty ):
+        for op in nonempty:
+            if params[op] == "or":
+                params[op] = "and"
+                break
+    return params, valid
 
 
 def sanitize_ilike(params: t.Dict) -> t.Tuple[ t.Dict, bool ]:
@@ -164,7 +214,6 @@ def make_params(args: t.Dict) -> t.Tuple[t.Dict, bool]:
     return params, valid
 
 
-
 def sanitize_params(params:t.Dict) -> t.Tuple[t.Dict, bool]:
     """
     sanitize/validate the user-inputted query parameters.
@@ -191,6 +240,8 @@ def sanitize_params(params:t.Dict) -> t.Tuple[t.Dict, bool]:
 
     # validate the array (repeatable) fields
     params, valid = sanitize_array(params)
+    if not valid:
+        return params, False
 
     # validate the boolean operators
     params, valid = sanitize_op(params)
@@ -208,39 +259,47 @@ def sanitize_params(params:t.Dict) -> t.Tuple[t.Dict, bool]:
 def make_query(params:t.Dict) -> ChunkedIteratorResult:
     """
     build and run an SQL query based on the validated, user inputted
-    parameters `params`. at each `if`, `iq` (our query) is updated.
+    parameters `params`. at each `if`, new parameters are added, either
+    to our main query object (`base_query`), or to a dict of sub-queries
+    (`subqueries`).
     date filtering is inclusive by default.
 
     the way the different parameters are processed varies depending on
     the value of the booleanOp related to that parameter ("title" and
-    "title_boolean_op", for ex.) . the `and`, `or`, `not` may need to
-    be done on a JOIN, and not on a WHERE. this requires an SQL
-    subquery. if the booleanOp is `and`, then we only need to update
-    an SQL query with the new parameter. else, we'll need to do subqueries
-    (see examples below).
+    "title_boolean_op", for ex).
+    - if the boolean op is "and", we just need to update our main sql query
+    - else (boolean op is "or" or "not"), we add it to the dict of subqueries.
+      this is because the boolean op defines the relationship between filters
+      and within a filter (like doing OR/NOT on a JOIN) (see examples below).
+    at the end, we will build the full query.
 
     process:
     - the aim is to get a list of all of the Iconography.id that
       match `params`. from this list, we'll query `Iconography` to
       get all the related objects.
-    - to do so, we will populate two objects and then combine them
+    - we populate two objects and then combine them
       to build the final query:
       - `base_query` is an sqlalchemy.Select. we add to base_query
         all fields with an `and` booleanOp: those don't need subqueries
       - `subqueries` is a dict of: { <field_name>: [ <sql_query>, <boolean_op> ] }.
         basically, it's a dict of subqueries when booleanOps are `or` or `not`.
-    - first, we get read all of the user parameters. depending on
-      the booleanOp, we either add data to `base_query` or to `subqueries`.
     - then, we build the final query.
-      - all `and` parameters are in `base_query`. it needs to be integrated
-        into the final sql query by adding the parameters in `subqueries`.
-      - `or` parameters are added by using an SQL UNION:
+      - all `and` parameters jave been added to `base_query`:
+        >>> SELECT iconography.id FROM iconography WHERE ...
+      - `not` parameters are added by using an SQL WHERE on a
+        subquery of ids to reject:
         >>> SELECT base_query UNION other_query
-      - `and` parameters are added by using an SQL WHERE on a subquery
-        of ids to reject:
+      - `or` parameters are added by using an SQL UNION:
         >>> SELECT * FROM base_query AS icn WHERE icn.id NOT IN ( other_query ).
 
-    raw sql not:
+    in SQL terms, the constructed SQL request is:
+    >>> SELECT *
+    ... FROM iconography
+    ... WHERE   <"and" filters>
+    ... AND NOT <"not" filters>
+    ... UNION   <"or" filters>
+
+    example of raw sql not on a join:
     >>> SELECT q1.id
     ... FROM
     ...   ( SELECT iconography.id FROM iconography
@@ -249,7 +308,7 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
     ...   ( SELECT iconography.id FROM iconography
     ...     WHERE iconography.id IN (2,5,6) );
 
-    raw sql or:
+    example of raw sql or on a join:
     >>> SELECT *
     ... FROM
     ...   ( SELECT iconography.id FROM iconography
@@ -291,7 +350,7 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
     if len(params["title"]):
         # `sqlbuilder` builds an sql expression and applies it to `ctx`.
         # the expression is always the same, only the `ctx` to which it is
-        # used changes: if booleanOp is `and`, then it is added to `base_qusery`.
+        # applied changes: if booleanOp is `and`, then it is added to `base_qusery`.
         # else, it is added to a subquery.
         sqlbuilder = lambda ctx: (
             ctx.join(Iconography
@@ -409,12 +468,6 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
         # do the OR statements
         stmt_or  = [ v[0] for v in subqueries.values() if v[1] == "or" ]
         full_query = union(full_query, *[ s for s in stmt_or ])
-
-    # print("%%%%%%%%%%%%%%%%")
-    # print(sqlparse.format( str(full_query)
-    #                      , reindent=True
-    #                      , keyword_case="upper" ))
-    # print("%%%%%%%%%%%%%%%%")
 
     r = db.session.execute(select( Iconography ).filter( Iconography.id.in_(full_query) ))
 

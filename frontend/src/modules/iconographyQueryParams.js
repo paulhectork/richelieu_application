@@ -48,13 +48,13 @@ export class IconographyQueryParams {
   institution          = [];         // Array<string> || []
   date                 = [];         // Array<{ filter: string, data: Array<number> }> || []. we prefer our types to always stay the same. `date` will thus always be an array, of length 0 if no data is submitted.
   // boolean operators for each input
-  titleBooleanOp       = "and";      // "and"|"or"|"not"
-  authorBooleanOp      = "and";      // "and"|"or"|"not"
-  publisherBooleanOp   = "and";      // "and"|"or"|"not"
-  themeBooleanOp       = "and";      // "and"|"or"|"not"
-  namedEntityBooleanOp = "and";      // "and"|"or"|"not"
-  institutionBooleanOp = "and";      // "and"|"or"|"not"
-  dateBooleanOp        = "and";      // "and"|"or"|"not"
+  titleBooleanOp       = "and";      // "and"|"not"
+  authorBooleanOp      = "and";      // "and"|"not"
+  publisherBooleanOp   = "and";      // "and"|"not"
+  themeBooleanOp       = "and";      // "and"|"not"
+  namedEntityBooleanOp = "and";      // "and"|"not"
+  institutionBooleanOp = "and";      // "and"|"not"
+  dateBooleanOp        = "and";      // "and"|"not"
 
   // utils properties
   toFlatten = ["date"];  // the fields to flatten/unflatten when converting to/from URLs. (fields which contain objects are stringified to `[objectObject]` by `vue-router`, we need to flatten them so their value can be readable in the URL)
@@ -467,7 +467,8 @@ export class IconographyQueryParams {
    * boolean ops can be undefined). else, log an error message and return "and".
    */
   booleanOpCleaner = x =>
-    ["and","or","not"].includes(x)
+    // ["and","or","not"].includes(x)
+    ["and","not"].includes(x)
     ? x
     : "and"
   /**

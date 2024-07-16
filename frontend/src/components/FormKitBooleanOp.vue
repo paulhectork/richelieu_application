@@ -19,7 +19,7 @@
                    border-radius: 0;"
     >
       <option value="and">ET</option>
-      <option value="or">OU</option>
+      <!--<option value="or">OU</option>-->
       <option value="not">SAUF</option>
     </select>
   </div>
