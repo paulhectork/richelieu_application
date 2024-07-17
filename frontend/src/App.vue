@@ -10,10 +10,7 @@
       </main>
       <!-- sidebar -->
       <div>
-        <!--<Transition name="sidebar">-->
-        <!--</Transition>-->
-        <TheVisualBar></TheVisualBar>
-
+        <TheSidebar></TheSidebar>
       </div>
     </div>
   </div>
@@ -30,7 +27,7 @@ import $ from "jquery";
 import { domStore } from "@stores/dom.js";
 import TheNavbar from '@components/TheNavbar.vue';
 import TheMenu from "@components/TheMenu.vue";
-import TheVisualBar from "@components/TheVisualBar.vue";
+import TheSidebar from "@components/TheSidebar.vue";
 
 
 const route = useRoute();
@@ -39,13 +36,13 @@ const route = useRoute();
 // if we are in `portrait`, toggle class to show
 // that the sidebar is visible or hidden
 function setMainWrapperClasses() {
-  let classes = `${domStore.windowOrientation} `;
-  if ( domStore.windowOrientation !== 'landscape' ) {
-    classes += domStore.sidebarActive
-               ? 'portrait-sidebar-active'
-               : 'portrait-sidebar-hidden'
-  };
-  return classes;
+  // let classes = `${domStore.windowOrientation} `;
+  // if ( domStore.windowOrientation !== 'landscape' ) {
+  //   classes += domStore.sidebarActive
+  //              ? 'portrait-sidebar-active'
+  //              : 'portrait-sidebar-hidden'
+  // };
+  // return classes;
 }
 
 // are we in `landscape` or `portrait` mode?
@@ -105,13 +102,13 @@ onUnmounted(() => {
   overflow-y: scroll;
   overflow-x: hidden;
 
-  /* on mobile, TheVisualBar is on the bottom of the page
+  /* on mobile, TheSidebar is on the bottom of the page
      with a height of 15vh; on desktop, it is on the side
      of the page width a width of 10vw.
    */
   display: grid;
-  grid-template-columns: 100vw;
-  grid-template-rows: 85vh 15vh;
+  grid-template-columns: 100%;
+  grid-template-rows: 85% 15%;
 
   margin-top: var(--cs-navbar-height-mobile);
   height: calc(100vh - var(--cs-navbar-height-mobile));
@@ -130,11 +127,7 @@ main {
   .main-wrapper {
     margin-top: var(--cs-navbar-height-desktop);
     height: calc(100vh - var(--cs-navbar-height-desktop));
-    /*
-    grid-template-columns: calc(100vw - var(--cs-sidebar-width-desktop))
-                           var(--cs-sidebar-width-desktop);
-    */
-    grid-template-columns: 90vw 10vw;
+    grid-template-columns: 90% 10%;
     grid-template-rows: 100%;
   }
 }

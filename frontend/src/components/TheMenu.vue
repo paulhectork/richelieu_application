@@ -3,9 +3,9 @@
  -->
 
 <template>
-  <div class="sidebar fill-parent">
+  <div class="menu-container fill-parent">
 
-    <ul class="sidebar-menu fill-parent border-bottom">
+    <ul class="menu fill-parent border-bottom">
       <li><RouterLink to="/iconographie"
                       class="menu-text"
       >Iconographie</RouterLink></li>
@@ -26,7 +26,7 @@
       >Voir les tables</RouterLink></li>
     </ul>
 
-    <div class="sidebar-visual">
+    <div class="menu-container-visual">
       <img :src="menuCropPath">
     </div>
 
@@ -43,7 +43,7 @@ const menuCropPath = "../src/assets/media/menu_crop.jpg";
 
 
 <style scoped>
-.sidebar {
+.menu-container {
   position: absolute;
   top: var(--cs-navbar-height-mobile);
   height: calc(100vh - var(--cs-navbar-height-mobile));
@@ -57,19 +57,19 @@ const menuCropPath = "../src/assets/media/menu_crop.jpg";
   background-color: var(--cs-main-default-bg);
   border-left: var(--cs-border);
 }
-.sidebar-menu {
+.menu {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
   padding: 0 2vw;
 }
-.sidebar-menu > li {
+.menu > li {
   margin: 2.6vh 0;
   list-style: none;
   transition: background-color 0s;
 }
-.sidebar-menu > li > a {
+.menu > li > a {
   color: var(--cs-main-second-bg);
   text-decoration: none;
   font-variant: small-caps;
@@ -79,7 +79,7 @@ li > a.selected {
   background-color: var(--cs-main-second-bg);
   color: var(--cs-main-second);
 }
-.sidebar-visual {
+.menu-container-visual {
 	margin: 0;
 	padding: 0;
   overflow: hidden;
@@ -87,18 +87,18 @@ li > a.selected {
 	align-items: center;
   justify-content: center;
 }
-.sidebar-visual > img {
+.menu-container-visual > img {
   /*max-width: 100%;*/
   min-width: 120%;
   object-fit: center;
 }
 
 @media ( orientation: landscape ) {
-  .sidebar {
+  .menu-container {
     height: calc(100vh - var(--cs-navbar-height-desktop));
     top: var(--cs-navbar-height-desktop);
   }
-  .sidebar-menu > li > a {
+  .menu > li > a {
     font-size: var(--cs-fontsize-menu-desktop);
   }
 }
