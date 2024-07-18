@@ -9,13 +9,11 @@
         <RouterView/>  <!-- display content that corresponds to a url targeted by `router-link` -->
       </main>
       <!-- sidebar -->
-      <div>
-        <TheSidebar></TheSidebar>
-      </div>
+      <TheSidebar></TheSidebar>
     </div>
   </div>
-
-  <TheMenu v-if="domStore.sidebarActive"></TheMenu>
+  <!-- full page menu -->
+  <TheMenu v-if="domStore.menuActive"></TheMenu>
 </template>
 
 
@@ -38,7 +36,7 @@ const route = useRoute();
 function setMainWrapperClasses() {
   // let classes = `${domStore.windowOrientation} `;
   // if ( domStore.windowOrientation !== 'landscape' ) {
-  //   classes += domStore.sidebarActive
+  //   classes += domStore.menuActive
   //              ? 'portrait-sidebar-active'
   //              : 'portrait-sidebar-hidden'
   // };
@@ -66,7 +64,7 @@ function touchOrNot() {
 // hide the mobile sidebar when changing route
 watch(route, (newRoute, oldRoute) => {
   if ( domStore.windowOrientation!== 'landscape' ) {
-    domStore.sidebarActive = false;
+    domStore.menuActive = false;
   }
 })
 
@@ -87,8 +85,8 @@ onUnmounted(() => {
 .app-wrapper {
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: var(--cs-navbar-height-mobile)
-                      calc(100vh - var(--cs-navbar-height-mobile));
+  grid-template-rows: var(--cs-navbar-height)
+                      calc(100vh - var(--cs-navbar-height));
   margin: 0;
   padding: 0;
   height: 100vh;
@@ -110,8 +108,8 @@ onUnmounted(() => {
   grid-template-columns: 100%;
   grid-template-rows: 85% 15%;
 
-  margin-top: var(--cs-navbar-height-mobile);
-  height: calc(100vh - var(--cs-navbar-height-mobile));
+  margin-top: var(--cs-navbar-height);
+  height: calc(100vh - var(--cs-navbar-height));
 }
 main {
   height: 100%;
@@ -120,13 +118,7 @@ main {
 }
 
 @media ( orientation: landscape ) {
-  .app-wrapper {
-    grid-template-rows: var(--cs-navbar-height-desktop)
-                        calc(100vh - var(--cs-navbar-height-desktop));
-  }
   .main-wrapper {
-    margin-top: var(--cs-navbar-height-desktop);
-    height: calc(100vh - var(--cs-navbar-height-desktop));
     grid-template-columns: 90% 10%;
     grid-template-rows: 100%;
   }

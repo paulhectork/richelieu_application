@@ -9,10 +9,7 @@
   <div class="sidebar-wrapper">
     <!-- <img :src="menuCropPath"> -->
     <div class="sidebar-iiif-wrapper">
-      <div :id="htmlId"
-           style="height: 100%"
-      ></div>
-      <IiifViewer osdId="sidebar-iiif-viewer"
+      <IiifViewer :osdId="htmlId"
                   :iiifUrl="iiifUrl"
                   @osd-viewer="defineViewer"
       ></IiifViewer>
@@ -22,7 +19,8 @@
 
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
+import { useRoute } from "vue-router";
 
 import $ from "jquery";
 import OpenSeadragon from "openseadragon";
@@ -36,8 +34,9 @@ const iiifUrl           = "https://apicollections.parismusees.paris.fr/iiif/3200
 const htmlId            = "sidebar-iiif-viewer";
 const idUuidIconography = "qr11679c39145004726a591f2b7086234e5";
 
+const route    = useRoute();
 const viewer   = ref(); // Openseadragon.viewer: the IIIF viewer
-const panPoint = ref()  // Openseadragon.Point : the point on which the viewer is centered
+const panPoint = ref(); // Openseadragon.Point : the point on which the viewer is centered
 
 /**
  * viewport config and coordinates.
@@ -62,7 +61,6 @@ const panPoint = ref()  // Openseadragon.Point : the point on which the viewer i
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 /** TODO
- * - scroll back to the original position on page change
  * - error handling if the IIIF viewer doesn't load
  * - fix this weird height thing
  * - see if there are other events on the OSD viewer
@@ -167,10 +165,10 @@ function defineViewer(newViewer) {
   viewer.value.addHandler("canvas-scroll", viewportRevert);
 }
 
+/****************************************/
 
+watch(route, viewportRevert);
 
-onMounted(() => {
-})
 onUnmounted(() => {
   $("main").off("scroll");
 })
@@ -184,9 +182,9 @@ onUnmounted(() => {
   overflow: scroll;
   border-top: var(--cs-border);
   border-left: none;
+  padding: 5px;
 }
 .sidebar-iiif-wrapper {
-  margin: 5px;
   border:var(--cs-border);
   height: 100%;
 }
@@ -202,7 +200,6 @@ img {
   .sidebar-wrapper {
     border-top: none;
     border-left: var(--cs-border);
-    height: 100%;
   }
 }
 </style>

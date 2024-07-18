@@ -16,7 +16,7 @@
     </h1>
 
     <div id="burger"
-         :class="domStore.sidebarActive ? 'burger-cross' : ''">
+         :class="domStore.menuActive ? 'burger-cross' : ''">
       <span></span>
       <span></span>
       <span></span>
@@ -37,8 +37,8 @@ import { cleanClickOrTouchend } from "@utils/functions.js";
 
 async function toggleSidebar() {
   // toggle HTML class
-  console.log( domStore.sidebarActive,
-               domStore.sidebarActive ? " : désactiver" : ": activer");
+  console.log( domStore.menuActive,
+               domStore.menuActive ? " : désactiver" : ": activer");
   domStore.toggleMobileSidebar();
   return
 }
@@ -60,7 +60,7 @@ onUnmounted(() => {
   top: 0;
   z-index: 2;
   position: fixed;
-  height: var(--cs-navbar-height-mobile);
+  height: var(--cs-navbar-height);
   background-color: white;
 
   display: grid;
@@ -69,11 +69,6 @@ onUnmounted(() => {
   grid-template-rows: 100%;
   justify-items: start;
   align-items: center;
-}
-@media ( orientation: landscape ) {
-  .navbar {
-    height: var(--cs-navbar-height-desktop);
-  }
 }
 #app-title a {
   margin: 0;

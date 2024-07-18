@@ -45,8 +45,8 @@ const menuCropPath = "../src/assets/media/menu_crop.jpg";
 <style scoped>
 .menu-container {
   position: absolute;
-  top: var(--cs-navbar-height-mobile);
-  height: calc(100vh - var(--cs-navbar-height-mobile));
+  top: var(--cs-navbar-height);
+  height: calc(100vh - var(--cs-navbar-height));
   width: 100vw;
 
   display: grid;
@@ -94,10 +94,6 @@ li > a.selected {
 }
 
 @media ( orientation: landscape ) {
-  .menu-container {
-    height: calc(100vh - var(--cs-navbar-height-desktop));
-    top: var(--cs-navbar-height-desktop);
-  }
   .menu > li > a {
     font-size: var(--cs-fontsize-menu-desktop);
   }

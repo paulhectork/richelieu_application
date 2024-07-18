@@ -27,8 +27,8 @@ export const domStore = reactive({
   /**
    * flag to show that the sidebar is visible on mobile displays
    */
-  sidebarActive: false,
+  menuActive: false,
   toggleMobileSidebar() {
-    this.sidebarActive = !this.sidebarActive
+    this.menuActive = !this.menuActive
   }
 })

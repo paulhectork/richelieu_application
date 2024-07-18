@@ -125,8 +125,12 @@
    */
   --cs-border: 1px solid black;
 
+  /*
   --cs-navbar-height-mobile: 7vh;
   --cs-navbar-height-desktop: 9vh;
+  */
+  --cs-navbar-height: 7vh;
+
   /*
   --cs-sidebar-width-desktop: 25vw;
   --cs-sidebar-width-mobile: 60vw;
