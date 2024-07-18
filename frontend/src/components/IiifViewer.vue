@@ -1,13 +1,20 @@
 <!-- a generic IIIF viewer.
 
-     this IIIF viewer takes 4 inputs:
-     * osdId        : the HTML id of the IIIF viewer
-     * iiifUrl      : an URL to a IIIF presentation manifest
-     * backupImgUrl : the filename a backup static file,
-                      which is on our server. this will
-                      be displayed if an error is encountered
-     * folio        : an optional array of folio numbers, to select which
-                      canvases to show instead of the whole manfiest
+     this components gets a IIIF manifest url, fetches it
+     and builds an Openseadragon viewer using it. if there
+     is an error, a static image can be provided to be displayed.
+
+     the component viewer takes 4 inputs:
+     * osdId            String        : the HTML id of the IIIF viewer
+     * iiifUrl          String        : an URL to a IIIF presentation manifest
+     * backupImgUrl     String        : the filename a backup static file,
+                                        which is on our server. this will
+                                        be displayed if an error is encountered
+     * backupImgDisplay String        : "cover"|"contain": value for the backup
+                                        static image <img>'s object-fit css property
+     * folio            Array<Number> : an optional array of folio numbers,
+                                        to select which canvases to show
+                                        instead of the whole manfiest
 -->
 
 <template>
@@ -19,6 +26,7 @@
   ></div>
   <img v-else
        :src="fnToIconographyFile(backupImgUrl)"
+       :style="{ objectFit: backupImgDisplay === 'cover' ? 'cover' : 'contain'  }"
        class="static-viewer">
 
 </template>
@@ -34,13 +42,23 @@ import LoaderComponent from "@components/ui/LoaderComponent.vue";
 
 /********************************************/
 
-const props         = defineProps(["osdId", "iiifUrl", "backupImgUrl", "folio"]);
+const props         = defineProps([ "osdId"
+                                  , "iiifUrl"
+                                  , "backupImgUrl"
+                                  , "backupImgDisplay"
+                                  , "folio" ]);
 const emit          = defineEmits(["osd-viewer"]);
 const viewer        = ref();       // OSD viewer
 const loadingFailed = ref(false);  // toggled in case of an error: will display a static image file instead of a IIIF tile sequence
 const isLoaded      = ref(false);  // switched to true once a IIIF viewer has loaded. hides the loader, shows the viewer
 
 /********************************************/
+
+function viewerErrorHandler() {
+  isLoaded.value      = true;
+  loadingFailed.value = true;
+  emit("osd-viewer", false);
+}
 
 /**
  * build an openseadragon viewer using `tileSequence`.
@@ -52,7 +70,7 @@ const isLoaded      = ref(false);  // switched to true once a IIIF viewer has lo
  */
 async function buildOsdViewer(tileSequence, osdId) {
   console.log(osdId);
-  viewer.value = OpenSeadragon({
+  viewer.value = await OpenSeadragon({
     id: osdId,
     tileSources: tileSequence,
     sequenceMode: true,
@@ -89,17 +107,17 @@ onMounted(async () => {
     .then( ([tileSequence, success]) => {
       if ( tileSequence.length && success ) {
         buildOsdViewer(tileSequence, props.osdId)
-        .then(isLoaded.value = true);
+        .then(isLoaded.value = true)
+        .catch( viewerErrorHandler );
 
       } else {
-        loadingFailed.value = true;
+        viewerErrorHandler();
       }
-    });
+    })
+    .catch( viewerErrorHandler );
   } else {
-    console.warn( "IiifViewer.vue: no IIIF for resource:"
-                , window.location.href.match(/qr1[a-z0-9]+/g)[0] )
-     loadingFailed.value = true;
-    isLoaded.value = true;
+    console.warn( `IiifViewer.vue: no IIIF for resource: ${window.location.href.match(/qr1[a-z0-9]+/g)[0]}` )
+    viewerErrorHandler();
   }
 })
 </script>
@@ -112,6 +130,5 @@ onMounted(async () => {
 .static-viewer {
   width: 100%;
   height: 100%;
-  object-fit: contain;
 }
 </style>

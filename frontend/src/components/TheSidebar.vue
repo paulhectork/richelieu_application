@@ -1,8 +1,37 @@
 <!-- TheSidebar.vue
 
-     a decorative bar that is on the side of the website
-     (or on the bottom, for mobiles).
-     this si
+     a decorative sidebar incorporating a IIIF viewer.
+     the viewer is panned depending on the % of page scrolling.
+     if there's an error, a static image is displayed.
+
+     logic:
+     1) create an openseadragon IIIF viewer. if there's no error,
+        assign the osd viewer to the ref `viewer`. if there is an error,
+        the ref `viewer` is `false` and the Openseadragon-specific
+        behaviours are disabled.
+     2) if there's no error: on page scrolling, the viewport is be
+        panned from left to right.
+        > `viewportPan()` handles the panning, depending on the % of
+          the page that has been scrolled.
+        > the Osd viewer can be manipulated by hand (clicked, pinched etc.),
+          which can zoom/move the image around and mess up our scrolling.
+          to prevent that, we use
+          > `viewportRevert()` to go back to the expected panning/zooming levels
+          > `viewportReset()` to go back to the original position and zooming level on page change.
+
+     x-axis scrolling is ponly allowed within a certain range, defined
+     by setting min-max values in a `viewportConfig` object:
+
+     X = non-scrollable zone
+     V = scrollable zone
+     ______________________________
+     |   |                    |   |
+     |   |                    |   |
+     | X |         V          | X |
+     |   |                    |   |
+     |   |                    |   |
+     ______________________________
+
 -->
 
 <template>
@@ -11,6 +40,8 @@
     <div class="sidebar-iiif-wrapper">
       <IiifViewer :osdId="htmlId"
                   :iiifUrl="iiifUrl"
+                  :backupImgUrl="imgUrl"
+                  backupImgDisplay="cover"
                   @osd-viewer="defineViewer"
       ></IiifViewer>
     </div>
@@ -26,11 +57,14 @@ import $ from "jquery";
 import OpenSeadragon from "openseadragon";
 
 import IiifViewer from "@components/IiifViewer.vue";
-// import { manifestToTileSequence, osdNavImages } from "@utils/iiif";
+import { fnToIconographyFile } from "@utils/functions";
 
 /****************************************/
 
+// wrong URL to test error handling
+// const iiifUrl           = "https://example.com";
 const iiifUrl           = "https://apicollections.parismusees.paris.fr/iiif/320057446/manifest";
+const imgUrl            = "qr16080c31522fa44a3b238cb3790054d1c.jpg";
 const htmlId            = "sidebar-iiif-viewer";
 const idUuidIconography = "qr11679c39145004726a591f2b7086234e5";
 
@@ -62,7 +96,6 @@ const panPoint = ref(); // Openseadragon.Point : the point on which the viewer i
 /////////////////////////////////////////////////////////
 /** TODO
  * - error handling if the IIIF viewer doesn't load
- * - fix this weird height thing
  * - see if there are other events on the OSD viewer
  *   that should trigger viewportRevert
  */
@@ -107,24 +140,39 @@ function makePanPoint(xStart, xEnd, y, xScrollRatio=0) {
 /**
  * pan the viewport horizontally depending on the vertical scroll
  * of the `main` html element. see `makePanPoint` for details.
+ * if `init===false`, add an x-offset defined by the % of page
+ * scrolled. else, there is no offset.
  */
-function viewportPan() {
-  let scrollRatio = getScrollRatio(),
-      p = makePanPoint( viewportConfig.xStartPos
-                      , viewportConfig.xEndPos
-                      , viewportConfig.yPos
-                      , scrollRatio);
-  viewer.value.viewport.panTo(p, false)
-  panPoint.value = p;
+function viewportPan(init=false) {
+  if ( viewer.value && viewer.value.viewport && viewer.value.viewport !== false ) {
+    let scrollRatio = !init ? getScrollRatio() : 0,
+        p = makePanPoint( viewportConfig.xStartPos
+                        , viewportConfig.xEndPos
+                        , viewportConfig.yPos
+                        , scrollRatio);
+    viewer.value.viewport.panTo(p, false)
+    panPoint.value = p;
+  }
 }
 
 /**
- * zoom on the viewport based on what has been defined in `viewportConfig.zoom`
+ * zoom on the viewport based on what has been
+ * defined in `viewportConfig.zoom`
  */
 function viewportZoom() {
-  viewer.value.viewport.zoomTo( viewportConfig.zoom, null, true );
+  if ( viewer.value && viewer.value.viewport && viewer.value.viewport !== false ) {
+    viewer.value.viewport.zoomTo( viewportConfig.zoom, null, true );
+  }
 }
 
+/**
+ * revert the viewport's zoom and pan to its last
+ * scroll-defined position.
+ * a user can interact with the OSD viewer and thus
+ * change the pan/zoom of the viewer. in that case,
+ * we wait a while before returning to the "normal"
+ * position.
+ */
 function viewportRevert() {
   setTimeout(() => {
     viewportZoom();
@@ -132,42 +180,60 @@ function viewportRevert() {
   }, 2000);
 }
 
-function defineViewer(newViewer) {
-  // update the global viewer handler
-  viewer.value = newViewer.value;
-
-  // hide the navigation buttons
-  $(`#${htmlId}`).find(".openseadragon-container > div:nth-child(2)")
-                 .hide();
-  $(`#${htmlId}`).find(".openseadragon-container .navigator").hide();
-
-  // set the zoom level so that the image fills its container
-  // see: https://codepen.io/iangilman/pen/RZxEWZ
-  const viewport = viewer.value.viewport;
-  const tiledImage = viewer.value.world.getItemAt(0);
-  viewportConfig.zoom = tiledImage.source.dimensions.x / viewport.getContainerSize().x;
+/**
+ * reset a viewport's pannong/zoom to its position
+ * on initial page load. to be used when the user
+ * changes page.
+ */
+function viewportReset() {
   viewportZoom();
-
-  // define the default center of the viewport
   viewportPan();
+}
 
-  // on scroll, update the viewport's center.
-  $("main").on("scroll", () => {
-    setTimeout(() => {
-      viewportPan();
-    }, 50)
-  })
+function defineViewer(newViewer) {
 
-  //TODO see if there are other events that should be added here.
-  // the viewport can be panned or zoomed by the user, but after some inactivity,
-  // switch the view back to what it is supposed to be based on the scrolling level.
-  viewer.value.addHandler("canvas-release", viewportRevert);
-  viewer.value.addHandler("canvas-scroll", viewportRevert);
+  if ( newViewer === false ) {
+    viewer.value = false;
+
+  } else {
+    // update the global viewer handler
+    viewer.value = newViewer.value;
+
+    // hide the navigation buttons
+    $(`#${htmlId}`).find(".openseadragon-container > div:nth-child(2)")
+                   .hide();
+    $(`#${htmlId}`).find(".openseadragon-container .navigator").hide();
+
+    // set the zoom level so that the image fills its container
+    // see: https://codepen.io/iangilman/pen/RZxEWZ
+    const viewport = viewer.value.viewport;
+    const tiledImage = viewer.value.world.getItemAt(0);
+    viewportConfig.zoom = tiledImage.source.dimensions.x / viewport.getContainerSize().x;
+    viewportZoom();
+
+    // define the default center of the viewport
+    viewportPan();
+
+    // on scroll, update the viewport's center.
+    $("main").on("scroll", () => {
+      setTimeout(() => {
+        viewportPan();
+      }, 50)
+    })
+
+    //TODO see if there are other events that should be added here.
+    // the viewport can be panned or zoomed by the user, but after some inactivity,
+    // switch the view back to what it is supposed to be based on the scrolling level.
+    viewer.value.addHandler("canvas-release", viewportRevert);
+    viewer.value.addHandler("canvas-scroll", viewportRevert);
+
+  }
 }
 
 /****************************************/
 
-watch(route, viewportRevert);
+// reposition the viewport to its original position when user changes page
+watch(route, () => { if (viewer.value !== false) { viewportReset() } });
 
 onUnmounted(() => {
   $("main").off("scroll");
@@ -175,7 +241,7 @@ onUnmounted(() => {
 </script>
 
 
-<style scoped>
+<style>
 .sidebar-wrapper {
   width: 100%;
   height: 100%;
@@ -188,14 +254,6 @@ onUnmounted(() => {
   border:var(--cs-border);
   height: 100%;
 }
-/*
-img {
-  object-fit: center;
-  min-height: 100%;
-  min-width: 100%;
-}
-*/
-
 @media ( orientation: landscape ) {
   .sidebar-wrapper {
     border-top: none;

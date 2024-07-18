@@ -70,10 +70,14 @@ export async function manifestToTileSequence(manifestUrl, folio=[]) {
                          })
 
   // assert that we're working with a v2 presentation manifest
-  if ( manifest["@context"] !== "http://iiif.io/api/presentation/2/context.json" ) {
+  if ( success && manifest["@context"] !== "http://iiif.io/api/presentation/2/context.json" ) {
     console.error(`iiif.manifestToTileSequence: the manifest must follow the IIIF
                    presentation v2 API, on '${manifestUrl}'`);
     success = false;
+  }
+
+  if (!success) {
+    return [ out, success ];
   }
 
   // extract the images.
