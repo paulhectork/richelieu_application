@@ -174,12 +174,6 @@ class Address(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
-    # def to_string(self):
-    #     """
-    #     string representation of an address
-    #     """
-    #     return f"{self.number} {self.street}, {self.city} ({self.date})"
-
     def get_place(self):
         return [ r.place.serialize_lite()
                  for r in self.r_address_place ]
@@ -191,25 +185,23 @@ class Address(db.Model):
                  for d in self.directory ]
 
     def serialize_lite(self):
-        return { "id_uuid" : self.id_uuid,            # str
-                 "address" : self.address,              # str
-                 "city"    : self.city,                  # str
-                 "country" : self.country,            # str
+        return { "id_uuid" : self.id_uuid,  # str
+                 "address" : self.address,  # str
+                 "city"    : self.city,     # str
+                 "country" : self.country,  # str
         }
 
 
     def serialize_full(self):
-        return { "id_uuid" : self.id_uuid,            # str
+        return { "id_uuid" : self.id_uuid,              # str
                  "address" : self.address,              # str
-                 "city"    : self.city,                  # str
-                 "country" : self.country,            # str
-                 "source"  : self.source,              # str
-                 "date"    : int4range2list(self.date),  # t.List[int]
+                 "city"    : self.city,                 # str
+                 "country" : self.country,              # str
+                 "source"  : self.source,               # str
+                 "date"    : int4range2list(self.date), # t.List[int]
 
-                 # "as_string": self.to_string(),    # str
-
-                 "place": self.get_place(),          # t.List[t.Dict]
-                 "directory": self.get_directory()   # t.List[t.Dict]
+                 "place": self.get_place(),             # t.List[t.Dict]
+                 "directory": self.get_directory()      # t.List[t.Dict]
         }
 
 
