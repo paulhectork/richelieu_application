@@ -161,8 +161,7 @@ class Address(db.Model):
 
     id      : Mapped[int]                   = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
     id_uuid : Mapped[str]                   = mapped_column(Text, nullable=False)
-    number  : Mapped[str]                   = mapped_column(Text, nullable=True)
-    street  : Mapped[str]                   = mapped_column(Text, nullable=False)
+    address : Mapped[str]                   = mapped_column(Text, nullable=False)
     city    : Mapped[str]                   = mapped_column(Text, nullable=False)
     country : Mapped[str]                   = mapped_column(Text, nullable=False)
     source  : Mapped[str]                   = mapped_column(Text, nullable=False)
@@ -193,8 +192,7 @@ class Address(db.Model):
 
     def serialize_lite(self):
         return { "id_uuid" : self.id_uuid,            # str
-                 "number"  : self.number,              # str
-                 "street"  : self.street,              # str
+                 "address" : self.address,              # str
                  "city"    : self.city,                  # str
                  "country" : self.country,            # str
         }
@@ -202,8 +200,7 @@ class Address(db.Model):
 
     def serialize_full(self):
         return { "id_uuid" : self.id_uuid,            # str
-                 "number"  : self.number,              # str
-                 "street"  : self.street,              # str
+                 "address" : self.address,              # str
                  "city"    : self.city,                  # str
                  "country" : self.country,            # str
                  "source"  : self.source,              # str

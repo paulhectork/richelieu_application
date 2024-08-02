@@ -33,6 +33,7 @@ class Iconography(db.Model):
 
     id               : Mapped[int]         = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
     id_uuid          : Mapped[str]         = mapped_column(Text, nullable=False)
+    id_richelieu     : Mapped[str]         = mapped_column(Text, nullable=False)
     iiif_url         : Mapped[str]         = mapped_column(Text, nullable=True)
     iiif_folio       : Mapped[t.List[int]] = mapped_column(psql.ARRAY(psql.INTEGER, dimensions=1), nullable=True)
     source_url       : Mapped[str]         = mapped_column(Text, nullable=True)

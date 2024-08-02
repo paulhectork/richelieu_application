@@ -115,7 +115,7 @@ class TestQueries(unittest.TestCase):
               """
             ]
             ,
-            [ { "namedEntity": ['Martinet éditeur', 'Lecointe architecte'] },
+            [ { "namedEntity": ['Martinet Éditeur', 'Lecointe architecte'] },
               r"""
               SELECT DISTINCT iconography.id_uuid
               FROM iconography
@@ -123,7 +123,7 @@ class TestQueries(unittest.TestCase):
               ON r_iconography_named_entity.id_iconography = iconography.id
               JOIN named_entity
               ON r_iconography_named_entity.id_named_entity = named_entity.id
-              AND named_entity.entry_name IN ('Martinet éditeur', 'Lecointe architecte');
+              AND named_entity.entry_name IN ('Martinet Éditeur', 'Lecointe architecte');
               """
             ]
             ,
