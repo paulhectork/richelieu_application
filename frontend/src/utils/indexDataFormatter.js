@@ -12,7 +12,12 @@
  * NamedEntity, Theme...)
  */
 
-import { fnToIconographyFile, fnToCartographyFile } from "@utils/functions";
+import { fnToIconographyFile
+       , fnToCartographyFile
+       , urlToFrontendPlace
+       , urlToFrontendIconography
+       , urlToFrontendTheme
+       , urlToFrontendNamedEntity } from "@utils/url";
 import { stringifyIconographyResource
        , stringifyThemeOrNamedEntityResource } from "@utils/stringifiers";
 
@@ -24,8 +29,8 @@ import { stringifyIconographyResource
 
 export function indexDataFormatterIconography(dataArr) {
   return dataArr.map((c) => {
-   return { idUuid : c.id_uuid,
-            href   : new URL(`/iconographie/${c.id_uuid}`, window.location.href).href,
+   return { iduuid : c.id_uuid,
+            href   : urlToFrontendIconography(c.id_uuid).href,
             iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
             img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0].url).href : null,
             text   : stringifyIconographyResource(c) };
@@ -35,8 +40,8 @@ export function indexDataFormatterIconography(dataArr) {
 export function indexDataFormatterPlace(dataArr) {
   return dataArr.map((c) => {
     if ( ! c.address.length ) console.log(c)
-    return { idUuid : c.id_uuid,
-             href   : new URL(`/lieu/${c.id_uuid}`, window.location.href).href,
+    return { iduuid : c.id_uuid,
+             href   : urlToFrontendPlace(c.id_uuid).href,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
              img    : c.filename.length ? fnToCartographyFile(c.filename[0].url).href : null,
              text   : c.address.length ? c.address[0].address : "Addresse inconnue" };
@@ -45,8 +50,8 @@ export function indexDataFormatterPlace(dataArr) {
 
 export function indexDataFormatterTheme(dataArr) {
   return dataArr.map((c) => {
-    return { idUuid : c.id_uuid,
-             href   : new URL(`/theme/${c.id_uuid}`, window.location.href).href,
+    return { iduuid : c.id_uuid,
+             href   : urlToFrontendTheme(c.id_uuid).href,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
              img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
              text   : stringifyThemeOrNamedEntityResource(c)
@@ -57,8 +62,8 @@ export function indexDataFormatterTheme(dataArr) {
 
 export function indexDataFormatterNamedEntity(dataArr) {
   return dataArr.map((c) => {
-    return { idUuid : c.id_uuid,
-             href   : new URL(`/sujet/${c.id_uuid}`, window.location.href).href,
+    return { iduuid : c.id_uuid,
+             href   : urlToFrontendNamedEntity(c.id_uuid).href,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
              img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
              text   : stringifyThemeOrNamedEntityResource(c)

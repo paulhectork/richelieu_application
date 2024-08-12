@@ -9,15 +9,38 @@
 
 
 <template>
-  <h1>Thème: {{ formattedThemeName }}</h1>
+  <h1>Thème:{{ formattedThemeName }}</h1>
 
   <LoaderComponent v-if="!backendLoaded"></LoaderComponent>
   <div v-else>
-    <p><strong>{{ theme.iconography_count }}</strong>
-      ressources iconographiques sont associées à ce thème.</p>
+    <p><strong>{{ theme.iconography_count }} ressources iconographiques</strong>
+      sont associées à ce thème.</p>
+
+    <p v-if="associatedThemes.length && associatedThemes.length > 1"
+       v-html="`Les <strong>${associatedThemes.length} thèmes</strong> les
+                plus fréquemment associés au thème <i>${themeName }</i> sont:
+                ${ stringifyAssociated(associatedThemes, 'theme') }.`"
+    ></p>
+    <p v-else-if="associatedThemes.length===1"
+       v-html="`<strong>Le thème</strong> le plus fréquemment associé
+                au thème <i>${themeName }</i> est:
+                ${ stringifyAssociated(associatedThemes, 'theme') }.`"
+    ></p>
+
+    <p v-if="associatedNamedEntity.length && associatedNamedEntity.length > 1"
+       v-html="`Les <strong>${associatedNamedEntity.length} sujets</strong> les
+                plus fréquemment associés au thème <i>${themeName}</i> sont:
+                ${ stringifyAssociated(associatedNamedEntity, 'namedEntity') }.`"
+    ></p>
+    <p v-else-if="associatedThemes.length===1"
+       v-html="`<strong>Le sujet</strong> le plus fréquemment associé
+                au thème <i>${themeName }</i> est:
+                ${ stringifyAssociated(associatedNamedEntity, 'namedEntity') }.`"
+    ></p>
+
 
     <IndexBase :data="dataFilter"
-           display="resource"
+               display="resource"
     ></IndexBase>
   </div>
 </template>
@@ -31,7 +54,7 @@ import axios from "axios";
 import IndexBase from "@components/IndexBase.vue";
 import LoaderComponent from "@components/ui/LoaderComponent.vue";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
-import { capitalizeString, capitalizeWords } from "@utils/stringifiers";
+import { stringifyAssociated, capitalizeString, capitalizeWords } from "@utils/stringifiers";
 
 /**************************************************/
 
@@ -40,27 +63,30 @@ const theme      = ref({});    // the theme object sent from the backend
 const themeName  = ref("");    // the name of the theme.
 const dataFull   = ref([]);    // the complete iconography  data, set from a watcher
 const dataFilter = ref([]);    // the user-filtered iconography data, set from a watcher
-const idUuid     = ref(route.params.idUuid);
+const iduuid     = ref(route.params.iduuid);
 const backendLoaded = ref(false);  // when swittched to true, the loader is removed
+
+const associatedThemes      = ref([]); // themes most frequently associated with the current theme
+const associatedNamedEntity = ref([]); // named entites most frequently associated with the current theme
 
 // the backend URLs, defined as `computed` to handle reactivity
 const apiTargetTheme = computed(() =>
-  new URL(`/i/theme-name/${idUuid?.value}`, __API_URL__))
+  new URL(`/i/theme-name/${iduuid?.value}`, __API_URL__))
 const apiTargetIconography  = computed(() =>
-  new URL(`/i/theme/${idUuid?.value}`, __API_URL__) );
+  new URL(`/i/theme/${iduuid?.value}`, __API_URL__) );
 // the theme name
 const formattedThemeName = computed(() =>
   themeName.value ? capitalizeWords(themeName.value) : themeName.value );
 
 /***************************************************/
 
+
 /**
  * get all backend data from an UUID. we divide the fetching
  * of data in 2 queries because the second query, `apiTargetIconography`,
  * can take time to run
- * @param {string} themeIdUuid: the UUID of this theme
  */
-function getData(themeIdUuid) {
+function getData() {
   axios.get(apiTargetTheme.getter().href).then(r => {
     themeName.value = r.data.length ? r.data[0] : undefined;
   })
@@ -72,21 +98,35 @@ function getData(themeIdUuid) {
   })
 }
 
+/**
+ * get the named entities and themes associated to the current theme.
+ * for example: the NEs which are the most often used to tag images
+ * which are also tagged with the current theme.
+ */
+function getAssociated() {
+  axios.get( new URL(`/i/associated-theme-from-theme/${iduuid.value}`, __API_URL__).href )
+       .then(r => { associatedThemes.value = r.data });
+  axios.get( new URL(`/i/associated-named-entity-from-theme/${iduuid.value}`, __API_URL__).href )
+       .then(r => { console.log(r.data); associatedNamedEntity.value = r.data });
+}
+
 watch(theme, (newTheme, oldTheme) => {
   dataFull.value   = newTheme.iconography;
   dataFilter.value = indexDataFormatterIconography(dataFull.value);
 })
 
-watch(() => route.params.idUuid, (newIdUuid, oldIdUuid) => {
-  idUuid.value = newIdUuid;
-  getData(newIdUuid);
+watch(() => route.params.iduuid, (newIduuid, oldIduuid) => {
+  iduuid.value = newIduuid;
+  getData();
+  getAssociated();
 })
 
 
 /***************************************************/
 
 onMounted(() => {
-  getData(idUuid.value);
+  getData();
+  getAssociated();
 })
 
 </script>

@@ -8,20 +8,6 @@ import { hasTouch } from "@globals";
 
 
 /**
- * create an URL to an image on the remote server
- * from the cartography/iconography table.
- * @param {str} fn : the filename to the image
- * @returns        : the URL to that image
- */
-export function fnToCartographyFile(fn) {
-  return new URL(`/statics/cartography/${fn}`, __SERVER_URL__);
-}
-export function fnToIconographyFile(fn) {
-  return new URL(`/statics/iconography/${fn}`, __SERVER_URL__);
-}
-
-
-/**
  * on touchscreen devices, "when the user touches
  * the screen both touch and click events will occur".
  * this means that, if `hasTouch`, 2 events are fired

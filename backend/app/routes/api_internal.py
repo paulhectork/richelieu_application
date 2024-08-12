@@ -1,6 +1,6 @@
 from flask import render_template, jsonify, request
 from psycopg2.extras import NumericRange
-from sqlalchemy import text, desc, asc
+from sqlalchemy import text, desc, asc, and_, func
 import random
 import json
 
@@ -177,7 +177,7 @@ def place_lite(place_uuid:str):
 
 
 @app.route("/i/theme-name/<id_uuid>")
-def main_theme_name(id_uuid):
+def main_theme_name(id_uuid:str):
     """
     get the name of a theme from its UUID.
     used in the main page for a theme.
@@ -187,13 +187,197 @@ def main_theme_name(id_uuid):
 
 
 @app.route("/i/named-entity-name/<id_uuid>")
-def main_named_entity_name(id_uuid):
+def main_named_entity_name(id_uuid:str):
     """
     get the name of a named entity from its UUID
     used in the main pages for a named entity.
     """
     r = db.session.execute(NamedEntity.query.filter( NamedEntity.id_uuid == id_uuid ))
     return jsonify([ n[0].entry_name for n in r.all() ])
+
+
+@app.route("/i/associated-theme-from-theme/<id_uuid>")
+def associated_theme_from_theme(id_uuid:str):
+    """
+    get the most frequently associated themes from a theme:
+    fetch the themes that are most frequently used to tag
+    iconography ressources that have the theme `id_uuid`.
+
+    the logic is:
+    1) get all iconography ressources with the good theme
+    2) get all the themes that are used to tag those iconography resources
+    3) groupby + count + order: count the number of occurrences of each
+       theme, and keep only the 5 most used themes.
+
+    the query below is analog to:
+    >>> SELECT
+    ...   theme.id
+    ...   , theme.entry_name
+    ...   , COUNT (theme.id) AS count_associated
+    ... FROM theme
+    ... JOIN r_iconography_theme
+    ... ON theme.id = r_iconography_theme.id_theme
+    ... JOIN iconography
+    ... ON r_iconography_theme.id_iconography = iconography.id
+    ... AND iconography.id IN (
+    ...   SELECT iconography.id
+    ...   FROM iconography
+    ...   JOIN r_iconography_theme
+    ...   ON r_iconography_theme.id_iconography = iconography.id
+    ...   JOIN theme ON theme.id = r_iconography_theme.id_theme
+    ...   AND theme.id = 1
+    ... )
+    ... WHERE theme.id != 1
+    ... GROUP BY theme.id
+    ... ORDER BY count_associated DESC
+    ... LIMIT 5;
+
+    return structure:
+    >>> [
+    ...    # 1st theme
+    ...    { "id_uuid"    : "<uuid for a theme>",
+    ...      "entry_name" : "<name of the theme>",
+    ...      "count"      : "<number of times a theme is associated with the theme on which we run a query>"
+    ...    },
+    ...    # other themes
+    ...    {...}
+    ... ]
+
+    :param id_uuid: the UUID of the theme to get associations from
+    :returns: a jsonified list of dicts, with the structure described above
+    """
+    # all iconography tagged with theme with `id_uuid`
+    icono_for_theme = (select(Iconography.id)
+                       .join( Iconography.r_iconography_theme )
+                       .join( R_IconographyTheme
+                              .theme
+                              .and_(Theme.id_uuid == id_uuid)))
+    # main query
+    q = (select( Theme.id_uuid
+                , Theme.entry_name
+                , func.count(Theme.id).label("associates_count") )  # `.label()` is compulsory !!! (and not `.alias()` !!)
+         # fetch all themes that are connected to the current theme
+         .join( Theme.r_iconography_theme )
+         .join( R_IconographyTheme
+                .iconography
+                .and_( Iconography.id.in_(icono_for_theme) ))
+         # ensure we don't process the current theme
+         .filter( Theme.id_uuid != id_uuid )
+         # groupby, orders and limits.
+         .group_by(Theme.id)
+         .order_by(func.count(Theme.id).desc() )
+         .limit(5) )
+
+    # run query, restructure results, return
+    r = db.session.execute(q).all()
+    r = [ { "id_uuid": row[0], "entry_name": row[1], "count": row[2] } for row in r ]
+    return jsonify(r)
+
+
+@app.route("/i/associated-named-entity-from-theme/<id_uuid>")
+def associated_named_entity_from_theme(id_uuid:str):
+    """
+    get the most frequently associated named entites from a theme:
+    fetch the NEs that are most frequently used to tag iconography
+    ressources that have the theme `id_uuid`.
+
+    see the doc of `associated_theme_from_theme` for details.
+    """
+    # all iconography tagged with theme with `id_uuid`
+    icono_for_theme = (select(Iconography.id)
+                       .join( Iconography.r_iconography_theme )
+                       .join( R_IconographyTheme
+                              .theme
+                              .and_(Theme.id_uuid == id_uuid)))
+    # main query
+    q = (select( NamedEntity.id_uuid
+               , NamedEntity.entry_name
+               , func.count(NamedEntity.id).label("associates_count") )  # `.label()` is compulsory !!! (and not `.alias()` !!)
+         # fetch all themes that are connected to the current theme
+         .join( NamedEntity.r_iconography_named_entity )
+         .join( R_IconographyNamedEntity
+                .iconography
+                .and_( Iconography.id.in_(icono_for_theme) ))
+         # groupby, orders and limits.
+         .group_by(NamedEntity.id)
+         .order_by(func.count(NamedEntity.id).desc() )
+         .limit(5) )
+
+    # run query, restructure results, return
+    r = db.session.execute(q).all()
+    r = [ { "id_uuid": row[0], "entry_name": row[1], "count": row[2] } for row in r ]
+    return jsonify(r)
+
+
+@app.route("/i/associated-named-entity-from-named-entity/<id_uuid>")
+def associated_named_entity_from_named_entity(id_uuid:str):
+    """
+    get the most frequently associated named entites from a named entity:
+    fetch the NEs that are most frequently used to tag iconography
+    ressources that have the named entity with UUID `id_uuid`.
+
+    see the doc of `associated_theme_from_theme` for details.
+    """
+    # all iconography tagged with NE with `id_uuid`
+    icono_for_ne = (select(Iconography.id)
+                    .join( Iconography.r_iconography_named_entity )
+                    .join( R_IconographyNamedEntity
+                           .named_entity
+                           .and_(NamedEntity.id_uuid == id_uuid)))
+    # main query
+    q = (select( NamedEntity.id_uuid
+               , NamedEntity.entry_name
+               , func.count(NamedEntity.id).label("associates_count") )  # `.label()` is compulsory !!! (and not `.alias()` !!)
+         # fetch all themes that are connected to the current theme
+         .join( NamedEntity.r_iconography_named_entity )
+         .join( R_IconographyNamedEntity
+                .iconography
+                .and_( Iconography.id.in_(icono_for_ne) ))
+         # ensure we don't process the current named entity
+         .filter( NamedEntity.id_uuid != id_uuid )
+         # groupby, orders and limits.
+         .group_by(NamedEntity.id)
+         .order_by(func.count(NamedEntity.id).desc() )
+         .limit(5) )
+
+    # run query, restructure results, return
+    r = db.session.execute(q).all()
+    r = [ { "id_uuid": row[0], "entry_name": row[1], "count": row[2] } for row in r ]
+    return jsonify(r)
+
+@app.route("/i/associated-theme-from-named-entity/<id_uuid>")
+def associated_theme_from_named_entity(id_uuid:str):
+    """
+    get the most frequently associated themes from a named entity:
+    fetch the themes that are most frequently used to tag iconography
+    ressources that have the NE with UUID `id_uuid`.
+
+    see the doc of `associated_theme_from_theme` for details.
+    """
+    # all iconography tagged with NE with `id_uuid`
+    icono_for_ne = (select(Iconography.id)
+                    .join( Iconography.r_iconography_named_entity )
+                    .join( R_IconographyNamedEntity
+                           .named_entity
+                           .and_(NamedEntity.id_uuid == id_uuid)))
+    # main query
+    q = (select( Theme.id_uuid
+               , Theme.entry_name
+               , func.count(Theme.id).label("associates_count") )  # `.label()` is compulsory !!! (and not `.alias()` !!)
+         # fetch all themes that are connected to the current theme
+         .join( Theme.r_iconography_theme )
+         .join( R_IconographyTheme
+                .iconography
+                .and_( Iconography.id.in_(icono_for_ne) ))
+         # groupby, orders and limits.
+         .group_by(Theme.id)
+         .order_by(func.count(Theme.id).desc() )
+         .limit(5) )
+
+    # run query, restructure results, return
+    r = db.session.execute(q).all()
+    r = [ { "id_uuid": row[0], "entry_name": row[1], "count": row[2] } for row in r ]
+    return jsonify(r)
 
 
 @app.route("/i/iconography-overall-date-range")

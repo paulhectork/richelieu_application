@@ -1,7 +1,14 @@
 /******************************************************
+ *                                                    *
  *        transform objects (`[]`, `{}`) into         *
  *        string representations                      *
+ *                                                    *
  ******************************************************/
+
+import { urlToFrontendActor
+       , urlToFrontendTheme
+       , urlToFrontendNamedEntity
+       , urlToFrontendInstitution } from "@utils/url";
 
 
 /**
@@ -101,7 +108,7 @@ export function stringifyThemeOrNamedEntityResource(x) {
  */
 export function stringifyActorArray(actorArray, hyperlink=false) {
   const doHyperlink = actor =>
-    `<a href="${ new URL(`/acteur/${actor.id_uuid}`, window.location.href).href }"
+    `<a href="${ urlToFrontendActor(actor.id_uuid).href }"
     >${actor.entry_name}</a>`;
 
   let out = "";
@@ -125,7 +132,7 @@ export function stringifyActorArray(actorArray, hyperlink=false) {
 }
 
 export function stringifyThemeArray(themeArray, hyperlink=false) {
-  const doHyperlink = (theme) => `<a href="${ new URL(`/theme/${theme.id_uuid}`, window.location.href).href }"
+  const doHyperlink = (theme) => `<a href="${ urlToFrontendTheme(theme.id_uuid).href }"
                                   >${theme.entry_name}</a>`;
   let out = "";
   if ( themeArray != null && themeArray.length ) {
@@ -146,7 +153,7 @@ export function stringifyThemeArray(themeArray, hyperlink=false) {
 }
 
 export function stringifyNamedEntityArray(namedEntityArray, hyperlink=false) {
-  const doHyperlink = (ne) => `<a href="${ new URL(`/sujet/${ne.id_uuid}`, window.location.href).href }"
+  const doHyperlink = (ne) => `<a href="${ urlToFrontendNamedEntity(ne.id_uuid).href }"
                                >${ne.entry_name}</a>`;
   let out = "";
   if ( namedEntityArray != null && namedEntityArray.length ) {
@@ -167,7 +174,7 @@ export function stringifyNamedEntityArray(namedEntityArray, hyperlink=false) {
 }
 
 export function stringifyInstitutionArray(institutionArray, hyperlink=false) {
-  const doHyperlink = (i) => `<a href="${ new URL(`/institution/${i.id_uuid}`, window.location.href).href }"
+  const doHyperlink = (i) => `<a href="${ urlToFrontendInstitution(i.id_uuid).href }"
                                >${i.entry_name}</a>`;
   let out = "";
   if ( institutionArray != null && institutionArray.length ) {
@@ -187,3 +194,57 @@ export function stringifyInstitutionArray(institutionArray, hyperlink=false) {
   return out;
 
 }
+
+/**
+ * elements that are associated with a resource always have the same
+ * structure. here, we centralize their stringification.
+ *
+ * elements associated, are, for example, named entities that co-occur
+ * with a theme. they are fetched from the backend.
+ *
+ * all associated elements are included in an `<a>`, with a redirection
+ * to their main page.
+ *
+ * @param {*} associated: the array of associated objects. their structure is:
+ *  ```
+ *  [
+ *     # 1st theme
+ *     { "id_uuid"    : "<uuid for a theme>",
+ *       "entry_name" : "<name of the theme>",
+ *       "count"      : "<number of times a theme is associated with the theme on which we run a query>"
+ *     },
+ *     # other themes
+ *     {...}
+ *  ]
+ *  ```
+ * @param {*} targetKey : `targetKey` is a key to determine where
+ *  the URL of each `associated` el will redirect to: named entity, theme...
+ */
+export function stringifyAssociated(associated, targetKey) {
+  const urlBuilder = targetKey === "theme" ? urlToFrontendTheme : urlToFrontendNamedEntity;
+  const processEl = (el) =>
+    `<a href="${urlBuilder((el.id_uuid))}">${el.entry_name}</a>
+     (${el.count} co-occurrence${ el.count > 1 ? 's' : '' }`;
+
+  // validate arguments
+  if ( ! ["theme", "namedEntity"].includes(targetKey) ) {
+    console.error(`ThemeMainView.stringifyAssociated: param 'targetKey'
+                   must be one of ["theme", "namedEntity"], got ${targetKey}`)
+  }
+
+  let out = "";
+  associated.map((el, idx) => {
+    switch ( idx ) {
+      case associated.length - 1:  // `a` is the last entry in `associated`
+        out += processEl(el);
+        break;
+      case associated.length - 2:  //`a` is the entry before the last in `associated`
+        out += `${processEl(el)} et `;
+        break;
+      default:                     // any other entry
+        out += `${processEl(el)}, `;
+    }
+  })
+  return out;
+}
+

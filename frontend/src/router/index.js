@@ -24,7 +24,7 @@ const router = createRouter({
       name: 'Index iconographique',
       component: () => import("@views/IconographyIndexView.vue")
     }, {
-      path: '/iconographie/:idUuid',
+      path: '/iconographie/:iduuid',
       name: 'Ressource iconographique',
       component: () => import("@views/IconographyMainView.vue")
     }, {
@@ -36,7 +36,7 @@ const router = createRouter({
       name: 'Index des thèmes',
       component: () => import("@views/ThemeIndexView.vue")
     }, {
-      path: '/theme/:idUuid',
+      path: '/theme/:iduuid',
       name: 'Thème',
       component: () => import("@views/ThemeMainView.vue")
     }, {
@@ -44,7 +44,7 @@ const router = createRouter({
       name: 'Index des sujets',
       component: () => import("@views/NamedEntityIndexView.vue")
     }, {
-      path: '/sujet/:idUuid',
+      path: '/sujet/:iduuid',
       name: 'Sujet',
       component: () => import("@views/NamedEntityMainView.vue")
     }, {
@@ -52,7 +52,7 @@ const router = createRouter({
       name: 'Index des lieux',
       component: () => import("@views/PlaceIndexView.vue")
     }, {
-      path: '/lieu/:idUuid',
+      path: '/lieu/:iduuid',
       name: 'Lieu',
       component: () => import("@views/PlaceMainView.vue")
     }, {

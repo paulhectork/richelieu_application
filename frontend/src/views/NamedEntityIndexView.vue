@@ -18,7 +18,7 @@ import { onMounted, ref } from "vue";
 import axios from "axios";
 
 // import { stringifyThemeOrNamedEntityResource } from "@utils/stringifiers";
-// import { fnToIconographyFile } from "@utils/functions";
+// import { fnToIconographyFile } from "@utils/url";
 import { indexDataFormatterNamedEntity } from "@utils/indexDataFormatter";
 import LoaderComponent from "@components/ui/LoaderComponent.vue";
 import IndexBase from "@components/IndexBase.vue";

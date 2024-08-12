@@ -14,7 +14,7 @@
 import axios from "axios";
 import DataTableComponent from "@components/DataTableComponent.vue";
 import { stringifyDate } from "@utils/stringifiers";
-import { fnToCartographyFile } from "@utils/functions";
+import { fnToCartographyFile } from "@utils/url";
 
 const apiTarget = new URL("/i/cartography", __API_URL__);
 const columnsDefinition = [ { data: "filename",

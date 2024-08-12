@@ -21,6 +21,7 @@ import { ref, onMounted } from "vue";
 import $ from "jquery";
 
 import { globalDefineMap } from "@utils/leafletUtils";
+import { urlToFrontendPlace } from "@utils/url";
 
 /******************************************************/
 
@@ -36,7 +37,7 @@ async function buildPlacePopup(placeUuid) {
     address = address.length
               ? address[0].address
               : "Addresse inconnue";
-    return `<a href="${new URL('/lieu/' + placeUuid, window.location.href).href}"
+    return `<a href="${urlToFrontendPlace(placeUuid).href}"
             >${address}</a>`
   })
 }

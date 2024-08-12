@@ -37,7 +37,7 @@ import { onMounted, ref } from "vue";
 import OpenSeadragon from "openseadragon";
 
 import { manifestToTileSequence, osdNavImages } from "@utils/iiif";
-import { fnToIconographyFile } from "@utils/functions";
+import { fnToIconographyFile } from "@utils/url";
 import LoaderComponent from "@components/ui/LoaderComponent.vue";
 
 /********************************************/
