@@ -22,7 +22,7 @@ const router = createRouter({
     }, {
       path: '/iconographie',
       name: 'Index iconographique',
-      component: () => import("@views/IconographyView.vue")
+      component: () => import("@views/IconographyIndexView.vue")
     }, {
       path: '/iconographie/:idUuid',
       name: 'Ressource iconographique',
@@ -34,7 +34,7 @@ const router = createRouter({
     }, {
       path: '/theme',
       name: 'Index des thèmes',
-      component: () => import("@views/ThemeView.vue")
+      component: () => import("@views/ThemeIndexView.vue")
     }, {
       path: '/theme/:idUuid',
       name: 'Thème',
@@ -42,7 +42,7 @@ const router = createRouter({
     }, {
       path: '/sujet',
       name: 'Index des sujets',
-      component: () => import("@views/NamedEntityView.vue")
+      component: () => import("@views/NamedEntityIndexView.vue")
     }, {
       path: '/sujet/:idUuid',
       name: 'Sujet',
@@ -50,7 +50,11 @@ const router = createRouter({
     }, {
       path: '/lieu',
       name: 'Index des lieux',
-      component: () => import("@views/PlaceView.vue")
+      component: () => import("@views/PlaceIndexView.vue")
+    }, {
+      path: '/lieu/:idUuid',
+      name: 'Lieu',
+      component: () => import("@views/PlaceMainView.vue")
     }, {
       path: '/table-viewer',
       name: 'Voir les tables',

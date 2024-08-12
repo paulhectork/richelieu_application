@@ -15,9 +15,9 @@
     <p><strong>{{ namedEntity.iconography_count }}</strong>
       ressources iconographiques sont associées à ce sujet.</p>
 
-    <Index :data="dataFilter"
+    <IndexBase :data="dataFilter"
            display="resource"
-    ></Index>
+    ></IndexBase>
   </div>
 </template>
 
@@ -27,7 +27,7 @@ import { onMounted, ref, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 
-import Index from "@components/Index.vue";
+import IndexBase from "@components/IndexBase.vue";
 import LoaderComponent from "@components/ui/LoaderComponent.vue";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { capitalizeString, capitalizeWords } from "@utils/stringifiers";

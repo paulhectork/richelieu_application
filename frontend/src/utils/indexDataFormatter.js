@@ -6,7 +6,7 @@
  * icongraphy index is used by `IconographyView.vue`,
  * `ThemeMainView.vue`, `NamedEntityMain.vue`). the data
  * for indexes sent from the backend has to be reformatted
- * before being passed to `Index.vue` and `IndexItem.vue`.
+ * before being passed to `IndexBase.vue` and `IndexItem.vue`.
  * this module centralizes this reformatting, with one
  * formatting function per data source (Iconography,
  * NamedEntity, Theme...)
@@ -14,7 +14,6 @@
 
 import { fnToIconographyFile, fnToCartographyFile } from "@utils/functions";
 import { stringifyIconographyResource
-       , stringifyAddressResource
        , stringifyThemeOrNamedEntityResource } from "@utils/stringifiers";
 
 
@@ -33,13 +32,14 @@ export function indexDataFormatterIconography(dataArr) {
   })
 }
 
-export function indexDataFormatterCartography(dataArr) {
+export function indexDataFormatterPlace(dataArr) {
   return dataArr.map((c) => {
+    if ( ! c.address.length ) console.log(c)
     return { idUuid : c.id_uuid,
              href   : new URL(`/lieu/${c.id_uuid}`, window.location.href).href,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
              img    : c.filename.length ? fnToCartographyFile(c.filename[0].url).href : null,
-             text   : c.address.length ? stringifyAddressResource(c.address[0]) : "Addresse inconnue" };
+             text   : c.address.length ? c.address[0].address : "Addresse inconnue" };
   })
 }
 

@@ -77,10 +77,23 @@ class Place(db.Model):
                  for f in c.filename ]
 
     def get_address_index(self) -> t.List[t.Dict]:
-        address_objs = [ r.address for r in self.r_address_place
-                         if r.address.source == self.vector_source ]
-        return [ a.serialize_lite()
-                 for a in address_objs ]
+        """
+        get the address for a specific place. we try to get an address that
+        matches this place's `vector_source`.
+        if none is found (there's no address matching the vector source, e.g., for Billaud)
+        => default to `parcellaire1900`.
+        => if parcellaire 1900 is missing too, default to the first available address
+        """
+        address_objs = { r.address.source: r.address for r in self.r_address_place }
+
+        if self.vector_source in address_objs.items():
+            address_objs = [ address_objs[self.vector_source] ]
+        elif "parcellaire_1900" in address_objs.items():
+            address_objs = [ address_objs["parcellaire1900"] ]
+        else:
+            address_objs = [ list(address_objs.values())[0] ]
+
+        return [ a.serialize_lite() for a in address_objs ]
 
     # def serialize_lite(self) -> t.Dict:
     #     return { "id_uuid"  : self.id_uuid,      # str
@@ -206,6 +219,6 @@ class Address(db.Model):
 
 
 from .data_sources import Cartography
-from .relationships import R_CartographyPlace
+from .relationships import R_AddressPlace, R_CartographyPlace
 
 

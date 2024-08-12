@@ -30,20 +30,20 @@ import axios from "axios";
 
 import $ from "jquery";
 
-import { indexDataFormatterCartography } from "@utils/indexDataFormatter";
+import { indexDataFormatterPlace } from "@utils/indexDataFormatter";
 import LoaderComponent from "@components/ui/LoaderComponent.vue";
 import IndexPlace from "@components/IndexPlace.vue";
 
 const apiTarget  = new URL("/i/place", __API_URL__);
 const dataFull   = ref([]);     // the full index, independant of user filters
-const dataFilter = ref([]);     // the data to pass to `Index.vue`, can vary based on user filters
+const dataFilter = ref([]);     // the data to pass to `IndexBase.vue`, can vary based on user filters
 const display    = "resource";  // which display style to use
 const isLoaded   = ref(false);  // hide the loader, show the index when toggled to true
 
 onMounted(() => {
   axios.get(apiTarget).then((r) => {
     dataFull.value   = JSON.parse(r.request.response);
-    dataFilter.value = indexDataFormatterCartography(dataFull.value);
+    dataFilter.value = indexDataFormatterPlace(dataFull.value);
     isLoaded.value = true;
   })
 

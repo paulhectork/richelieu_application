@@ -20,7 +20,6 @@ import { ref, onMounted } from "vue";
 
 import $ from "jquery";
 
-import { stringifyAddressResource } from "@utils/stringifiers";
 import { globalDefineMap } from "@utils/leafletUtils";
 
 /******************************************************/
@@ -35,7 +34,7 @@ async function buildPlacePopup(placeUuid) {
   return axios.get(apiTarget).then(r => {
     let address = r.data[0].address;
     address = address.length
-              ? stringifyAddressResource(address[0])
+              ? address[0].address
               : "Addresse inconnue";
     return `<a href="${new URL('/lieu/' + placeUuid, window.location.href).href}"
             >${address}</a>`

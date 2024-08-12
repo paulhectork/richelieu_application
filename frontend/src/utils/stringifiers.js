@@ -82,17 +82,6 @@ export function stringifyIconographyResource(i) {
 }
 
 /**
- * stringify a single address object
- */
-export function stringifyAddressResource(a) {
-  let out = "";
-  out += (a.number != null) ? `${a.number}, ` : "";
-  out += a.street.length ? `${a.street} `  : "";
-  out += "(Paris, France)"
-  return out
-}
-
-/**
  * stringify a single `Theme` or `NamedEntity` object
  * @returns string
  */

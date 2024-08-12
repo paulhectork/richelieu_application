@@ -5,17 +5,17 @@
     résultats correspondent à votre recherche.</p>
   <p v-else>Aucun résultat de correspond à votre recherche.</p>
 
-  <Index v-if="dataFilter.length"
+  <IndexBase v-if="dataFilter.length"
          :data="dataFilter"
          display="resource"
-  ></Index>
+  ></IndexBase>
 </template>
 
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
 
-import Index from "@components/Index.vue";
+import IndexBase from "@components/IndexBase.vue";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 
 /******************************************/
