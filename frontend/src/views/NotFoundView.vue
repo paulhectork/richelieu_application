@@ -1,25 +1,19 @@
+<!-- NotFoundView.vue
+
+     a view displayed when a route is not registered / a page
+     does not exist. also implemented as a non-view component
+     to use when a route exists, but is parameters are invalid
+     (for example, in @views/IconographyMainView, when an UUID
+     is invalid/points to nothing in the database).
+-->
+
 <template>
-  <div class="not-found">
-    <h1>[404]</h1>
-    <p>Cette page n'a pas été trouvée ou n'existe pas!</p>
-  </div>
+  <NotFound></NotFound>
 </template>
 
 <script setup>
-
+import NotFound from "@components/NotFound.vue";
 </script>
 
 <style scoped>
-.not-found {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-h1 {
-  font-family: var(--cs-font-sans-serif);
-}
-
 </style>

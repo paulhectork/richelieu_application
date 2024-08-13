@@ -66,7 +66,7 @@ import { fnToIconographyFile } from "@utils/url";
 const iiifUrl           = "https://apicollections.parismusees.paris.fr/iiif/320057446/manifest";
 const imgUrl            = "qr16080c31522fa44a3b238cb3790054d1c.jpg";
 const htmlId            = "sidebar-iiif-viewer";
-const iduuidIconography = "qr11679c39145004726a591f2b7086234e5";
+const idUuidIconography = "qr11679c39145004726a591f2b7086234e5";
 
 const route    = useRoute();
 const viewer   = ref(); // Openseadragon.viewer: the IIIF viewer

@@ -29,13 +29,13 @@
           >
             <!--
             <IiifViewer v-if="iconography.iiif_url"
-                        :osdId="`iiif-${iduuid}`"
+                        :osdId="`iiif-${idUuid}`"
                         :iiifUrl="iconography.iiif_url"
                         :backupImgUrl="imageUrl"
             ></IiifViewer>
             <div v-else><p>Pas d'image IIIF à montrer</p></div>
             -->
-            <IiifViewer :osdId="`iiif-${iduuid}`"
+            <IiifViewer :osdId="`iiif-${idUuid}`"
                         :iiifUrl="iconography.iiif_url"
                         :backupImgUrl="imageUrl"
             ></IiifViewer>
@@ -43,7 +43,7 @@
           <div v-else
                class="leaflet-container"
           >
-            <MapIconographyMain :lflId="`lfl-${iduuid}`"
+            <MapIconographyMain :lflId="`lfl-${idUuid}`"
                                 :placeGeoJson="iconography.place"
             ></MapIconographyMain>
           </div>
@@ -154,12 +154,12 @@ import { stringifyActorArray
 /***************************************************/
 
 const route = useRoute();
-const iduuid = ref(route.params.iduuid);
+const idUuid = ref(route.params.idUuid);
 const iconography = ref();
 const viewerType = ref("osd");  // "osd" for a IIIF viewer, "leaflet" for a leaflet map of the place of this image
 
 const apiTarget = computed(() =>
-  new URL(`/i/iconography/${iduuid.value}`, __API_URL__) );
+  new URL(`/i/iconography/${idUuid.value}`, __API_URL__) );
 // a backup image url in case the IIIF one doesn't load properly
 const imageUrl = computed(() => {
   return iconography.value !== undefined
@@ -184,8 +184,8 @@ function toggleViewer(e) {
 
 /***************************************************/
 
-watch(() => route.params.id_uuid, (newIduuid, oldIduuid) => {
-  iduuid.value = newIduuid;
+watch(() => route.params.idUuid, (newIdUuid, oldIdUuid) => {
+  idUuid.value = newIdUuid;
   getIconographyResource();
 })
 onMounted(() => {

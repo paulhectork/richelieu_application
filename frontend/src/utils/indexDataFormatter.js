@@ -29,7 +29,7 @@ import { stringifyIconographyResource
 
 export function indexDataFormatterIconography(dataArr) {
   return dataArr.map((c) => {
-   return { iduuid : c.id_uuid,
+   return { idUuid : c.id_uuid,
             href   : urlToFrontendIconography(c.id_uuid).href,
             iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
             img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0].url).href : null,
@@ -40,7 +40,7 @@ export function indexDataFormatterIconography(dataArr) {
 export function indexDataFormatterPlace(dataArr) {
   return dataArr.map((c) => {
     if ( ! c.address.length ) console.log(c)
-    return { iduuid : c.id_uuid,
+    return { idUuid : c.id_uuid,
              href   : urlToFrontendPlace(c.id_uuid).href,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
              img    : c.filename.length ? fnToCartographyFile(c.filename[0].url).href : null,
@@ -50,7 +50,7 @@ export function indexDataFormatterPlace(dataArr) {
 
 export function indexDataFormatterTheme(dataArr) {
   return dataArr.map((c) => {
-    return { iduuid : c.id_uuid,
+    return { idUuid : c.id_uuid,
              href   : urlToFrontendTheme(c.id_uuid).href,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
              img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
@@ -62,7 +62,7 @@ export function indexDataFormatterTheme(dataArr) {
 
 export function indexDataFormatterNamedEntity(dataArr) {
   return dataArr.map((c) => {
-    return { iduuid : c.id_uuid,
+    return { idUuid : c.id_uuid,
              href   : urlToFrontendNamedEntity(c.id_uuid).href,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
              img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,

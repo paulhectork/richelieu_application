@@ -7,7 +7,8 @@
         item in this array.
 
       props:
-      * `display`: passed to `IndexItem` to determine the style used.
+      * `display`: one of "resource"|"concept".
+          passed to `IndexItem` to determine the style used.
       * `data`   : the array of data to display. the structure is the same
           no matter the parent which calls IndexBase, or the kind of object
           to display (Icono, Named Entity...):

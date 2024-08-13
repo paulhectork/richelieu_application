@@ -20,34 +20,34 @@ export const fnToIconographyFile = (fn) =>
 
 /**
  * build an URL to a frontend page on a theme, based on this theme's UUID
- * @param {string} themeIduuid: the UUID of the theme
+ * @param {string} themeIdUuid: the UUID of the theme
  * @returns {URL}
  */
-export const urlToFrontendTheme = (themeIduuid) =>
-  new URL(`/theme/${themeIduuid}`, window.location.origin);
+export const urlToFrontendTheme = (themeIdUuid) =>
+  new URL(`/theme/${themeIdUuid}`, window.location.origin);
 
 
 /**
  * build an URL to a frontend page on a named entity, based on this NE's UUID
- * @param {string} namedEntityIduuid: the UUID of the named entity
+ * @param {string} namedEntityIdUuid: the UUID of the named entity
  * @returns {URL}
  */
-export const urlToFrontendNamedEntity = (namedEntityIduuid) =>
-  new URL(`/sujet/${namedEntityIduuid}`, window.location.origin);
+export const urlToFrontendNamedEntity = (namedEntityIdUuid) =>
+  new URL(`/sujet/${namedEntityIdUuid}`, window.location.origin);
 
 /**
  * the same for other frontend pages.
  */
-export const urlToFrontendPlace = placeIduuid =>
-  new URL(`/lieu/${placeIduuid}`, window.location.origin);
+export const urlToFrontendPlace = placeIdUuid =>
+  new URL(`/lieu/${placeIdUuid}`, window.location.origin);
 
-export const urlToFrontendIconography = iconographyIduuid =>
-  new URL(`/iconographie/${iconographyIduuid}`, window.location.origin);
+export const urlToFrontendIconography = iconographyIdUuid =>
+  new URL(`/iconographie/${iconographyIdUuid}`, window.location.origin);
 
-export const urlToFrontendActor = actorIduuid =>
-  new URL(`/acteur/${actorIduuid}`, window.location.origin);
+export const urlToFrontendActor = actorIdUuid =>
+  new URL(`/acteur/${actorIdUuid}`, window.location.origin);
 
-export const urlToFrontendInstitution = institutionIduuid =>
-  new URL(`/institution/${institutionIduuid}`, window.location.origin);
+export const urlToFrontendInstitution = institutionIdUuid =>
+  new URL(`/institution/${institutionIdUuid}`, window.location.origin);
 
 

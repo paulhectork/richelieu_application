@@ -31,7 +31,7 @@ import { ref, computed, onMounted } from "vue";
 import { manifestToThumbnail } from "@utils/iiif.js";
 
 const props = defineProps(["item", "display"]);
-// const selector = `#iiif-thumbnail-${props.item.iduuid}`;
+// const selector = `#iiif-thumbnail-${props.item.idUuid}`;
 
 onMounted(() => {
   /*

@@ -61,7 +61,7 @@ const namedEntity     = ref({});    // the namedEntity object sent from the back
 const namedEntityName = ref("");    // the name of the namedEntity.
 const dataFull        = ref([]);    // the complete iconography  data, set from a watcher
 const dataFilter      = ref([]);    // the user-filtered iconography data, set from a watcher
-const iduuid          = ref(route.params.iduuid);
+const idUuid          = ref(route.params.idUuid);
 const backendLoaded   = ref(false);  // when swittched to true, the loader is removed
 
 const associatedThemes      = ref([]); // themes most frequently associated with the current named entity
@@ -69,9 +69,9 @@ const associatedNamedEntity = ref([]); // named entites most frequently associat
 
 // the backend URLs, defined as `computed` to handle reactivity
 const apiTargetNamedEntity = computed(() =>
-  new URL(`/i/named-entity-name/${iduuid?.value}`, __API_URL__))
+  new URL(`/i/named-entity-name/${idUuid?.value}`, __API_URL__))
 const apiTargetIconography  = computed(() =>
-  new URL(`/i/named-entity/${iduuid?.value}`, __API_URL__) );
+  new URL(`/i/named-entity/${idUuid?.value}`, __API_URL__) );
 
 /***************************************************/
 
@@ -98,9 +98,9 @@ function getData() {
  * which are also tagged with the current named entity.
  */
 function getAssociated() {
-  axios.get( new URL(`/i/associated-theme-from-named-entity/${iduuid.value}`, __API_URL__).href )
+  axios.get( new URL(`/i/associated-theme-from-named-entity/${idUuid.value}`, __API_URL__).href )
        .then(r => { associatedThemes.value = r.data });
-  axios.get( new URL(`/i/associated-named-entity-from-named-entity/${iduuid.value}`, __API_URL__).href )
+  axios.get( new URL(`/i/associated-named-entity-from-named-entity/${idUuid.value}`, __API_URL__).href )
        .then(r => { associatedNamedEntity.value = r.data });
 }
 
@@ -109,8 +109,8 @@ watch(namedEntity, (newNamedEntity, oldNamedEntity) => {
   dataFilter.value = indexDataFormatterIconography(dataFull.value);
 })
 
-watch(() => route.params.iduuid, (newIduuid, oldIduuid) => {
-  iduuid.value = newIduuid;
+watch(() => route.params.idUuid, (newIdUuid, oldIdUuid) => {
+  idUuid.value = newIdUuid;
   getData();
   getAssociated();
 })

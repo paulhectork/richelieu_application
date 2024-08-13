@@ -196,6 +196,23 @@ def main_named_entity_name(id_uuid:str):
     return jsonify([ n[0].entry_name for n in r.all() ])
 
 
+@app.route("/i/iconography-from-uuid")
+def iconography_from_uuid():#id_uuid_arr:t.List[str]):
+    """
+    return Iconography objects matching the UUIDs in `id_uuid_arr`.
+    the UUIDs desired have the parameter name `id_uuid`.
+    """
+    id_uuid_arr = request.args.getlist("id_uuid")
+    out = []
+
+    if len(id_uuid_arr):
+        query = select( Iconography ).filter( Iconography.id_uuid.in_(id_uuid_arr) )
+        r = db.session.execute( query ).all()
+        out = [ icono[0].serialize_lite() for icono in r ]
+
+    return jsonify(out)
+
+
 @app.route("/i/associated-theme-from-theme/<id_uuid>")
 def associated_theme_from_theme(id_uuid:str):
     """
