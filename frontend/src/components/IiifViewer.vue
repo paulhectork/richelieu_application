@@ -27,13 +27,15 @@
   <img v-else
        :src="fnToIconographyFile(backupImgUrl)"
        :style="{ objectFit: backupImgDisplay === 'cover' ? 'cover' : 'contain'  }"
-       class="static-viewer">
+       class="static-viewer"
+  >
 
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
 
+import $ from "jquery";
 import OpenSeadragon from "openseadragon";
 
 import { manifestToTileSequence, osdNavImages } from "@utils/iiif";
@@ -85,8 +87,7 @@ async function buildOsdViewer(tileSequence, osdId) {
       bottom: 10
     },
     gestureSettingsMouse: { scrollToZoom: false },
-    showSequenceControl: ( typeof(tileSequence) === Array  // show sequenceControl buttons only if tileSequence contains several tiles
-                           && tileSequence.length > 1 )
+    showSequenceControl: ( typeof(tileSequence)===Array && tileSequence.length > 1 )  // show sequenceControl buttons only if tileSequence contains several tiles
                          ? tileSequence.length > 1
                          : false,
     showNavigator: true,
@@ -95,7 +96,10 @@ async function buildOsdViewer(tileSequence, osdId) {
     prefixUrl: new URL("/statics/openseadragon-icons/", __SERVER_URL__).href,
     navImages: osdNavImages
   });
-  return viewer.value.addOnceHandler("open", () => { emit("osd-viewer", viewer); return });  // await for loading to be ready to return
+  return viewer.value.addOnceHandler("open", () => {
+    $(`#${osdId} .openseadragon-canvas`).css("backgroundColor", "var(--cs-darkplum)");
+    emit("osd-viewer", viewer);
+    return });  // await for loading to be ready to return
 }
 
 /********************************************/
@@ -130,5 +134,8 @@ onMounted(async () => {
 .static-viewer {
   width: 100%;
   height: 100%;
+}
+.openseadragon-canvas {
+  background: var(--cs-darkplum) !important;
 }
 </style>

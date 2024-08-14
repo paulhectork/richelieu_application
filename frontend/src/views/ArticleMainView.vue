@@ -35,7 +35,18 @@
   <div class="article-main-wrapper">
 
     <div class="article-viewer-wrapper">
-      <div class="iiif-wrapper"></div>
+      <div class="iiif-wrapper">
+        <div v-if="currentIconographyIiif"
+             class="iiif-inner-wrapper">
+          <IiifViewer :osdId="currentIconographyIiif.id_uuid"
+                      :iiifUrl="currentIconographyIiif.iiif_url"
+
+          ></IiifViewer>
+          <div class="iiif-cartel">
+            <p v-html="stringifyIconographyResource(currentIconographyIiif)"></p>
+          </div>
+        </div>
+      </div>
       <div class="article-wrapper">
         <component :is="articleComponent"
                    @query-params="fetchIndex"
@@ -46,7 +57,7 @@
     </div>
 
     <div class="article-index-wrapper">
-      <h2>Ressources liées {{ iconographyIndex.length
+      <h2>Resources liées {{ iconographyIndex.length
                               ? `(${iconographyIndex.length})`
                               : "" }}
       </h2>
@@ -67,19 +78,23 @@ import { useRoute, useRouter } from "vue-router";
 
 import axios from "axios";
 import _ from "lodash";
+import $ from "jquery";
 
 import IndexBase from "@components/IndexBase.vue";
+import IiifViewer from "@components/IiifViewer.vue";
 import LoaderComponent from "@components/ui/LoaderComponent.vue";
-import { indexDataFormatterIconography } from "@utils/indexDataFormatter.js";
+import { stringifyIconographyResource } from "@utils/stringifiers.js";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams.js";
+import { indexDataFormatterIconography } from "@utils/indexDataFormatter.js";
 
 /************************************************/
 
-const route            = useRoute();
-const articleName      = ref(route.params.articleName);
-const articleComponent = shallowRef();  // the currentcomponent, or NotFound.vue if articleName is not a key of `urlMapper` below. `shallowRef` is used to avoid vue performance warnings
-const iconographyIndex = ref([]);       // array of iconography objects to display in an index
-const iconographyIiif  = ref([]);       // array of iconography resources from which to display IIIFs
+const route                  = useRoute();
+const articleName            = ref(route.params.articleName);
+const articleComponent       = shallowRef();  // the currentcomponent, or NotFound.vue if articleName is not a key of `urlMapper` below. `shallowRef` is used to avoid vue performance warnings
+const iconographyIndex       = ref([]);       // array of iconography objects to display in an index
+const iconographyIiif        = ref([]);       // array of iconography resources from which to display IIIFs
+const currentIconographyIiif = ref();         // the iconography ressource currently viewed in the IIIF viewer. can be modified when clicking on `.button-eye`.
 
 // url to component name mapper
 const urlMapper = { "bourse"             : "Article01.vue"
@@ -163,6 +178,10 @@ function fetchIndex(newQueryParams) {
   })
 }
 
+function getIconographyIiifIdUuid() {
+
+}
+
 /**
  * from an array of iconography uuids, fetch the iconography
  * resources from the backend in order to build our main
@@ -174,13 +193,29 @@ function fetchIiif(iiifIdUuid) {
 
   axios.get( targetUrl.href, { params: { id_uuid: iiifIdUuid },
                                paramsSerializer: { indexes:null } } )
-       .then(r => iconographyIiif.value = r.data )
+       .then(r => { iconographyIiif.value = r.data;
+                    let firstIdUuid = $($(".button-eye")[0]).attr("data-key");
+                    setCurrentIconographyIiif(firstIdUuid);
+       })
        .catch(e => console.error("ArticleMainView.fetchIiif(): backend error with parameters:"
                                 , iiifIdUuid, `error stack:`, e));
   // TODO CRÉER LES VISIONNEUSES IIIF
 
   // ERREURS CORS QUAND ON REFRESH: ÇA POSE PAS PROBLÈME,
   // MAIS SI ON VEUT UNE EXPLICATION: https://github.com/axios/axios/issues/801
+}
+
+/**
+ * build a IIIF viewer for an iconography resource
+ * @param {string} idUuid
+ */
+function setCurrentIconographyIiif(idUuid) {
+  try {
+  currentIconographyIiif.value =
+    iconographyIiif.value.filter(i => i.id_uuid == idUuid)[0];
+  } catch {
+    console.log("err", iconographyIiif.value);
+  }
 }
 
 /************************************************/
@@ -194,8 +229,42 @@ onMounted(() => {
 <style scoped>
 .article-viewer-wrapper {
   display: grid;
+  /*
+  grid-template-rows: auto auto;
+  grid-template-rows: 100%;
+  */
   grid-template-columns: 40% 60%;
   grid-template-rows: 100%;
+}
+@media ( oriention: landscape ) {
+  .article-viewer-wrapper {
+  }
+}
+.iiif-wrapper {
+  height: 100%;
+}
+.iiif-inner-wrapper {
+  height: 100%;
+  max-height: calc(100vh - var(--cs-navbar-height));
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-rows: 90% 10%;
+}
+.iiif-cartel {
+  width: 100%;
+  text-align: center;
+  border-top: var(--cs-border);
+  border-bottom: var(--cs-border);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.article-wrapper {
+  padding: 0 1vw;
+  border-left: var(--cs-border);
+  border-bottom: var(--cs-border);
 }
 .article-index-wrapper {
   min-height: 30vh;

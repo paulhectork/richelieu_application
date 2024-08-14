@@ -208,7 +208,7 @@ def iconography_from_uuid():#id_uuid_arr:t.List[str]):
     if len(id_uuid_arr):
         query = select( Iconography ).filter( Iconography.id_uuid.in_(id_uuid_arr) )
         r = db.session.execute( query ).all()
-        out = [ icono[0].serialize_lite() for icono in r ]
+        out = [ icono[0].serialize_full() for icono in r ]
 
     return jsonify(out)
 

@@ -5,7 +5,7 @@
 -->
 
 <template>
-  <button>
+  <button class="button-eye">
     <!--
     <svg width="100%"
          height="100%"

@@ -205,7 +205,8 @@ export function stringifyInstitutionArray(institutionArray, hyperlink=false) {
  * all associated elements are included in an `<a>`, with a redirection
  * to their main page.
  *
- * @param {*} associated: the array of associated objects. their structure is:
+ * @param {Array<Object>} associated: the array of associated objects.
+ *  their structure is:
  *  ```
  *  [
  *     # 1st theme

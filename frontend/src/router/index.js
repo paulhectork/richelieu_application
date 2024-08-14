@@ -25,7 +25,7 @@ const router = createRouter({
       component: () => import("@views/IconographyIndexView.vue")
     }, {
       path: '/iconographie/:idUuid',
-      name: 'Ressource iconographique',
+      name: 'Resource iconographique',
       component: () => import("@views/IconographyMainView.vue")
     }, {
       path: '/cartographie',
