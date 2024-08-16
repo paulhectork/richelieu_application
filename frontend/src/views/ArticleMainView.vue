@@ -36,15 +36,15 @@
 
     <div class="article-viewer-wrapper">
       <div class="iiif-wrapper">
-        <div v-if="currentIconographyMain"
+        <div v-if="iconographyMainCurrent"
              class="iiif-inner-wrapper">
-          <IiifViewer :osdId="currentIconographyMain.id_uuid"
-                      :iiifUrl="currentIconographyMain.iiif_url"
+          <IiifViewer :osdId="iconographyMainCurrent.id_uuid"
+                      :iiifUrl="iconographyMainCurrent.iiif_url"
                       @osd-viewer="setCurrentIiifViewer"
 
           ></IiifViewer>
           <div class="iiif-cartel">
-            <p v-html="stringifyIconographyResource(currentIconographyMain)"></p>
+            <p v-html="stringifyIconographyResource(iconographyMainCurrent)"></p>
           </div>
         </div>
       </div>
@@ -52,6 +52,7 @@
         <component :is="articleComponent"
                    @query-params="fetchIndex"
                    @iiif-id-uuid="fetchIiif"
+                   @footnotes="setArticleFootnotes"
                    @vue:mounted="registerArticleEvents"
         >
         </component>
@@ -71,6 +72,14 @@
     </div>
 
   </div>
+
+  <ArticleFootnote v-if="currentFootnoteContent.length"
+                   :footnoteContent="currentFootnoteContent"
+                   :footnotePosition="currentFootnotePos"
+                   :footnoteHtmlId="currentFootnoteHtmlId"
+                   @unmount-footnote="unmountFootnote"
+  ></ArticleFootnote>
+
 </template>
 
 
@@ -84,6 +93,7 @@ import $ from "jquery";
 
 import IndexBase from "@components/IndexBase.vue";
 import IiifViewer from "@components/IiifViewer.vue";
+import ArticleFootnote from "@components/ArticleFootnote.vue";
 import LoaderComponent from "@components/ui/LoaderComponent.vue";
 import { stringifyIconographyResource } from "@utils/stringifiers.js";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams.js";
@@ -94,10 +104,16 @@ import { indexDataFormatterIconography } from "@utils/indexDataFormatter.js";
 const route                  = useRoute();
 const articleName            = ref(route.params.articleName);
 const articleComponent       = shallowRef();  // the currentcomponent, or NotFound.vue if articleName is not a key of `urlMapper` below. `shallowRef` is used to avoid vue performance warnings
+
 const iconographyIndex       = ref([]);       // array of iconography objects to display in an index
 const iconographyMainArray   = ref([]);       // array of a few iconography resources (2-6) from which to display IIIFs
-const currentIconographyMain = ref();         // the iconography ressource currently viewed in the IIIF viewer. can be modified when clicking on `.button-eye`.
+const iconographyMainCurrent = ref();         // the iconography ressource currently viewed in the IIIF viewer. can be modified when clicking on `.button-eye`.
 const iiifViewer             = ref();         // openseadragon viewer returned by `IiifViewer.vue`
+
+const articleFootnotes       = ref({})        // the footnotes of the `articleComponent`. structure: { <footnote key>: <footnote content> }
+const currentFootnoteContent = ref("")        // when a footnote is clicked, this ref will hold its HTML content
+const currentFootnoteHtmlId  = ref("")        // the htmlId of the current footnote, if a footnote is displayed
+const currentFootnotePos     = ref([])        // [x:float, y:float]. where to position the
 
 // url to component name mapper
 const urlMapper = { "bourse"             : "Article01.vue"
@@ -204,6 +220,16 @@ function fetchIndex(newQueryParams) {
 }
 
 /**
+ * set the `articleFootnotes` ref from the `footnotes`
+ * emitted by the child `Article\d+` component.
+ * @param {Object} footnotes: the footnotes
+ *   (strucutre: { <footnote key>: <footnote content> })
+ */
+function setArticleFootnotes(footnotes) {
+  articleFootnotes.value = footnotes;
+}
+
+/**
  * after a viewer has been created, assign it to the
  * `iiifViewer`. also set the size of the viewer
  * if in portrait mode.
@@ -213,33 +239,51 @@ function setCurrentIiifViewer(viewer) {
   iiifViewer.value = viewer.value;
 }
 
-function getIconographyIiifIdUuid() {
-
-}
-
 /**
  * build a IIIF viewer for an iconography resource
  * @param {string} iconographyIdUuid
  */
 function setCurrentIconographyMain(iconographyIdUuid) {
-  currentIconographyMain.value =
+  iconographyMainCurrent.value =
     iconographyMainArray.value.filter(i => i.id_uuid == iconographyIdUuid)[0];
 }
 
 /**
  * when clicking on a `.button-eye` button, change
  * the iiif viewer to display the ressource it points to.
+ * the new iconography ressource is identified by its id_uuid,
+ * which is stored in the `.button-eye`'s @data-key attribute.
  *
  * this function triggers the entire changing stack:
- * setting the new `currentIconographyMain` will change
+ * setting the new `iconographyMainCurrent` will change
  * the props sent to `IiifViewer.vue`, which will trigger
  * `IiifViewer.vue` to delete the old viewer and generate
  * a new one.
  */
 function switchIconographyMainOnClick(evt) {
   let newIconographyIdUuid = $(evt.currentTarget).attr("data-key");
-  if ( newIconographyIdUuid !== currentIconographyMain.id_uuid ) {
+  if ( newIconographyIdUuid !== iconographyMainCurrent.id_uuid ) {
     setCurrentIconographyMain(newIconographyIdUuid)
+  }
+}
+
+function unmountFootnote() {
+  console.log("hi");
+  // 2 méthodes: en cliquant sur le bouton croix ou en cliquant hors de la modale
+  currentFootnoteContent.value = "";
+  currentFootnoteHtmlId.value  = "";
+  currentFootnotePos.value     = [];
+}
+
+function mountFootnoteOnClick(evt) {
+  let footnoteKey = $(evt.currentTarget).attr("data-key");
+  if ( Object.keys(articleFootnotes.value).includes(footnoteKey) ) {
+    currentFootnoteContent.value = articleFootnotes.value[footnoteKey];
+    currentFootnoteHtmlId.value  = `article-footnote-${footnoteKey}`;
+    currentFootnotePos.value     = [];
+  } else {
+    console.error(`ArticleMainView.mountFootnoteOnClick(): could not resolve footnote for key "${footnoteKey}". expected one of :`,
+                  Object.keys(articleFootnotes.value));
   }
 }
 
@@ -252,6 +296,8 @@ function switchIconographyMainOnClick(evt) {
 function registerArticleEvents() {
   $(".button-eye").on("click", switchIconographyMainOnClick);
   $(".button-eye").on("touchend", switchIconographyMainOnClick);
+  $(".button-ellipsis").on("click", mountFootnoteOnClick);
+  $(".button-ellipsis").on("touchend", mountFootnoteOnClick);
 }
 
 /************************************************/
@@ -262,6 +308,8 @@ onMounted(() => {
 onUnmounted(() => {
   $(".button-eye").off("click", switchIconographyMainOnClick);
   $(".button-eye").off("touchend", switchIconographyMainOnClick);
+  $(".button-ellipsis").off("click", mountFootnoteOnClick);
+  $(".button-ellipsis").off("touchend", mountFootnoteOnClick);
 })
 </script>
 
