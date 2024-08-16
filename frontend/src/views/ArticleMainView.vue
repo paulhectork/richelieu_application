@@ -36,14 +36,15 @@
 
     <div class="article-viewer-wrapper">
       <div class="iiif-wrapper">
-        <div v-if="currentIconographyIiif"
+        <div v-if="currentIconographyMain"
              class="iiif-inner-wrapper">
-          <IiifViewer :osdId="currentIconographyIiif.id_uuid"
-                      :iiifUrl="currentIconographyIiif.iiif_url"
+          <IiifViewer :osdId="currentIconographyMain.id_uuid"
+                      :iiifUrl="currentIconographyMain.iiif_url"
+                      @osd-viewer="setCurrentIiifViewer"
 
           ></IiifViewer>
           <div class="iiif-cartel">
-            <p v-html="stringifyIconographyResource(currentIconographyIiif)"></p>
+            <p v-html="stringifyIconographyResource(currentIconographyMain)"></p>
           </div>
         </div>
       </div>
@@ -51,6 +52,7 @@
         <component :is="articleComponent"
                    @query-params="fetchIndex"
                    @iiif-id-uuid="fetchIiif"
+                   @vue:mounted="registerArticleEvents"
         >
         </component>
       </div>
@@ -73,7 +75,7 @@
 
 
 <script setup>
-import { onMounted, ref, shallowRef, defineAsyncComponent } from 'vue';
+import { onMounted, onUnmounted, ref, shallowRef, defineAsyncComponent } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 
 import axios from "axios";
@@ -93,8 +95,9 @@ const route                  = useRoute();
 const articleName            = ref(route.params.articleName);
 const articleComponent       = shallowRef();  // the currentcomponent, or NotFound.vue if articleName is not a key of `urlMapper` below. `shallowRef` is used to avoid vue performance warnings
 const iconographyIndex       = ref([]);       // array of iconography objects to display in an index
-const iconographyIiif        = ref([]);       // array of iconography resources from which to display IIIFs
-const currentIconographyIiif = ref();         // the iconography ressource currently viewed in the IIIF viewer. can be modified when clicking on `.button-eye`.
+const iconographyMainArray   = ref([]);       // array of a few iconography resources (2-6) from which to display IIIFs
+const currentIconographyMain = ref();         // the iconography ressource currently viewed in the IIIF viewer. can be modified when clicking on `.button-eye`.
+const iiifViewer             = ref();         // openseadragon viewer returned by `IiifViewer.vue`
 
 // url to component name mapper
 const urlMapper = { "bourse"             : "Article01.vue"
@@ -178,44 +181,77 @@ function fetchIndex(newQueryParams) {
   })
 }
 
+/**
+ * from an array of iconography uuids, fetch the iconography
+ * resources from the backend in order to build our main
+ * IIIF viewer.
+ * @param {Array<string>} iconographyIdUuidArray: the array of iconography uuids
+ */
+ function fetchIiif(iconographyIdUuidArray) {
+  let targetUrl = new URL(`/i/iconography-from-uuid`, __API_URL__);
+
+  axios.get( targetUrl.href, { params: { id_uuid: iconographyIdUuidArray },
+                               paramsSerializer: { indexes:null } } )
+       .then(r => { iconographyMainArray.value = r.data;
+                    let firstIdUuid = $($(".button-eye")[0]).attr("data-key");
+                    setCurrentIconographyMain(firstIdUuid);
+       })
+       .catch(e => console.error("ArticleMainView.fetchIiif(): backend error with parameters:"
+                                , iconographyIdUuidArray, `error stack:`, e));
+  // erreurs axios/cors quand on refresh: ça ne pose pas de prolbème,
+  // mais il y a une explication ici si besoin:
+  // https://github.com/axios/axios/issues/801
+}
+
+/**
+ * after a viewer has been created, assign it to the
+ * `iiifViewer`. also set the size of the viewer
+ * if in portrait mode.
+ * @param {Openseadragon.viewer} viewer: the openseadragon viewer emitted by `IiifViewer.vue`.
+ */
+function setCurrentIiifViewer(viewer) {
+  iiifViewer.value = viewer.value;
+}
+
 function getIconographyIiifIdUuid() {
 
 }
 
 /**
- * from an array of iconography uuids, fetch the iconography
- * resources from the backend in order to build our main
- * IIIF viewer.
- * @param {Array<string>} iiifIdUuid: the array of iconography uuids
+ * build a IIIF viewer for an iconography resource
+ * @param {string} iconographyIdUuid
  */
-function fetchIiif(iiifIdUuid) {
-  let targetUrl = new URL(`/i/iconography-from-uuid`, __API_URL__);
-
-  axios.get( targetUrl.href, { params: { id_uuid: iiifIdUuid },
-                               paramsSerializer: { indexes:null } } )
-       .then(r => { iconographyIiif.value = r.data;
-                    let firstIdUuid = $($(".button-eye")[0]).attr("data-key");
-                    setCurrentIconographyIiif(firstIdUuid);
-       })
-       .catch(e => console.error("ArticleMainView.fetchIiif(): backend error with parameters:"
-                                , iiifIdUuid, `error stack:`, e));
-  // TODO CRÉER LES VISIONNEUSES IIIF
-
-  // ERREURS CORS QUAND ON REFRESH: ÇA POSE PAS PROBLÈME,
-  // MAIS SI ON VEUT UNE EXPLICATION: https://github.com/axios/axios/issues/801
+function setCurrentIconographyMain(iconographyIdUuid) {
+  currentIconographyMain.value =
+    iconographyMainArray.value.filter(i => i.id_uuid == iconographyIdUuid)[0];
 }
 
 /**
- * build a IIIF viewer for an iconography resource
- * @param {string} idUuid
+ * when clicking on a `.button-eye` button, change
+ * the iiif viewer to display the ressource it points to.
+ *
+ * this function triggers the entire changing stack:
+ * setting the new `currentIconographyMain` will change
+ * the props sent to `IiifViewer.vue`, which will trigger
+ * `IiifViewer.vue` to delete the old viewer and generate
+ * a new one.
  */
-function setCurrentIconographyIiif(idUuid) {
-  try {
-  currentIconographyIiif.value =
-    iconographyIiif.value.filter(i => i.id_uuid == idUuid)[0];
-  } catch {
-    console.log("err", iconographyIiif.value);
+function switchIconographyMainOnClick(evt) {
+  let newIconographyIdUuid = $(evt.currentTarget).attr("data-key");
+  if ( newIconographyIdUuid !== currentIconographyMain.id_uuid ) {
+    setCurrentIconographyMain(newIconographyIdUuid)
   }
+}
+
+/**
+ * register events on `.article-wrapper`. event registering must
+ * be called within a function because this allows us to wait for
+ * the Article\d+ component to be mounted with the @vue:mounted hook.
+ * see: https://stackoverflow.com/a/72486795/17915803
+ */
+function registerArticleEvents() {
+  $(".button-eye").on("click", switchIconographyMainOnClick);
+  $(".button-eye").on("touchend", switchIconographyMainOnClick);
 }
 
 /************************************************/
@@ -223,23 +259,29 @@ function setCurrentIconographyIiif(idUuid) {
 onMounted(() => {
   articleComponent.value = loadCurrentArticleComponent(articleName.value);
 })
+onUnmounted(() => {
+  $(".button-eye").off("click", switchIconographyMainOnClick);
+  $(".button-eye").off("touchend", switchIconographyMainOnClick);
+})
 </script>
 
 
 <style scoped>
 .article-viewer-wrapper {
-  display: grid;
-  /*
-  grid-template-rows: auto auto;
-  grid-template-rows: 100%;
-  */
-  grid-template-columns: 40% 60%;
-  grid-template-rows: 100%;
+  display: flex;
+  flex-direction: column-reverse;
+  border-bottom: var(--cs-border);
 }
-@media ( oriention: landscape ) {
+@media ( orientation: landscape ) {
   .article-viewer-wrapper {
+    display: grid;
+    grid-template-columns: 40% 60%;
+    grid-template-rows: 100%;
   }
 }
+
+/***************************************/
+
 .iiif-wrapper {
   height: 100%;
 }
@@ -249,22 +291,31 @@ onMounted(() => {
   position: sticky;
   top: 0;
   display: grid;
-  grid-template-rows: 90% 10%;
+  grid-template-rows: 1fr min-content;  /* min content will resize the `.iiif-cartel` to contain the complete cartel, while keeping the `.iiif-viewer` size as big as possible */
+}
+.article-viewer-wrapper :deep(.iiif-viewer) {
+  height: 70vh;
+}
+@media ( orientation:landscape ) {
+  .article-viewer-wrapper :deep(.iiif-viewer) {
+    height: auto;
+  }
 }
 .iiif-cartel {
   width: 100%;
   text-align: center;
   border-top: var(--cs-border);
-  border-bottom: var(--cs-border);
   margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
+/***************************************/
+
 .article-wrapper {
   padding: 0 1vw;
   border-left: var(--cs-border);
-  border-bottom: var(--cs-border);
 }
 .article-index-wrapper {
   min-height: 30vh;

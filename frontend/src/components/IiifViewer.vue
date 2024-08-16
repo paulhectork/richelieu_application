@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 import $ from "jquery";
 import OpenSeadragon from "openseadragon";
@@ -71,7 +71,6 @@ function viewerErrorHandler() {
  * @param {string} osdId      : the openseadragon id of the tile
  */
 async function buildOsdViewer(tileSequence, osdId) {
-  console.log(osdId);
   viewer.value = await OpenSeadragon({
     id: osdId,
     tileSources: tileSequence,
@@ -102,11 +101,24 @@ async function buildOsdViewer(tileSequence, osdId) {
     return });  // await for loading to be ready to return
 }
 
-/********************************************/
+/**
+ * switch all state variables back to their original state.
+ * to use when the props change.
+ */
+function revertToStartState() {
+  if (viewer.value) { viewer.value.destroy() };
+  viewer.value        = undefined;
+  isLoaded.value      = false;
+  loadingFailed.value = false;
+}
 
-onMounted(async () => {
-
-  if ( props.iiifUrl ) {
+/**
+ * create a new viewer from the values passed in `props`.
+ * called in `onMounted` and `watch(props)`, when the
+ * parent updates `props` without unmounting `IiifViewer`.
+ */
+async function initNewViewer() {
+  if ( props.iiifUrl != null ) {
     manifestToTileSequence(props.iiifUrl)
     .then( ([tileSequence, success]) => {
       if ( tileSequence.length && success ) {
@@ -120,9 +132,26 @@ onMounted(async () => {
     })
     .catch( viewerErrorHandler );
   } else {
-    console.warn( `IiifViewer.vue: no IIIF for resource: ${window.location.href.match(/qr1[a-z0-9]+/g)[0]}` )
+    console.warn( `IiifViewer.vue: no IIIF for resource: ${props.osdId}` )
     viewerErrorHandler();
   }
+}
+
+/**
+ * triggered when the parent changes `props` without unmounting
+ * this component (for example, when changing iiif viewer in `ArticleMainView`).
+ */
+watch(props, (newProps, oldProps) => {
+  console.log("IiifViewer:watch(props)", newProps);
+
+  revertToStartState();
+  initNewViewer();
+})
+
+/********************************************/
+
+onMounted(async () => {
+  initNewViewer();
 })
 </script>
 
