@@ -116,20 +116,19 @@ const currentFootnoteHtmlId  = ref("")        // the htmlId of the current footn
 const currentFootnotePos     = ref([])        // [x:float, y:float]. where to position the
 
 // url to component name mapper
-const urlMapper = { "bourse"             : "Article01.vue"
-                  , "mode"               : "Article02.vue"
-                  , "menu"               : "Article03.vue"
-                  , "nature"             : "Article04.vue"
-                  , "cafe"               : "Article05.vue"
-                  , "chantier"           : "Article06.vue"
-                  , "reseau"             : "Article07.vue"
-                  , "actualite"          : "Article08.vue"
-                  , "habiter"            : "Article09.vue"
-                  , "patrimonialisation" : "Article10.vue"
-                  , "mobilier"           : "Article11.vue"
-                  , "theatre"            : "Article12.vue"
-                  , "prostitution"       : "Article13.vue"
-                  , "banque"             : "Article14.vue" }
+const urlMapper = { "bourse"             : "ArticleContentBourse.vue"
+                  , "mode"               : "ArticleContentMode.vue"
+                  , "menu"               : "ArticleContentMenu.vue"
+                  , "nature"             : "ArticleContentNature.vue"
+                  , "cafe"               : "ArticleContentCafe.vue"
+                  , "chantier"           : "ArticleContentChantier.vue"
+                  , "reseau"             : "ArticleContentReseau.vue"
+                  , "habiter"            : "ArticleContentHabiter.vue"
+                  , "patrimonialisation" : "ArticleContentPatrimonialisation.vue"
+                  , "mobilier"           : "ArticleContentMobilier.vue"
+                  , "theatre"            : "ArticleContentTheatre.vue"
+                  , "prostitution"       : "ArticleContentProstitution.vue"
+                  , "banque"             : "ArticleContentBanque.vue" }
 
 /************************************************/
 
@@ -323,7 +322,7 @@ onUnmounted(() => {
 @media ( orientation: landscape ) {
   .article-viewer-wrapper {
     display: grid;
-    grid-template-columns: 40% 60%;
+    grid-template-columns: 45% 55%;
     grid-template-rows: 100%;
   }
 }
@@ -364,8 +363,35 @@ onUnmounted(() => {
 .article-wrapper {
   padding: 0 1vw;
   border-left: var(--cs-border);
+  font-size: 16px;
 }
 .article-index-wrapper {
   min-height: 30vh;
+}
+.article-wrapper :deep(p) {
+  line-height: 1.3;
+}
+.article-wrapper :deep(.article-body) {
+  margin: 0 50px;
+}
+.article-wrapper :deep(q) {
+  quotes: "«" "»" "‹" "›";
+}
+.article-wrapper :deep(.article-body button) {
+  display: inline-block;
+  max-width: 20px;
+  max-height: 20px;
+  padding: 0;
+  /* a negative top margin to avoid differences
+     in line heights in lines that contain a `button`.
+     a transform centers the button on the line.
+  */
+  margin: -15% 0 0 0;
+  transform: translateY(15%);
+}
+@media ( orientation:portrait ) {
+  .article-wrapper :deep(.article-body) {
+    margin: 0 20px;
+  }
 }
 </style>

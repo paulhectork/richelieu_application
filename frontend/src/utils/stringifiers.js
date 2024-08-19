@@ -225,7 +225,7 @@ export function stringifyAssociated(associated, targetKey) {
   const urlBuilder = targetKey === "theme" ? urlToFrontendTheme : urlToFrontendNamedEntity;
   const processEl = (el) =>
     `<a href="${urlBuilder((el.id_uuid))}">${el.entry_name}</a>
-     (${el.count} co-occurrence${ el.count > 1 ? 's' : '' }`;
+     (${el.count} co-occurrence${ el.count > 1 ? 's' : '' })`;
 
   // validate arguments
   if ( ! ["theme", "namedEntity"].includes(targetKey) ) {
