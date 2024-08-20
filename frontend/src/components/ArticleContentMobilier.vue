@@ -120,7 +120,7 @@ import { urlToFrontendTheme, urlToFrontendNamedEntity } from "@utils/url.js";
 /************************************************/
 
 const rootUrl     = window.location.origin;
-const emit        = defineEmits(["queryParams", "iiifIdUuid", "footnotes"]);
+const emit        = defineEmits(["queryParams", "iiifIdUuidArray", "footnotes"]);
 const queryParams = { theme: [ "espace public"
                              , "mobilier urbain"
                              , "affiche"
@@ -129,14 +129,14 @@ const queryParams = { theme: [ "espace public"
                              , "mœurs"
                              ],
                       themeBooleanOp: "or" };
-const iiifIdUuid = [ "qr116f7dbcdb2884ccd8ea4160c07202ad3"  // MC55
-                   , "qr14be40957a31c4767b80c3de152d094a0"  // MC315
-                   , "qr1d15d16273e194973a295b618fb812540"  // BHVP23
-                   , "qr1df69056471584f02bf3200a819d3d7cb"  // MAK1
-                   , "qr17ecadb767ccf4f80a131f84daea1696b"  // PRBNF24
-                   , "qr1a98e4dd3d2b7432da0971c604bf34cc1"  // BDFPM119
-                   ]
-const footnotes   = {
+const iiifIdUuidArray = [ "qr116f7dbcdb2884ccd8ea4160c07202ad3"  // MC55
+                        , "qr14be40957a31c4767b80c3de152d094a0"  // MC315
+                        , "qr1d15d16273e194973a295b618fb812540"  // BHVP23
+                        , "qr1df69056471584f02bf3200a819d3d7cb"  // MAK1
+                        , "qr17ecadb767ccf4f80a131f84daea1696b"  // PRBNF24
+                        , "qr1a98e4dd3d2b7432da0971c604bf34cc1"  // BDFPM119
+                        ]
+const footnotes = {
   "thezy1976"    : `Marie de Thézy, <i>Paris, la rue. Le mobilier urbain parisien
                     du Second Empire à nos jours à travers les collections
                     photographiques de la Bibliothèque historique de la ville de
@@ -167,7 +167,7 @@ const footnotes   = {
 // when the component is mounted, send base emits to parent
 onMounted(() => {
   emit("queryParams", queryParams);
-  emit("iiifIdUuid", iiifIdUuid);
+  emit("iiifIdUuidArray", iiifIdUuidArray);
   emit("footnotes", footnotes)
 })
 </script>

@@ -51,7 +51,7 @@
       <div class="article-wrapper">
         <component :is="articleComponent"
                    @query-params="fetchIndex"
-                   @iiif-id-uuid="fetchIiif"
+                   @iiif-id-uuid-array="fetchIiif"
                    @footnotes="setArticleFootnotes"
                    @vue:mounted="registerArticleEvents"
         >
@@ -373,9 +373,6 @@ onUnmounted(() => {
 }
 .article-wrapper :deep(.article-body) {
   margin: 0 50px;
-}
-.article-wrapper :deep(q) {
-  quotes: "«" "»" "‹" "›";
 }
 .article-wrapper :deep(.article-body button) {
   display: inline-block;
