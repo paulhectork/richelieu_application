@@ -57,6 +57,7 @@ onMounted(() => {
 
 <style scoped>
 .index-item {
+  font-family: var(--cs-font-sans-serif-accentuate);
   border: var(--cs-border);
   margin: 7px;
 }
@@ -125,35 +126,9 @@ p {
   align-items: center;
 
 }
-/* `>>>` is a deep selector that allows to apply
-   style to elts rendered with `v-html` */
-.index-item-concept >>> span:last-child {
-  font-family: var(--cs-font-sans-serif);
-}
 /*
-svg {
-  font-size: var(--cs-fontsize-mobile);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-text {
-  height: 100%;
-  width: 100%;
-  fill: var(--cs-main-default);
-  stroke: var(--cs-main-default-bg);
-  stroke-width: .5px;
-  stroke-linejoin: round;
-  animation: 2s pulsate infinite;
-}
-@keyframes pulsate {
-  50%{ stroke-width:1px }
-}
-
-@media( orientation: landscape ) {
-  svg {
-    font-size: var(--cs-fontsize-main-desktop);
-  }
+.index-item-concept :deep(span:last-child) {
+  font-family: var(--cs-font-sans-serif);
 }
 */
 </style>

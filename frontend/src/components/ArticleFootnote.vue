@@ -94,11 +94,12 @@ onUnmounted(() => {
 .footnote-inner-wrapper {
   display: grid;
   grid-template-rows: 100%;
-  grid-template-columns: 90% 10%;
+  grid-template-columns: 2fr auto;
   justify-items: center;
   align-items: center;
 }
 .button-cross {
+  margin: 5px;
   height: max(3vh, 30px);
 }
 

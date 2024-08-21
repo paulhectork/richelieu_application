@@ -9,10 +9,17 @@
 
 <template>
   <nav class="navbar border-bottom fill-parent">
-    <h1 class="navbar-brand"
-        id="app-title"
+    <h1 id="app-title"
     >
+      <!--
       <RouterLink to="/">Richelieu. Histoire du quartier</RouterLink>
+      -->
+      <RouterLink to="/">
+        <img :src="logoPath"
+             id="logo-richelieu"
+             alt="logo du projet Richelieu: 'Quartier Richelieu' écrit en Garamond en noir sur fond blanc"
+        >
+      </RouterLink>
     </h1>
 
     <div id="burger"
@@ -34,6 +41,11 @@ import { domStore } from "@stores/dom";
 import { clickOrTouchEvent } from "@globals";
 import { cleanClickOrTouchend } from "@utils/functions.js";
 
+/**************************************************************/
+
+const logoPath = "../src/assets/icons/logo-text.png";
+
+/**************************************************************/
 
 async function toggleSidebar() {
   // toggle HTML class
@@ -70,32 +82,19 @@ onUnmounted(() => {
   justify-items: start;
   align-items: center;
 }
-#app-title a {
-  margin: 0;
-  padding: 0;
-  font-size: max(3vh, 18px);
+h1 > a {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--cs-txt);
-  text-decoration: none;
-  text-transform: uppercase;
-  font-size: min(50px, 2.5vh);  /* portrait size */
-  font-weight: 500;
 }
-#app-title:hover {
-  color: var(--cs-link-default);
+#logo-richelieu {
+  max-height: calc(var(--cs-navbar-height) - 10px);
+  object-fit: contain;
+  margin-left: 10px;
 }
-
-@media ( orientation: landscape ) {
-	#app-title a {
-	  font-size: 4vh;
-	}
-}
-
 #burger {
-  width: max(5vw, 40px);
-  height: 4vh;
+  width: max(4vw, 40px);
+  height: max(4vh, 30px);
   display: flex;
   margin-left: 3vw;
   flex-direction: column;
@@ -134,6 +133,30 @@ onUnmounted(() => {
 }
 
 
+/* styling of the title before using a logo
+#app-title a {
+  margin: 0;
+  padding: 0;
+  font-size: max(3vh, 18px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cs-txt);
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: min(50px, 2.5vh);  /* portrait size * /
+  font-weight: 500;
+}
+#app-title:hover {
+  color: var(--cs-link-default);
+}
+
+@media ( orientation: landscape ) {
+	#app-title a {
+	  font-size: 4vh;
+	}
+}
+*/
 
 
 /*

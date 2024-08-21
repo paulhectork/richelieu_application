@@ -17,15 +17,67 @@
  **************************************************************************/
 
 
-/***********************************************
- *              basic definitions              *
- ***********************************************/
-@font-face {
-  font-family: "urlaub-grotesk";
-  src: url("./fonts/Urlaub-Grotesk-Regular.otf") format("opentype");
-  font-weight: normal;
+/**************************************************************************/
+/* font definitions */
+
+/**
+ * EB garamond font definition. adapted from
+ * https://github.com/georgd/EB-Garamond/blob/master/html/garastyle.css
+ * and the ITC galliard font declaration
+ */
+ @font-face {
+  font-family: 'eb-garamond';
+  src:  url('./fonts/eb-garamond/ttf/EBGaramond12-Regular.ttf') format('truetype'),
+  	    url('./fonts/eb-garamond/otf/EBGaramond12-Regular.otf') format('opentype');
   font-style: normal;
 }
+/*
+@font-face {
+  font-family: "eb-garamond";
+  src:  url('./fonts/eb-garamond/ttf/EBGaramond08-Regular.ttf') format('truetype'),
+      	url('./fonts/eb-garamond/otf/EBGaramond08-Regular.otf') format('opentype');
+  font-style: normal;
+}
+*/
+@font-face {
+  font-family: "eb-garamond";
+  src:  url('./fonts/eb-garamond/ttf/EBGaramond12-Italic.ttf') format('truetype'),
+  	    url('./fonts/eb-garamond/otf/EBGaramond12-Italic.otf') format('opentype');
+  font-style: italic;
+}
+/*
+@font-face {
+  font-family: "eb-garamond";
+  src:  url('./fonts/eb-garamond/ttf/EBGaramond08-Italic.ttf') format('truetype'),
+  	    url('./fonts/eb-garamond/otf/EBGaramond08-Italic.otf') format('opentype');
+  font-style: italic;
+}
+*/
+/*
+@font-face {
+	font-family: "eb-garamond";
+  src:	url('./fonts/eb-garamond/ttf/EBGaramond-Initials.ttf') format('truetype'),
+  	url('./fonts/eb-garamond/otf/EBGaramond-Initials.otf') format('opentype');
+  font-style: normal;
+}
+*/
+@font-face {
+  font-family: "eb-garamond-sc";
+  src:  url('./fonts/eb-garamond/ttf/EBGaramondSC12-Regular.ttf') format('truetype'),
+  	    url('./fonts/eb-garamond/otf/EBGaramondSC12-Regular.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'urlaub-grotesk';
+  src: url('./fonts/urlaub-grotesk/fonts/Urlaub-Grotesk-Regular.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/urlaub-grotesk/fonts/Urlaub-Grotesk-Regular.woff2') format('woff2'), /* Modern Browsers */
+       url('./fonts/urlaub-grotesk/fonts/Urlaub-Grotesk-Regular.otf') format('opentype'), /* Safari, Android, iOS */
+       url('./fonts/urlaub-grotesk/fonts/Urlaub-Grotesk-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
 @font-face {
   font-family: "mels";
   src: url("./fonts/mels/Mels-Regular.otf") format("opentype");
@@ -39,12 +91,16 @@
   font-style: italic;
 }
 
+/**************************************************************************/
+/* root */
+
 :root {
   /**
    * FONT DEFINITIONS
    */
-  --cs-font-serif: "ITC Galliard Std";
+  --cs-font-serif: "eb-garamond";
   --cs-font-sans-serif: "urlaub-grotesk", "mels", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --cs-font-sans-serif-accentuate: "mels", "urlaub-grotesk";
 
   /**
    * COLOR DEFINITIONS
@@ -126,10 +182,10 @@
   --cs-border: 1px solid black;
 
   /*
-  --cs-navbar-height-mobile: 7vh;
-  --cs-navbar-height-desktop: 9vh;
+  the navbar's height is AT LEAST 50px, if the screen is bigger, it is 7vh.
+  the main part of the app's height is calc(100vh - var(--cs-navbar-height))
   */
-  --cs-navbar-height: 7vh;
+  --cs-navbar-height: max(7vh, 50px);
 
   /*
   --cs-sidebar-width-desktop: 25vw;
@@ -153,9 +209,9 @@
 
 }
 
-/***********************************************
- *                global styles                *
- ***********************************************/
+/**************************************************************************/
+/* global styles for elements */
+
 *
 , *::before
 , *::after {
@@ -175,6 +231,10 @@ body {
 
 h1,h2,h3,h4,h5,h6 {
   font-family: var(--cs-font-serif);
+}
+h1 {
+  font-family: "eb-garamond-sc";
+  font-variant: small-caps;
 }
 
 a {
@@ -207,8 +267,9 @@ td {
 q {
   quotes: "«" "»" "‹" "›";
 }
-/*********************************/
-/* color schemes */
+
+/**************************************************************************/
+/* classes defining color patterns */
 
 .main-default {
   color: var(--cs-main-default);
@@ -236,8 +297,9 @@ q {
   background-color: var(--cs-contrast-active-bg);
 }
 
-/*********************************/
-/* globally useful classes */
+
+/**************************************************************************/
+/* globally used classes */
 
 .border-bottom {
   border-bottom: var(--cs-border);
@@ -260,12 +322,13 @@ q {
 
 }
 
-/*********************************/
+
+/**************************************************************************/
 /* generic button styling */
 
 button {
   margin: 2px;
-  font-family: "mels";
+  font-family: var(--cs-font-sans-serif-accentuate);
   padding: 3px 5px 1px 5px;
   background-color: var(--cs-main-default-bg);
 
@@ -288,7 +351,7 @@ button:active {
   width: fit-content;
 }
 
-/*********************************/
+/**************************************************************************/
 /* svg */
 
 button > svg > path {
@@ -305,8 +368,8 @@ button:active > svg > path {
 
 }
 
-/*********************************/
-/* leaflet styles */
+/**************************************************************************/
+/* leaflet */
 
 .leaflet-popup-content-wrapper {
   box-shadow: unset !important;
@@ -327,8 +390,8 @@ button:active > svg > path {
   color: var(--cs-link-visited) !important;
 }
 
-/*********************************/
-/* formkit styles */
+/**************************************************************************/
+/* formkit */
 
 .formkit-outer {
   margin-bottom: min(2vh, 10px);
@@ -354,7 +417,6 @@ button:active > svg > path {
   background-color: var(--cs-seagreen);
 }
 
-/*********************************/
 .form-field-outer-wrapper {
   display: grid;
   grid-template-columns: 15% 85%;
@@ -368,9 +430,8 @@ button:active > svg > path {
   height: 30px;
 }
 
-
-/*********************************/
-/* select2 styles */
+/**************************************************************************/
+/* select2 */
 
 .select2-selection {
   border: var(--cs-border) !important;
@@ -385,9 +446,9 @@ button:active > svg > path {
   height: 100% !important
 }
 
-/*********************************/
-/* vue transitions
- * see: https://vuejs.org/guide/built-ins/transition.html */
+/**************************************************************************/
+/* vue transitions */
+/* see: https://vuejs.org/guide/built-ins/transition.html */
 
 .v-enter-active
 , .v-leave-active {
