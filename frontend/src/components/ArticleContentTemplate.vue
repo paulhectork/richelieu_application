@@ -1,4 +1,4 @@
-<!-- ArticleComponentEmptyStructure.vue:
+<!-- ArticleComponentTemplate.vue:
 
      a basic template for all the ArticleContent...
      components. actually unused in the app.
@@ -41,7 +41,6 @@ import { urlToFrontendTheme, urlToFrontendNamedEntity } from "@utils/url.js";
 
 /**********************************************/
 
-const rootUrl = window.location.origin;                                        // the root URL of the current page
 const emit    = defineEmits(["queryParams", "iiifIdUuidArray", "footnotes"]);  // what to emit to `ArticleMainView.vue`
 
 const iiifIdUuidArray = [];  // the UUIDs of iconography ressources from which to display a IIIF image

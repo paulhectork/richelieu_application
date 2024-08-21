@@ -102,7 +102,7 @@ const reinitFields = () => {
 
 /**
  * handle the input by sending it to the formkit context.
- * @param {the event} e
+ * @param {event} e
  */
 function inputHandler(e) {
   inputFields.value[e.originalTarget.id] = e.srcElement.value;  // update `inputFields`

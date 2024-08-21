@@ -43,7 +43,7 @@ import { cleanClickOrTouchend } from "@utils/functions.js";
 
 /**************************************************************/
 
-const logoPath = "../src/assets/icons/logo-text.png";
+const logoPath = "../src/assets/icons/logo-text.svg";
 
 /**************************************************************/
 
@@ -88,7 +88,7 @@ h1 > a {
   justify-content: center;
 }
 #logo-richelieu {
-  max-height: calc(var(--cs-navbar-height) - 10px);
+  height: calc(var(--cs-navbar-height) - 10px);
   object-fit: contain;
   margin-left: 10px;
 }

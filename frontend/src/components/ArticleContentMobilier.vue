@@ -8,13 +8,13 @@
   <div class="article-body">
     <p>Depuis le XIX<sup>e</sup> siècle, le quartier Richelieu fait office d'épicentre
       des politiques urbaines relatives au
-      <a :href="urlToFrontendTheme('qr1b56ce7199bc94c7db5cfbcbb2849220d')">
-        mobilier urbain</a>.
+      <RouterLink to="/theme/qr1b56ce7199bc94c7db5cfbcbb2849220d">
+        mobilier urbain</RouterLink>.
       Popularisée par JC Decaux dans les années 1960, cette notion revêt une
       définition administrative, soit
       <q>&nbsp;l'ensemble des objets ou dispositifs publics installés dans
-        <a :href="urlToFrontendTheme('qr1bc9332b2db5f45ee9dec8433307f8e7f')">
-          l'espace public</a>
+        <RouterLink to="/theme/qr1bc9332b2db5f45ee9dec8433307f8e7f">
+          l'espace public</RouterLink>
         &nbsp;<ButtonEllipsis data-key="thezy1976"></ButtonEllipsis>&nbsp;
       </q>.
       À cette définition se superposent un volet légal, comme vecteur de normes, et un
@@ -35,23 +35,23 @@
     </p>
     <p>Une autre activité phare du quartier exerce une influence sur le
       mobilier de rue&nbsp;: le
-      <a :href="urlToFrontendTheme('qr1ccc4169a977f41a995771d81522941e2')">
-        théâtre</a>.
+      <RouterLink to="/theme/qr1ccc4169a977f41a995771d81522941e2">
+        théâtre</RouterLink>.
       Le préfet Rambuteau (1781-1869)
       choisit d'implanter les premières colonnes urinoirs à proximité des
       théâtres parisiens, le long du boulevard des Italiens et du boulevard
       Montmartre. Loin d'être de simples lieux d'aisance, elles servent aussi
       de support pour la
-      <a :href="urlToFrontendTheme('qr1dda4429d380a4244ab6c8873e41c6fa1')">
-        publicité</a>
+      <RouterLink to="/theme/qr1dda4429d380a4244ab6c8873e41c6fa1">
+        publicité</RouterLink>
       , en atteste une lithographie de F. Bouchot
       <ButtonEye data-key="qr14be40957a31c4767b80c3de152d094a0"></ButtonEye>.
       Rapidement jugées incongrues, elles laissent place, à partir
       de 1868, aux colonnes Morris. Ces dernières sont légion dans ce quartier
       propice au divertissement. Initialement conçues pour la réclame théâtrale,
       elles présentent également des
-      <a :href="urlToFrontendTheme('qr1a5a5ddd859b4463f96c2ec2e7ba23686')">
-        affiches</a>
+      <RouterLink to="/theme/qr1a5a5ddd859b4463f96c2ec2e7ba23686">
+        affiches</RouterLink>
       en lien avec l'alimentation
       <ButtonEye data-key="qr1a98e4dd3d2b7432da0971c604bf34cc1"></ButtonEye>&nbsp;
       <a :href="rootUrl + '/article/menu'">
@@ -71,8 +71,8 @@
       immortalisé par Charles Marville (1813-1879). Parangon
       de la modernité haussmannienne, cet édicule permet de retracer l'histoire
       des
-      <a :href="urlToFrontendTheme('qr1d8b0b911dd7b43ff825c908263e1fcc1')">
-        mœurs</a>
+      <RouterLink to="/theme/qr1d8b0b911dd7b43ff825c908263e1fcc1">
+        mœurs</RouterLink>
       de ce quartier. Il est définitivement fermé en 1903
       <ButtonEllipsis data-key="bulletin1903"></ButtonEllipsis>
       à cause de sa réputation interlope. Haut lieu des amours homosexuelles,

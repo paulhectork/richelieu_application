@@ -4,7 +4,7 @@
       with extra data fetched from the database.
 
       this component is composed of 4 components:
-      * `Article\d+`: (Article1, Article14...):
+      * `ArticleContent...`: (ArticleComponentBourse...):
           the article itself, loaded dynamically based on the
           `articleName` parameter in the URL. if the article
           looked for is not found, a 404 is displayed instead
@@ -18,7 +18,7 @@
       * `ArticleMainView` handles the interaction between
           components and ALL generic processes (all things that
           can and will be repeated from one article to another)
-      * `Article\d+` contains the DATA specific to an article:
+      * `ArticleContent...` contains the DATA specific to an article:
           the article itself, query parameters to build the IndexBase,
           UUIDs for the iconography ressources to display in the
           IIIF viewer, footnotes... all of that is emitted to
@@ -26,7 +26,11 @@
           another, but the processes are always the same, so they
           are handled by the current component.
       * `IiifViewer`, `IndexBase` and `ArticleFootnote` display data
-          fetched from `Article\d+` and passed to them from `ArticleMainView`
+          fetched from `ArticleContent...` and passed to them
+          from `ArticleMainView`
+
+      view @components/ArticleComponentTemplate.vue for more info on
+      the structure of all the components.
 -->
 
 
@@ -220,7 +224,7 @@ function fetchIndex(newQueryParams) {
 
 /**
  * set the `articleFootnotes` ref from the `footnotes`
- * emitted by the child `Article\d+` component.
+ * emitted by the child `ArticleContent...` component.
  * @param {Object} footnotes: the footnotes
  *   (strucutre: { <footnote key>: <footnote content> })
  */
@@ -289,7 +293,7 @@ function mountFootnoteOnClick(evt) {
 /**
  * register events on `.article-wrapper`. event registering must
  * be called within a function because this allows us to wait for
- * the Article\d+ component to be mounted with the @vue:mounted hook.
+ * the ArticleContent... component to be mounted with the @vue:mounted hook.
  * see: https://stackoverflow.com/a/72486795/17915803
  */
 function registerArticleEvents() {

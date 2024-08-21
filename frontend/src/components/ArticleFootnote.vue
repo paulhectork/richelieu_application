@@ -45,7 +45,7 @@ const closeOnClick = (e) => {
 
 /**
  * close the footnote when pressing the `Escape` key
- * @param {JQueryEventObject} e
+ * @param {@link jQuery.event} e
  */
 const closeOnEsc = (e) =>
   ( e.key === "Escape" )
@@ -58,7 +58,6 @@ onMounted(() => {
   let topOffset = ($(window).height() - $(`#${props.footnoteHtmlId}`).height()) / 2;
   $(`#${props.footnoteHtmlId}`).css({ maxWidth : maxWidth,
                                       top      : topOffset });
-
   let leftOffset = ($(".article-main-wrapper").width() - $(`#${props.footnoteHtmlId}`).width()) / 2
   $(`#${props.footnoteHtmlId}`).css({ left: leftOffset });
 

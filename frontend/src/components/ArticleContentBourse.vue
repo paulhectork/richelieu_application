@@ -30,8 +30,8 @@
       plus largement dans ce quartier
       <ButtonEllipsis data-key="charles2021"></ButtonEllipsis>
       . Si le temple de
-      <a :href="urlToFrontendTheme('qr1ce0a74ab786b4b52832f0abd0c9de4ce')">
-        l'argent</a>
+      <RouterLink to="/theme/qr1ce0a74ab786b4b52832f0abd0c9de4ce">
+        l'argent</RouterLink>
       conçu suivant les plans d'Alexandre Théodore Brongniart
       (1739-1813) en 1808, et inauguré vingt ans plus tard,
       en est le point de repère principal, la Bourse occupe
@@ -39,8 +39,8 @@
       <ButtonEllipsis data-key="brongniart1986"></ButtonEllipsis>
       . Elle était initialement installée
       dans le
-      <a :href="urlToFrontendNamedEntity('qr1eac893b6bd6d421c8bf00b83a4dbba13')">
-        jardin Vivienne</a>,
+      <RouterLink to="/sujet/qr1eac893b6bd6d421c8bf00b83a4dbba13">
+        jardin Vivienne</RouterLink>,
       où les agents de change négociaient sous une série d'arcades
       <ButtonEye data-key="qr1a99b309c1d9043dbbbef00f2759e6a7d"></ButtonEye>
       . Elle itinéra ensuite
@@ -70,8 +70,8 @@
       architecturales des immeubles adjacents à la place
       semblent tirer parti de sa configuration et de sa fréquentation.
       L'exemple du magasin au
-      <a :href="urlToFrontendNamedEntity('qr19529e0fdc0d340b39f34a4c48f364f9f')">
-        Palais de cristal</a>,
+      <RouterLink to="/sujet/qr19529e0fdc0d340b39f34a4c48f364f9f">
+        Palais de cristal</RouterLink>,
       ouvert vers 1850 en écho au déjà célèbre <i>Crystal Palace</i>
       de Londres, est éclairant
       <ButtonEye data-key="qr10494022adccf4ed7b4dc55615a996372"></ButtonEye>
@@ -115,8 +115,12 @@
       &nbsp;
       <ButtonEllipsis data-key="berthelot2008"></ButtonEllipsis>.
       Ce choix, plutôt que celui de la
-      <a :href="urlToFrontendNamedEntity('qr15f9f002f1fc34ee79a079b5841a16fa2')">
+      <!--
+        <a :href="urlToFrontendNamedEntity('qr15f9f002f1fc34ee79a079b5841a16fa2')">
         Banque de France</a>
+      -->
+      <RouterLink to="/sujet/qr15f9f002f1fc34ee79a079b5841a16fa2">
+        Banque de France</RouterLink>
       par exemple, est peut-être à chercher du côté de l'institution
       elle-même&nbsp;: la spéculation et l'agiotage auraient moins
       bonne presse que la Banque, figure d'autorité plus
@@ -126,7 +130,7 @@
 
   <!-- author name -->
   <div class="article-footer">
-    <p></p>
+    <p>Charlotte Duvette</p>
   </div>
 
 </template>
