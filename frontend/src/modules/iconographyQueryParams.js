@@ -462,15 +462,21 @@ export class IconographyQueryParams {
     return dateOut;
   }
   /**
-   * clean a booleanOp parameter. if it's not valid, revert to the default "and"
-   * if `x` is not in [and,or,not] but is undefined, just return "and" (by default,
-   * boolean ops can be undefined). else, log an error message and return "and".
+   * clean a booleanOp parameter `x`. booleanOp must be one of ["and","or"].
+   * - if valid return booleanOp.
+   * - if undefined or null or empty string, return "and"
+   * - if invalid but not undefined, log a warning and return "and".
    */
   booleanOpCleaner = x =>
     // ["and","or","not"].includes(x)
     ["and","not"].includes(x)
     ? x
-    : "and"
+    : x == null || x === ""
+    ? "and"
+    : (() => {
+        console.warn(`iconographyQueryParams.booleanOpCleaner(): expected one of ["and","not"], got "${x}". reverting to default "and"`)
+        ;return "and" }
+      )();
   /**
    * clean a flat string array (that is, an array made only
    * of scalars) by removing values that are null or undefined

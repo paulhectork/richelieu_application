@@ -93,8 +93,8 @@ h1 > a {
   margin-left: 10px;
 }
 #burger {
-  width: max(4vw, 40px);
-  height: max(4vh, 30px);
+  width: calc(var(--cs-navbar-height) - 20px);
+  height: calc(var(--cs-navbar-height) - 20px);
   display: flex;
   margin-left: 3vw;
   flex-direction: column;
@@ -106,13 +106,19 @@ h1 > a {
 #burger > span {
   height: 0.3vh;
   min-height: 2px;
-  min-width: 4.5vw;
   width: 100%;
   background-color: var(--cs-duck);
+
   transition: max-width .5s
             , transform .5s
             , opacity .25s
             , background-color 0.5s;
+}
+#burger > span:nth-child(1) {
+  transform-origin: top left;
+}
+#burger > span:nth-child(3) {
+  transform-origin: bottom left;
 }
 #burger:hover > span {
   background-color: var(--cs-link-default);
@@ -125,11 +131,12 @@ h1 > a {
   opacity: 0;
 }
 .burger-cross > span:nth-child(1) {
-  transform: translateY(450%) rotate(45deg);
+  transform: rotate(45deg);
+  /*transform: translateY(500%) rotate(45deg);*/
 }
 .burger-cross > span:nth-child(3) {
-  transform: translateY(-1.3vh) rotate(-45deg);
-  transform: translateY(-450%) rotate(-45deg);
+  transform: rotate(-45deg);
+  /*transform: translateY(-500%) rotate(-45deg);*/
 }
 
 

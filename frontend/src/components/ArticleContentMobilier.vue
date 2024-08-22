@@ -54,9 +54,9 @@
         affiches</RouterLink>
       en lien avec l'alimentation
       <ButtonEye data-key="qr1a98e4dd3d2b7432da0971c604bf34cc1"></ButtonEye>&nbsp;
-      <a :href="rootUrl + '/article/menu'">
+      <RouterLink to="/article/menu">
         <ButtonArrow orient="right"></ButtonArrow>
-      </a>.
+      </RouterLink>.
     </p>
     <p>Le jardin du Palais-Royal sert aussi de moteur en matière d'équipement
       public. Ce lien étroit entre l'aménagement des rues et des espaces verts

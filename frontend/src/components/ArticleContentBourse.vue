@@ -115,10 +115,6 @@
       &nbsp;
       <ButtonEllipsis data-key="berthelot2008"></ButtonEllipsis>.
       Ce choix, plutôt que celui de la
-      <!--
-        <a :href="urlToFrontendNamedEntity('qr15f9f002f1fc34ee79a079b5841a16fa2')">
-        Banque de France</a>
-      -->
       <RouterLink to="/sujet/qr15f9f002f1fc34ee79a079b5841a16fa2">
         Banque de France</RouterLink>
       par exemple, est peut-être à chercher du côté de l'institution

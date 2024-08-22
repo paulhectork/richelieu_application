@@ -29,14 +29,20 @@
           fetched from `ArticleContent...` and passed to them
           from `ArticleMainView`
 
-      view @components/ArticleComponentTemplate.vue for more info on
+      view @components/ArticleContentTemplate.vue for more info on
       the structure of all the components.
 -->
 
 
 <template>
 
-  <div class="article-main-wrapper">
+  <div class="fill-parent"
+       v-if="notFoundFlag===true">
+    <component :is="articleComponent"></component>
+  </div>
+
+  <div v-else
+       class="article-main-wrapper">
 
     <div class="article-viewer-wrapper">
       <div class="iiif-wrapper">
@@ -44,6 +50,14 @@
              class="iiif-inner-wrapper">
           <IiifViewer :osdId="iconographyMainCurrent.id_uuid"
                       :iiifUrl="iconographyMainCurrent.iiif_url"
+                      :backupImgUrl="/* first non compress/thumbnail image in the `filename` array */
+                                     iconographyMainCurrent
+                                     .filename
+                                     .filter(x => x.url.match(/^qr1[a-z0-9]+\.[a-z]+$/))
+                                     [0]
+                                     .url"
+                      :folio="iconographyMainCurrent.folio"
+                      backupImgDisplay="contain"
                       @osd-viewer="setCurrentIiifViewer"
 
           ></IiifViewer>
@@ -88,7 +102,12 @@
 
 
 <script setup>
-import { onMounted, onUnmounted, ref, shallowRef, defineAsyncComponent } from 'vue';
+import { onMounted
+       , onUnmounted
+       , ref
+       , shallowRef
+       , defineAsyncComponent
+       , watch } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 
 import axios from "axios";
@@ -106,8 +125,9 @@ import { indexDataFormatterIconography } from "@utils/indexDataFormatter.js";
 /************************************************/
 
 const route                  = useRoute();
-const articleName            = ref(route.params.articleName);
+const articleName            = ref();         // the name of the article, defined in `setArticleName`, allows us to load the relevant `ArticleContent...`.
 const articleComponent       = shallowRef();  // the currentcomponent, or NotFound.vue if articleName is not a key of `urlMapper` below. `shallowRef` is used to avoid vue performance warnings
+const notFoundFlag           = ref(false);    // true if the component `articleComponent` is `NotFound.vue`
 
 const iconographyIndex       = ref([]);       // array of iconography objects to display in an index
 const iconographyMainArray   = ref([]);       // array of a few iconography resources (2-6) from which to display IIIFs
@@ -143,14 +163,49 @@ const urlMapper = { "bourse"             : "ArticleContentBourse.vue"
  * using `@` in imports doesn't work in dynamic loading,
  * see: https://stackoverflow.com/a/72977926/17915803
  * @param {string} articleName
- * @returns {ComponentPublicInstance}: the vue component
+ * @returns {Array<ComponentPublicInstance, bool>}:
+ *   an array of 2 elements:
+ *   - the vue component
+ *   - a boolean that is True if `NotFound` is returned.
  */
 function loadCurrentArticleComponent(articleName) {
   let componentName = Object.keys(urlMapper).includes(articleName)
                       ? urlMapper[articleName]
                       : "NotFound.vue";
-  return defineAsyncComponent(() => import(`../components/${componentName}` /* @vite-ignore */));
+  return [ defineAsyncComponent(() => import(`../components/${componentName}` /* @vite-ignore */))
+         , componentName === "NotFound.vue"
+         ];
 }
+
+/**
+ * from the `articleName` param in a vue-router route,
+ * trigger the complete article change hook:
+ *
+ * - define `articleName` ref (the name of the current
+ *    article, given in `route.params.articleName`)
+ * - define the `articleComponent` ref, which will trigger
+ *    the loading of the new article
+ * - empty `iconographyIndex`:`
+ *    iconographyIndex` is fetched  asynchronously from
+ *    fetchIndex()`. if we don't do this, when switching
+ *    from componentA to componentB, until the `fetchIndex()`
+ *    returns results relevant to `componentB, the index of
+ *    `componentA` will be displayed `
+ *
+ * this function is called on `onMounted`
+ * and on route change using `watch(route)`.
+ *
+ * @param {vue-router.RouteLocationNormalizedLoaded} _route:
+ *   the vue-router route.
+ */
+function articleMounter(_route) {
+  iconographyIndex.value = [];
+  // load the new ArticleContent...
+  articleName.value = _route.params.articleName;
+  [ articleComponent.value, notFoundFlag.value ] = loadCurrentArticleComponent(articleName.value);
+  if ( notFoundFlag ) { console.log("oh, no") }
+}
+
 
 /**
  * run a backend query to get an index
@@ -192,7 +247,7 @@ function fetchIndex(newQueryParams) {
   axios
   .post( targetUrl.href, queryParams.toJson() )
   .then(r => { iconographyIndex.value = indexDataFormatterIconography(r.data);  })
-  .catch(e => { console.error( `ArticleMainIndex.fetchIndex(queryParams): backend error (${e.response?.data})`
+  .catch(e => { console.error( `ArticleMainIndex.fetchIndex(): backend error (${e.response?.data})`
                              , "on query:"
                              , queryParams.toJson()
                              , "error dump:"
@@ -249,6 +304,7 @@ function setCurrentIiifViewer(viewer) {
 function setCurrentIconographyMain(iconographyIdUuid) {
   iconographyMainCurrent.value =
     iconographyMainArray.value.filter(i => i.id_uuid == iconographyIdUuid)[0];
+  console.log(">>", iconographyMainCurrent.value);
 }
 
 /**
@@ -271,7 +327,6 @@ function switchIconographyMainOnClick(evt) {
 }
 
 function unmountFootnote() {
-  console.log("hi");
   // 2 méthodes: en cliquant sur le bouton croix ou en cliquant hors de la modale
   currentFootnoteContent.value = "";
   currentFootnoteHtmlId.value  = "";
@@ -291,12 +346,13 @@ function mountFootnoteOnClick(evt) {
 }
 
 /**
- * register events on `.article-wrapper`. event registering must
- * be called within a function because this allows us to wait for
- * the ArticleContent... component to be mounted with the @vue:mounted hook.
+ * register events on child `ArticleContent...`.
+ * event registering must be called within a function
+ * because this allows us to wait for the ArticleContent...
+ * component to be mounted with the @vue:mounted hook.
  * see: https://stackoverflow.com/a/72486795/17915803
  */
-function registerArticleEvents() {
+ function registerArticleEvents() {
   $(".button-eye").on("click", switchIconographyMainOnClick);
   $(".button-eye").on("touchend", switchIconographyMainOnClick);
   $(".button-ellipsis").on("click", mountFootnoteOnClick);
@@ -305,9 +361,14 @@ function registerArticleEvents() {
 
 /************************************************/
 
-onMounted(() => {
-  articleComponent.value = loadCurrentArticleComponent(articleName.value);
+watch(route, (newRoute, oldRoute) => {
+  articleMounter(newRoute);
 })
+
+onMounted(() => {
+  articleMounter(route);
+})
+
 onUnmounted(() => {
   $(".button-eye").off("click", switchIconographyMainOnClick);
   $(".button-eye").off("touchend", switchIconographyMainOnClick);

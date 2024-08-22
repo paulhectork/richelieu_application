@@ -79,6 +79,7 @@ async function buildOsdViewer(tileSequence, osdId) {
     showHomeControl: true,
     autoHideControls: true,
     crossOriginPolicy: true,
+    defaultZoomLevel: 1,
     viewportMargins: {
       top: 10,
       left: 10,
@@ -98,7 +99,8 @@ async function buildOsdViewer(tileSequence, osdId) {
   return viewer.value.addOnceHandler("open", () => {
     $(`#${osdId} .openseadragon-canvas`).css("backgroundColor", "var(--cs-darkplum)");
     emit("osd-viewer", viewer);
-    return });  // await for loading to be ready to return
+    return
+  });  // await for loading to be ready to return
 }
 
 /**
