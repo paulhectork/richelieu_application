@@ -16,9 +16,10 @@
         [
           // 1st object
           {
-            "href" : <url to redirect to on click>,
-            "img"  : <url to the background image>,
-            "text" : <text to display in the `IndexItem`>
+            "idUuid" : <uuid of the resource>,
+            "href"   : <relative url to redirect to on click (without the url origin)>,
+            "img"    : <url to the background image>,
+            "text"   : <text to display in the `IndexItem`>
           },
           // other objects
           {...}
@@ -27,25 +28,76 @@
 -->
 
 <template>
-  <div class="index-container animate__animated animate__slideInLeft">
-    <IndexItem v-for="d in data"
-               :item="d"
-               :display="display"
-    ></IndexItem>
+  <div class="index-wrapper">
+    <div class="index-filter-wrapper">
+      <FormKit type="search"
+               placeholder="..."
+               label="Filtrer"
+               :delay="1000"
+               @input="textFilter"
+      ></FormKit>
+    </div>
+    <div class="index-inner-wrapper animate__animated animate__slideInLeft">
+      <IndexItem v-for="d in dataFilter"
+                 :item="d"
+                 :display="display"
+      ></IndexItem>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 
 import IndexItem from "@components/IndexItem.vue";
 
+/*******************************************************/
+
 const props = defineProps([ "display"  // which component to use for rendering a component: `resource` => `IndexItem.vue`, `concept` => `IndexItem.vue`
                           , "data" ])  // the data to display.
+const dataFull = ref([]);    // all items of the index
+const dataFilter = ref([]);  // index items filtered in `.index-filter-wrapper`
+
+/*******************************************************/
+
+/**
+ * simplify the string `s`
+ */
+const simplifyString = s =>
+  s !== undefined
+  ? s.toLowerCase().trim().replaceAll(/\s+/g, " ")
+  : s;
+
+
+/**
+ * remove html tags from the string `_string`
+ */
+const stripHtml = _string => _string.replace(/<[^>]*>?/gm, '');
+
+/**
+ *
+ * @param {string} filterBy
+ */
+function textFilter(filterBy) {
+  filterBy = simplifyString( stripHtml(filterBy) );
+  dataFilter.value = dataFull.value.filter(x =>
+    simplifyString( stripHtml(x.text) ).includes(filterBy)
+  );
+  console.log(dataFilter.value)
+
+}
+
+/*******************************************************/
+
+
+onMounted(() => {
+  dataFull.value = props.data;
+  dataFilter.value = dataFull.value;
+})
 </script>
 
 <style>
-.index-container {
+.index-inner-wrapper {
   width: 100%;
   display: grid;
   grid-auto-rows: 40vh;

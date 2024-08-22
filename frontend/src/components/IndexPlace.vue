@@ -1,6 +1,30 @@
-<!-- a special type of index for our places:
+<!-- IndexPlace.vue
+
+     a special type of index for our places:
      left, a list of places. right, a map that can display
-     vectors and rasters for the selected place. -->
+     vectors and rasters for the selected place.
+
+      props:
+      * `display`: one of "resource"|"concept".
+          passed to `IndexItem` to determine the style used.
+      * `data`   : the array of data to display. the structure is the same
+          no matter the parent which calls IndexBase, or the kind of object
+          to display (Icono, Named Entity...):
+        ```
+        [
+          // 1st object
+          {
+            "idUuid" : <uuid of the resource>,
+            "href"   : <relative url to redirect to on click (without the url origin)>,
+            "img"    : <url to the background image>,
+            "text"   : <text to display in the `IndexItem`>
+          },
+          // other objects
+          {...}
+        ]
+        ```
+
+-->
 
 <template>
   <div class="index-place">
@@ -10,9 +34,10 @@
         <tr v-for="d in data" class="animate__animated animate__bounceInUp">
           <td>
             <button class="text-container" v-html="d.text" :value="d.href"></button>
-            <a :href="d.href" class="button-arrow-container">
+            <RouterLink :to="d.href"
+                        class="button-arrow-container">
               <ButtonArrow orient="right"></ButtonArrow>
-            </a>
+            </RouterLink>
           </td>
         </tr>
       </table>

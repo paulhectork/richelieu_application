@@ -1,27 +1,27 @@
 <template>
-  <a v-if="display==='resource'"
+  <RouterLink v-if="display==='resource'"
      class="index-item index-item-resource"
-     :href="item.href"
+     :to="item.href"
   >
     <img :src="item.img"
          class="fill-parent"
          loading="lazy"
          >
     <p v-html="item.text"></p>
-  </a>
+  </RouterLink>
 
-  <a v-if="display==='concept'"
+  <RouterLink v-if="display==='concept'"
      class="index-item index-item-concept"
-     :href="item.href"
+     :to="item.href"
      :style="{ 'background-image': `url(${item.img})` }"
   >
     <p v-html="item.text"></p>
-  </a>
+  </RouterLink>
 
-  <a v-if="display==='cartography'"
+  <RouterLink v-if="display==='cartography'"
      class="index-item index-item-cartography"
-     :href="item.href"
-  ></a>
+     :to="item.href"
+  ></RouterLink>
 </template>
 
 <script setup>

@@ -199,13 +199,11 @@ function loadCurrentArticleComponent(articleName) {
  *   the vue-router route.
  */
 function articleMounter(_route) {
-  iconographyIndex.value = [];
+  iconographyIndex.value = [];  // empty the previous index
   // load the new ArticleContent...
   articleName.value = _route.params.articleName;
   [ articleComponent.value, notFoundFlag.value ] = loadCurrentArticleComponent(articleName.value);
-  if ( notFoundFlag ) { console.log("oh, no") }
 }
-
 
 /**
  * run a backend query to get an index
@@ -304,7 +302,6 @@ function setCurrentIiifViewer(viewer) {
 function setCurrentIconographyMain(iconographyIdUuid) {
   iconographyMainCurrent.value =
     iconographyMainArray.value.filter(i => i.id_uuid == iconographyIdUuid)[0];
-  console.log(">>", iconographyMainCurrent.value);
 }
 
 /**
