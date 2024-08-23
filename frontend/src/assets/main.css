@@ -314,7 +314,16 @@ q {
   top: 0;
   position: sticky;
 }
-.list-invisible {   /* to have an <ul> with no list-specific style elements */
+
+/* use in a div or `p` outisde a `q` to create a multiline quote*/
+.multi-line-quote-wrapper {
+  line-height: 1.3;
+  font-style: italic;
+  padding: 5% 0% 5% 15%;
+}
+
+/* to have an <ul> with no list-specific style elements */
+.list-invisible {
   list-style: none;
   padding-left: 0;
   margin-bottom: 0;
@@ -346,6 +355,12 @@ button:hover {
   border: var(--cs-border);
 }
 button:active {
+  background-color: var(--cs-seagreen);
+  color: var(--cs-main-default);
+  width: fit-content;
+}
+/* emulate .active state */
+button.button-activated {
   background-color: var(--cs-seagreen);
   color: var(--cs-main-default);
   width: fit-content;

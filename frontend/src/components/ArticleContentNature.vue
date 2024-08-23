@@ -129,12 +129,16 @@
       &nbsp;
       <UiButtonEllipsis data-key="sade1864"></UiButtonEllipsis>&nbsp;:
     </p>
-    <p><q>&nbsp;C'est un magnifique jardin d'été qui se transforme
-      en jardin d'hiver […] Il se compose de l'exacte étendue
-      du jardin d'été dont il n'est qu'une ingénieuse transformation&nbsp;;
-      on y dine sous des arbres et sous de vrai feuillage
-      <UiButtonEllipsis data-key="monde1864"></UiButtonEllipsis>.
-    </q></p>
+    <div class="multi-line-quote-wrapper">
+      <q>&nbsp;
+        C'est un magnifique jardin d'été qui se transforme
+        en jardin d'hiver […] Il se compose de l'exacte étendue
+        du jardin d'été dont il n'est qu'une ingénieuse transformation&nbsp;;
+        on y dine sous des arbres et sous de vrai feuillage
+        <UiButtonEllipsis data-key="monde1864"></UiButtonEllipsis>.
+        &nbsp;
+      </q>
+    </div>
   </div>
 
   <!-- author name -->

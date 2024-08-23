@@ -141,6 +141,7 @@ const currentFootnotePos     = ref([])        // [x:float, y:float]. where to po
 
 // url to component name mapper
 const urlMapper = { "bourse"             : "ArticleContentBourse.vue"
+                  , "vivienne"           : "ArticleContentVivienne.vue"
                   , "mode"               : "ArticleContentMode.vue"
                   , "menu"               : "ArticleContentMenu.vue"
                   , "nature"             : "ArticleContentNature.vue"
@@ -264,9 +265,15 @@ function fetchIndex(newQueryParams) {
 
   axios.get( targetUrl.href, { params: { id_uuid: iconographyIdUuidArray },
                                paramsSerializer: { indexes:null } } )
-       .then(r => { iconographyMainArray.value = r.data;
-                    let firstIdUuid = $($(".button-eye")[0]).attr("data-key");
-                    setCurrentIconographyMain(firstIdUuid);
+       .then(r => {
+          // save the resources to be displayed in a iiif viewer
+          iconographyMainArray.value = r.data;
+          // set the style
+          $(".button-eye").removeClass("button-activated")
+          $($(".button-eye")[0]).addClass("button-activated");
+          // create the 1st viewer
+          let firstIdUuid = $($(".button-eye")[0]).attr("data-key");
+          setCurrentIconographyMain(firstIdUuid);
        })
        .catch(e => console.error("ArticleMainView.fetchIiif(): backend error with parameters:"
                                 , iconographyIdUuidArray, `error stack:`, e));
@@ -317,20 +324,36 @@ function setCurrentIconographyMain(iconographyIdUuid) {
  * a new one.
  */
 function switchIconographyMainOnClick(evt) {
+  // set the style as activated
+  $(".button-eye").removeClass("button-activated");
+  $(evt.currentTarget).addClass("button-activated");
+
   let newIconographyIdUuid = $(evt.currentTarget).attr("data-key");
   if ( newIconographyIdUuid !== iconographyMainCurrent.id_uuid ) {
     setCurrentIconographyMain(newIconographyIdUuid)
   }
 }
 
+/**
+ * remove the currently displayed footnote, by clicking
+ * `.button-cross` or by clicking outside of the modal
+ */
 function unmountFootnote() {
-  // 2 méthodes: en cliquant sur le bouton croix ou en cliquant hors de la modale
+  $(".button-ellipsis").removeClass("button-activated");  // unset the style
   currentFootnoteContent.value = "";
   currentFootnoteHtmlId.value  = "";
   currentFootnotePos.value     = [];
 }
 
+/**
+ * mount a footnote when clicking on a `.button-ellipsis`
+ * @param {jQuery.event} evt: the click event
+ */
 function mountFootnoteOnClick(evt) {
+  // set the style
+  $(".button-ellipsis").removeClass("button-activated");
+  $(evt.currentTarget).addClass("button-activated");
+  // display the footnote
   let footnoteKey = $(evt.currentTarget).attr("data-key");
   if ( Object.keys(articleFootnotes.value).includes(footnoteKey) ) {
     currentFootnoteContent.value = articleFootnotes.value[footnoteKey];
@@ -419,7 +442,9 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
 }
-
+.iiif-cartel > p {
+  margin: 10px;
+}
 /***************************************/
 
 .article-wrapper {
