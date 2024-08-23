@@ -138,16 +138,16 @@
 
           <!-- add/delete buttons -->
           <div class="button-container">
-            <ButtonCross v-if="displayButtonCross(htmlId)"
+            <UiButtonCross v-if="displayUiButtonCross(htmlId)"
                         type="button"
                         @click="popField(htmlId)"
                         @touchEnd="popField(htmlId)"
-            ></ButtonCross>
-            <ButtonPlus v-if="displayButtonPlus(htmlId)"
+            ></UiButtonCross>
+            <UiButtonPlus v-if="displayUiButtonPlus(htmlId)"
                         type="button"
                         @click="addField"
                         @touchEnd="addField"
-            ></ButtonPlus>
+            ></UiButtonPlus>
           </div>
 
         </li>
@@ -167,8 +167,8 @@ import axios from "axios";
 import $ from "jquery";
 import { useFormKitNodeById } from "@formkit/vue";
 
-import ButtonCross from "@components/ui/ButtonCross.vue";
-import ButtonPlus from "@components/ui/ButtonPlus.vue";
+import UiButtonCross from "@components/UiButtonCross.vue";
+import UiButtonPlus from "@components/UiButtonPlus.vue";
 
 /****************************************/
 
@@ -209,11 +209,11 @@ const popField = (htmlId) => {
 /**
  * display or hide the buttons in `.button-container`
  */
-const displayButtonPlus = (htmlId) =>
+const displayUiButtonPlus = (htmlId) =>
   Object.keys(inputFields.value).indexOf(htmlId)
   === Object.keys(inputFields.value).length - 1;
 
-const displayButtonCross = () =>
+const displayUiButtonCross = () =>
   Object.keys(inputFields.value).length > 1;
 
 

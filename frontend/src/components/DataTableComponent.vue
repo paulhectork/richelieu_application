@@ -9,7 +9,7 @@
     <table id="datatable-index" class="row-border order-column"></table>
   </div>
 
-  <UpDownScroller></UpDownScroller>
+  <UiUpDownScroller></UiUpDownScroller>
 </template>
 
 
@@ -23,7 +23,7 @@ import DataTable from "datatables.net-dt";
 
 import { domStore } from "@stores/dom";
 import { isKindaEmpty } from "@utils/functions";
-import UpDownScroller from "@components/ui/UpDownScroller.vue";
+import UiUpDownScroller from "@components/UiUpDownScroller.vue";
 
 /**
  * how does this component work?

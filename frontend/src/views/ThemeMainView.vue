@@ -11,7 +11,7 @@
 <template>
   <h1>Thème:{{ formattedThemeName }}</h1>
 
-  <LoaderComponent v-if="!backendLoaded"></LoaderComponent>
+  <UiLoaderComponent v-if="!backendLoaded"></UiLoaderComponent>
   <div v-else>
     <p><strong>{{ theme.iconography_count }} ressources iconographiques</strong>
       sont associées à ce thème.</p>
@@ -52,7 +52,7 @@ import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 
 import IndexBase from "@components/IndexBase.vue";
-import LoaderComponent from "@components/ui/LoaderComponent.vue";
+import UiLoaderComponent from "@components/UiLoaderComponent.vue";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { stringifyAssociated, capitalizeString, capitalizeWords } from "@utils/stringifiers";
 

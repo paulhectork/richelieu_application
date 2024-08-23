@@ -36,7 +36,7 @@
             <button class="text-container" v-html="d.text" :value="d.href"></button>
             <RouterLink :to="d.href"
                         class="button-arrow-container">
-              <ButtonArrow orient="right"></ButtonArrow>
+              <UiButtonArrow orient="right"></UiButtonArrow>
             </RouterLink>
           </td>
         </tr>
@@ -58,7 +58,7 @@ import "leaflet";
 
 import "leaflet/dist/leaflet.css";
 
-import ButtonArrow from "@components/ui/ButtonArrow.vue";
+import UiButtonArrow from "@components/UiButtonArrow.vue";
 import { globalDefineMap } from "@utils/leafletUtils.js";
 import { clickOrTouchEvent } from "@globals";
 

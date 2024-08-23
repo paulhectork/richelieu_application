@@ -86,7 +86,7 @@
                  :data="iconographyIndex"
                  display="resource"
       ></IndexBase>
-      <LoaderComponent v-else></LoaderComponent>
+      <UiLoaderComponent v-else></UiLoaderComponent>
     </div>
 
   </div>
@@ -117,7 +117,7 @@ import $ from "jquery";
 import IndexBase from "@components/IndexBase.vue";
 import IiifViewer from "@components/IiifViewer.vue";
 import ArticleFootnote from "@components/ArticleFootnote.vue";
-import LoaderComponent from "@components/ui/LoaderComponent.vue";
+import UiLoaderComponent from "@components/UiLoaderComponent.vue";
 import { stringifyIconographyResource } from "@utils/stringifiers.js";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams.js";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter.js";

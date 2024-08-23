@@ -1,4 +1,4 @@
-<!-- ButtonArrow.vue: an HTML button containing an SVG arrow
+<!-- UiButtonArrow.vue: an HTML button containing an SVG arrow
 
      the arrow button can be rotated based on the value
      of `props.orient` ("up", "down", "left", "right") -->
@@ -34,7 +34,7 @@ function rotateOnOrient() {
   const orient = props.orient;
 
   if ( !allowed.includes(orient) ) {
-    throw new Error(`ButtonArrow.vue: value of orient must be one of '${allowed}', got '${orient}'`)
+    throw new Error(`UiButtonArrow.vue: value of orient must be one of '${allowed}', got '${orient}'`)
   } else {
     switch (orient) {
       case "up":

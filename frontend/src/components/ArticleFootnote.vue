@@ -4,8 +4,8 @@
     <div class="footnote-inner-wrapper">
       <p v-html="props.footnoteContent"
       ></p>
-      <ButtonCross @click="sendUnmount"
-      ></ButtonCross>
+      <UiButtonCross @click="sendUnmount"
+      ></UiButtonCross>
     </div>
   </div>
 </template>
@@ -16,7 +16,7 @@ import { onMounted, onUnmounted } from "vue";
 
 import $ from "jquery";
 
-import ButtonCross from "@components/ui/ButtonCross.vue";
+import UiButtonCross from "@components/UiButtonCross.vue";
 
 /************************************************/
 

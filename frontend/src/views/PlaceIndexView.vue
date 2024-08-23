@@ -13,7 +13,7 @@
     </div>
 
     <div class="bottom-container">
-      <LoaderComponent v-if="!isLoaded"></LoaderComponent>
+      <UiLoaderComponent v-if="!isLoaded"></UiLoaderComponent>
       <IndexPlace v-else
                   :display="display"
                   :data="dataFilter"
@@ -31,7 +31,7 @@ import axios from "axios";
 import $ from "jquery";
 
 import { indexDataFormatterPlace } from "@utils/indexDataFormatter";
-import LoaderComponent from "@components/ui/LoaderComponent.vue";
+import UiLoaderComponent from "@components/UiLoaderComponent.vue";
 import IndexPlace from "@components/IndexPlace.vue";
 
 const apiTarget  = new URL("/i/place", __API_URL__);

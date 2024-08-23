@@ -18,7 +18,7 @@
 -->
 
 <template>
-  <LoaderComponent v-if="!isLoaded"></LoaderComponent>
+  <UiLoaderComponent v-if="!isLoaded"></UiLoaderComponent>
 
   <div v-if="loadingFailed !== true"
        :id="osdId"
@@ -40,7 +40,7 @@ import OpenSeadragon from "openseadragon";
 
 import { manifestToTileSequence, osdNavImages } from "@utils/iiif";
 import { fnToIconographyFile } from "@utils/url";
-import LoaderComponent from "@components/ui/LoaderComponent.vue";
+import UiLoaderComponent from "@components/UiLoaderComponent.vue";
 
 /********************************************/
 

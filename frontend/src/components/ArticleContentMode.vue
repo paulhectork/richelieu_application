@@ -14,7 +14,7 @@
       et Richelieu. Ces établissements aux marchandises diversifiées,
       symboles d'une modernisation du commerce, annonceraient
       le triomphe des grands magasins sous le Second Empire
-      <ButtonEllipsis data-key="daumas2020"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="daumas2020"></UiButtonEllipsis>.
     </p>
     <p>Le terme nouveautés, renvoie au renouvellement saisonnier
       des étoffes disponibles sur le marché, ainsi qu'aux
@@ -22,7 +22,7 @@
       issus de procédés innovants, en majorité des tissus,
       de provenances, qualités, couleurs et prix multiples,
       mais aussi des accessoires et des bijoux
-      <ButtonEllipsis data-key="coquery2000"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="coquery2000"></UiButtonEllipsis>.
       Cette diversification
       de la marchandise héritée de la fin du XVIIIe siècle,
       et la promotion d'articles <q>&nbsp;dans les plus nouveaux
@@ -35,9 +35,9 @@
       de ces commerces de mode, stimulé par la <q>&nbsp;procession
       de désœuvrés qui collent leurs visages aux devantures
       des magasins
-      <ButtonEllipsis data-key="lukine1844"></ButtonEllipsis>
+      <UiButtonEllipsis data-key="lukine1844"></UiButtonEllipsis>
       &nbsp;</q>&nbsp;
-      <ButtonEye data-key="qr1b9fb564472f644ce9abbb45c1149f26e"></ButtonEye>.
+      <UiButtonEye data-key="qr1b9fb564472f644ce9abbb45c1149f26e"></UiButtonEye>.
       L'évolution des techniques
       et des pratiques ont contraint l'espace architectural
       à se renouveler par la mise à disposition de lieux
@@ -55,7 +55,7 @@
       naturellement remplis de fort vieilles choses, et le
       talent par excellence est d'en écouler le plus possible&nbsp;</q>
       notamment par le <q>&nbsp;jargon de la mise en scène
-      <ButtonEllipsis data-key="texier1852"></ButtonEllipsis>
+      <UiButtonEllipsis data-key="texier1852"></UiButtonEllipsis>
       &nbsp;</q>.
       Sur un ton satirique, l'auteur insiste sur le rôle
       déterminant de la configuration intérieure, et de l'éclat
@@ -69,19 +69,19 @@
       s'installe en 1841 dans la parcelle d'angle
       de la galerie Colbert, au croisement de deux rues très
       empruntées
-      <ButtonEye data-key="qr1407e1cc361d14ac599b7fbe2d8bccc76"></ButtonEye>.
+      <UiButtonEye data-key="qr1407e1cc361d14ac599b7fbe2d8bccc76"></UiButtonEye>.
       L'extension, vingt ans plus tard,
       de <q>&nbsp;sept nouvelles galeries&nbsp;</q> et les
       <q>&nbsp;six millions de nouveautés&nbsp;</q> supposés
       à la vente semble relativement démesurés au regard
       de la superficie
-      <ButtonEllipsis data-key="patrie1861"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="patrie1861"></UiButtonEllipsis>.
       À l'instar du magasin de vêtements
       <RouterLink to="/sujet/qr1a52ab8323fe241cd979aa4d26921a3bd">
         Au prince Eugène</RouterLink>, n° 17 rue Vivienne,
       une bonne appréciation de la configuration de ces lieux
       se heurte souvent à la nature des images qui les représentent
-      <ButtonEye data-key="qr12e238eda84a94b828a7903c32ee3a81e"></ButtonEye>.
+      <UiButtonEye data-key="qr12e238eda84a94b828a7903c32ee3a81e"></UiButtonEye>.
       Ces visuels, généralement des
       <RouterLink to="/theme/qr1a5a5ddd859b4463f96c2ec2e7ba23686">affiches</RouterLink>
       publicitaires, renseignent davantage sur les moyens de communication
@@ -92,7 +92,7 @@
         Aux villes de France</RouterLink>&nbsp;
       <q>&nbsp;le plus vaste de l'univers&nbsp;</q> signé Eugène Petit est
       ouvert en 1846 en lieu et place d'anciens hôtels particuliers
-      <ButtonEye data-key="qr1c88ff2e6b2494e4e8f9e0d8f9fb2169d"></ButtonEye>.
+      <UiButtonEye data-key="qr1c88ff2e6b2494e4e8f9e0d8f9fb2169d"></UiButtonEye>.
       Ses galeries serpentent entre les cours et
       jardins des rues Vivienne et Richelieu, grâce à une
       structure moderne parée de poutres et de verrières.
@@ -105,7 +105,7 @@
       Thiollet permet d'affirmer que ces établissements plus
       intimistes, aux décors à l'antique qui imitent le marbre
       et le bronze, offrent une autre pratique de la mode
-      <ButtonEye data-key="qr11921ab2adcaf409198003a99aebd2a41"></ButtonEye>.
+      <UiButtonEye data-key="qr11921ab2adcaf409198003a99aebd2a41"></UiButtonEye>.
       Signés par des architectes de renom, tels Lecointe ou
       Visconti, ils entrent dans la belle architecture.
     </p>
@@ -124,9 +124,9 @@
 import { onMounted, ref } from "vue";
 
 
-import ButtonEye from "@components/ui/ButtonEye.vue";
-import ButtonArrow from "@components/ui/ButtonArrow.vue";
-import ButtonEllipsis from "@components/ui/ButtonEllipsis.vue";
+import UiButtonEye from "@components/UiButtonEye.vue";
+import UiButtonArrow from "@components/UiButtonArrow.vue";
+import UiButtonEllipsis from "@components/UiButtonEllipsis.vue";
 import { urlToFrontendTheme, urlToFrontendNamedEntity } from "@utils/url.js";
 
 /**********************************************/

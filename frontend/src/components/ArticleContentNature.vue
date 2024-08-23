@@ -1,8 +1,8 @@
 <template>
   <!--
     images and footnotes:
-    <ButtonEllipsis data-key="..."></ButtonEllipsis>
-    <ButtonEye data-key="an UUID of iiifIdUuid"></ButtonEye>
+    <UiButtonEllipsis data-key="..."></UiButtonEllipsis>
+    <UiButtonEye data-key="an UUID of iiifIdUuid"></UiButtonEye>
    -->
 
   <!-- title and subtitle -->
@@ -45,32 +45,32 @@
         Bibliothèque nationale de France</RouterLink>.
       Ce jardin d'hôtel particulier a été l'objet de plusieurs
       transformations paysagères
-      <ButtonEllipsis data-key="conraux2017"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="conraux2017"></UiButtonEllipsis>.
       Changé en cours il fut un temps aménagé
       pour abriter les activités boursières
       <RouterLink to="/article/bourse">
-        <ButtonArrow orient="right"></ButtonArrow>
+        <UiButtonArrow orient="right"></UiButtonArrow>
       </RouterLink> qui s'y tenaient sous une série d'arcades,
       avant d'être redessiné par Henri Labrouste dans les
       années 1860 pour l'agrément des usagers de la bibliothèque
-      <ButtonEye data-key="qr104225f7426ca430fbcc2518b1cf9d43d"></ButtonEye>.
+      <UiButtonEye data-key="qr104225f7426ca430fbcc2518b1cf9d43d"></UiButtonEye>.
       Le sentiment de la nature, cher à l'architecte,
       se retrouve dans les paysages peints insérés dans les
       arcades aveugles de la salle de lecture des imprimés,
       <q>&nbsp;basilique de la connaissance perdue dans la
       forêt de l'ignorance
-      <ButtonEllipsis data-key="desgoffe1858"></ButtonEllipsis>
+      <UiButtonEllipsis data-key="desgoffe1858"></UiButtonEllipsis>
       &nbsp;</q>. À l'exception d'un
       écureuil partiellement représenté et de quelques silhouettes
       d'oiseaux, la faune est quasiment absente
-      <ButtonEllipsis data-key="pitrou2023"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="pitrou2023"></UiButtonEllipsis>.
     </p>
     <p>Place de la Bourse, les volatiles alimentent les
       railleries du dessinateur Cham, qui, en 1858, suggérait
       l'embarras causé aux boursicoteurs par les moineaux
       attirés par les arbres situés devant l'entrée du Palais
       Brongniart
-      <ButtonEye data-key="qr137922d8348bd4148ab55411c6f4199cf"></ButtonEye>.
+      <UiButtonEye data-key="qr137922d8348bd4148ab55411c6f4199cf"></UiButtonEye>.
       Au-delà de la dimension satirique
       de l'illustration, l'artiste s'inscrit dans l'actualité.
       Un an auparavant, les
@@ -81,7 +81,7 @@
       été transplantés en remplacement d'anciens arbustes
       jugés trop chétifs, avant de disparaître totalement
       pour laisser place à la circulation
-      <ButtonEllipsis data-key="monde1857"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="monde1857"></UiButtonEllipsis>.
     </p>
     <p>Le rétrécissement des espaces plantés s'observe aussi
       au <RouterLink to="/sujet/qr169af23423c6c4d5a944bcd1eaf284f12">
@@ -91,13 +91,13 @@
       centre du jardin disposait d'un toit végétalisé qui
       offrait un deuxième lieu de déambulation champêtre
       aux promeneurs
-      <ButtonEye data-key="qr1bfdfba3ee4d74aeb9faa5c383b361bca"></ButtonEye>
+      <UiButtonEye data-key="qr1bfdfba3ee4d74aeb9faa5c383b361bca"></UiButtonEye>
       &nbsp;
-      <ButtonEllipsis data-key="koll2019"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="koll2019"></UiButtonEllipsis>.
       Cet édifice hybride était
       recouvert de feuilles de cuivre, et équipé de plantes
       en pots et de fleurs dans la vogue des jardins suspendus
-      <ButtonEllipsis data-key="duvette2025"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="duvette2025"></UiButtonEllipsis>.
       L'expérience de cette terrasse peu étanche a trouvé
       une continuité dans son homologue installée au siècle
       suivant au-dessus de la
@@ -106,7 +106,7 @@
       Les constructions qui s'observaient sur les toits de quelques
       immeubles de la place de la Bourse, autour de 1820-1830, sont
       un autre élément favorable à la prise de hauteur
-      <ButtonEye data-key="qr1e1835ec4e58a4c068a86fb02d489ec95"></ButtonEye>.
+      <UiButtonEye data-key="qr1e1835ec4e58a4c068a86fb02d489ec95"></UiButtonEye>.
       Si elles devaient permettre une vue dégagée sur la
       place encore peu encombrée, elles aussi sont rapidement
       devenues obsolètes.
@@ -125,15 +125,15 @@
       L'aménagement intérieur, attribué à l'architecte Profilet,
       est déployé sur cet éventail publicitaire de la compagnie
       des chemins de fer de l'État
-      <ButtonEye data-key="qr14672b589f85f48a7a68eeb2f37efa9e2"></ButtonEye>
+      <UiButtonEye data-key="qr14672b589f85f48a7a68eeb2f37efa9e2"></UiButtonEye>
       &nbsp;
-      <ButtonEllipsis data-key="sade1864"></ButtonEllipsis>&nbsp;:
+      <UiButtonEllipsis data-key="sade1864"></UiButtonEllipsis>&nbsp;:
     </p>
     <p><q>&nbsp;C'est un magnifique jardin d'été qui se transforme
       en jardin d'hiver […] Il se compose de l'exacte étendue
       du jardin d'été dont il n'est qu'une ingénieuse transformation&nbsp;;
       on y dine sous des arbres et sous de vrai feuillage
-      <ButtonEllipsis data-key="monde1864"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="monde1864"></UiButtonEllipsis>.
     </q></p>
   </div>
 
@@ -149,9 +149,9 @@
 import { onMounted, ref } from "vue";
 
 
-import ButtonEye from "@components/ui/ButtonEye.vue";
-import ButtonArrow from "@components/ui/ButtonArrow.vue";
-import ButtonEllipsis from "@components/ui/ButtonEllipsis.vue";
+import UiButtonEye from "@components/UiButtonEye.vue";
+import UiButtonArrow from "@components/UiButtonArrow.vue";
+import UiButtonEllipsis from "@components/UiButtonEllipsis.vue";
 import { urlToFrontendTheme, urlToFrontendNamedEntity } from "@utils/url.js";
 
 /**********************************************/

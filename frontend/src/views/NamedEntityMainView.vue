@@ -10,7 +10,7 @@
 <template>
   <h1>Sujet: {{ namedEntityName }}</h1>
 
-  <LoaderComponent v-if="!backendLoaded"></LoaderComponent>
+  <UiLoaderComponent v-if="!backendLoaded"></UiLoaderComponent>
   <div v-else>
     <p><strong>{{ namedEntity.iconography_count }}</strong>
       ressources iconographiques sont associées à ce sujet.</p>
@@ -50,7 +50,7 @@ import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 
 import IndexBase from "@components/IndexBase.vue";
-import LoaderComponent from "@components/ui/LoaderComponent.vue";
+import UiLoaderComponent from "@components/UiLoaderComponent.vue";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { stringifyAssociated, capitalizeString, capitalizeWords } from "@utils/stringifiers";
 

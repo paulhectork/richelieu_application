@@ -14,7 +14,7 @@
       <RouterLink to="/theme/qr1f3a4a5feda9c459ea3113e3143df97d4">
         factures</RouterLink> et cartes de restaurants classés
       dans la catégorie des éphémères
-      <ButtonEllipsis data-key="bhvp"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="bhvp"></UiButtonEllipsis>.
       Dans le corpus peu
       étudié des menus-cartes décorés réalisés autour de
       1900, on constate qu'en plus des condiments,
@@ -23,12 +23,12 @@
       et <RouterLink to="/theme/qr13dbd5594458b4246aea9efa5f2d5e0d9">
         prestations</RouterLink>,
       la ville et ses bâtiments occupent une place privilégiée
-      <ButtonEllipsis data-key="rambourg2013"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="rambourg2013"></UiButtonEllipsis>.
       Les salles de restauration,
       les façades avec devantures réelles ou inventées, et
       les compositions architecturales imaginaires semblent
       parfois se substituer aux traditionnelles enseignes
-      <ButtonEllipsis data-key="challine2020"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="challine2020"></UiButtonEllipsis>.
     </p>
     <p>C'est le cas du
       <RouterLink to="/sujet/qr10ef175d0c1bf44b5a5b4a953f4dd7efc">
@@ -40,7 +40,7 @@
       n'occupait que deux arcades (n° 40 et 41 galerie Montpensier)
       mais dont l'enseigne, ainsi représentée en illustration,
       dévore une importante surface murale
-      <ButtonEye data-key="qr14014413968644c9284e39a26b00d5b20"></ButtonEye>.
+      <UiButtonEye data-key="qr14014413968644c9284e39a26b00d5b20"></UiButtonEye>.
       Plus qu'un désir de grandeur, ce décor architectural oscillant
       entre réalisme et fantasme, évoque le souhait non pas
       de se démarquer, mais d'être remarqué.
@@ -51,7 +51,7 @@
       prône davantage un sentiment d'appartenance, une image
       de marque relative à l'importance occupée par le Palais-Royal
       dans les esprits
-      <ButtonEllipsis data-key="rambourg2023"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="rambourg2023"></UiButtonEllipsis>.
       Dans ce dessin, l'accent aussi porté
       sur le jardin et ses aménagements illustre autant les
       prestations de cette portion de ville que celles du
@@ -66,7 +66,7 @@
         Grand Restaurant de la Bourse</RouterLink>
       installé au 47 rue Vivienne, l'architecture est sujette
       à une composition inventée, mais inspirée de la réalité
-      <ButtonEye data-key="qr1fe0369bfdf5546eaaf49c982d1ad5929"></ButtonEye>.
+      <UiButtonEye data-key="qr1fe0369bfdf5546eaaf49c982d1ad5929"></UiButtonEye>.
       Cette façade imaginaire avec sa lanterne, sa marquise au
       globe rayonnant encadrée de fleurs en pot est conçue
       comme une invitation littérale envoyée aux consommateurs
@@ -91,9 +91,9 @@
       <RouterLink to="/theme/qr1bc9332b2db5f45ee9dec8433307f8e7f">
         l'espace public</RouterLink>,
       et plus particulièrement du trottoir dans ces menus
-      <ButtonEllipsis data-key="rambourg2015"></ButtonEllipsis>,
+      <UiButtonEllipsis data-key="rambourg2015"></UiButtonEllipsis>,
       interroge l'habituel et le quotidien
-      <ButtonEye data-key="qr1ec3ff790fea5416f98a790bd57015159"></ButtonEye>.
+      <UiButtonEye data-key="qr1ec3ff790fea5416f98a790bd57015159"></UiButtonEye>.
       Les colonnes Morris sont un élément
       récurrent de la composition de ces illustrations. Elles
       font leur incursion dans le paysage urbain à partir
@@ -144,9 +144,9 @@
 import { onMounted, ref } from "vue";
 
 
-import ButtonEye from "@components/ui/ButtonEye.vue";
-import ButtonArrow from "@components/ui/ButtonArrow.vue";
-import ButtonEllipsis from "@components/ui/ButtonEllipsis.vue";
+import UiButtonEye from "@components/UiButtonEye.vue";
+import UiButtonArrow from "@components/UiButtonArrow.vue";
+import UiButtonEllipsis from "@components/UiButtonEllipsis.vue";
 import { urlToFrontendTheme, urlToFrontendNamedEntity } from "@utils/url.js";
 
 /**********************************************/

@@ -5,7 +5,7 @@
   <h1>Index des sujets</h1>
   <p>Les sujets sont des points d'intérêt découverts dans chacune des images.</p>
 
-  <LoaderComponent v-if="!isLoaded"></LoaderComponent>
+  <UiLoaderComponent v-if="!isLoaded"></UiLoaderComponent>
   <IndexBase v-else
          :display="display"
          :data="dataFilter"
@@ -20,7 +20,7 @@ import axios from "axios";
 // import { stringifyThemeOrNamedEntityResource } from "@utils/stringifiers";
 // import { fnToIconographyFile } from "@utils/url";
 import { indexDataFormatterNamedEntity } from "@utils/indexDataFormatter";
-import LoaderComponent from "@components/ui/LoaderComponent.vue";
+import UiLoaderComponent from "@components/UiLoaderComponent.vue";
 import IndexBase from "@components/IndexBase.vue";
 
 const apiTarget  = new URL("/i/named-entity", __API_URL__);

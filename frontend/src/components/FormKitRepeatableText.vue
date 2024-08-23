@@ -25,16 +25,16 @@
                  @input="inputHandler"
           ></input>
           <div class="button-container">
-            <ButtonCross v-if="displayButtonCross(htmlId)"
+            <UiButtonCross v-if="displayUiButtonCross(htmlId)"
                         type="button"
                         @click="popField(htmlId)"
                         @touchEnd="popField(htmlId)"
-            ></ButtonCross>
-            <ButtonPlus v-if="displayButtonPlus(htmlId)"
+            ></UiButtonCross>
+            <UiButtonPlus v-if="displayUiButtonPlus(htmlId)"
                         type="button"
                         @click="addField"
                         @touchEnd="addField"
-            ></ButtonPlus>
+            ></UiButtonPlus>
           </div>
         </div>
       </li>
@@ -47,8 +47,8 @@
 <script setup>
 import { ref, onMounted } from "vue";
 
-import ButtonCross from "@components/ui/ButtonCross.vue";
-import ButtonPlus from "@components/ui/ButtonPlus.vue";
+import UiButtonCross from "@components/UiButtonCross.vue";
+import UiButtonPlus from "@components/UiButtonPlus.vue";
 
 /******************************************/
 
@@ -114,22 +114,22 @@ function inputHandler(e) {
  * each `<li>` contains an `<input>` and two optional buttons
  * that can add/remove an input field.
  *
- * `displayButtonPlus` and `displayButtonCross` allows us
- * to control the display of the `ButtonPlus` (add an input)
- * and `ButtonCross` (remove an input) components:
- * - displayButtonPlus: ButtonPlus is only present on the
+ * `displayUiButtonPlus` and `displayUiButtonCross` allows us
+ * to control the display of the `UiButtonPlus` (add an input)
+ * and `UiButtonCross` (remove an input) components:
+ * - displayUiButtonPlus: UiButtonPlus is only present on the
  *   last <li> in the <ul>
- * - displayButtonCross: if there is only one `<li>` in the <ul>,
- *   ButtonCross is not present.
+ * - displayUiButtonCross: if there is only one `<li>` in the <ul>,
+ *   UiButtonCross is not present.
  *
  * @param {string} htmlId: the ID of the input in the same `<li>`
  *   as the input button.
  *  */
-const displayButtonPlus = (htmlId) =>
+const displayUiButtonPlus = (htmlId) =>
   Object.keys(inputFields.value).indexOf(htmlId)
   === Object.keys(inputFields.value).length - 1;
 
-const displayButtonCross = (htmlId) =>
+const displayUiButtonCross = (htmlId) =>
   Object.keys(inputFields.value).length > 1;
 
 /******************************************/

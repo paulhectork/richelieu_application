@@ -58,9 +58,9 @@
     >{{ displayQuery ? "Masquer" : "Afficher" }} la recherche</button>
   </div>
 
-  <LoaderComponent v-if="displayResults==='loading'"
+  <UiLoaderComponent v-if="displayResults==='loading'"
                    class="results-loader"
-  ></LoaderComponent>
+  ></UiLoaderComponent>
 
   <div class="results-container"
        v-if="displayResults === 'yes'">
@@ -79,7 +79,7 @@ import _ from "lodash";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams";
 import AdvancedSearchQuery from "@components/AdvancedSearchQuery.vue";
 import AdvancedSearchResults from "@components/AdvancedSearchResults.vue";
-import LoaderComponent from "@components/ui/LoaderComponent.vue";
+import UiLoaderComponent from "@components/UiLoaderComponent.vue";
 
 
 /***************************************/
@@ -91,7 +91,7 @@ const router         = useRouter(); // the full router
 const queryParams    = ref();       // an IconographyQueryParams object with query params defined by the user in `AdvancedSearchQuery`, or query params visible in the URL
 const queryResults   = ref([]);     // results of a query to the server
 const queryError     = ref(false);  // switched to true if a backend internal server error occurs
-const displayResults = ref("no");   // `no|loading|yes`. controls the display of `AdvancedSearchResults` and `LoaderComponent`. when the value is 'no', neither are shown. when it is 'loading', `LoaderComponent` is shown. when 'yes', `LoaderComponent` is not shown and `AdvancedSearchResults` is shown.
+const displayResults = ref("no");   // `no|loading|yes`. controls the display of `AdvancedSearchResults` and `UiLoaderComponent`. when the value is 'no', neither are shown. when it is 'loading', `UiLoaderComponent` is shown. when 'yes', `UiLoaderComponent` is not shown and `AdvancedSearchResults` is shown.
 const displayQuery   = ref(true);   // when switched to false, the AdvancedSearchQuery block is hidden using the `slideInOut` transition
 
 /***************************************/

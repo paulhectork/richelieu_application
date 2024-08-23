@@ -1,5 +1,5 @@
 <!--
-  UpDownScroller.vue : a component to add Up/Down
+  UiUpDownScroller.vue : a component to add Up/Down
   buttons to a page. buttons are visible when the
   user has scrolled past `0.75 * windowHeight`,
   but is further than `0.75 * windowHeight`
@@ -9,21 +9,21 @@
 <template>
   <div id="scroll-buttons">
     <TransitionGroup>
-      <ButtonArrow orient="up"
+      <UiButtonArrow orient="up"
                    v-if="displayButtons"
                    @click="scroller('up')"
-      ></ButtonArrow>
-      <ButtonArrow orient="down"
+      ></UiButtonArrow>
+      <UiButtonArrow orient="down"
                    v-if="displayButtons"
                    @click="scroller('down')"
-      ></ButtonArrow>
+      ></UiButtonArrow>
     </TransitionGroup>
   </div>
 </template>
 
 <script setup>
 import { onMounted, onUnmounted, ref } from "vue";
-import ButtonArrow from "@components/ui/ButtonArrow.vue";
+import UiButtonArrow from "@components/UiButtonArrow.vue";
 
 import $ from "jquery";
 

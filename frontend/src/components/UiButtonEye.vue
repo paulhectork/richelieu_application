@@ -1,4 +1,4 @@
-<!-- ButtonEye.vue
+<!-- UiButtonEye.vue
 
      an SVG drawing of an eye, used to show that when clicking on it,
      something can be seen (an image, a plot on map....)

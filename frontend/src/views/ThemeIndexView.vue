@@ -6,7 +6,7 @@
   <p>Les thèmes sont des catégories générales dans
     lesquelles notre iconographie est organisée.</p>
 
-  <LoaderComponent v-if="!isLoaded"></LoaderComponent>
+  <UiLoaderComponent v-if="!isLoaded"></UiLoaderComponent>
   <IndexBase v-else
          :display="display"
          :data="dataFilter"
@@ -19,7 +19,7 @@ import { onMounted, ref } from "vue";
 import axios from "axios";
 
 import { indexDataFormatterTheme } from "@utils/indexDataFormatter";
-import LoaderComponent from "@components/ui/LoaderComponent.vue";
+import UiLoaderComponent from "@components/UiLoaderComponent.vue";
 import IndexBase from "@components/IndexBase.vue";
 
 const apiTarget  = new URL("/i/theme", __API_URL__);

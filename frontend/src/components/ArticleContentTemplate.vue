@@ -7,8 +7,8 @@
 <template>
   <!--
     images and footnotes:
-    <ButtonEllipsis data-key="..."></ButtonEllipsis>
-    <ButtonEye data-key="an UUID of iiifIdUuid"></ButtonEye>
+    <UiButtonEllipsis data-key="..."></UiButtonEllipsis>
+    <UiButtonEye data-key="an UUID of iiifIdUuid"></UiButtonEye>
    -->
 
   <!-- title and subtitle -->
@@ -34,9 +34,9 @@
 import { onMounted, ref } from "vue";
 
 
-import ButtonEye from "@components/ui/ButtonEye.vue";
-import ButtonArrow from "@components/ui/ButtonArrow.vue";
-import ButtonEllipsis from "@components/ui/ButtonEllipsis.vue";
+import UiButtonEye from "@components/UiButtonEye.vue";
+import UiButtonArrow from "@components/UiButtonArrow.vue";
+import UiButtonEllipsis from "@components/UiButtonEllipsis.vue";
 import { urlToFrontendTheme, urlToFrontendNamedEntity } from "@utils/url.js";
 
 /**********************************************/

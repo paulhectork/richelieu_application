@@ -20,7 +20,7 @@
       voulues par les contemporains, valorisant tantôt une
       rue emblématique (Vivienne), une institution monumentale
       (la bibliothèque), ou une activité (le théâtre)
-      <ButtonEllipsis data-key="duvette2025"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="duvette2025"></UiButtonEllipsis>.
     </p>
 
     <p>Le patronyme <q>&nbsp;de la Bourse&nbsp;</q> privilégié après la
@@ -28,7 +28,7 @@
       le magnétisme du bâtiment, ainsi que l'effervescence
       des activités financières et commerçantes qui se développèrent
       plus largement dans ce quartier
-      <ButtonEllipsis data-key="charles2021"></ButtonEllipsis>
+      <UiButtonEllipsis data-key="charles2021"></UiButtonEllipsis>
       . Si le temple de
       <RouterLink to="/theme/qr1ce0a74ab786b4b52832f0abd0c9de4ce">
         l'argent</RouterLink>
@@ -36,13 +36,13 @@
       (1739-1813) en 1808, et inauguré vingt ans plus tard,
       en est le point de repère principal, la Bourse occupe
       le quartier depuis 1724
-      <ButtonEllipsis data-key="brongniart1986"></ButtonEllipsis>
+      <UiButtonEllipsis data-key="brongniart1986"></UiButtonEllipsis>
       . Elle était initialement installée
       dans le
       <RouterLink to="/sujet/qr1eac893b6bd6d421c8bf00b83a4dbba13">
         jardin Vivienne</RouterLink>,
       où les agents de change négociaient sous une série d'arcades
-      <ButtonEye data-key="qr1a99b309c1d9043dbbbef00f2759e6a7d"></ButtonEye>
+      <UiButtonEye data-key="qr1a99b309c1d9043dbbbef00f2759e6a7d"></UiButtonEye>
       . Elle itinéra ensuite
       à l'échelle de quelques rues&nbsp;: entre le Louvre (1795),
       l'église des Petits-Pères (à partir de 1796), ou le
@@ -54,7 +54,7 @@
     <p>Soucieux de créer un projet d'ensemble, Brongniart
       imagine d'abord une place à colonnades et portes à
       l'antique autour de la Bourse, resté lettre morte
-      <ButtonEye data-key="qr1b53fda157c6c4958a7319f0c9f104fb9"></ButtonEye>
+      <UiButtonEye data-key="qr1b53fda157c6c4958a7319f0c9f104fb9"></UiButtonEye>
       . Ce projet non réalisé de place ordonnée affirme
       l'importance qu'on accorde au rapport entre un monument
       et son environnement direct. Livrée aux aléas des transformations
@@ -74,20 +74,20 @@
         Palais de cristal</RouterLink>,
       ouvert vers 1850 en écho au déjà célèbre <i>Crystal Palace</i>
       de Londres, est éclairant
-      <ButtonEye data-key="qr10494022adccf4ed7b4dc55615a996372"></ButtonEye>
+      <UiButtonEye data-key="qr10494022adccf4ed7b4dc55615a996372"></UiButtonEye>
       . Extrêmement bien documenté grâce
       à une intense production d'images, qui le situent en
       arrière-plan du palais Brongniart, ce magasin de
       <q>&nbsp;vêtement tout faits (<i>sic.</i>)&nbsp;</q>
       présente un angle arrondi criblé d'enseignes, immédiatement
       visible depuis la place et l'entrée du monument
-      <ButtonEllipsis data-key="parisienne1882"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="parisienne1882"></UiButtonEllipsis>.
     </p>
 
     <p>Les vues gravées et photographiées de cette place,
       réalisées autour de 1900, suggèrent une importante
       cacophonie visuelle et sonore
-      <ButtonEye data-key="qr15c9cfc7e06d343f4beba2fdaea805f79"></ButtonEye>
+      <UiButtonEye data-key="qr15c9cfc7e06d343f4beba2fdaea805f79"></UiButtonEye>
       . Elle se traduit d'une part,
       par une multiplication d'affiches, de devantures,
       et d'écritures couvrant chaque immeuble, et d'autre
@@ -97,7 +97,7 @@
       continue d'insectes humains&nbsp;</q>, et le trafic généré
       par la station d'omnibus et les rangées de fiacres
       s'alimentent réciproquement dans un mouvement soutenu
-      <ButtonEllipsis data-key="zola1891"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="zola1891"></UiButtonEllipsis>.
       Ces images rendent compte d'un quotidien mais aussi
       du regard porté sur la ville par ceux que l'habitent.
     </p>
@@ -111,9 +111,9 @@
       à l'affiche du roman L'Argent de Zola, ces œuvres littéraires
       diffusent l'image, mentale et sociale, d'une bourse
       à la fois moteur de fortune et de misère
-      <ButtonEye data-key="qr1b678213db36c4953b99c5720c6eac054"></ButtonEye>
+      <UiButtonEye data-key="qr1b678213db36c4953b99c5720c6eac054"></UiButtonEye>
       &nbsp;
-      <ButtonEllipsis data-key="berthelot2008"></ButtonEllipsis>.
+      <UiButtonEllipsis data-key="berthelot2008"></UiButtonEllipsis>.
       Ce choix, plutôt que celui de la
       <RouterLink to="/sujet/qr15f9f002f1fc34ee79a079b5841a16fa2">
         Banque de France</RouterLink>
@@ -136,9 +136,9 @@
 import { onMounted, ref } from "vue";
 
 
-import ButtonEye from "@components/ui/ButtonEye.vue";
-import ButtonArrow from "@components/ui/ButtonArrow.vue";
-import ButtonEllipsis from "@components/ui/ButtonEllipsis.vue";
+import UiButtonEye from "@components/UiButtonEye.vue";
+import UiButtonArrow from "@components/UiButtonArrow.vue";
+import UiButtonEllipsis from "@components/UiButtonEllipsis.vue";
 import { urlToFrontendTheme, urlToFrontendNamedEntity } from "@utils/url.js";
 
 /**********************************************/

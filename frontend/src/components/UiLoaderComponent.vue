@@ -1,4 +1,4 @@
-<!-- LoaderComponent.vue
+<!-- UiLoaderComponent.vue
 
     a very simple CSS loader. its height can be set on the parent. -->
 
