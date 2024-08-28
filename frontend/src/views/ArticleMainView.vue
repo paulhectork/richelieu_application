@@ -147,13 +147,16 @@ const urlMapper = { "bourse"             : "ArticleContentBourse.vue"
                   , "nature"             : "ArticleContentNature.vue"
                   , "cafe"               : "ArticleContentCafe.vue"
                   , "chantier"           : "ArticleContentChantier.vue"
-                  , "reseau"             : "ArticleContentReseau.vue"
+                  //, "reseau"             : "ArticleContentReseau.vue"
                   , "habiter"            : "ArticleContentHabiter.vue"
                   , "patrimonialisation" : "ArticleContentPatrimonialisation.vue"
                   , "mobilier"           : "ArticleContentMobilier.vue"
                   , "theatre"            : "ArticleContentTheatre.vue"
                   , "prostitution"       : "ArticleContentProstitution.vue"
-                  , "banque"             : "ArticleContentBanque.vue" }
+                  , "banque"             : "ArticleContentBanque.vue"
+                  , "curiosite"          : "ArticleContentCuriosité.vue"
+                  //, "reseau"             : "ArticleContentReseau.vue"
+}
 
 /************************************************/
 

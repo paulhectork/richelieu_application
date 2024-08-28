@@ -1,25 +1,55 @@
+<!-- App.vue
+     this component is the starting point for the app.
+     it manages basic app-wide processes.
+
+     2 importants actions happen here:
+     - log the window orientation in `domStore` (landscape or portrait)
+     - handling the showing/hiding of the menu (see below).
+
+     interaction between App.vue, TheMenu.vue and TheNavbar.vue:
+     how is the menu displayed ?
+     - hiding/showing the menu is defined in `App.vue` and `TheNavbar.vue`.
+     - App.vue contains a `menuActive` ref. if `true`, the menu is shown and
+        the burger button in TheNavbar takes the shape of a cross. else,
+        the menu is hidden and the burger is in its normal state.
+     - App.vue listens to route changes. when the route changes, `menuActive`
+        is set to close and TheMenu is hidden.
+     - App.vue passes menuActive as a prop to TheNavbar.
+     - TheNavbar determines the style of `#burger` (cross or burger) and
+        the display of the menu when interacting with `#burger` based
+        on menuActive. when `#burger` is clicked, TheNavbar emits an event
+        (menu-active-update) to App.vue, and App.vue will switch the flag
+        menuActive: if true-> false, if false -> true. this will toggle the
+        visibility of the menu.
+-->
+
 <template>
   <div class="app-wrapper main-default">
     <!-- navbar -->
-    <TheNavbar/>
-    <div class="main-wrapper fill-parent"
-         :class="setMainWrapperClasses()">
+    <TheNavbar :menu-active="menuActive"
+               @menu-active-update="updateMenuActive"
+    ></TheNavbar>
+
+    <!-- content + navbar -->
+    <div class="main-wrapper fill-parent">
       <!-- main content: pages -->
       <main>
-        <RouterView/>  <!-- display content that corresponds to a url targeted by `router-link` -->
+        <RouterView></RouterView>  <!-- display content that corresponds to a url targeted by `router-link` -->
       </main>
       <!-- sidebar -->
       <TheSidebar></TheSidebar>
     </div>
   </div>
+
   <!-- full page menu -->
-  <TheMenu v-if="domStore.menuActive"></TheMenu>
+  <TheMenu v-if="menuActive"></TheMenu>
 </template>
 
 
 <script setup>
-import { onMounted, onUnmounted, watch } from "vue";
+import { onMounted, onUnmounted, watch, ref } from "vue";
 import { RouterView, useRoute, useRouter } from 'vue-router';
+
 import $ from "jquery";
 
 import { domStore } from "@stores/dom.js";
@@ -27,21 +57,12 @@ import TheNavbar from '@components/TheNavbar.vue';
 import TheMenu from "@components/TheMenu.vue";
 import TheSidebar from "@components/TheSidebar.vue";
 
+/**********************************************************/
 
 const route = useRoute();
+const menuActive = ref(false);
 
-
-// if we are in `portrait`, toggle class to show
-// that the sidebar is visible or hidden
-function setMainWrapperClasses() {
-  // let classes = `${domStore.windowOrientation} `;
-  // if ( domStore.windowOrientation !== 'landscape' ) {
-  //   classes += domStore.menuActive
-  //              ? 'portrait-sidebar-active'
-  //              : 'portrait-sidebar-hidden'
-  // };
-  // return classes;
-}
+/**********************************************************/
 
 // are we in `landscape` or `portrait` mode?
 function calcWindowOrientation() {
@@ -53,30 +74,35 @@ function calcWindowOrientation() {
   }, 1000)
 }
 
-/*
-// the browsing device allows touch (tactile screen)
-// see: https://web.dev/articles/mobile-touchandmouse
-function touchOrNot() {
-  featureDetectionStore.setHasTouch();
+function updateMenuActive(newState) {
+  menuActive.value = newState;
 }
-*/
 
-// hide the mobile sidebar when changing route
+// doesn't work: the event is fired multiple times and so the menu is
+// closed and reopened instantly.
+// function closeMenuOnEscape(e) {
+//   if ( menuActive.value === true && e.key === "Enter" ) {
+//     menuActive.value = !menuActive.value;
+//     console.log(e, e.key, menuActive.value);
+//   }
+// }
+
+/**********************************************************/
+
+// on page change, close the menu
 watch(route, (newRoute, oldRoute) => {
-  if ( domStore.windowOrientation!== 'landscape' ) {
-    domStore.menuActive = false;
-  }
+  menuActive.value = false;
 })
 
-
 onMounted(() => {
-  // touchOrNot();
   calcWindowOrientation();
   addEventListener("resize", calcWindowOrientation);
+  // $(document).on("keyup", closeMenuOnEscape)
 })
 
 onUnmounted(() => {
   removeEventListener("resize", calcWindowOrientation);
+  // $(document).off("keyUp", closeMenuOnEscape);
 })
 </script>
 

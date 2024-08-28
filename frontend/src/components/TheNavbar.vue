@@ -2,18 +2,26 @@
      a navbar that is always displayed on top
      of the viewport.
 
-    a burger menu is displayed to show/hide
-    the navbar when :
-    `@media ( min-width: 900px ) and ( orientation: landscape )`
+    a burger menu is displayed to show/hide menu.
+    how does it work ????? basically,
+    - the parent App.vue defines a `menuActive`
+      ref with a boolean value:
+      - if `true`, the menu must be visible and the burger must
+          take the shape of a cross
+      - if `false`, the menu must be hidden and the burger in its
+          original state (3 horizontal lines).
+    - TheNavbar.vue is passed the prop `menuActive` from `App.vue`.
+        when clicking on `#burger`, TheNavbar will emit to `App.vue`
+        a signal (`menuActiveUpdate`): true if `menuActive===true`,
+        false otherwise.
+    - when `App.vue` receives `menuActiveUpdate`, it flips the value
+        of `menuActive`, thus hiding the menu.
 -->
 
 <template>
   <nav class="navbar border-bottom fill-parent">
     <h1 id="app-title"
     >
-      <!--
-      <RouterLink to="/">Richelieu. Histoire du quartier</RouterLink>
-      -->
       <RouterLink to="/">
         <img :src="logoPath"
              id="logo-richelieu"
@@ -23,7 +31,10 @@
     </h1>
 
     <div id="burger"
-         :class="domStore.menuActive ? 'burger-cross' : ''">
+         :class="props.menuActive ? 'burger-cross' : ''"
+         @click="emit('menuActiveUpdate', !props.menuActive)"
+         @touchend="emit('menuActiveUpdate', !props.menuActive)"
+    >
       <span></span>
       <span></span>
       <span></span>
@@ -43,26 +54,17 @@ import { cleanClickOrTouchend } from "@utils/functions.js";
 
 /**************************************************************/
 
+const props = defineProps(["menuActive"]);
+const emit = defineEmits(["menuActiveUpdate"])
+
 const logoPath = "../src/assets/icons/logo-text.svg";
 
 /**************************************************************/
 
-async function toggleSidebar() {
-  // toggle HTML class
-  console.log( domStore.menuActive,
-               domStore.menuActive ? " : désactiver" : ": activer");
-  domStore.toggleMobileSidebar();
-  return
-}
-
 onMounted(() => {
   $("#burger").on(clickOrTouchEvent, (e) => {
     e = cleanClickOrTouchend(e);
-    toggleSidebar(e);
   });
-})
-onUnmounted(() => {
-  document.removeEventListener(clickOrTouchEvent, toggleSidebar);
 })
 </script>
 

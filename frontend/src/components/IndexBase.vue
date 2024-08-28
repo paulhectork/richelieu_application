@@ -97,10 +97,29 @@ onMounted(() => {
 </script>
 
 <style>
+/**
+ * 3 viewports are defined:
+ * - mobile/portrait with small screen/default: only
+ *    1 IndexItem per row
+ * - mobile/portrait with large screen: 3 items per row
+ *    (else, the image quality is too low)
+ * - landscape: 3 items per row
+ */
 .index-inner-wrapper {
   width: 100%;
   display: grid;
   grid-auto-rows: 40vh;
-  grid-template-columns: repeat(3, 33%);
+  grid-template-columns: 50% 50%;
+}
+@media ( orientation:portrait ) and ( max-width: 600px ) {
+  .index-inner-wrapper {
+    grid-template-columns: 100%;
+    padding: 0 3% 0 3%;
+  }
+}
+@media ( orientation:landscape ) {
+  .index-inner-wrapper {
+    grid-template-columns: repeat(3, calc(100%/3));
+  }
 }
 </style>

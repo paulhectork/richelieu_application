@@ -243,6 +243,9 @@ onUpdated(() => {
 table {
   height: 100%;
 }
+td {
+  padding: 10px;
+}
 td:first-child {
   font-weight: 700;
 }

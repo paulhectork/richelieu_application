@@ -3,7 +3,7 @@
 -->
 
 <template>
-  <h1>Index de l'iconographie</h1>
+  <h1>Iconographie</h1>
 
   <UiLoaderComponent v-if="!isLoaded"></UiLoaderComponent>
   <IndexBase v-else

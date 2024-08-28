@@ -100,7 +100,7 @@
    */
   --cs-font-serif: "eb-garamond";
   --cs-font-sans-serif: "urlaub-grotesk", "mels", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --cs-font-sans-serif-accentuate: "mels", "urlaub-grotesk";
+  --cs-font-sans-serif-accentuate: "mels", "urlaub-grotesk", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";;
 
   /**
    * COLOR DEFINITIONS
@@ -124,9 +124,11 @@
   /**
    * OUR COLOR THEME
    *
-   * we define 2 modes, each which 3 states. all have foreground/background combos.
+   * we define 3 modes, each which 3 states. all have foreground/background combos.
+   * `main` and `negative` are full-page color themes (light and dark, respectively)
+   * `contrast` is for visually contrasted elements
    *
-   * >>>> `main`        : the base state: common text and elements.
+   * >>>> `main`        : the base state, white on black: common text and elements.
    * ---> `main-default`: the base state
    * ---> `main-second` : either for text that we want to shine a light
    *                      on, or for buttons and interactive stuff that
@@ -134,6 +136,15 @@
    * ---> `main-active` : when an action is triggered on an interactive
    *                      element. this insists on a change of state, or
    *                      on an action from the user.
+   **********************
+   * >>>> `negative`        : white on black. intended for full pages
+   * ---> `negative-default`: the base state
+   * ---> `negative-second` : either for text that we want to shine a light
+   *                          on, or for buttons and interactive stuff that
+   *                          is being hovered
+   * ---> `negative-active` : when an action is triggered on an interactive
+   *                          element. this insists on a change of state, or
+   *                          on an action from the user.
    **********************
    * >>>> `contrast`        : for contrasting elements. this is thought for
    *                          big blocks that have a special meaning in
@@ -152,13 +163,23 @@
 
   /**********************/
   --cs-main-default: var(--cs-black);           /* font color */
-  --cs-main-default-bg: var(--cs-white);                /* background color */
+  --cs-main-default-bg: var(--cs-white);        /* background color */
 
   --cs-main-second: var(--cs-white);
   --cs-main-second-bg: var(--cs-lightgrey);
 
   --cs-main-active-bg: var(--cs-white);
   --cs-main-active: var(--cs-seagreen);
+
+  /**********************/
+  --cs-negative-default: var(--cs-white);           /* font color */
+  --cs-negative-default-bg: var(--cs-black);        /* background color */
+
+  --cs-negative-second: var(--cs-white);
+  --cs-negative-second-bg: var(--cs-lightgrey);
+
+  --cs-negative-active-bg: var(--cs-white);
+  --cs-negative-active: var(--cs-seagreen);
 
   /**********************/
   --cs-contrast-default: var(--cs-lightgrey);
@@ -282,6 +303,19 @@ q {
 .main-active {
   color: var(--cs-main-active);
   background-color: var(--cs-main-active-bg);
+}
+
+.negative-default {
+  color: var(--cs-negative-default);
+  background-color: var(--cs-negative-default-bg);
+}
+.negative-second {
+  color: var(--cs-negative-second);
+  background-color: var(--cs-negative-second-bg);
+}
+.negative-active {
+  color: var(--cs-negative-active);
+  color: var(--cs-negative-active-bg);
 }
 
 .contrast-default {
