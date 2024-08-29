@@ -110,51 +110,47 @@ import { domStore } from "@stores/dom";
 
 import $ from "jquery";
 import _ from "lodash";
+import Color from "color";
 
 /***************************************************/
 
 // store the currently used colors to avoid reusing them more than once on the screen
+// useless if we don't use `colorsDark`/`colorsLight` but instead `randomColorLight/Dark`
 const currentColors = ref({ light:undefined, dark:undefined });
 
-const colorsDark = [ "#586f53"
-                   , "#6a536f"
-                   , "#6f5358"
-                   , "#476863"
-                   , "#475d68"
+const colorsDark = [ "#586f53", "#6a536f", "#6f5358", "#476863", "#475d68", "#b82650"
+                   , "#c8184a", "#b61c1c", "#8e052c", "#810505", "#730000", "#660000"
+                   , "#590000", "#4c0000", "#400000"];
+const colorsLight = [ "#ff9393", "#fdbcb4", "#db6446", "#e67b5e", "#ecce69", "#e1c155"
+                    , "#ecb06d", "#e1c14b", "#e3b63c", "#e9a232", "#e06d52" ]
 
-                   , "#b82650"
-                   , "#c8184a"
-                   , "#b61c1c"
-                   , "#8e052c"
-                   , "#810505"
-
-                   , "#730000"
-                   , "#660000"
-                   , "#590000"
-                   , "#4c0000"
-                   , "#400000"
-                   ];
-const colorsLight = [ "#ff9393"
-                    , "#fdbcb4"
-                    , "#db6446"
-                    , "#e67b5e"
-                    , "#ecce69"
-                    , "#e1c155"
-                    , "#ecb06d"
-                    , "#e1c14b"
-                    , "#e3b63c"
-                    , "#e9a232"
-                    , "#e06d52" ]
 
 /**************************************************/
 
+/**
+ *  functions to get a random color from an array of predefined colors
+ */
 const removeValFromArray = (arr, val) =>
   _.pull(_.clone(arr), val);  // _.clone is to avoid modifying in-place the `arr`
-
 const getRandomColor = (arr, aldreadyUsedColor) =>
     aldreadyUsedColor != null
     ? _.sample( removeValFromArray(arr, aldreadyUsedColor) )
     : _.sample(arr);
+
+/**
+ * functions to get random colors.
+ * - Math.random() > 0.5 ? ... allows to chose between two different gradiens for variety
+ * - toFixed(1) rounds to .1 => we yield a random color from
+ *     a discrete scale made of 10 steps (0..0.9).
+ */
+const randomColorLight = () =>
+  Math.random() > 0.5
+  ? new Color("#8dc6af").mix(new Color("#67e5cc"), Math.random().toFixed(1))
+  : new Color("#67e57e").mix(new Color("#67e57e"), Math.random().toFixed(1));
+const randomColorDark = () =>
+  Math.random() > 0.5
+  ? new Color("#700045").mix(new Color("#510708"), Math.random().toFixed(1))
+  : new Color("#510b07").mix(new Color("#030191"), Math.random().toFixed(1));
 
 /**************************************************/
 
@@ -163,24 +159,24 @@ onMounted(() => {
 
   $(".menu-subcategories > li")
   .on("mouseenter", (e) => {
-    let color = getRandomColor(colorsLight, currentColors.value.light);
+    // let color = getRandomColor(colorsLight, currentColors.value.light);
+    // currentColors.value.light = color;
+    let color = randomColorLight();
     $(e.currentTarget).css({ backgroundColor: color });
-    currentColors.value.light = color;
   })
   .on("mouseleave", (e) =>
     $(e.currentTarget).css({ backgroundColor: "var(--cs-main-default-bg)" }) );
 
   $(".menu-category:not(.has-subcategories)")
   .on("mouseenter", (e) => {
-    let color = getRandomColor(colorsDark, currentColors.value.dark);
+    // let color = getRandomColor(colorsDark, currentColors.value.dark);
+    // currentColors.value.dark = color;
+    let color = randomColorDark();
     $(e.currentTarget).css({ backgroundColor: color });
-    currentColors.value.dark = color;
   })
   .on("mouseleave", (e) =>
     $(e.currentTarget).css({ backgroundColor: "var(--cs-negative-default-bg)" }) );
 })
-
-// const menuCropPath = "../src/assets/media/menu_crop.jpg";
 </script>
 
 
@@ -267,7 +263,7 @@ a {
 .menu-category.has-subcategories {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 .menu-category:not(.has-subcategories) > a > h1 {
   width: 100%;
@@ -275,6 +271,10 @@ a {
 }
 .menu-category h1, .menu-category ul {
   padding: 1% 2%;
+}
+.menu-category:not(.has-subcategories)
+, .menu-subcategories > li {
+  transition: background-color var(--cs-color-transition);
 }
 
 /****************************************/
@@ -284,6 +284,7 @@ a {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+  margin-bottom: 3px;
 }
 .menu-subcategories > li {
   margin: 5px 3px;
@@ -304,6 +305,9 @@ a {
 @media (orientation:landscape) {
   .menu-subcategories {
     display: block;  /* remove display flex */
+  }
+  .menu-subcategories > li {
+    margin: 5px 0;
   }
   .menu-subcategories a {
     text-align: justify;
