@@ -76,6 +76,7 @@ class Theme(db.Model):
     id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
     id_uuid     : Mapped[str] = mapped_column(Text, nullable=False)
     entry_name  : Mapped[str] = mapped_column(Text, nullable=False)
+    category    : Mapped[str] = mapped_column(Text, nullable=False)
     description : Mapped[str] = mapped_column(Text, nullable=True)
 
     r_iconography_theme : Mapped[t.List["R_IconographyTheme"]] = relationship("R_IconographyTheme", back_populates="theme")
@@ -137,6 +138,7 @@ class NamedEntity(db.Model):
     id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
     id_uuid     : Mapped[str] = mapped_column(Text, nullable=False)
     entry_name  : Mapped[str] = mapped_column(Text, nullable=False)
+    category    : Mapped[str] = mapped_column(Text, nullable=False)
     description : Mapped[str] = mapped_column(Text, nullable=True)
 
     r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity", back_populates="named_entity")
