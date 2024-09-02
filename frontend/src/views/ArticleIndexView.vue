@@ -1,4 +1,5 @@
 <template>
+  <h1>TODO UPDATE INDEX</h1>
   <h1>Articles</h1>
   <div class="article-index-wrapper">
     <ul class="list-invisible">

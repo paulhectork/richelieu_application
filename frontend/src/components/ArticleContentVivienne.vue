@@ -79,7 +79,9 @@
       anecdote, ou en évènement. Sont ensuite citées les
       découvertes de vestiges anciens, l'insurrection royaliste
       du 13 Vendémiaire an IV (1795), et l'hôtel de Torcy
-      <UiButtonEye data-key="qr189666b405c8e4a0183d0f2edc4150a02"></UiButtonEye>.
+      <UiButtonEye data-key="qr189666b405c8e4a0183d0f2edc4150a02"
+                   data-folio=""
+      ></UiButtonEye>.
       Autant d'éléments invisibles du public,
       ou disparus, dont la mémoire subsiste dans les fonds
       d'archives iconographiques&nbsp;: photographies, dessins
