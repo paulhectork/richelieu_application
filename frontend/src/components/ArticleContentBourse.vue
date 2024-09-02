@@ -108,7 +108,7 @@
       ses usages quotidiens, que pris comme emblème d'une
       société capitaliste. Du culte voué à l'effigie de Robert
       Macaire, héros populaire fictif et roi des voleurs,
-      à l'affiche du roman L'Argent de Zola, ces œuvres littéraires
+      à l'affiche du roman <i>L'Argent</i> de Zola, ces œuvres littéraires
       diffusent l'image, mentale et sociale, d'une bourse
       à la fois moteur de fortune et de misère
       <UiButtonEye data-key="qr1b678213db36c4953b99c5720c6eac054"></UiButtonEye>

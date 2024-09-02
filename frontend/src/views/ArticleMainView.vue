@@ -38,7 +38,8 @@
 
   <div class="fill-parent"
        v-if="notFoundFlag===true">
-    <component :is="articleComponent"></component>
+    <component :is="articleComponent"
+    ></component>
   </div>
 
   <div v-else
@@ -373,11 +374,23 @@ function mountFootnoteOnClick(evt) {
  * component to be mounted with the @vue:mounted hook.
  * see: https://stackoverflow.com/a/72486795/17915803
  */
- function registerArticleEvents() {
+function registerArticleEvents() {
   $(".button-eye").on("click", switchIconographyMainOnClick);
   $(".button-eye").on("touchend", switchIconographyMainOnClick);
   $(".button-ellipsis").on("click", mountFootnoteOnClick);
   $(".button-ellipsis").on("touchend", mountFootnoteOnClick);
+}
+
+/**
+ * make sure that the title, subtitle and author name are filled out
+ */
+function noArticleErrors() {
+  if ( !$(".article-header > h1").text().length
+    || !$(".article-header > h2").text().length
+  ) console.error(`ArticleMainView.noArticleErrors(): missing TITLE on article '${route.params.articleName.toUpperCase()}'`)
+  if ( !$(".article-footer > p").text().length ) {
+    console.error(`ArticleMainView.noArticleErrors(): missing AUTHOR NAME on article '${route.params.articleName.toUpperCase()}'`)
+  }
 }
 
 /************************************************/
@@ -388,6 +401,7 @@ watch(route, (newRoute, oldRoute) => {
 
 onMounted(() => {
   articleMounter(route);
+  setTimeout(noArticleErrors, 1000)
 })
 
 onUnmounted(() => {
