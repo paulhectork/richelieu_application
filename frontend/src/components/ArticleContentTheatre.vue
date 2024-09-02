@@ -191,7 +191,7 @@ const queryParams     = { theme: [ "divertissement"
                                        ],
                           namedEntityBooleanOp: "and",
                           themeBooleanOp: "and"
-                         };  // the parameters to run a backend advanced search query
+                        };  // the parameters to run a backend advanced search query
 const footnotes       = {
   gengembre2009: `Gérard Gengembre, <q>&nbsp;Le théâtre bourgeois (1800-1870)&nbsp;</q>,
                   dans Alain Viala (dir.), <i>Le théâtre en France</i>. Presses Universitaires

@@ -8,7 +8,7 @@
 -->
 
 <template>
-  <h1>Sujet: {{ namedEntityName }}</h1>
+  <h1>{{ namedEntityName }}</h1>
 
   <UiLoaderComponent v-if="!backendLoaded"></UiLoaderComponent>
   <div v-else>

@@ -9,7 +9,7 @@
 
 
 <template>
-  <h1>Thème:{{ formattedThemeName }}</h1>
+  <h1>{{ formattedThemeName }}</h1>
 
   <UiLoaderComponent v-if="!backendLoaded"></UiLoaderComponent>
   <div v-else>

@@ -89,9 +89,10 @@ function updateMenuActive(newState) {
 
 /**********************************************************/
 
-// on page change, close the menu
+// on page change, close the menu + scroll `main` back to top of page
 watch(route, (newRoute, oldRoute) => {
   menuActive.value = false;
+  $("main").scrollTop(0);
 })
 
 onMounted(() => {

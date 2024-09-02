@@ -83,7 +83,13 @@ export function stringifyIconographyResource(i) {
   let date = stringifyDate(i.date);
 
   out += authors.length ? `${authors}, ` : "";
-  out += i.title.length ? `<i>${ i.title[0] }</i> ` : " ";
+  out += `<i>${ i.title[0] }</i>`
+         // attempt at a title-shortening that sometimes bugs.
+         // i.title.length && i.title[0].length > 30
+         // ? `<i>${ i.title[0].match(/^.{30}[^\s]*/g)[0] } [...] </i>` // shorten title if it's too long: take only first 30 chars
+         // : i.title.length && i.title[0].length <= 30
+         // ? `<i>${ i.title[0] }</i>`
+         // : " ";
   out += date.length ? `(${date})` : "";
   return out;
 }
