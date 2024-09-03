@@ -63,14 +63,14 @@
       sa voisine est moins réussi, <q>&nbsp;Elle offre dans
       ses plans est dans sa décoration, une variété que n'a
       pas la première
-      <UiButtonEllipsis data-key="thiollet1837b"></UiButtonEllipsis>
-      &nbsp;</q>.
+      <UiButtonEllipsis data-key="thiollet1837b"></UiButtonEllipsis>&nbsp;
+            </q>.
       La même <q>&nbsp;curieuse
       réunion&nbsp;</q> a été privilégiée dans la publication
       du plan de ces deux édifices accolés dans la seconde
       publication de l'auteur
-      <UiButtonEllipsis data-key="thiollet1838"></UiButtonEllipsis>
-      &nbsp;
+      <UiButtonEllipsis data-key="thiollet1838"></UiButtonEllipsis>&nbsp;
+
       <UiButtonEye data-key="qr1e3bf9de9bc46475692d703a7c2a62985"></UiButtonEye>.
     </p>
     <p>Thiollet présente également des nouvelles constructions
@@ -79,8 +79,8 @@
       maisons de la rue Neuve-Vivienne, nouvellement percée,
       se sont évertués à donner de l'originalité et de l'éclat
       aux devantures des boutiques même de ces maisons
-      <UiButtonEllipsis data-key="thiollet1837c"></UiButtonEllipsis>
-      &nbsp;</q>.
+      <UiButtonEllipsis data-key="thiollet1837c"></UiButtonEllipsis>&nbsp;
+            </q>.
       Ce nouveau tronçon de rue est prétexte à la mise en
       valeur d'habitations récentes, reproduites dans plusieurs
       ouvrages d'architecture, parfois complémentaires.  Les
@@ -94,14 +94,14 @@
       planches de Thiollet
       <UiButtonEye data-key="qr11015715200444c309c74fcb923d8b051"
                    :data-folio="[99]"
-      ></UiButtonEye>
-      &nbsp;
+      ></UiButtonEye>&nbsp;
+
       <UiButtonEllipsis data-key="thiollet1837d"></UiButtonEllipsis>.
       Ce bâtiment est représentatif
       des expérimentations autour d'une architecture domestique
       revisitée, pensée pour un usage spécifique
-      <UiButtonEye data-key="qr1f4edbc33c65a4c049cfca42d2e1cab91"></UiButtonEye>
-      &nbsp;
+      <UiButtonEye data-key="qr1f4edbc33c65a4c049cfca42d2e1cab91"></UiButtonEye>&nbsp;
+
       <UiButtonEye data-key="qr12415af99153c42aa8b626f8c077909e9"></UiButtonEye>.
       Signé <RouterLink to="/sujet/qr1630ea47fc3d64bddb57e61eb54a7aab8">
         Nepveu</RouterLink>,
@@ -120,8 +120,8 @@
       un <q>&nbsp;déplacement de la réalité architecturale
       de l'espace physique des édifices, vers le domaine
       de l'imprimé
-      <UiButtonEllipsis data-key="garric2008"></UiButtonEllipsis>
-      &nbsp;</q>.
+      <UiButtonEllipsis data-key="garric2008"></UiButtonEllipsis>&nbsp;
+            </q>.
     </p>
     <p>Rappelons néanmoins que ces bâtiments sont sélectionnés
       par les auteurs en fonction de ce qu'ils souhaitent

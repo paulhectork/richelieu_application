@@ -82,8 +82,8 @@
       Au Ménestrel, Heugel</RouterLink> et compagnie spécialisée
     dans la musique, la maison Martinet, ou encore chez
     Enoch frères et Costallat
-    <UiButtonEye data-key="qr1313714268e78446b81a82e5d09771aad"></UiButtonEye>
-    &nbsp;
+    <UiButtonEye data-key="qr1313714268e78446b81a82e5d09771aad"></UiButtonEye>&nbsp;
+
     <UiButtonEllipsis data-key="charle2009"></UiButtonEllipsis>.
   </p>
   <p>E. Fixon, A. A. E., Disdéri ou E. Tourtain installés
@@ -119,11 +119,11 @@
   </p>
   <p>Érigeant la jeunesse et la volupté en vertus cardinales
     du désir, ces photographies attestent aussi de la fétichisation
-    croissante de femmes perçues comme <q>&nbsp;exotiques&nbsp;</q>
-    &nbsp;<UiButtonEye data-key="qr16ad0ab58242442b391196c4301e91043"></UiButtonEye>.
+    croissante de femmes perçues comme <q>&nbsp;exotiques&nbsp;</q>&nbsp;
+        <UiButtonEye data-key="qr16ad0ab58242442b391196c4301e91043"></UiButtonEye>.
     La photographie fige les <q>&nbsp;belles
-    Espagnoles <UiButtonEllipsis data-key="asaro2011"></UiButtonEllipsis>
-    &nbsp;</q> (<RouterLink to="/sujet/qr1bed0903b78db48eca04ad0f933fab143">
+    Espagnoles <UiButtonEllipsis data-key="asaro2011"></UiButtonEllipsis>&nbsp;
+        </q> (<RouterLink to="/sujet/qr1bed0903b78db48eca04ad0f933fab143">
       Sylvia Sportas</RouterLink>,
     <RouterLink to="/sujet/qr132415457c4944b5f8534c8419127caa0">
       Gabrielle Moralès</RouterLink>,

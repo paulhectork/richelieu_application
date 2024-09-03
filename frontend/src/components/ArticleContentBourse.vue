@@ -111,8 +111,8 @@
       à l'affiche du roman <i>L'Argent</i> de Zola, ces œuvres littéraires
       diffusent l'image, mentale et sociale, d'une bourse
       à la fois moteur de fortune et de misère
-      <UiButtonEye data-key="qr1b678213db36c4953b99c5720c6eac054"></UiButtonEye>
-      &nbsp;
+      <UiButtonEye data-key="qr1b678213db36c4953b99c5720c6eac054"></UiButtonEye>&nbsp;
+
       <UiButtonEllipsis data-key="berthelot2008"></UiButtonEllipsis>.
       Ce choix, plutôt que celui de la
       <RouterLink to="/sujet/qr15f9f002f1fc34ee79a079b5841a16fa2">

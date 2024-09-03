@@ -42,8 +42,7 @@
         café de Chartres</RouterLink>
       (devenu le
       <RouterLink to="/sujet/qr1841e6e62e27942e7aed69f329ed431af">
-        Grand Véfour</RouterLink>
-      &nbsp;
+        Grand Véfour</RouterLink>&nbsp;
       <UiButtonEllipsis data-key="almanach1785"></UiButtonEllipsis>).
       Davantage que du café, on y consomme des liqueurs froides
       ou chaudes à base d'eau-de-vie brûlée, servies dans
@@ -74,8 +73,8 @@
       <RouterLink to="/sujet/qr13bc934e66d6b49cb8413be666a7b23aa">
         café des Mille colonnes</RouterLink>,
       qui se décuplaient à l'infini par un jeu de miroirs savamment disposés
-      <UiButtonEye data-key="qr1aa492107cd384b8a9b585ad404753cf4"></UiButtonEye>
-      &nbsp;
+      <UiButtonEye data-key="qr1aa492107cd384b8a9b585ad404753cf4">
+        </UiButtonEye>&nbsp;
       <UiButtonEllipsis data-key="mayeur1788"></UiButtonEllipsis>.
       La position centrale de
       <RouterLink to="/sujet/qr1fd3550edb6f84acdb2dc9bee08338ee0">
@@ -118,8 +117,7 @@
       Directoire, il est l'auteur des aménagements du café
       de la Régence, de Corazza, et de l'ancien
       <RouterLink to="/sujet/qr1334fe13eeeab4541a7386583ebcf318e">
-        passage Feydeau</RouterLink>
-      &nbsp;
+        passage Feydeau</RouterLink>&nbsp;
       <UiButtonEllipsis data-key="geist1988"></UiButtonEllipsis>.
     </p>
     <p>Au siècle suivant, l'imprimé est propice à une évolution

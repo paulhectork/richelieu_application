@@ -25,10 +25,10 @@
       royaume de la finance, empire de la mode qui <q>&nbsp;coiffe
       les quatre-vingt-six départements&nbsp;</q>, elle est
       aussi la <q>&nbsp;capitale du chocolat, de la praline
-      et du petit gâteau&nbsp;</q>
-      &nbsp;
-      <UiButtonEye data-key="qr1cb2eb071ec7944da91d39a4be7a02f72"></UiButtonEye>
-      &nbsp;
+      et du petit gâteau&nbsp;</q>&nbsp;
+
+      <UiButtonEye data-key="qr1cb2eb071ec7944da91d39a4be7a02f72"></UiButtonEye>&nbsp;
+
       <UiButtonEllipsis data-key="lurine"></UiButtonEllipsis>.
     </p>
     <p>Cette spécialisation des rues à l'échelle de la ville
@@ -41,8 +41,8 @@
       rue, d'un milieu, d'un immeuble, d'un type social pour
       percer les <q>&nbsp;mystères&nbsp;</q> du monde urbain
       proliférant
-      <UiButtonEllipsis data-key="charle"></UiButtonEllipsis>
-      &nbsp;</q>.
+      <UiButtonEllipsis data-key="charle"></UiButtonEllipsis>&nbsp;
+            </q>.
       Ces descriptions semblent parfois trahir le souhait
       de catégoriser les lieux en s'appuyant sur la prédominance
       d'une activité, sur le souvenir d'évènements historiques
@@ -95,8 +95,8 @@
       réceptifs aux préoccupations contemporaines sur l'équipement
       et l'embellissement de la cité, formulent des propositions
       pour la place de la Bourse et la rue Vivienne
-      <UiButtonEye data-key="qr1391a7af14c6a42cd8a45378eeb6a3c04"></UiButtonEye>
-      &nbsp;
+      <UiButtonEye data-key="qr1391a7af14c6a42cd8a45378eeb6a3c04"></UiButtonEye>&nbsp;
+
       <UiButtonEye data-key="qr17e8c5640fa5e4764ac2701bf0d08311a"></UiButtonEye>.
     </p>
     <p>Enfin, sans cibler un sujet précis, d'autres auteurs
@@ -127,8 +127,8 @@
         hôtels, des cercles, des cafés, des passages. En deux
         heures avec l'or que nous n'avons pas, on peut y organiser
         sa vie.
-        <UiButtonEllipsis data-key="joliet"></UiButtonEllipsis>
-        &nbsp;
+        <UiButtonEllipsis data-key="joliet"></UiButtonEllipsis>&nbsp;
+
       </q>
     </div>
 

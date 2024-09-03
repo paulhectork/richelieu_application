@@ -36,8 +36,8 @@ def txt2html(txt:str) -> str:
               .replace(" ", " "))                           # the cloud adds this weird space. replace it by a normal space
     txt = re.sub(r"^\s+", "", txt)                          # strip leading spaces
     txt = re.sub(r"\s+$", "", txt)                          # strip trailing spaces
-    txt = re.sub(r"« ?", r"<q>&nbsp;", txt)                 # add opening quote
-    txt = re.sub(r" ?»", r"&nbsp;</q>", txt)                # add closing quote
+    txt = re.sub(r"[«“] ?", r"<q>&nbsp;", txt)                 # add opening quote
+    txt = re.sub(r" ?[»”]", r"&nbsp;</q>", txt)                # add closing quote
     txt = re.sub(r" ([\:\;\?\!])", r"&nbsp;\1", txt)              # add non-breakable space before `;` and `:`
     txt = re.sub(r"^(.+)$", r"<p>\1</p>", txt, flags=re.M)  # create html paragraphs
     txt = re.sub(roman_regex, r"\1<sup>\5</sup>", txt)      # exposant en superscript

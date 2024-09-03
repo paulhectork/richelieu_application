@@ -59,8 +59,8 @@
       arcades aveugles de la salle de lecture des imprimés,
       <q>&nbsp;basilique de la connaissance perdue dans la
       forêt de l'ignorance
-      <UiButtonEllipsis data-key="desgoffe1858"></UiButtonEllipsis>
-      &nbsp;</q>. À l'exception d'un
+      <UiButtonEllipsis data-key="desgoffe1858"></UiButtonEllipsis>&nbsp;
+            </q>. À l'exception d'un
       écureuil partiellement représenté et de quelques silhouettes
       d'oiseaux, la faune est quasiment absente
       <UiButtonEllipsis data-key="pitrou2023"></UiButtonEllipsis>.
@@ -91,8 +91,8 @@
       centre du jardin disposait d'un toit végétalisé qui
       offrait un deuxième lieu de déambulation champêtre
       aux promeneurs
-      <UiButtonEye data-key="qr1bfdfba3ee4d74aeb9faa5c383b361bca"></UiButtonEye>
-      &nbsp;
+      <UiButtonEye data-key="qr1bfdfba3ee4d74aeb9faa5c383b361bca"></UiButtonEye>&nbsp;
+
       <UiButtonEllipsis data-key="koll2019"></UiButtonEllipsis>.
       Cet édifice hybride était
       recouvert de feuilles de cuivre, et équipé de plantes
@@ -125,8 +125,8 @@
       L'aménagement intérieur, attribué à l'architecte Profilet,
       est déployé sur cet éventail publicitaire de la compagnie
       des chemins de fer de l'État
-      <UiButtonEye data-key="qr14672b589f85f48a7a68eeb2f37efa9e2"></UiButtonEye>
-      &nbsp;
+      <UiButtonEye data-key="qr14672b589f85f48a7a68eeb2f37efa9e2"></UiButtonEye>&nbsp;
+
       <UiButtonEllipsis data-key="sade1864"></UiButtonEllipsis>&nbsp;:
     </p>
     <div class="multi-line-quote-wrapper">
@@ -135,8 +135,8 @@
         en jardin d'hiver […] Il se compose de l'exacte étendue
         du jardin d'été dont il n'est qu'une ingénieuse transformation&nbsp;;
         on y dine sous des arbres et sous de vrai feuillage
-        <UiButtonEllipsis data-key="monde1864"></UiButtonEllipsis>.
-        &nbsp;
+        <UiButtonEllipsis data-key="monde1864"></UiButtonEllipsis>.&nbsp;
+
       </q>
     </div>
   </div>

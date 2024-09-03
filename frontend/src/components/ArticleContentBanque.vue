@@ -37,8 +37,8 @@
       <RouterLink to="/theme/qr15e227dac15a4446d8b8b18a7e3213d8e">
         boutique</RouterLink> pour
       les particuliers. Théodore Labourieu, fondateur de
-      la revue <i>L'Art du XIX<sup>e</sup> siècle</i>
-      &nbsp;<UiButtonEllipsis data-key="fraixe2017"></UiButtonEllipsis>,
+      la revue <i>L'Art du XIX<sup>e</sup> siècle</i>&nbsp;
+            <UiButtonEllipsis data-key="fraixe2017"></UiButtonEllipsis>,
       affirmait ainsi qu'il&nbsp;:
     </p>
     <p class="multi-line-quote-wrapper">
@@ -54,8 +54,8 @@
       qu'il vend aux amoureux, il est curieux cependant que
       M. Acker soit, avant tout, le papetier de la Banque
       de France
-      <UiButtonEllipsis data-key="labourieu1853"></UiButtonEllipsis>.
-      &nbsp;</q>
+      <UiButtonEllipsis data-key="labourieu1853"></UiButtonEllipsis>.&nbsp;
+            </q>
     </p>
     <p>Les étiquettes lithographiées, placées
       en tête de chaque registre vendu, permettent de suivre
@@ -63,8 +63,8 @@
       au fil des années et des innovations techniques. Dans
       les années 1890, s'ajoutent, entre autres, le <q>&nbsp;papier
       goudron et ciré pour emballage
-      <UiButtonEllipsis data-key="woronoff2015"></UiButtonEllipsis>
-      &nbsp;</q>, ou encore
+      <UiButtonEllipsis data-key="woronoff2015"></UiButtonEllipsis>&nbsp;
+            </q>, ou encore
       les <q>&nbsp;timbres-secs&nbsp;</q>
       <UiButtonEye data-key="qr1ccfbadee336749e7a1bc1d7de7165def"></UiButtonEye>.
     </p>
@@ -75,8 +75,8 @@
       dès 1856, au 6, rue Montesquieu, se vit confier la
       gestion du <q>&nbsp;buffet&nbsp;</q> des employés de
       la banque entre 1914 et 1935
-      <UiButtonEye data-key="qr132a61f4d3cc64f6eb0585c36620ffaaf"></UiButtonEye>
-      &nbsp;
+      <UiButtonEye data-key="qr132a61f4d3cc64f6eb0585c36620ffaaf"></UiButtonEye>&nbsp;
+
       <UiButtonEllipsis data-key="philippe1960"></UiButtonEllipsis>.
       L'Amicale des
       Employés de la Banque, dans son bulletin de février
@@ -86,14 +86,14 @@
       fromage, demain ce sera sans doute le bifteck&nbsp;;
       ce dernier, de 0,80 franc, garni, est passé à 1.20
       francs, et il n'a plus de garniture
-      <UiButtonEllipsis data-key="labourieu1853"></UiButtonEllipsis>
-      &nbsp;</q>.
+      <UiButtonEllipsis data-key="labourieu1853"></UiButtonEllipsis>&nbsp;
+            </q>.
     </p>
     <p> Anna Safranova a fait remarquer que dans les restaurants
       Duval publics comme dans les cantines, <q>&nbsp;ce
       sont des jeunes filles qui servent à table
-      <UiButtonEllipsis data-key="safranova2017"></UiButtonEllipsis>
-      &nbsp;</q>.
+      <UiButtonEllipsis data-key="safranova2017"></UiButtonEllipsis>&nbsp;
+            </q>.
       La <i>Notice aux directeurs de cantine</i> (1928) prescrivait,
       à propos du personnel féminin, que <q>&nbsp;la coquetterie
       […] doit être appréciée et encouragée comme une qualité
@@ -124,8 +124,8 @@
       dans une seconde salle au
       <RouterLink to="/theme/qr1df2f987f702840baae856e9716d7928b">
         décor</RouterLink> <q>&nbsp;plus austère
-      <UiButtonEllipsis data-key="safranova2017"></UiButtonEllipsis>
-      &nbsp;</q>.
+      <UiButtonEllipsis data-key="safranova2017"></UiButtonEllipsis>&nbsp;
+            </q>.
     </p>
     <p>Ainsi, le succès économique de la Maison Acker comme
       des établissements Duval est en partie tributaire de

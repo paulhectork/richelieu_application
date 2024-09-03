@@ -35,8 +35,8 @@
       de ces commerces de mode, stimulé par la <q>&nbsp;procession
       de désœuvrés qui collent leurs visages aux devantures
       des magasins
-      <UiButtonEllipsis data-key="lukine1844"></UiButtonEllipsis>
-      &nbsp;</q>&nbsp;
+      <UiButtonEllipsis data-key="lukine1844"></UiButtonEllipsis>&nbsp;
+            </q>&nbsp;
       <UiButtonEye data-key="qr1b9fb564472f644ce9abbb45c1149f26e"></UiButtonEye>.
       L'évolution des techniques
       et des pratiques ont contraint l'espace architectural
@@ -55,8 +55,8 @@
       naturellement remplis de fort vieilles choses, et le
       talent par excellence est d'en écouler le plus possible&nbsp;</q>
       notamment par le <q>&nbsp;jargon de la mise en scène
-      <UiButtonEllipsis data-key="texier1852"></UiButtonEllipsis>
-      &nbsp;</q>.
+      <UiButtonEllipsis data-key="texier1852"></UiButtonEllipsis>&nbsp;
+            </q>.
       Sur un ton satirique, l'auteur insiste sur le rôle
       déterminant de la configuration intérieure, et de l'éclat
       du décor, véritable scénographie de la vente pensée

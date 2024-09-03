@@ -14,8 +14,8 @@
       définition administrative, soit
       <q>&nbsp;l'ensemble des objets ou dispositifs publics installés dans
         <RouterLink to="/theme/qr1bc9332b2db5f45ee9dec8433307f8e7f">
-          l'espace public</RouterLink>
-        &nbsp;<UiButtonEllipsis data-key="thezy1976"></UiButtonEllipsis>&nbsp;
+          l'espace public</RouterLink>&nbsp;
+                <UiButtonEllipsis data-key="thezy1976"></UiButtonEllipsis>&nbsp;
       </q>.
       À cette définition se superposent un volet légal, comme vecteur de normes, et un
       aspect symbolique, comme témoin et faiseur d'urbanité.
