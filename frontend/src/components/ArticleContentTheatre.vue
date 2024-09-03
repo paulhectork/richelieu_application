@@ -24,7 +24,7 @@
     troupes s'y succèdent d'une année à l'autre, tandis
     que leurs salles s'embrasent régulièrement, à l'image
     des trois salles Favart (1783, 1838 et 1898) de
-    <RouterLink to="/sujet/qr1ade7cadcd7cc48dea940ab85e5a898bb">
+    <RouterLink to="/entite-nommee/qr1ade7cadcd7cc48dea940ab85e5a898bb">
       l'Opéra-Comique</RouterLink>.
     Lorsqu'ils ne sont pas reconstruits, ces grands espaces
     sont réemployés et modernisés afin d'accueillir d'autres
@@ -34,10 +34,10 @@
   <p>Si certains demeurent, d'autres ont disparus. C'est
     le cas du théâtre Louvois dont le square actuel conserve
     le patronyme, ou du
-    <RouterLink to="/sujet/qr1f036d029d1684fa18aae6d392e42acff">
+    <RouterLink to="/entite-nommee/qr1f036d029d1684fa18aae6d392e42acff">
       théâtre Feydeau</RouterLink> (1791-1829) relié
     par le passage du même nom au
-    <RouterLink to="/sujet/qr1655e15e2c113476d8b96ddac4ba7ba89">
+    <RouterLink to="/entite-nommee/qr1655e15e2c113476d8b96ddac4ba7ba89">
       théâtre des Nouveautés</RouterLink>
     inauguré en 1827 place de la Bourse
     <UiButtonEye data-key="qr1d938f1e4dcf04987828d230ed99674d2"></UiButtonEye>.
@@ -78,7 +78,7 @@
     de réseaux économiques. Les pièces du théâtre de l'Opéra-Comique
     par exemple, peuvent être rattachées à au moins trois
     maisons d'édition situées dans la toute proche rue
-    Vivienne&nbsp;: <RouterLink to="/sujet/qr1205e44e43b774057b49a9a3803771807">
+    Vivienne&nbsp;: <RouterLink to="/entite-nommee/qr1205e44e43b774057b49a9a3803771807">
       Au Ménestrel, Heugel</RouterLink> et compagnie spécialisée
     dans la musique, la maison Martinet, ou encore chez
     Enoch frères et Costallat
@@ -95,7 +95,7 @@
     favorise les actrices&nbsp;
     <UiButtonEllipsis data-key="ravel2002"></UiButtonEllipsis>.
   </p>
-  <p>Les portraits de celles du <RouterLink to="/sujet/qr10680d4144f1b493887b5a47c58785374">
+  <p>Les portraits de celles du <RouterLink to="/entite-nommee/qr10680d4144f1b493887b5a47c58785374">
       théâtre du Palais-Royal</RouterLink>
     interpellent d'ailleurs plus par leur composition que
     par leur nombre. Tandis que la plupart des acteurs
@@ -123,15 +123,15 @@
         <UiButtonEye data-key="qr16ad0ab58242442b391196c4301e91043"></UiButtonEye>.
     La photographie fige les <q>&nbsp;belles
     Espagnoles <UiButtonEllipsis data-key="asaro2011"></UiButtonEllipsis>&nbsp;
-        </q> (<RouterLink to="/sujet/qr1bed0903b78db48eca04ad0f933fab143">
+        </q> (<RouterLink to="/entite-nommee/qr1bed0903b78db48eca04ad0f933fab143">
       Sylvia Sportas</RouterLink>,
-    <RouterLink to="/sujet/qr132415457c4944b5f8534c8419127caa0">
+    <RouterLink to="/entite-nommee/qr132415457c4944b5f8534c8419127caa0">
       Gabrielle Moralès</RouterLink>,
     etc.) ou encore les <q>&nbsp;belles Juives
     <UiButtonEllipsis data-key="fournier2012"></UiButtonEllipsis>&nbsp;</q>
-    (<RouterLink to="/sujet/qr150243d87a57247d394f7a9fa3a6a891f">
+    (<RouterLink to="/entite-nommee/qr150243d87a57247d394f7a9fa3a6a891f">
       Ida Klein</RouterLink>,
-    <RouterLink to="/sujet/qr1dd8d5e6e80274fda9b263b808f719dba">
+    <RouterLink to="/entite-nommee/qr1dd8d5e6e80274fda9b263b808f719dba">
       Clein</RouterLink>, etc.) dans un imaginaire sexuel,
     les assignant toujours et encore à leur altérité prétendument
     radicale. Et si ces deux fantasmes ethnotypiques ont

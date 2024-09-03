@@ -30,11 +30,11 @@
      ```
      <FormKit type="fkSelect"
               name="namedEntity"
-              label="Sujet"
-              placeholder="Sélectionner un sujet"
-              :options="[{ value: 'a', label: 'Sujet 1' },
-                         { value: 'b', label: 'Sujet 2' },
-                         { value: 'c', label: 'Sujet 3' }]"
+              label="Entité nommée"
+              placeholder="Sélectionner une entité nommée"
+              :options="[{ value: 'a', label: 'Entité nommée 1' },
+                         { value: 'b', label: '...2' },
+                         { value: 'c', label: '...3' }]"
      /><FormKit>
      ```
 -->

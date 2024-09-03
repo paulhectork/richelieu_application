@@ -29,7 +29,6 @@ export const capitalizeWords = (str) =>
   ? str.split(" ").map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" ")
   : str;
 
-
 /**
  * generic function to create a string representation
  * from an array of values named `arr`. this works best
@@ -228,7 +227,9 @@ export function stringifyInstitutionArray(institutionArray, hyperlink=false) {
  *  the URL of each `associated` el will redirect to: named entity, theme...
  */
 export function stringifyAssociated(associated, targetKey) {
-  const urlBuilder = targetKey === "theme" ? urlToFrontendTheme : urlToFrontendNamedEntity;
+  const urlBuilder = targetKey === "theme"
+                     ? urlToFrontendTheme
+                     : urlToFrontendNamedEntity;
   const processEl = (el) =>
     `<a href="${urlBuilder((el.id_uuid))}">${el.entry_name}</a>
      (${el.count} co-occurrence${ el.count > 1 ? 's' : '' })`;

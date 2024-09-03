@@ -39,7 +39,7 @@
       <UiButtonEllipsis data-key="brongniart1986"></UiButtonEllipsis>
       . Elle était initialement installée
       dans le
-      <RouterLink to="/sujet/qr1eac893b6bd6d421c8bf00b83a4dbba13">
+      <RouterLink to="/entite-nommee/qr1eac893b6bd6d421c8bf00b83a4dbba13">
         jardin Vivienne</RouterLink>,
       où les agents de change négociaient sous une série d'arcades
       <UiButtonEye data-key="qr1a99b309c1d9043dbbbef00f2759e6a7d"></UiButtonEye>
@@ -70,7 +70,7 @@
       architecturales des immeubles adjacents à la place
       semblent tirer parti de sa configuration et de sa fréquentation.
       L'exemple du magasin au
-      <RouterLink to="/sujet/qr19529e0fdc0d340b39f34a4c48f364f9f">
+      <RouterLink to="/entite-nommee/qr19529e0fdc0d340b39f34a4c48f364f9f">
         Palais de cristal</RouterLink>,
       ouvert vers 1850 en écho au déjà célèbre <i>Crystal Palace</i>
       de Londres, est éclairant
@@ -115,7 +115,7 @@
 
       <UiButtonEllipsis data-key="berthelot2008"></UiButtonEllipsis>.
       Ce choix, plutôt que celui de la
-      <RouterLink to="/sujet/qr15f9f002f1fc34ee79a079b5841a16fa2">
+      <RouterLink to="/entite-nommee/qr15f9f002f1fc34ee79a079b5841a16fa2">
         Banque de France</RouterLink>
       par exemple, est peut-être à chercher du côté de l'institution
       elle-même&nbsp;: la spéculation et l'agiotage auraient moins

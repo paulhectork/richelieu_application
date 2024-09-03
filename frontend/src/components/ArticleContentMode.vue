@@ -62,9 +62,9 @@
       du décor, véritable scénographie de la vente pensée
       pour la consommation moderne.
     </p>
-    <p>Le magasin du <RouterLink to="/sujet/qr11aa90d203bbe4b52bea31a00d838f51e">
+    <p>Le magasin du <RouterLink to="/entite-nommee/qr11aa90d203bbe4b52bea31a00d838f51e">
         Grand Colbert</RouterLink>
-      attribué à <RouterLink to="/sujet/qr1105ec8ce6a0847e4b6141dba098593c5">
+      attribué à <RouterLink to="/entite-nommee/qr1105ec8ce6a0847e4b6141dba098593c5">
         l'architecte Hervas</RouterLink>,
       s'installe en 1841 dans la parcelle d'angle
       de la galerie Colbert, au croisement de deux rues très
@@ -77,7 +77,7 @@
       de la superficie
       <UiButtonEllipsis data-key="patrie1861"></UiButtonEllipsis>.
       À l'instar du magasin de vêtements
-      <RouterLink to="/sujet/qr1a52ab8323fe241cd979aa4d26921a3bd">
+      <RouterLink to="/entite-nommee/qr1a52ab8323fe241cd979aa4d26921a3bd">
         Au prince Eugène</RouterLink>, n° 17 rue Vivienne,
       une bonne appréciation de la configuration de ces lieux
       se heurte souvent à la nature des images qui les représentent
@@ -88,7 +88,7 @@
       et sur l'image mentale qu'en avaient les contemporains,
       que sur l'espace conçu et pratiqué.
     </p>
-    <p>Le magasin <RouterLink to="/sujet/qr1cabb211562d24484869ff5e9f3340a3f">
+    <p>Le magasin <RouterLink to="/entite-nommee/qr1cabb211562d24484869ff5e9f3340a3f">
         Aux villes de France</RouterLink>&nbsp;
       <q>&nbsp;le plus vaste de l'univers&nbsp;</q> signé Eugène Petit est
       ouvert en 1846 en lieu et place d'anciens hôtels particuliers

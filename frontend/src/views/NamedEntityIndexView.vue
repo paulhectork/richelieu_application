@@ -2,8 +2,9 @@
      an index page for all of our themes -->
 
 <template>
-  <h1>Index des sujets</h1>
-  <p>Les sujets sont des points d'intérêt découverts dans chacune des images.</p>
+  <h1>Index des entités nommées</h1>
+  <p>Les entités nommées sont des points d'intérêt
+    découverts dans chacune des images.</p>
 
   <UiLoaderComponent v-if="!isLoaded"></UiLoaderComponent>
   <IndexBase v-else

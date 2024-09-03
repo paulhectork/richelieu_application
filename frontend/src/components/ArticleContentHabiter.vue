@@ -16,9 +16,9 @@
       et religieux, du quartier est renouvelé par la construction
       de rues, de passages couverts et de monuments publics.
       À proximité de la rue Vivienne, la rue des Colonnes,
-      le <RouterLink to="/sujet/qr1334fe13eeeab4541a7386583ebcf318e">
+      le <RouterLink to="/entite-nommee/qr1334fe13eeeab4541a7386583ebcf318e">
         passage Feydeau</RouterLink> et le
-      <RouterLink to="/sujet/qr1ee01c344f5c84253aa02dee64ccbb692">
+      <RouterLink to="/entite-nommee/qr1ee01c344f5c84253aa02dee64ccbb692">
         passage des Panoramas</RouterLink> sont
       ouverts par des particuliers dans les années 1790,
       sur le terrain d'anciens
@@ -40,9 +40,9 @@
       une série de logements à louer.
     </p>
     <p>Suivant cette démarche, la
-      <RouterLink to="/sujet/qr148a03a1991e648cca62a6c34bd36d6ae">
+      <RouterLink to="/entite-nommee/qr148a03a1991e648cca62a6c34bd36d6ae">
         galerie Vivienne</RouterLink> puis
-      la <RouterLink to="/sujet/qr18a6b2da1dc164c3a94de23e5fe6aa602">
+      la <RouterLink to="/entite-nommee/qr18a6b2da1dc164c3a94de23e5fe6aa602">
         galerie Colbert</RouterLink>
       sont aménagées en 1824 et 1827 afin
       de relier les rues Vivienne et des Petits-Champs. Ces
@@ -85,11 +85,11 @@
       valeur d'habitations récentes, reproduites dans plusieurs
       ouvrages d'architecture, parfois complémentaires.  Les
       plan, coupe et élévation de celle du
-      <RouterLink to="/sujet/qr131d5bbe5f5b64805a91431911f4219cb">
+      <RouterLink to="/entite-nommee/qr131d5bbe5f5b64805a91431911f4219cb">
         chocolatier Marquis</RouterLink>,
       42, rue Vivienne, figurent dans le <i>Paris moderne</i> de
       Louis Marie Normand, tandis que la boutique voisine
-      du <RouterLink to="/sujet/qr1f8a0afddec8b48a094f22de547024c8c">
+      du <RouterLink to="/entite-nommee/qr1f8a0afddec8b48a094f22de547024c8c">
         pâtissier Noël</RouterLink>, signée Viel, est gravée sur les
       planches de Thiollet
       <UiButtonEye data-key="qr11015715200444c309c74fcb923d8b051"
@@ -103,7 +103,7 @@
       <UiButtonEye data-key="qr1f4edbc33c65a4c049cfca42d2e1cab91"></UiButtonEye>&nbsp;
 
       <UiButtonEye data-key="qr12415af99153c42aa8b626f8c077909e9"></UiButtonEye>.
-      Signé <RouterLink to="/sujet/qr1630ea47fc3d64bddb57e61eb54a7aab8">
+      Signé <RouterLink to="/entite-nommee/qr1630ea47fc3d64bddb57e61eb54a7aab8">
         Nepveu</RouterLink>,
       son programme hybridé
       combine espace de fabrication au sous-sol, boutique

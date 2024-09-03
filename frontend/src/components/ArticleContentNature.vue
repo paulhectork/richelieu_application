@@ -30,18 +30,18 @@
       du XVII<sup>e</sup> siècle, on ne conserve que ceux
       qui ont échappé à la pression foncière et à la densification
       urbaine. Dans
-      <RouterLink to="/sujet/qr1ede588201ad344db82fdcd710a279a36">
+      <RouterLink to="/entite-nommee/qr1ede588201ad344db82fdcd710a279a36">
         l'hôtel de La Vrillière puis de Toulouse</RouterLink>,
       conçu par François Mansart (1635-1640), le jardin aristocratique
       s'est démocratisé suivant les modernisations de la
-      <RouterLink to="/sujet/qr15f9f002f1fc34ee79a079b5841a16fa2">
+      <RouterLink to="/entite-nommee/qr15f9f002f1fc34ee79a079b5841a16fa2">
         Banque de France</RouterLink>,
       installée dès 1808.
     </p>
     <p>Signée du même architecte, la galerie <q>&nbsp;brique
       et pierre&nbsp;</q> du cardinal Mazarin longe l'actuel
       <q>&nbsp;jardin Vivienne&nbsp;</q> de la
-      <RouterLink to="/sujet/qr1074f3f01a68b4768b9baf7ecb3ab1c0f">
+      <RouterLink to="/entite-nommee/qr1074f3f01a68b4768b9baf7ecb3ab1c0f">
         Bibliothèque nationale de France</RouterLink>.
       Ce jardin d'hôtel particulier a été l'objet de plusieurs
       transformations paysagères
@@ -74,7 +74,7 @@
       Au-delà de la dimension satirique
       de l'illustration, l'artiste s'inscrit dans l'actualité.
       Un an auparavant, les
-      <RouterLink to="/sujet/qr1e103712cfa324199b661aec7357c0b42">
+      <RouterLink to="/entite-nommee/qr1e103712cfa324199b661aec7357c0b42">
         arbres de la Bourse</RouterLink>,
       des <q>&nbsp;vieux
       marronniers enlevés à la place du trône&nbsp;</q> avaient
@@ -84,7 +84,7 @@
       <UiButtonEllipsis data-key="monde1857"></UiButtonEllipsis>.
     </p>
     <p>Le rétrécissement des espaces plantés s'observe aussi
-      au <RouterLink to="/sujet/qr169af23423c6c4d5a944bcd1eaf284f12">
+      au <RouterLink to="/entite-nommee/qr169af23423c6c4d5a944bcd1eaf284f12">
         Palais-Royal</RouterLink>.
       Entre 1788 et 1799, le cirque mi-enterré construit
       sur les plans de Victor Louis au
@@ -101,7 +101,7 @@
       L'expérience de cette terrasse peu étanche a trouvé
       une continuité dans son homologue installée au siècle
       suivant au-dessus de la
-      <RouterLink to="/sujet/qr17e0ddbb21d394105b4618fc2460e8654">
+      <RouterLink to="/entite-nommee/qr17e0ddbb21d394105b4618fc2460e8654">
         galerie d'Orléans</RouterLink>.
       Les constructions qui s'observaient sur les toits de quelques
       immeubles de la place de la Bourse, autour de 1820-1830, sont
@@ -115,7 +115,7 @@
       d'îlot un dernier exemple du rapport de force entre
       nature cachée et dévoilée. À l'instar des serres prisées
       de la haute société, le
-      <RouterLink to="/sujet/qr1cc4d60647ea34deb8d838091ea176a7e">
+      <RouterLink to="/entite-nommee/qr1cc4d60647ea34deb8d838091ea176a7e">
         restaurant Champeaux</RouterLink>
       disposait
       de son propre jardin d'hiver, dont il a fait son principal

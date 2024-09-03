@@ -14,7 +14,7 @@
   <!-- the article itself -->
   <div class="article-body">
     <p>Propriété du Duc d'Orléans, le
-      <RouterLink to="/sujet/qr169af23423c6c4d5a944bcd1eaf284f12">
+      <RouterLink to="/entite-nommee/qr169af23423c6c4d5a944bcd1eaf284f12">
         Palais-Royal</RouterLink> est fermé
       à la police royale jusqu'en 1789, favorisant de ce
       fait l'implantation d'activités illicites telles que
@@ -65,11 +65,11 @@
         théâtres</RouterLink>
       où il est aisé de trouver des clients
       friands de divertissement en tous genres. Le
-      <RouterLink to="/sujet/qr1aad3b9f3ee034ba7ba704504f94a38d1">
+      <RouterLink to="/entite-nommee/qr1aad3b9f3ee034ba7ba704504f94a38d1">
         théâtre Montensier</RouterLink>&nbsp;
       <UiButtonEye data-key="qr18b29fb05163e40079cd62337e6c30a3e"></UiButtonEye>
       et le
-      <RouterLink to="/sujet/qr14d2e16631b5f474593805d4584bf7466">
+      <RouterLink to="/entite-nommee/qr14d2e16631b5f474593805d4584bf7466">
         théâtre Séraphin</RouterLink>&nbsp;
       <UiButtonEllipsis data-key="deterville"></UiButtonEllipsis>
       constituent deux des terrains de chasse favoris des Vénus du palais.
@@ -106,13 +106,13 @@
         commerce</RouterLink> respectable du Palais-Royal.
       Cette zone grise est à l'œuvre dans les galeries dites
       <q>&nbsp;de pierre&nbsp;</q>, comprenant les galeries
-      <RouterLink to="/sujet/qr1d9ea0fb3a45945aa8d728d1a7361de6d">
+      <RouterLink to="/entite-nommee/qr1d9ea0fb3a45945aa8d728d1a7361de6d">
         Montpensier</RouterLink>,
-      <RouterLink to="/sujet/qr1bc4d6d194a6d47e48c2aa01450cd4877">
+      <RouterLink to="/entite-nommee/qr1bc4d6d194a6d47e48c2aa01450cd4877">
         Beaujolais</RouterLink> et
-      <RouterLink to="/sujet/qr1cc53415ebfdc405697c1486d47946b5e">Valois</RouterLink>
+      <RouterLink to="/entite-nommee/qr1cc53415ebfdc405697c1486d47946b5e">Valois</RouterLink>
       et celle dite <q>&nbsp;de bois&nbsp;</q>, ancêtre de la
-      <RouterLink to="/sujet/qr17e0ddbb21d394105b4618fc2460e8654">
+      <RouterLink to="/entite-nommee/qr17e0ddbb21d394105b4618fc2460e8654">
         galerie d'Orléans</RouterLink>.
       Plusieurs estampes de Claude-Louis Desrais
       <UiButtonEye data-key="qr197a9bff47a4b42ee853f87a17bd51d64"></UiButtonEye>&nbsp;

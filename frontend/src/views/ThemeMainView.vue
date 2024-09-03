@@ -16,6 +16,13 @@
     <p><strong>{{ theme.iconography_count }} ressources iconographiques</strong>
       sont associées à ce thème.</p>
 
+    <IndexAssociatedResources v-if="associatedThemes.length && associatedThemes.length > 1"
+                              fromTable="theme"
+                              toTable="theme"
+                              :to="associatedThemes"
+                              from=""
+    ></IndexAssociatedResources>
+
     <p v-if="associatedThemes.length && associatedThemes.length > 1"
        v-html="`Les <strong>${associatedThemes.length} thèmes</strong> les
                 plus fréquemment associés au thème <i>${themeName }</i> sont:
@@ -28,12 +35,12 @@
     ></p>
 
     <p v-if="associatedNamedEntity.length && associatedNamedEntity.length > 1"
-       v-html="`Les <strong>${associatedNamedEntity.length} sujets</strong> les
-                plus fréquemment associés au thème <i>${themeName}</i> sont:
+       v-html="`Les <strong>${associatedNamedEntity.length} entités nommées</strong> les
+                plus fréquemment associées au thème <i>${themeName}</i> sont:
                 ${ stringifyAssociated(associatedNamedEntity, 'namedEntity') }.`"
     ></p>
     <p v-else-if="associatedThemes.length===1"
-       v-html="`<strong>Le sujet</strong> le plus fréquemment associé
+       v-html="`<strong>L'entité nommée</strong> la plus fréquemment associée
                 au thème <i>${themeName }</i> est:
                 ${ stringifyAssociated(associatedNamedEntity, 'namedEntity') }.`"
     ></p>
@@ -53,6 +60,7 @@ import axios from "axios";
 
 import IndexBase from "@components/IndexBase.vue";
 import UiLoaderComponent from "@components/UiLoaderComponent.vue";
+import IndexAssociatedResources from "@components/IndexAssociatedResources.vue";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { stringifyAssociated, capitalizeString, capitalizeWords } from "@utils/stringifiers";
 

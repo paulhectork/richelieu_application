@@ -33,7 +33,7 @@ export const urlToFrontendTheme = (themeIdUuid) =>
  * @returns {URL}
  */
 export const urlToFrontendNamedEntity = (namedEntityIdUuid) =>
-  new URL(`/sujet/${namedEntityIdUuid}`, window.location.origin);
+  new URL(`/entite-nommee/${namedEntityIdUuid}`, window.location.origin);
 
 /**
  * the same for other frontend pages.

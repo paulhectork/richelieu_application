@@ -13,27 +13,27 @@
   <UiLoaderComponent v-if="!backendLoaded"></UiLoaderComponent>
   <div v-else>
     <p><strong>{{ namedEntity.iconography_count }}</strong>
-      ressources iconographiques sont associées à ce sujet.</p>
+      ressources iconographiques sont associées à cette entité nommée.</p>
 
     <p v-if="associatedThemes.length && associatedThemes.length > 1"
        v-html="`Les <strong>${associatedThemes.length} thèmes</strong> les
-                plus fréquemment associés au sujet <i>${ namedEntityName }</i> sont:
+                plus fréquemment associés à l'entité nommée <i>${ namedEntityName }</i> sont:
                 ${ stringifyAssociated(associatedThemes, 'theme') }.`"
     ></p>
     <p v-else-if="associatedThemes.length===1"
        v-html="`<strong>Le thème</strong> le plus fréquemment associé
-                au sujet <i>${ namedEntityName }</i> est:
+                à l'entité nommée <i>${ namedEntityName }</i> est:
                 ${ stringifyAssociated(associatedThemes, 'theme') }.`"
     ></p>
 
     <p v-if="associatedNamedEntity.length && associatedNamedEntity.length > 1"
-       v-html="`Les <strong>${associatedNamedEntity.length} sujets</strong> les
-                plus fréquemment associés au sujet <i>${namedEntityName}</i> sont:
+       v-html="`Les <strong>${associatedNamedEntity.length} entités nommées</strong> les
+                plus fréquemment associés à l'entité nommée <i>${namedEntityName}</i> sont:
                 ${ stringifyAssociated(associatedNamedEntity, 'namedEntity') }.`"
     ></p>
     <p v-else-if="associatedThemes.length===1"
-       v-html="`<strong>Le sujet</strong> le plus fréquemment associé
-                au sujet <i>${ namedEntityName }</i> est:
+       v-html="`<strong>L'entité nommée</strong> la plus fréquemment associée
+                à l'entité nommée <i>${ namedEntityName }</i> est:
                 ${ stringifyAssociated(associatedNamedEntity, 'namedEntity') }.`"
     ></p>
 

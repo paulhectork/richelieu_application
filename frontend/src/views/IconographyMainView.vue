@@ -70,7 +70,7 @@
             <td v-html="stringifyThemeArray(iconography.theme, true)"></td>
           </tr>
           <tr>
-            <td>{{ iconography.named_entity.length > 1 ? "Sujets" : "Sujet" }}</td>
+            <td>{{ iconography.named_entity.length > 1 ? "Entités nommées" : "Entité nommée" }}</td>
             <td v-html="stringifyNamedEntityArray(iconography.named_entity, true)"></td>
           </tr>
 

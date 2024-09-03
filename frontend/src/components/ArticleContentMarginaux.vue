@@ -20,7 +20,7 @@
   <!-- the article itself -->
   <div class="article-body">
     <p>Synonyme du luxe et de la volupté au cœur de la capitale,
-      le <RouterLink to="/sujet/qr169af23423c6c4d5a944bcd1eaf284f12">
+      le <RouterLink to="/entite-nommee/qr169af23423c6c4d5a944bcd1eaf284f12">
         Palais-Royal</RouterLink>
       ne saurait pourtant se cantonner à
       son image d'Épinal. Face au chatoiement des étoffes
@@ -60,10 +60,10 @@
       <UiButtonEllipsis data-key="renneville2018"></UiButtonEllipsis>.
       Les deux principaux
       géants de notre corpus iconographique,
-      <RouterLink to="/sujet/qr15fb38865f9c24cdc99339efe2ed9a131">
+      <RouterLink to="/entite-nommee/qr15fb38865f9c24cdc99339efe2ed9a131">
         Paul Butterbrodt</RouterLink>&nbsp;
       <UiButtonEye data-key="qr1d6b9f7f810fc44a487f4f710ef81e3cd"></UiButtonEye>
-      et <RouterLink to="/sujet/qr1c5419ebe75ed47b587dd6755c8d5cb15">
+      et <RouterLink to="/entite-nommee/qr1c5419ebe75ed47b587dd6755c8d5cb15">
         Mlle la Pierre</RouterLink>&nbsp;
       <UiButtonEye data-key="qr1e8b369d0bc53453796bb86967e879e3d"></UiButtonEye>
       se produisent à l'entresol du sieur Curtius, célèbre pour son cabinet
@@ -82,7 +82,7 @@
       l'image du <q>&nbsp;bon sauvage&nbsp;</q>, riant et inoffensif qui semble
       primer au Palais-Royal jusqu'à la fin du XIX<sup>e</sup>
       siècle. Ainsi, le
-      <RouterLink to="/sujet/qr1f78229ffdcb64db787f2180d67f3f715">
+      <RouterLink to="/entite-nommee/qr1f78229ffdcb64db787f2180d67f3f715">
         Café des Aveugles</RouterLink>, café-caveau emblématique
       de la Révolution française, abrite un percussionniste
       grimé en <q>&nbsp;indien&nbsp;</q>&nbsp;
@@ -92,9 +92,9 @@
       des années 1830. Au volet récréatif de l'imaginaire
       colonial se superpose une dimension institutionnelle
       et administrative à partir de 1900, lorsque la
-      <RouterLink to="/sujet/qr17e0ddbb21d394105b4618fc2460e8654">
+      <RouterLink to="/entite-nommee/qr17e0ddbb21d394105b4618fc2460e8654">
         galerie d'Orléans</RouterLink> accueille
-      <RouterLink to="/sujet/qr1f9e7e7ab2d36435083613d38a9560fb8">
+      <RouterLink to="/entite-nommee/qr1f9e7e7ab2d36435083613d38a9560fb8">
         l'Office central des colonies</RouterLink>&nbsp;
       <UiButtonEye data-key="qr112d549c964084fff909681571fe42d84"></UiButtonEye>,
       véritable tache aveugle de l'historiographie actuelle.

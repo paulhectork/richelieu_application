@@ -8,9 +8,9 @@
 
   <!-- the article itself -->
   <div class="article-body">
-    <p>L'essor de la <RouterLink to="/sujet/qr15f9f002f1fc34ee79a079b5841a16fa2">
+    <p>L'essor de la <RouterLink to="/entite-nommee/qr15f9f002f1fc34ee79a079b5841a16fa2">
         Banque de France</RouterLink>, sise dans
-      <RouterLink to="/sujet/qr1ede588201ad344db82fdcd710a279a36">
+      <RouterLink to="/entite-nommee/qr1ede588201ad344db82fdcd710a279a36">
         l'hôtel de Toulouse</RouterLink>
       depuis 1811, se mesure tant à l'échelle
       globale que locale. Cette institution occupe une place
@@ -19,7 +19,7 @@
       de différents types de commerces liés à l'activité
       de la banque, permet d'en prendre la mesure.
     </p>
-    <p>Parmi ceux-ci, la <RouterLink to="/sujet/qr1c6ef3895a2c946dfaae3f8eaf5375ea2">
+    <p>Parmi ceux-ci, la <RouterLink to="/entite-nommee/qr1c6ef3895a2c946dfaae3f8eaf5375ea2">
         Maison Acker</RouterLink>, aussi
       appelée papeterie de la Banque de France, fondée en
       1847, occupait la cour du 29, rue Neuve des Petits-Champs
@@ -69,7 +69,7 @@
       <UiButtonEye data-key="qr1ccfbadee336749e7a1bc1d7de7165def"></UiButtonEye>.
     </p>
     <p>La célèbre société
-      <RouterLink to="/sujet/qr19023d0e572504fe7a630c2b7029ed751">
+      <RouterLink to="/entite-nommee/qr19023d0e572504fe7a630c2b7029ed751">
         Bouillons Duval</RouterLink>,
       ayant ouvert son premier restaurant,
       dès 1856, au 6, rue Montesquieu, se vit confier la

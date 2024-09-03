@@ -15,9 +15,9 @@
                           class="menu-text"
               >Iconographie</RouterLink></li>
             <li class="main-default">
-              <RouterLink to="/sujet"
+              <RouterLink to="/entite-nommee"
                           class="menu-text"
-              >Sujets</RouterLink>
+              >Entités nommées</RouterLink>
             </li>
             <li class="main-default">
               <RouterLink to="/theme"

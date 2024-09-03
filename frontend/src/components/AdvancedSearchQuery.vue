@@ -67,9 +67,9 @@
         ></FormKit>
         <FormKit type="fkSelect"
                  name="namedEntity"
-                 label="Sujet"
-                 placeholder="Sélectionner un sujet"
-                 help="Sélectionner un sujet"
+                 label="Entité nommée"
+                 placeholder="Sélectionner une entité nommée"
+                 help="Sélectionner une entité nommée"
                  :options="namedEntityArray"
         ></FormKit>
       </div>

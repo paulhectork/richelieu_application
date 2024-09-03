@@ -11,14 +11,14 @@
   <div class="article-body">
     <p>Depuis leur inauguration en 1784, cafés et restaurants
       prolifèrent sous les arcades de la capitale de Paris,
-      le <RouterLink to="/sujet/qr169af23423c6c4d5a944bcd1eaf284f12">
+      le <RouterLink to="/entite-nommee/qr169af23423c6c4d5a944bcd1eaf284f12">
         Palais-Royal</RouterLink>&nbsp;
         <UiButtonEllipsis data-key="koll2019"></UiButtonEllipsis>.
-      Les ailes <RouterLink to="/sujet/qr1bc4d6d194a6d47e48c2aa01450cd4877">
+      Les ailes <RouterLink to="/entite-nommee/qr1bc4d6d194a6d47e48c2aa01450cd4877">
         Beaujolais</RouterLink>,
-      <RouterLink to="/sujet/qr1cc53415ebfdc405697c1486d47946b5e">
+      <RouterLink to="/entite-nommee/qr1cc53415ebfdc405697c1486d47946b5e">
         Valois</RouterLink> et
-      <RouterLink to="/sujet/qr1d9ea0fb3a45945aa8d728d1a7361de6d">
+      <RouterLink to="/entite-nommee/qr1d9ea0fb3a45945aa8d728d1a7361de6d">
         Montpensier</RouterLink>,
       conçues par l'architecte Victor Louis (1731-1800),
       denses et très empruntées, abritent un un grand nombre
@@ -34,14 +34,14 @@
     </p>
     <p>Dans l'almanach du Palais-Royal de 1786, on recense
       quelques-uns des principaux cafés passés à la postérité&nbsp;:
-      le <RouterLink to="/sujet/qr1dfc176223ba941da8fb438f6268a87a4">
+      le <RouterLink to="/entite-nommee/qr1dfc176223ba941da8fb438f6268a87a4">
         café de Foy</RouterLink>, le
-      <RouterLink to="/sujet/qr1d109eda888494da3a8d436455bceb826">
+      <RouterLink to="/entite-nommee/qr1d109eda888494da3a8d436455bceb826">
         café du Caveau (puis de la Rotonde)</RouterLink>,
-      ou encore le <RouterLink to="/sujet/qr12f19656fa42f48718cd12f7cdf3fcdf0">
+      ou encore le <RouterLink to="/entite-nommee/qr12f19656fa42f48718cd12f7cdf3fcdf0">
         café de Chartres</RouterLink>
       (devenu le
-      <RouterLink to="/sujet/qr1841e6e62e27942e7aed69f329ed431af">
+      <RouterLink to="/entite-nommee/qr1841e6e62e27942e7aed69f329ed431af">
         Grand Véfour</RouterLink>&nbsp;
       <UiButtonEllipsis data-key="almanach1785"></UiButtonEllipsis>).
       Davantage que du café, on y consomme des liqueurs froides
@@ -49,7 +49,7 @@
       de petits carafons, des muscats, quelques mets et autres
       vins en tout genre. La proximité avec d'autres lieux
       de sociabilité, complémentaires, à l'instar du
-      <RouterLink to="/sujet/qr10680d4144f1b493887b5a47c58785374">
+      <RouterLink to="/entite-nommee/qr10680d4144f1b493887b5a47c58785374">
         théâtre Montansier</RouterLink>
       disposant néanmoins de ses propres prestations alcoolisées,
       en assure un succès réciproque
@@ -70,14 +70,14 @@
       La salle du café du Caveau <q>&nbsp;est
       grande, agréablement décorée, ornée de glaces placées
       avec intelligence&nbsp;</q>, à l'instar du
-      <RouterLink to="/sujet/qr13bc934e66d6b49cb8413be666a7b23aa">
+      <RouterLink to="/entite-nommee/qr13bc934e66d6b49cb8413be666a7b23aa">
         café des Mille colonnes</RouterLink>,
       qui se décuplaient à l'infini par un jeu de miroirs savamment disposés
       <UiButtonEye data-key="qr1aa492107cd384b8a9b585ad404753cf4">
         </UiButtonEye>&nbsp;
       <UiButtonEllipsis data-key="mayeur1788"></UiButtonEllipsis>.
       La position centrale de
-      <RouterLink to="/sujet/qr1fd3550edb6f84acdb2dc9bee08338ee0">
+      <RouterLink to="/entite-nommee/qr1fd3550edb6f84acdb2dc9bee08338ee0">
         Madame Romain</RouterLink>,
       la <q>&nbsp;belle limonadière&nbsp;</q>,
       incarne au café des Mille colonnes une forme de représentation
@@ -116,7 +116,7 @@
       dit Thibierge (1756-1836). Actif de la Révolution au
       Directoire, il est l'auteur des aménagements du café
       de la Régence, de Corazza, et de l'ancien
-      <RouterLink to="/sujet/qr1334fe13eeeab4541a7386583ebcf318e">
+      <RouterLink to="/entite-nommee/qr1334fe13eeeab4541a7386583ebcf318e">
         passage Feydeau</RouterLink>&nbsp;
       <UiButtonEllipsis data-key="geist1988"></UiButtonEllipsis>.
     </p>

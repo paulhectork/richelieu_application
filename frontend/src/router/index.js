@@ -40,12 +40,12 @@ const router = createRouter({
       name: 'Thème',
       component: () => import("@views/ThemeMainView.vue")
     }, {
-      path: '/sujet',
-      name: 'Index des sujets',
+      path: '/entite-nommee',
+      name: 'Index des entités nommées',
       component: () => import("@views/NamedEntityIndexView.vue")
     }, {
-      path: '/sujet/:idUuid',
-      name: 'Sujet',
+      path: '/entite-nommee/:idUuid',
+      name: 'Entité nommée',
       component: () => import("@views/NamedEntityMainView.vue")
     }, {
       path: '/lieu',

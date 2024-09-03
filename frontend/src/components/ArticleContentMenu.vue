@@ -31,10 +31,10 @@
       <UiButtonEllipsis data-key="challine2020"></UiButtonEllipsis>.
     </p>
     <p>C'est le cas du
-      <RouterLink to="/sujet/qr10ef175d0c1bf44b5a5b4a953f4dd7efc">
+      <RouterLink to="/entite-nommee/qr10ef175d0c1bf44b5a5b4a953f4dd7efc">
         Grand restaurant Vidrequin</RouterLink>,
       installé dans l'enceinte du
-      <RouterLink to="/sujet/qr169af23423c6c4d5a944bcd1eaf284f12">
+      <RouterLink to="/entite-nommee/qr169af23423c6c4d5a944bcd1eaf284f12">
         Palais-Royal</RouterLink>,
       dont l'établissement
       n'occupait que deux arcades (n° 40 et 41 galerie Montpensier)
@@ -62,7 +62,7 @@
       de restaurateurs que de types d'illustrations. Leur
       rhétorique est aussi variée que celle des plats proposés.
       À titre d'exemple, dans certains documents édités pour
-      le <RouterLink to="/sujet/qr1d4dd01cdd58849cd83674914c01d464e">
+      le <RouterLink to="/entite-nommee/qr1d4dd01cdd58849cd83674914c01d464e">
         Grand Restaurant de la Bourse</RouterLink>
       installé au 47 rue Vivienne, l'architecture est sujette
       à une composition inventée, mais inspirée de la réalité
@@ -100,7 +100,7 @@
       de 1868, soit moins de 20 ans avant la création de
       cette colonne-menu réalisée à l'occasion d'un dîner
       du
-      <RouterLink to="/sujet/qr1b05476b5f7644e27bd3f4215660f0389">
+      <RouterLink to="/entite-nommee/qr1b05476b5f7644e27bd3f4215660f0389">
         Cercles des arts libéraux</RouterLink>
       en 1883. La colonne, reproduite
       avec précision, affiche en couleur des réclames pour
