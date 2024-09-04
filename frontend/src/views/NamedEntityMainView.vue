@@ -38,7 +38,7 @@
     ></p>
 
     <IndexBase :data="dataFilter"
-           display="resource"
+               display="resource"
     ></IndexBase>
   </div>
 </template>
@@ -98,9 +98,9 @@ function getData() {
  * which are also tagged with the current named entity.
  */
 function getAssociated() {
-  axios.get( new URL(`/i/associated-theme-from-named-entity/${idUuid.value}`, __API_URL__).href )
+  axios.get( new URL(`/i/association/theme-from-named-entity/${idUuid.value}`, __API_URL__).href )
        .then(r => { associatedThemes.value = r.data });
-  axios.get( new URL(`/i/associated-named-entity-from-named-entity/${idUuid.value}`, __API_URL__).href )
+  axios.get( new URL(`/i/association/named-entity-from-named-entity/${idUuid.value}`, __API_URL__).href )
        .then(r => { associatedNamedEntity.value = r.data });
 }
 

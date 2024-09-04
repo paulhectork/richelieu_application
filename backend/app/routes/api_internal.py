@@ -1,6 +1,6 @@
 from flask import render_template, jsonify, request
 from psycopg2.extras import NumericRange
-from sqlalchemy import text, desc, asc, and_, func
+from sqlalchemy import text, func
 import random
 import json
 
@@ -113,8 +113,7 @@ def index_place():
 @app.route("/i/place-lite/<place_uuid>")
 def place_lite(place_uuid:str):
     """
-    get a single `place` item and return
-    its `serialize_lite()` repr
+    get a single `place` item and return its `serialize_lite()` repr
     """
     r = db.session.execute(Place.query.filter(Place.id_uuid==place_uuid).limit(1))
     return jsonify([ _[0].serialize_lite() for _ in r.all() ])
@@ -145,8 +144,7 @@ def main_theme(id_uuid):
 @app.route("/i/theme-name/<id_uuid>")
 def main_theme_name(id_uuid:str):
     """
-    get the name of a theme from its UUID.
-    used in the main page for a theme.
+    get the name of a theme from its UUID. used in the main page for a theme.
     """
     r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
     return jsonify([ t[0].entry_name for t in r.all() ])
@@ -225,7 +223,7 @@ def index_directory():
 # *************************************************************************
 # advanced search
 # *************************************************************************
-@app.route("/i/iconography/search", methods=["GET", "POST"])
+@app.route("/i/search/iconography", methods=["GET", "POST"])
 def advanced_search_iconography():
     """
     the heavy work is done in `../search/search_iconography.py`
@@ -260,8 +258,8 @@ def advanced_search_iconography():
 # associations
 # *************************************************************************
 
-@app.route("/i/associated-theme-from-theme/<id_uuid>")
-def associated_theme_from_theme(id_uuid:str):
+@app.route("/i/association/theme-from-theme/<id_uuid>")
+def association_theme_from_theme(id_uuid:str):
     """
     get the most frequently associated themes from a theme:
     fetch the themes that are most frequently used to tag
@@ -338,8 +336,8 @@ def associated_theme_from_theme(id_uuid:str):
     return jsonify(r)
 
 
-@app.route("/i/associated-named-entity-from-theme/<id_uuid>")
-def associated_named_entity_from_theme(id_uuid:str):
+@app.route("/i/association/named-entity-from-theme/<id_uuid>")
+def association_named_entity_from_theme(id_uuid:str):
     """
     get the most frequently associated named entites from a theme:
     fetch the NEs that are most frequently used to tag iconography
@@ -373,8 +371,8 @@ def associated_named_entity_from_theme(id_uuid:str):
     return jsonify(r)
 
 
-@app.route("/i/associated-named-entity-from-named-entity/<id_uuid>")
-def associated_named_entity_from_named_entity(id_uuid:str):
+@app.route("/i/association/named-entity-from-named-entity/<id_uuid>")
+def association_named_entity_from_named_entity(id_uuid:str):
     """
     get the most frequently associated named entites from a named entity:
     fetch the NEs that are most frequently used to tag iconography
@@ -409,8 +407,8 @@ def associated_named_entity_from_named_entity(id_uuid:str):
     r = [ { "id_uuid": row[0], "entry_name": row[1], "count": row[2] } for row in r ]
     return jsonify(r)
 
-@app.route("/i/associated-theme-from-named-entity/<id_uuid>")
-def associated_theme_from_named_entity(id_uuid:str):
+@app.route("/i/association/theme-from-named-entity/<id_uuid>")
+def association_theme_from_named_entity(id_uuid:str):
     """
     get the most frequently associated themes from a named entity:
     fetch the themes that are most frequently used to tag iconography
@@ -442,6 +440,114 @@ def associated_theme_from_named_entity(id_uuid:str):
     r = db.session.execute(q).all()
     r = [ { "id_uuid": row[0], "entry_name": row[1], "count": row[2] } for row in r ]
     return jsonify(r)
+
+
+@app.route("/i/association/index")
+def association_index():
+    """
+    build an index of `iconography` resources where
+    from_table.id_uuid == from_id_uuid and to_table.id_uuid == to_id_uuid
+
+    query params:
+    * from_table   str : tableA's name in the database
+    * to_table     str : tableB's name in the database
+    * from_id_uuid str : id_uuid in tableA
+    * to_id_uuid   str : id_uuid in tableB
+    """
+    # 1) get and test params
+    params = { "from_table"  : request.args.get("from_table", None),
+               "to_table"    : request.args.get("to_table", None),
+               "from_id_uuid": request.args.get("from_id_uuid", None) ,
+               "to_id_uuid"  : request.args.get("to_id_uuid", None) }
+
+    # check that we have valid data
+    tablenames = db.session.execute(text( "SELECT table_name "
+                                        + "FROM information_schema.tables "
+                                        + "WHERE table_schema = 'public';"))
+    tablenames = [ _[0] for _ in tablenames.all() ]  # list of allowed table names
+    if ( any( v == None or v == "" for v in params.values() )
+         or params["from_table"] not in tablenames
+         or params["to_table"] not in tablenames ):
+        return "Internal server error at `make_params`", 500
+
+    # 2) helper functions
+    # a lambda function is defined for each filter on
+    # the Iconography table, for a modular approach:
+    # we apply different filters at different points, but the
+    # filtering used is the same (filter by a theme UUID will
+    # always look the same). so, those functions will be used
+    # at the needed places with the params needed.
+    # params:
+    #   * q           : the query
+    #   * id_uuid     : an uuid string
+    #   * id_uuid_arr : an array of id_uuids, when we're getting the association
+    #                   between 2 rows of the same table
+    by_theme = lambda q, id_uuid: (
+        q.join(Iconography.r_iconography_theme)
+              .join(R_IconographyTheme
+                    .theme
+                    .and_( Theme.id_uuid == id_uuid )))
+    by_named_entity = lambda q, id_uuid: (
+        (q.join(Iconography.r_iconography_named_entity)
+          .join(R_IconographyNamedEntity
+                .named_entity
+                .and_( NamedEntity.id_uuid == id_uuid ))))
+    # USELESS: these would be equivalent to an OR between
+    # different values of the same table (an SQL OUTER JOIN
+    # between from_id_uuid and to_id_uuid), where we want an
+    # INNER JOIN.
+    # by_named_entity_arr = lambda q, id_uuid_arr: (
+    #     (q.join(Iconography.r_iconography_named_entity)
+    #       .join(R_IconographyNamedEntity
+    #            .named_entity
+    #            .and_( NamedEntity.id_uuid.in_(id_uuid_arr) ))) )
+    # by_theme_arr = lambda q, id_uuid_arr: (
+    #     q.join(Iconography.r_iconography_theme)
+    #           .join(R_IconographyTheme
+    #                .theme
+    #                .and_( Theme.id_uuid.in_(id_uuid_arr) )))
+
+    # 3) build query
+    base_query = select(func.distinct(Iconography.id))  # base query
+
+    # associating between 2 id_uuids of the same table. this will need
+    # an inner join with a subquery, main query for themeA, subquery for themeB
+    if ( params["from_table"] == params["to_table"]
+         and params["from_table"] == "theme" ):
+        base_query = by_theme( base_query, params["from_id_uuid"] )
+        to_query   = by_theme( select(Iconography.id)
+                             , params["to_id_uuid"] )
+        base_query = base_query.filter(Iconography.id.in_(to_query))
+    # named_entityA and named_entityB
+    elif ( params["from_table"] == params["to_table"]
+           and params["from_table"] == "named_entity" ):
+        base_query = by_named_entity( base_query, params["from_id_uuid"] )
+        to_query   = by_named_entity( select(Iconography.id)
+                                    , params["to_id_uuid"] )
+        base_query = base_query.filter(Iconography.id.in_(to_query))
+
+    # associating 2 different tables. no subqueries, just chain joins.
+    else:
+        # from a theme
+        if params["from_table"] == "theme":
+            base_query = by_theme(base_query, params["from_id_uuid"])
+        # from a named entity
+        elif params["from_table"] == "named_entity":
+            base_query = by_named_entity(base_query, params["from_id_uuid"])
+        # to a theme
+        if params["to_table"] == "theme":
+            base_query = by_theme(base_query, params["to_id_uuid"])
+        # to a named entity
+        elif params["to_table"] == "named_entity":
+            base_query = by_named_entity(base_query, params["to_id_uuid"])
+
+    query = select( Iconography ).filter( Iconography.id.in_(base_query) )
+    r = db.session.execute(query)
+
+    # import sqlparse
+    # print(sqlparse.format(str(query), keyword_case="upper", reindent=True))
+
+    return [ i[0].serialize_lite() for i in r.all() ]
 
 
 

@@ -1,4 +1,4 @@
-<!-- NotFoundView.vue
+<!-- ErrNotFoundView.vue
 
      a view displayed when a route is not registered / a page
      does not exist. also implemented as a non-view component
@@ -8,11 +8,11 @@
 -->
 
 <template>
-  <NotFound></NotFound>
+  <ErrNotFound></ErrNotFound>
 </template>
 
 <script setup>
-import NotFound from "@components/NotFound.vue";
+import ErrNotFound from "@components/ErrNotFound.vue";
 </script>
 
 <style scoped>

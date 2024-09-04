@@ -30,7 +30,7 @@ def config_app(cfgname:str):
     db.init_app(app)
     CORS(app, origins=[ "http://localhost:5173"     # frontend as localhost
                       , "http://172.17.1.142:5173"  # frontend as server IP addr
-                      , "http://localhost:5000",    # backend as localhost (should be useless but hey)
+                      , "http://localhost:5000"    # backend as localhost (should be useless but hey)
     ])
     return app
 

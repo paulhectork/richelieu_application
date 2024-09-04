@@ -16,13 +16,21 @@
     <p><strong>{{ theme.iconography_count }} ressources iconographiques</strong>
       sont associées à ce thème.</p>
 
-      <IndexCombinedResources v-if="associatedThemes.length && associatedThemes.length > 1"
+      <IndexAssociationRedirects v-if="associatedThemes.length"
                               fromTable="theme"
                               toTable="theme"
                               :to="associatedThemes"
                               :from="{ entry_name: theme.entry_name
                                      , id_uuid: theme.id_uuid }"
-      ></IndexCombinedResources>
+      ></IndexAssociationRedirects>
+
+      <IndexAssociationRedirects v-if="associatedNamedEntities.length"
+                              fromTable="theme"
+                              toTable="named_entity"
+                              :to="associatedNamedEntities"
+                              :from="{ entry_name: theme.entry_name
+                                     , id_uuid: theme.id_uuid }"
+      ></IndexAssociationRedirects>
 
     <!--
     <p v-if="associatedThemes.length && associatedThemes.length > 1"
@@ -35,19 +43,18 @@
                 au thème <i>${themeName }</i> est:
                 ${ stringifyAssociated(associatedThemes, 'theme') }.`"
     ></p>
-    -->
 
-    <p v-if="associatedNamedEntity.length && associatedNamedEntity.length > 1"
-       v-html="`Les <strong>${associatedNamedEntity.length} entités nommées</strong> les
+    <p v-if="associatedNamedEntities.length && associatedNamedEntities.length > 1"
+       v-html="`Les <strong>${associatedNamedEntities.length} entités nommées</strong> les
                 plus fréquemment associées au thème <i>${themeName}</i> sont:
-                ${ stringifyAssociated(associatedNamedEntity, 'namedEntity') }.`"
+                ${ stringifyAssociated(associatedNamedEntities, 'namedEntity') }.`"
     ></p>
     <p v-else-if="associatedThemes.length===1"
        v-html="`<strong>L'entité nommée</strong> la plus fréquemment associée
                 au thème <i>${themeName }</i> est:
-                ${ stringifyAssociated(associatedNamedEntity, 'namedEntity') }.`"
+                ${ stringifyAssociated(associatedNamedEntities, 'namedEntity') }.`"
     ></p>
-
+    -->
 
     <IndexBase :data="dataFilter"
                display="resource"
@@ -63,7 +70,7 @@ import axios from "axios";
 
 import IndexBase from "@components/IndexBase.vue";
 import UiLoaderComponent from "@components/UiLoaderComponent.vue";
-import IndexCombinedResources from "@components/IndexCombinedResources.vue";
+import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { stringifyAssociated, capitalizeString, capitalizeWords } from "@utils/stringifiers";
 
@@ -78,7 +85,7 @@ const idUuid     = ref(route.params.idUuid);
 const backendLoaded = ref(false);  // when swittched to true, the loader is removed
 
 const associatedThemes      = ref([]); // themes most frequently associated with the current theme
-const associatedNamedEntity = ref([]); // named entites most frequently associated with the current theme
+const associatedNamedEntities = ref([]); // named entites most frequently associated with the current theme
 
 // the backend URLs, defined as `computed` to handle reactivity
 const apiTargetTheme = computed(() =>
@@ -104,7 +111,7 @@ function getData() {
   axios.get(apiTargetIconography.getter().href).then(r => {
     backendLoaded.value = true;
     if ( r.data.length ) {
-      theme.value = r.data[0]
+      theme.value = r.data[0];
     }
   })
 }
@@ -115,10 +122,10 @@ function getData() {
  * which are also tagged with the current theme.
  */
 function getAssociated() {
-  axios.get( new URL(`/i/associated-theme-from-theme/${idUuid.value}`, __API_URL__).href )
+  axios.get( new URL(`/i/association/theme-from-theme/${idUuid.value}`, __API_URL__).href )
        .then(r => { associatedThemes.value = r.data });
-  axios.get( new URL(`/i/associated-named-entity-from-theme/${idUuid.value}`, __API_URL__).href )
-       .then(r => { console.log(r.data); associatedNamedEntity.value = r.data });
+  axios.get( new URL(`/i/association/named-entity-from-theme/${idUuid.value}`, __API_URL__).href )
+       .then(r => { associatedNamedEntities.value = r.data });
 }
 
 watch(theme, (newTheme, oldTheme) => {

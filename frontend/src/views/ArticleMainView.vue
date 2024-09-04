@@ -127,8 +127,8 @@ import { indexDataFormatterIconography } from "@utils/indexDataFormatter.js";
 
 const route                  = useRoute();
 const articleName            = ref();         // the name of the article, defined in `setArticleName`, allows us to load the relevant `ArticleContent...`.
-const articleComponent       = shallowRef();  // the currentcomponent, or NotFound.vue if articleName is not a key of `urlMapper` below. `shallowRef` is used to avoid vue performance warnings
-const notFoundFlag           = ref(false);    // true if the component `articleComponent` is `NotFound.vue`
+const articleComponent       = shallowRef();  // the currentcomponent, or ErrNotFound.vue if articleName is not a key of `urlMapper` below. `shallowRef` is used to avoid vue performance warnings
+const notFoundFlag           = ref(false);    // true if the component `articleComponent` is `ErrNotFound.vue`
 
 const iconographyIndex       = ref([]);       // array of iconography objects to display in an index
 const iconographyMainArray   = ref([]);       // array of a few iconography resources (2-6) from which to display IIIFs
@@ -162,21 +162,21 @@ const urlMapper = { "bourse"             : "ArticleContentBourse.vue"
 /**
  * dynamically import the article component based
  * on the name in the route. if no comonent is found,
- * NotFound is imported.
+ * ErrNotFound is imported.
  * using `@` in imports doesn't work in dynamic loading,
  * see: https://stackoverflow.com/a/72977926/17915803
  * @param {string} articleName
  * @returns {Array<ComponentPublicInstance, bool>}:
  *   an array of 2 elements:
  *   - the vue component
- *   - a boolean that is True if `NotFound` is returned.
+ *   - a boolean that is True if `ErrNotFound` is returned.
  */
 function loadCurrentArticleComponent(articleName) {
   let componentName = Object.keys(urlMapper).includes(articleName)
                       ? urlMapper[articleName]
-                      : "NotFound.vue";
+                      : "ErrNotFound.vue";
   return [ defineAsyncComponent(() => import(`../components/${componentName}` /* @vite-ignore */))
-         , componentName === "NotFound.vue"
+         , componentName === "ErrNotFound.vue"
          ];
 }
 
@@ -243,7 +243,7 @@ function articleMounter(_route) {
  */
 function fetchIndex(newQueryParams) {
   let queryParams = new IconographyQueryParams(newQueryParams, "route");
-  let targetUrl = new URL("/i/iconography/search", __API_URL__);
+  let targetUrl = new URL("/i/search/iconography", __API_URL__);
 
   axios
   .post( targetUrl.href, queryParams.toJson() )

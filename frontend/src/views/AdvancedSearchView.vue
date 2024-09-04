@@ -84,7 +84,7 @@ import UiLoaderComponent from "@components/UiLoaderComponent.vue";
 
 /***************************************/
 
-const targetUrl = new URL("/i/iconography/search", __API_URL__);
+const targetUrl = new URL("/i/search/iconography", __API_URL__);
 
 const route          = useRoute();  // the current route
 const router         = useRouter(); // the full router

@@ -58,8 +58,9 @@ const router = createRouter({
     }, {
       path: '/index-combine',
       name: 'Index Combiné',
-      component: () => import("@views/CombinedIndexView.vue"),
+      component: () => import("@views/AssociationIndexView.vue"),
       props: route => ({ toIdUuid   : route.query.toIdUuid,   // https://router.vuejs.org/guide/essentials/passing-props.html#Function-mode                        fromIdUuid : route.query.fromIdUuid
+                         fromIdUuid : route.query.fromIdUuid,
                          fromTable  : route.query.from,
                          toTable    : route.query.to })
     }, {
@@ -77,7 +78,7 @@ const router = createRouter({
     }, {
       path: "/:pathMatch(.*)*",
       name: "404",
-      component: () => import("@views/NotFoundView.vue")
+      component: () => import("@views/ErrNotFoundView.vue")
     }
   ]
 })

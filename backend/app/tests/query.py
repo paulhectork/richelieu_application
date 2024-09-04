@@ -65,7 +65,7 @@ class TestQueries(unittest.TestCase):
 
     def test_advanced_search_iconography_individual(self):
         """
-        test the individual search params in `/i/iconography/search` route.
+        test the individual search params in `/i/search/iconography` route.
 
         query arguments are written pretty much like they are
         expected to be received from the frontend, and the
@@ -75,7 +75,7 @@ class TestQueries(unittest.TestCase):
         '%' is a special character in python strings, so we need to prefix
         strings that contain it with 'r'.
         """
-        route = "/i/iconography/search"
+        route = "/i/search/iconography"
 
         # queries is an array of [ <route params>, <raw sql query> ]
         queries = [
@@ -189,7 +189,7 @@ class TestQueries(unittest.TestCase):
         """
         test the combination of different params with AND, OR, NOT boolean operators.
         """
-        route = "/i/iconography/search"
+        route = "/i/search/iconography"
         queries = [
             # basic OR
             [ { "namedEntity"   : [ "Galerie Vivienne" ],
@@ -430,7 +430,7 @@ class TestQueries(unittest.TestCase):
         error to be raised.
         here, we don't need to check for raw SQL or anything.
         """
-        route = "/i/iconography/search"
+        route = "/i/search/iconography"
 
         # get on this route returns a 400
         with self.app.app_context():

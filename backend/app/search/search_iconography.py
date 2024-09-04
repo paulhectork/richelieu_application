@@ -2,18 +2,15 @@ from sqlalchemy.engine.result import ChunkedIteratorResult
 from sqlalchemy.sql.expression import and_, any_, or_
 from psycopg2.extras import NumericRange
 from sqlalchemy import select, func, union
-from sqlalchemy.orm import aliased
-from flask import ctx, current_app
+from flask import current_app
 import typing as t
-
-import sqlparse
-
 
 from ..orm import ( Iconography, Title, Actor, Theme, NamedEntity
                   , Institution, R_Institution, R_IconographyActor
                   , R_IconographyNamedEntity, R_IconographyTheme)
 from ..utils.converters import list2int4range
 from ..app import db
+
 
 # *******************************************************
 # advanced search engine for the iconography
@@ -472,6 +469,7 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
     r = db.session.execute(select( Iconography ).filter( Iconography.id.in_(full_query) ))
 
     if current_app.config["TESTING"]:
+        import sqlparse
         # `.all()` closes the transaction, which means that we won't be able
         # to access the query results down the road, which will raise unecessary
         # testing errors => we run a second query count the results.
