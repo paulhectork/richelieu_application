@@ -16,13 +16,15 @@
     <p><strong>{{ theme.iconography_count }} ressources iconographiques</strong>
       sont associées à ce thème.</p>
 
-    <IndexAssociatedResources v-if="associatedThemes.length && associatedThemes.length > 1"
+      <IndexCombinedResources v-if="associatedThemes.length && associatedThemes.length > 1"
                               fromTable="theme"
                               toTable="theme"
                               :to="associatedThemes"
-                              from=""
-    ></IndexAssociatedResources>
+                              :from="{ entry_name: theme.entry_name
+                                     , id_uuid: theme.id_uuid }"
+      ></IndexCombinedResources>
 
+    <!--
     <p v-if="associatedThemes.length && associatedThemes.length > 1"
        v-html="`Les <strong>${associatedThemes.length} thèmes</strong> les
                 plus fréquemment associés au thème <i>${themeName }</i> sont:
@@ -33,6 +35,7 @@
                 au thème <i>${themeName }</i> est:
                 ${ stringifyAssociated(associatedThemes, 'theme') }.`"
     ></p>
+    -->
 
     <p v-if="associatedNamedEntity.length && associatedNamedEntity.length > 1"
        v-html="`Les <strong>${associatedNamedEntity.length} entités nommées</strong> les
@@ -60,7 +63,7 @@ import axios from "axios";
 
 import IndexBase from "@components/IndexBase.vue";
 import UiLoaderComponent from "@components/UiLoaderComponent.vue";
-import IndexAssociatedResources from "@components/IndexAssociatedResources.vue";
+import IndexCombinedResources from "@components/IndexCombinedResources.vue";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { stringifyAssociated, capitalizeString, capitalizeWords } from "@utils/stringifiers";
 

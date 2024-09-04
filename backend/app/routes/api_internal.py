@@ -10,16 +10,17 @@ from ..app import app, db
 from ..orm import *
 
 
-# *************************************************
+# ********************************************************************************
 # routes for the internal API
 # basepath: `<APP URL>/i/`
-# *************************************************
+# ********************************************************************************
 
 
 
-# ******************************************
-# indexes
-# ******************************************
+# *************************************************************************
+# iconography
+# *************************************************************************
+
 @app.route("/i/iconography")
 def index_iconography():
     """
@@ -31,66 +32,6 @@ def index_iconography():
     return jsonify([ _[0].serialize_lite() for _ in r.all() ])
 
 
-@app.route("/i/cartography")
-def index_cartography():
-    """
-    get all `cartography` ressources.
-    """
-    r = db.session.execute(Cartography.query)
-    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
-
-
-@app.route("/i/place")
-def index_place():
-    """
-    get all `place` ressources
-    """
-    r = db.session.execute(Place.query)
-    return jsonify([  _[0].serialize_lite() for _ in r.all() ])
-
-
-@app.route("/i/directory")
-def index_directory():
-    """
-    get all directory ressources
-    """
-    r = db.session.execute(Directory.query)
-    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
-
-
-@app.route("/i/theme")
-def index_theme():
-    """
-    get all theme elements
-    """
-    r = (db.session.query(Theme, Theme.iconography_count)
-                   .order_by(Theme.iconography_count.desc()) )
-    # to check the result: print( [_[0].iconography_count for _ in r.all()] )
-    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
-
-
-@app.route("/i/named-entity")
-def index_named_entity():
-    """
-    get all named entity elements
-    """
-    r = (db.session.query(NamedEntity, NamedEntity.iconography_count)
-                   .order_by(NamedEntity.iconography_count.desc()) )
-    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
-
-
-@app.route("/i/institution")
-def institution():
-    """
-    get all institution elements
-    """
-    r = db.session.execute(Institution.query)
-    return jsonify([ i[0].serialize_lite() for i in r.all() ])
-
-
-# ******************************************
-# main pages
-# ******************************************
 @app.route("/i/iconography/<id_uuid>")
 def main_iconography(id_uuid):
     """return an `Iconography` object based on its `id_uuid`"""
@@ -115,11 +56,114 @@ def main_iconography(id_uuid):
     return jsonify(out)
 
 
+@app.route("/i/iconography-from-uuid")
+def iconography_from_uuid():#id_uuid_arr:t.List[str]):
+    """
+    return Iconography objects matching the UUIDs in `id_uuid_arr`.
+    the UUIDs desired have the parameter name `id_uuid`.
+    """
+    id_uuid_arr = request.args.getlist("id_uuid")
+    out = []
+
+    if len(id_uuid_arr):
+        query = select( Iconography ).filter( Iconography.id_uuid.in_(id_uuid_arr) )
+        r = db.session.execute( query ).all()
+        out = [ icono[0].serialize_full() for icono in r ]
+
+    return jsonify(out)
+
+
+@app.route("/i/iconography-overall-date-range")
+def iconography_overall_date_range():
+    """
+    get the overall minimum/maximum
+    dates on the iconography table
+    """
+    r = db.session.execute(text("""(
+                                  SELECT lower(iconography.date)
+                                  FROM iconography
+                                  WHERE iconography.date IS NOT NULL
+                                  ORDER BY iconography.date ASC
+                                  LIMIT 1
+                                )
+                                UNION
+                                (
+                                  SELECT upper(iconography.date)
+                                  FROM iconography
+                                  WHERE iconography.date IS NOT NULL
+                                  ORDER BY iconography.date DESC
+                                  LIMIT 1
+                                );"""))
+    return jsonify(sorted([ d[0] for d in r.all() ]))
+
+
+# *************************************************************************
+# place
+# *************************************************************************
+
+@app.route("/i/place")
+def index_place():
+    """
+    get all `place` ressources
+    """
+    r = db.session.execute(Place.query)
+    return jsonify([  _[0].serialize_lite() for _ in r.all() ])
+
+
+@app.route("/i/place-lite/<place_uuid>")
+def place_lite(place_uuid:str):
+    """
+    get a single `place` item and return
+    its `serialize_lite()` repr
+    """
+    r = db.session.execute(Place.query.filter(Place.id_uuid==place_uuid).limit(1))
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+
+
+# *************************************************************************
+# theme
+# *************************************************************************
+
+@app.route("/i/theme")
+def index_theme():
+    """
+    get all theme elements
+    """
+    r = (db.session.query(Theme, Theme.iconography_count)
+                   .order_by(Theme.iconography_count.desc()) )
+    # to check the result: print( [_[0].iconography_count for _ in r.all()] )
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+
+
 @app.route("/i/theme/<id_uuid>")
 def main_theme(id_uuid):
     """fetch all iconographic resources related to a theme"""
     r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
     return jsonify([ t[0].serialize_full() for t in r.all() ])
+
+
+@app.route("/i/theme-name/<id_uuid>")
+def main_theme_name(id_uuid:str):
+    """
+    get the name of a theme from its UUID.
+    used in the main page for a theme.
+    """
+    r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
+    return jsonify([ t[0].entry_name for t in r.all() ])
+
+
+# *************************************************************************
+# named_entity
+# *************************************************************************
+
+@app.route("/i/named-entity")
+def index_named_entity():
+    """
+    get all named entity elements
+    """
+    r = (db.session.query(NamedEntity, NamedEntity.iconography_count)
+                   .order_by(NamedEntity.iconography_count.desc()) )
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
 
 
 @app.route("/i/named-entity/<id_uuid>")
@@ -129,9 +173,58 @@ def main_named_entity(id_uuid):
     return jsonify([ n[0].serialize_full() for n in r.all() ])
 
 
-# ******************************************
+@app.route("/i/named-entity-name/<id_uuid>")
+def main_named_entity_name(id_uuid:str):
+    """
+    get the name of a named entity from its UUID
+    used in the main pages for a named entity.
+    """
+    r = db.session.execute(NamedEntity.query.filter( NamedEntity.id_uuid == id_uuid ))
+    return jsonify([ n[0].entry_name for n in r.all() ])
+
+
+# *************************************************************************
+# cartography
+# *************************************************************************
+
+@app.route("/i/cartography")
+def index_cartography():
+    """
+    get all `cartography` ressources.
+    """
+    r = db.session.execute(Cartography.query)
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+
+
+# *************************************************************************
+# institution
+# *************************************************************************
+
+@app.route("/i/institution")
+def institution():
+    """
+    get all institution elements
+    """
+    r = db.session.execute(Institution.query)
+    return jsonify([ i[0].serialize_lite() for i in r.all() ])
+
+
+# *************************************************************************
+# directory
+# *************************************************************************
+
+@app.route("/i/directory")
+def index_directory():
+    """
+    get all directory ressources
+    """
+    r = db.session.execute(Directory.query)
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+
+
+# *************************************************************************
 # advanced search
-# ******************************************
+# *************************************************************************
 @app.route("/i/iconography/search", methods=["GET", "POST"])
 def advanced_search_iconography():
     """
@@ -163,55 +256,9 @@ def advanced_search_iconography():
         return "This route only accepts HTTP with JSON parameters", 400
 
 
-# ******************************************
-# utils
-# ******************************************
-@app.route("/i/place-lite/<place_uuid>")
-def place_lite(place_uuid:str):
-    """
-    get a single `place` item and return
-    its `serialize_lite()` repr
-    """
-    r = db.session.execute(Place.query.filter(Place.id_uuid==place_uuid).limit(1))
-    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
-
-
-@app.route("/i/theme-name/<id_uuid>")
-def main_theme_name(id_uuid:str):
-    """
-    get the name of a theme from its UUID.
-    used in the main page for a theme.
-    """
-    r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
-    return jsonify([ t[0].entry_name for t in r.all() ])
-
-
-@app.route("/i/named-entity-name/<id_uuid>")
-def main_named_entity_name(id_uuid:str):
-    """
-    get the name of a named entity from its UUID
-    used in the main pages for a named entity.
-    """
-    r = db.session.execute(NamedEntity.query.filter( NamedEntity.id_uuid == id_uuid ))
-    return jsonify([ n[0].entry_name for n in r.all() ])
-
-
-@app.route("/i/iconography-from-uuid")
-def iconography_from_uuid():#id_uuid_arr:t.List[str]):
-    """
-    return Iconography objects matching the UUIDs in `id_uuid_arr`.
-    the UUIDs desired have the parameter name `id_uuid`.
-    """
-    id_uuid_arr = request.args.getlist("id_uuid")
-    out = []
-
-    if len(id_uuid_arr):
-        query = select( Iconography ).filter( Iconography.id_uuid.in_(id_uuid_arr) )
-        r = db.session.execute( query ).all()
-        out = [ icono[0].serialize_full() for icono in r ]
-
-    return jsonify(out)
-
+# *************************************************************************
+# associations
+# *************************************************************************
 
 @app.route("/i/associated-theme-from-theme/<id_uuid>")
 def associated_theme_from_theme(id_uuid:str):
@@ -397,34 +444,14 @@ def associated_theme_from_named_entity(id_uuid:str):
     return jsonify(r)
 
 
-@app.route("/i/iconography-overall-date-range")
-def iconography_overall_date_range():
-    """
-    get the overall minimum/maximum
-    dates on the iconography table
-    """
-    r = db.session.execute(text("""(
-                                  SELECT lower(iconography.date)
-                                  FROM iconography
-                                  WHERE iconography.date IS NOT NULL
-                                  ORDER BY iconography.date ASC
-                                  LIMIT 1
-                                )
-                                UNION
-                                (
-                                  SELECT upper(iconography.date)
-                                  FROM iconography
-                                  WHERE iconography.date IS NOT NULL
-                                  ORDER BY iconography.date DESC
-                                  LIMIT 1
-                                );"""))
-    return jsonify(sorted([ d[0] for d in r.all() ]))
 
 
 
-# ******************************************
+
+
+# *************************************************************************
 # table viewer
-# ******************************************
+# *************************************************************************
 
 
 @app.route("/i/list-tables")

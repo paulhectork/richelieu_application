@@ -56,6 +56,13 @@ const router = createRouter({
       name: 'Lieu',
       component: () => import("@views/PlaceMainView.vue")
     }, {
+      path: '/index-combine',
+      name: 'Index Combiné',
+      component: () => import("@views/CombinedIndexView.vue"),
+      props: route => ({ toIdUuid   : route.query.toIdUuid,   // https://router.vuejs.org/guide/essentials/passing-props.html#Function-mode                        fromIdUuid : route.query.fromIdUuid
+                         fromTable  : route.query.from,
+                         toTable    : route.query.to })
+    }, {
       path: '/article',
       name: 'Articles',
       component: () => import("@views/ArticleIndexView.vue")
