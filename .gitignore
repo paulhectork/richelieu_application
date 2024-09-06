@@ -152,6 +152,7 @@ npm-debug.log yarn-error.log
 
 # VARIOUS STUFF
 nohup.out
+frontend/node_modules-retord/
 
 # ECLIPSE + IDE STUFF
 .settings/*
