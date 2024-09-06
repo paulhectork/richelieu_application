@@ -47,7 +47,9 @@ class Title(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+
 # *******************************************************************
+
 
 class Annotation(db.Model):
     """
@@ -67,7 +69,9 @@ class Annotation(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+
 # *******************************************************************
+
 
 class Theme(db.Model):
     """
@@ -117,6 +121,7 @@ class Theme(db.Model):
     def serialize_lite(self):
         return { "id_uuid": self.id_uuid,                     # str
                  "entry_name": self.entry_name,               # str
+                 "category": self.category,                   # str
                  "thumbnail": self.get_thumbnail(),           # t.List[str]
                  "iconography_count": self.iconography_count  # int
         }
@@ -125,6 +130,7 @@ class Theme(db.Model):
         return { "id_uuid": self.id_uuid,                     # str
                  "entry_name": self.entry_name,               # str
                  "description": self.description,             # str
+                 "category": self.category,                   # str
                  "iconography": self.get_iconography(),       # t.List[t.Dict]
                  "iconography_count": self.iconography_count  # int
         }
@@ -136,7 +142,7 @@ class Theme(db.Model):
         number of themes for that category
         """
         query = (select( Theme.category
-                       , func.count(Theme.id_uuid).label("count_themes"))
+                       , func.count(Theme.id_uuid).label("count"))
                 .group_by(Theme.category)
                 .order_by(Theme.category))
         r = db.session.execute(query).all()
@@ -207,6 +213,7 @@ class NamedEntity(db.Model):
     def serialize_lite(self):
         return { "id_uuid": self.id_uuid,                     # str
                  "entry_name": self.entry_name,               # str
+                 "category": self.category,                   # str
                  "thumbnail": self.get_thumbnail(),           # t.List[str]
                  "iconography_count": self.iconography_count  # int
         }
@@ -214,12 +221,42 @@ class NamedEntity(db.Model):
     def serialize_full(self):
         return { "id_uuid": self.id_uuid,                     # str
                  "entry_name": self.entry_name,               # str
+                 "category": self.category,                   # str
                  "description": self.description,             # str
                  "iconography": self.get_iconography(),       # t.List[t.Dict]
                  "iconography_count": self.iconography_count  # int
         }
 
+    @classmethod
+    def get_categories(cls) -> t.Dict:
+        """
+        return all categories mapped to the
+        number of named entities for that category
+        """
+        query = (select( NamedEntity.category
+                       , func.count(NamedEntity.id_uuid).label("count"))
+                .group_by(NamedEntity.category)
+                .order_by(NamedEntity.category))
+        r = db.session.execute(query).all()
+        out = [ { "category_name": row[0], "count": row[1] }
+                for row in r ]
+        return out
+
+    @classmethod
+    def get_named_entities_for_category(cls, category:str):
+        """
+        return all named entities for category `category`
+        """
+        query = (select(NamedEntity)
+                .filter(NamedEntity.category==category)
+                .order_by(NamedEntity.entry_name))
+        r = db.session.execute(query).all()
+        return [ t[0].serialize_lite() for t in r ]
+
+
+
 # *******************************************************************
+
 
 class Actor(db.Model):
     """

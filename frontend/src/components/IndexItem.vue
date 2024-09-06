@@ -26,31 +26,12 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-// import $ from "jquery";
 
 import { manifestToThumbnail } from "@utils/iiif.js";
 
+/**************************************************************/
+
 const props = defineProps(["item", "display"]);
-// const selector = `#iiif-thumbnail-${props.item.idUuid}`;
-
-onMounted(() => {
-  /*
-  if ( props.item.iiif ) {
-    (async () => {
-      manifestToThumbnail(props.item.iiif, props.item.img)
-      .then((thumbnailUrl) => {
-        // console.log( thumbnailUrl );
-        // $(selector).attr("src", thumbnailUrl);
-        $(selector).attr("src", props.item.img)
-      })
-      .catch((e) => {
-        console.error("ERROR IN INDEXITEM", e);
-      });
-    })()
-  }
-  */
-
-})
 
 </script>
 

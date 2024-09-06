@@ -2,14 +2,18 @@
 
       a basic index to display an array of data: Iconography, Named Entity, Themes.
       the parent sends an array of objects from which to build an item.
-      * `IndexBase` handles the array-level
-      * `IndexItem` handles the object-level, aka the display of each individual
-        item in this array.
+        IndexBase
+          handles the array-level
+        IndexItem
+          handles the object-level, aka the display of each individual
+          item in this array.
 
       props:
-      * `display`: one of "resource"|"concept".
+        display:
+          one of "resource"|"concept".
           passed to `IndexItem` to determine the style used.
-      * `data`   : the array of data to display. the structure is the same
+        data:
+          the array of data to display. the structure is the same
           no matter the parent which calls IndexBase, or the kind of object
           to display (Icono, Named Entity...):
         ```
@@ -55,7 +59,7 @@ import IndexItem from "@components/IndexItem.vue";
 
 const props = defineProps([ "display"  // which component to use for rendering a component: `resource` => `IndexItem.vue`, `concept` => `IndexItem.vue`
                           , "data" ])  // the data to display.
-const dataFull = ref([]);    // all items of the index
+const dataFull   = ref([]);    // all items of the index
 const dataFilter = ref([]);  // index items filtered in `.index-filter-wrapper`
 
 /*******************************************************/

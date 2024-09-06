@@ -23,7 +23,7 @@ export const fnToIconographyFile = (fn) =>
  * @returns {URL}
  */
 export const urlToFrontendThemeCategory = (categoryName) =>
-  new URL(`/theme/${categoryName}`, window.location.origin);
+  new URL(`/theme/${ encodeURIComponent(categoryName) }`, window.location.origin);
 
 /**
  * build an URL to a frontend page on a theme, based on this theme's UUID
@@ -32,7 +32,8 @@ export const urlToFrontendThemeCategory = (categoryName) =>
  * @returns {URL}
  */
 export const urlToFrontendTheme = (categoryName, themeIdUuid) =>
-  new URL(`/theme/${categoryName}/${themeIdUuid}`, window.location.origin);
+  new URL( `/theme/${ encodeURIComponent(categoryName) }/${ themeIdUuid }`
+         , window.location.origin);
 
 
 /**
@@ -41,7 +42,8 @@ export const urlToFrontendTheme = (categoryName, themeIdUuid) =>
  * @returns {URL}
  */
 export const urlToFrontendNamedEntityCategory = (categoryName) =>
-  new URL(`/entite-nommee/${categoryName}`, window.location.origin);
+  new URL( `/entite-nommee/${ encodeURIComponent(categoryName) }`
+         , window.location.origin)
 
 /**
  * build an URL to a frontend page on a named entity, based on this NE's UUID
@@ -50,7 +52,8 @@ export const urlToFrontendNamedEntityCategory = (categoryName) =>
  * @returns {URL}
  */
 export const urlToFrontendNamedEntity = (categoryName, namedEntityIdUuid) =>
-  new URL(`/entite-nommee/${category}/${namedEntityIdUuid}`, window.location.origin);
+  new URL( `/entite-nommee/${ encodeURIComponent(categoryName) }/${ namedEntityIdUuid }`
+         , window.location.origin);
 
 /**
  * the same for other frontend pages.

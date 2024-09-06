@@ -89,7 +89,7 @@ export function indexDataFormatterNamedEntityCategory(dataArr) {
 export function indexDataFormatterNamedEntity(dataArr) {
   return dataArr.map((c) => {
     return { idUuid : c.id_uuid,
-             href   : urlToFrontendNamedEntity(c.id_uuid).pathname,
+             href   : urlToFrontendNamedEntity(c.category, c.id_uuid).pathname,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
              img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
              text   : stringifyThemeOrNamedEntityResource(c)

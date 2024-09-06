@@ -172,19 +172,47 @@ def main_theme_name(id_uuid:str):
 # named_entity
 # *************************************************************************
 
+#@app.route("/i/named-entity")
+#def index_named_entity():
+#    """
+#    get all named entity elements
+#    """
+#    r = (db.session.query(NamedEntity, NamedEntity.iconography_count)
+#                   .order_by(NamedEntity.iconography_count.desc()) )
+#    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+#
+
 @app.route("/i/named-entity")
-def index_named_entity():
+def index_named_entity_category():
     """
-    get all named entity elements
+    get all categories mapped to the number of named entities they contain
     """
-    r = (db.session.query(NamedEntity, NamedEntity.iconography_count)
-                   .order_by(NamedEntity.iconography_count.desc()) )
-    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+    categories = NamedEntity.get_categories()
+    return jsonify(categories)
 
 
-@app.route("/i/named-entity/<id_uuid>")
-def main_named_entity(id_uuid):
-    """fetch all iconographic resources related to a named entity"""
+@app.route("/i/named-entity/<category_name>")
+def index_named_entity_in_category(category_name:str):
+    """
+    get all themes within a category
+    """
+    named_entities = NamedEntity.get_named_entities_for_category(category_name)
+    return jsonify(named_entities)
+
+
+#TODO FIND A WAY TO ACCESS RESSOURCE ONLY BY UUID (WITHOUT CATEGORY) ?
+# par exemple, en transformant les deux routes au dessus pour que la catégorie
+# ne fasse plus partie du chemin, mais soit un paramètre optionnnel de `/i/named-entity`:
+# si on ne fournit pas le paramètre, alors on renvoie les catégories.
+# si on fournit le paramètre category (et donc une catégorie précise),
+# on renvoie les ressources iconographiques pour cette catégorie.
+@app.route("/i/named-entity/<category_name>/<id_uuid>")
+def main_named_entity(category_name:str, id_uuid:str):
+    """
+    fetch all iconographic resources related to a named entity.
+    category_name is just passed to make the difference between
+    this route and "/i/named-entity/<category_name>"
+    """
     r = db.session.execute(NamedEntity.query.filter( NamedEntity.id_uuid == id_uuid ))
     return jsonify([ n[0].serialize_full() for n in r.all() ])
 
