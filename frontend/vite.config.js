@@ -30,8 +30,8 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
   switch (mode) {
     case "backend-server":
       configVariables = {
-        __API_URL__    : JSON.stringify("http://172.17.1.142:5000/i"),
-        // API_URL__    : JSON.stringify("https://quartier-richelieu-retour.inha.fr:5000"),
+        //__API_URL__    : JSON.stringify("http://172.17.1.142:5000/i"),
+        __API_URL__    : JSON.stringify("https://quartier-richelieu-retour.inha.fr:5000"),
         __STATICS_URL__: JSON.stringify("https://quartier-richelieu-data.inha.fr") // "http://richdata01.inha.fr")
       };
       break;

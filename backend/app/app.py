@@ -28,10 +28,14 @@ def config_app(cfgname:str):
 
     app.config.from_object(CONFIGS[cfgname])
     db.init_app(app)
-    CORS(app, origins=[ "http://localhost:5173"     # frontend as localhost
-                      , "http://172.17.1.142:5173"  # frontend as server IP addr
-                      , "http://localhost:5000"    # backend as localhost (should be useless but hey)
-    ])
+    # https://readthedocs.org/projects/flask-cors/downloads/pdf/latest/
+    # CORS(app)  # allow all. works, but raises security concerns
+    #CORS(app, resources={ r"/i/*": {"origins": "*"} })  # slightly fancier equivalent of the above
+    CORS(app, origins=[ "https://quartier-richelieu-retour.inha.fr:443"   # apache frontend
+                      , "https://quartier-richelieu-retour.inha.fr:5173"  # vue/vite frontend (https)
+                      , "http://quartier-richelieu-retour.inha.fr:5173"   # vue/vite frontend (http)
+                      , "http://localhost:5173"                           # vue/vite frontend (http, as localhost)
+                      ])
     return app
 
 
