@@ -17,43 +17,47 @@ const router = createRouter({
       component: () => import("@views/HomeView.vue")
     }, {
       path: '/recherche',
+      name: 'Recherche',
       component: () => import("@views/AdvancedSearchView.vue")
     }, {
       path: '/iconographie',
+      name: 'Index iconographique',
       component: () => import("@views/IconographyIndexView.vue")
     }, {
       path: '/iconographie/:idUuid',
+      name: 'Resource iconographique',
       component: () => import("@views/IconographyMainView.vue")
     }, {
       path: '/cartographie',
+      name: 'Index cartographique',
       component: () => import("@views/CartographyView.vue")
     }, {
       path: '/theme',
-      component: () => import("@views/ThemeCategoryIndexView.vue")
-    }, {
-      path: '/theme/:categoryName',
+      name: 'Index des thèmes',
       component: () => import("@views/ThemeIndexView.vue")
     }, {
-      path: '/theme/:categoryName/:idUuid',
+      path: '/theme/:idUuid',
       name: 'Thème',
       component: () => import("@views/ThemeMainView.vue")
     }, {
       path: '/entite-nommee',
-      component: () => import("@views/NamedEntityCategoryIndexView.vue")
-    }, {
-      path: '/entite-nommee/:categoryName',
+      name: 'Index des entités nommées',
       component: () => import("@views/NamedEntityIndexView.vue")
     }, {
-      path: '/entite-nommee/:categoryName/:idUuid',
+      path: '/entite-nommee/:idUuid',
+      name: 'Entité nommée',
       component: () => import("@views/NamedEntityMainView.vue")
     }, {
       path: '/lieu',
+      name: 'Index des lieux',
       component: () => import("@views/PlaceIndexView.vue")
     }, {
       path: '/lieu/:idUuid',
+      name: 'Lieu',
       component: () => import("@views/PlaceMainView.vue")
     }, {
       path: '/index-combine',
+      name: 'Index Combiné',
       component: () => import("@views/AssociationIndexView.vue"),
       props: route => ({ toIdUuid   : route.query.toIdUuid,   // https://router.vuejs.org/guide/essentials/passing-props.html#Function-mode                        fromIdUuid : route.query.fromIdUuid
                          fromIdUuid : route.query.fromIdUuid,
@@ -61,15 +65,19 @@ const router = createRouter({
                          toTable    : route.query.to })
     }, {
       path: '/article',
+      name: 'Articles',
       component: () => import("@views/ArticleIndexView.vue")
     }, {
       path: '/article/:articleName',
+      name: 'Article',
       component: () => import("@views/ArticleMainView.vue")
     }, {
       path: '/table-viewer',
+      name: 'Voir les tables',
       component: () => import("@views/TableViewerView.vue")
     }, {
       path: "/:pathMatch(.*)*",
+      name: "404",
       component: () => import("@views/ErrNotFoundView.vue")
     }
   ]

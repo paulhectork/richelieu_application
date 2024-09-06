@@ -101,14 +101,6 @@ export function stringifyThemeOrNamedEntityResource(x) {
   return `<span>${x.entry_name}</span><span>[${x.iconography_count}]</span>`
 }
 
-/**
- * stringify a Theme.category or NamedEntity.category,
- * (as returned by `/i/theme`, or `/i/category`)
- */
-export function stringifyThemeOrNamedEntityCategory(x) {
-  return `<span>${x.category_name}</span><span>[${x.count}]</span>`
-}
-
 
 /**
  * all of the functions below are pretty much the same: take an

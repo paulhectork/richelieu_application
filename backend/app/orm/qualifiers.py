@@ -47,7 +47,6 @@ class Title(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
-# *******************************************************************
 
 class Annotation(db.Model):
     """
@@ -67,7 +66,6 @@ class Annotation(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
-# *******************************************************************
 
 class Theme(db.Model):
     """
@@ -128,35 +126,6 @@ class Theme(db.Model):
                  "iconography": self.get_iconography(),       # t.List[t.Dict]
                  "iconography_count": self.iconography_count  # int
         }
-
-    @classmethod
-    def get_categories(cls) -> t.Dict:
-        """
-        return all categories mapped to the
-        number of themes for that category
-        """
-        query = (select( Theme.category
-                       , func.count(Theme.id_uuid).label("count_themes"))
-                .group_by(Theme.category)
-                .order_by(Theme.category))
-        r = db.session.execute(query).all()
-        out = [ { "category_name": row[0], "count": row[1] }
-                for row in r ]
-        return out
-
-    @classmethod
-    def get_themes_for_category(cls, category:str):
-        """
-        return all themes for category `category`
-        """
-        query = (select(Theme)
-                .filter(Theme.category==category)
-                .order_by(Theme.entry_name))
-        r = db.session.execute(query).all()
-        return [ t[0].serialize_lite() for t in r ]
-
-
-# *******************************************************************
 
 
 class NamedEntity(db.Model):
@@ -219,7 +188,6 @@ class NamedEntity(db.Model):
                  "iconography_count": self.iconography_count  # int
         }
 
-# *******************************************************************
 
 class Actor(db.Model):
     """

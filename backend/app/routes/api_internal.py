@@ -123,37 +123,19 @@ def place_lite(place_uuid:str):
 # theme
 # *************************************************************************
 
-# @app.route("/i/theme")
-# def index_theme():
-#     """
-#     get all theme elements
-#     """
-#     r = (db.session.query(Theme, Theme.iconography_count)
-#                    .order_by(Theme.iconography_count.desc()) )
-#     # to check the result: print( [_[0].iconography_count for _ in r.all()] )
-#     return jsonify([ _[0].serialize_lite() for _ in r.all() ])
-
-#TODO error handling: 404 if nothing is returned
 @app.route("/i/theme")
-def index_theme_category():
+def index_theme():
     """
-    get all categories mapped to the number of themes they contain
+    get all theme elements
     """
-    categories = Theme.get_categories()
-    return jsonify(categories)
+    r = (db.session.query(Theme, Theme.iconography_count)
+                   .order_by(Theme.iconography_count.desc()) )
+    # to check the result: print( [_[0].iconography_count for _ in r.all()] )
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
 
 
-@app.route("/i/theme/<category_name>")
-def index_theme_in_category(category_name:str):
-    """
-    get all themes within a category
-    """
-    themes = Theme.get_themes_for_category(category_name)
-    return jsonify(themes)
-
-
-@app.route("/i/theme/<category_name>/<id_uuid>")
-def main_theme(category_name:str, id_uuid:str):
+@app.route("/i/theme/<id_uuid>")
+def main_theme(id_uuid):
     """fetch all iconographic resources related to a theme"""
     r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
     return jsonify([ t[0].serialize_full() for t in r.all() ])
