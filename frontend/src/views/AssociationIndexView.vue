@@ -14,9 +14,9 @@
   <!-- display the combined index -->
   <div v-if="error !== true">
     <h1 v-if="Object.keys(from).length && Object.keys(to).length">
-      {{ capitalizeString(from.entryName) }} ({{ from.table }})
+      {{ capitalizeString(from.entryName) }} <!--({{ from.table }})-->
       &amp;
-      {{ capitalizeString(to.entryName) }} ({{ to.table }})
+      {{ capitalizeString(to.entryName) }} <!--({{ to.table }})-->
     </h1>
 
     <div class="index-wrapper">

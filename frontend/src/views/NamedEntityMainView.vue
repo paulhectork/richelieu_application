@@ -15,6 +15,23 @@
     <p><strong>{{ namedEntity.iconography_count }}</strong>
       ressources iconographiques sont associées à cette entité nommée.</p>
 
+    <IndexAssociationRedirects v-if="associatedThemes.length"
+                              fromTable="named_entity"
+                              toTable="theme"
+                              :to="associatedThemes"
+                              :from="{ entry_name: namedEntity.entry_name
+                                     , id_uuid: namedEntity.id_uuid }"
+    ></IndexAssociationRedirects>
+
+    <IndexAssociationRedirects v-if="associatedNamedEntities.length"
+                              fromTable="named_entity"
+                              toTable="named_entity"
+                              :to="associatedNamedEntities"
+                              :from="{ entry_name: namedEntity.entry_name
+                                     , id_uuid: namedEntity.id_uuid }"
+    ></IndexAssociationRedirects>
+
+    <!--
     <p v-if="associatedThemes.length && associatedThemes.length > 1"
        v-html="`Les <strong>${associatedThemes.length} thèmes</strong> les
                 plus fréquemment associés à l'entité nommée <i>${ namedEntityName }</i> sont:
@@ -26,16 +43,17 @@
                 ${ stringifyAssociated(associatedThemes, 'theme') }.`"
     ></p>
 
-    <p v-if="associatedNamedEntity.length && associatedNamedEntity.length > 1"
-       v-html="`Les <strong>${associatedNamedEntity.length} entités nommées</strong> les
+    <p v-if="associatedNamedEntities.length && associatedNamedEntities.length > 1"
+       v-html="`Les <strong>${associatedNamedEntities.length} entités nommées</strong> les
                 plus fréquemment associés à l'entité nommée <i>${namedEntityName}</i> sont:
-                ${ stringifyAssociated(associatedNamedEntity, 'namedEntity') }.`"
+                ${ stringifyAssociated(associatedNamedEntities, 'namedEntity') }.`"
     ></p>
     <p v-else-if="associatedThemes.length===1"
        v-html="`<strong>L'entité nommée</strong> la plus fréquemment associée
                 à l'entité nommée <i>${ namedEntityName }</i> est:
-                ${ stringifyAssociated(associatedNamedEntity, 'namedEntity') }.`"
+                ${ stringifyAssociated(associatedNamedEntities, 'namedEntity') }.`"
     ></p>
+    -->
 
     <IndexBase :data="dataFilter"
                display="resource"
@@ -51,6 +69,8 @@ import axios from "axios";
 
 import IndexBase from "@components/IndexBase.vue";
 import UiLoaderComponent from "@components/UiLoaderComponent.vue";
+import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
+
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { stringifyAssociated, capitalizeString, capitalizeWords } from "@utils/stringifiers";
 
@@ -65,7 +85,7 @@ const idUuid          = ref(route.params.idUuid);
 const backendLoaded   = ref(false);  // when swittched to true, the loader is removed
 
 const associatedThemes      = ref([]); // themes most frequently associated with the current named entity
-const associatedNamedEntity = ref([]); // named entites most frequently associated with the current named entity
+const associatedNamedEntities = ref([]); // named entites most frequently associated with the current named entity
 
 // the backend URLs, defined as `computed` to handle reactivity
 const apiTargetNamedEntity = computed(() =>
@@ -101,7 +121,7 @@ function getAssociated() {
   axios.get( new URL(`/i/association/theme-from-named-entity/${idUuid.value}`, __API_URL__).href )
        .then(r => { associatedThemes.value = r.data });
   axios.get( new URL(`/i/association/named-entity-from-named-entity/${idUuid.value}`, __API_URL__).href )
-       .then(r => { associatedNamedEntity.value = r.data });
+       .then(r => { associatedNamedEntities.value = r.data });
 }
 
 watch(namedEntity, (newNamedEntity, oldNamedEntity) => {
