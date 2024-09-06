@@ -30,5 +30,5 @@ def run(mode:str) -> None:
 
 
 if __name__ == "__main__":
-    run()
+    run(port=5000)
 
