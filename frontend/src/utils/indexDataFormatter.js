@@ -17,9 +17,12 @@ import { fnToIconographyFile
        , urlToFrontendPlace
        , urlToFrontendIconography
        , urlToFrontendTheme
-       , urlToFrontendNamedEntity } from "@utils/url";
+       , urlToFrontendNamedEntity
+       , urlToFrontendThemeCategory
+       , urlToFrontendNamedEntityCategory } from "@utils/url";
 import { stringifyIconographyResource
-       , stringifyThemeOrNamedEntityResource } from "@utils/stringifiers";
+       , stringifyThemeOrNamedEntityResource
+       , stringifyThemeOrNamedEntityCategory } from "@utils/stringifiers";
 
 
 /**
@@ -48,10 +51,21 @@ export function indexDataFormatterPlace(dataArr) {
   })
 }
 
+export function indexDataFormatterThemeCategory(dataArr) {
+  return dataArr.map((c) => {
+    return { idUuid : undefined,
+             href   : urlToFrontendThemeCategory(c.category_name).pathname,
+             iiif   : null,   // todo
+             img    : null,   // todo
+             text   : stringifyThemeOrNamedEntityCategory(c)
+    }
+  })
+}
+
 export function indexDataFormatterTheme(dataArr) {
   return dataArr.map((c) => {
     return { idUuid : c.id_uuid,
-             href   : urlToFrontendTheme(c.id_uuid).pathname,
+             href   : urlToFrontendTheme(c.category, c.id_uuid).pathname,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
              img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
              text   : stringifyThemeOrNamedEntityResource(c)
@@ -59,6 +73,18 @@ export function indexDataFormatterTheme(dataArr) {
     }
   })
 }
+
+export function indexDataFormatterNamedEntityCategory(dataArr) {
+  return dataArr.map((c) => {
+    return { idUuid : undefined,
+             href   : urlToFrontendNamedEntityCategory(c.category_name).pathname,
+             iiif   : null,   // todo
+             img    : null,   // todo
+             text   : stringifyThemeOrNamedEntityCategory(c)
+    }
+  })
+}
+
 
 export function indexDataFormatterNamedEntity(dataArr) {
   return dataArr.map((c) => {

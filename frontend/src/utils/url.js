@@ -17,23 +17,40 @@ export const fnToCartographyFile = (fn) =>
 export const fnToIconographyFile = (fn) =>
   new URL(`/statics/iconography/${fn}`, __STATICS_URL__);
 
+/**
+ * build an URL to a theme category.
+ * @param {string} categoryName: the name of the category (as is in the database)
+ * @returns {URL}
+ */
+export const urlToFrontendThemeCategory = (categoryName) =>
+  new URL(`/theme/${categoryName}`, window.location.origin);
 
 /**
  * build an URL to a frontend page on a theme, based on this theme's UUID
+ * @param {string} categoryName: a value of Theme.category (to build the route's hierarchy)
  * @param {string} themeIdUuid: the UUID of the theme
  * @returns {URL}
  */
-export const urlToFrontendTheme = (themeIdUuid) =>
-  new URL(`/theme/${themeIdUuid}`, window.location.origin);
+export const urlToFrontendTheme = (categoryName, themeIdUuid) =>
+  new URL(`/theme/${categoryName}/${themeIdUuid}`, window.location.origin);
 
 
 /**
+ * build an URL to a named entity category.
+ * @param {string} categoryName: the name of the category (as is in the database)
+ * @returns {URL}
+ */
+export const urlToFrontendNamedEntityCategory = (categoryName) =>
+  new URL(`/entite-nommee/${categoryName}`, window.location.origin);
+
+/**
  * build an URL to a frontend page on a named entity, based on this NE's UUID
+ * @param {string} categoryName: a value of NamedEntity.category (to build the route's hierarchy)
  * @param {string} namedEntityIdUuid: the UUID of the named entity
  * @returns {URL}
  */
-export const urlToFrontendNamedEntity = (namedEntityIdUuid) =>
-  new URL(`/entite-nommee/${namedEntityIdUuid}`, window.location.origin);
+export const urlToFrontendNamedEntity = (categoryName, namedEntityIdUuid) =>
+  new URL(`/entite-nommee/${category}/${namedEntityIdUuid}`, window.location.origin);
 
 /**
  * the same for other frontend pages.
