@@ -103,6 +103,15 @@ export function stringifyThemeOrNamedEntityResource(x) {
 
 
 /**
+ * stringify a Theme.category or NamedEntity.category,
+ * (as returned by `/i/theme`, or `/i/category`)
+ */
+export function stringifyThemeOrNamedEntityCategory(x) {
+  return `<span>${x.category_name}</span><span>[${x.count}]</span>`
+}
+
+
+/**
  * all of the functions below are pretty much the same: take an
  * array of objects and transform them into an HTML string. if
  * `hyperlink` is true, create an `<a href="">` with an redirection
