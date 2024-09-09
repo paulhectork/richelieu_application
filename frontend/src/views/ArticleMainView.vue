@@ -242,6 +242,10 @@ function articleMounter(_route) {
  * @returns
  */
 function fetchIndex(newQueryParams) {
+  if ( ! Object.keys(newQueryParams).length ) {
+    console.error(`ArticleMainView.fetchIndex(): no query parameters on "${articleName.value}"`)
+  }
+
   let queryParams = new IconographyQueryParams(newQueryParams, "route");
   let targetUrl = new URL("/i/search/iconography", __API_URL__);
 
@@ -384,12 +388,12 @@ function registerArticleEvents() {
 /**
  * make sure that the title, subtitle and author name are filled out
  */
-function noArticleErrors() {
+function missingArticleData() {
   if ( !$(".article-header > h1").text().length
     || !$(".article-header > h2").text().length
-  ) console.error(`ArticleMainView.noArticleErrors(): missing TITLE on article '${route.params.articleName.toUpperCase()}'`)
+  ) console.error(`ArticleMainView.missingArticleData(): missing TITLE on article '${route.params.articleName.toUpperCase()}'`)
   if ( !$(".article-footer > p").text().length ) {
-    console.error(`ArticleMainView.noArticleErrors(): missing AUTHOR NAME on article '${route.params.articleName.toUpperCase()}'`)
+    console.error(`ArticleMainView.missingArticleData(): missing AUTHOR NAME on article '${route.params.articleName.toUpperCase()}'`)
   }
 }
 
@@ -401,7 +405,7 @@ watch(route, (newRoute, oldRoute) => {
 
 onMounted(() => {
   articleMounter(route);
-  setTimeout(noArticleErrors, 1000)
+  setTimeout(missingArticleData, 1000)
 })
 
 onUnmounted(() => {
