@@ -81,7 +81,7 @@ export function stringifyIconographyResource(i) {
   let out = "";
   let authors = stringifyActorArray(i.authors);
   let date = stringifyDate(i.date);
-  let truncateOpt = { length:30, omission:" [...]", separator:" " }
+  let truncateOpt = { length:30, omission:" [...]", separator:/[\s;,\[\]\(\)]+/g }
 
   authors = authors.length && authors.length > 30
   ? _.truncate(authors, truncateOpt)

@@ -100,7 +100,7 @@
           </tr>
           <tr v-if="iconography.institution.length">
             <td>Institution</td>
-            <td v-html="stringifyInstitutionArray(iconography.institution, true)"></td>
+            <td v-html="stringifyInstitutionArray(iconography.institution, false)"></td>
           </tr>
           <tr v-if="iconography.inventory_number">
             <td>Numéro d'inventaire</td>

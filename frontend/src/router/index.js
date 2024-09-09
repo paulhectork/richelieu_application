@@ -32,6 +32,20 @@ const router = createRouter({
       component: () => import("@views/ThemeOrNamedEntityCategoryIndexView.vue"),
       props: { tableName: "theme" }  // https://router.vuejs.org/guide/essentials/passing-props.html#Object-mode
     }, {
+      // theme and named entities route matching (both work the same):
+      //
+      // theme/qr1.+
+      //    => we're looking for a main theme
+      //    => redirect to ThemeMainView. else, the slug after "entite-nommee/"
+      //       should be a category (see route below).
+      // in practical terms, this means that ThemeMainView and NamedEntityMainView
+      // can be reached by 2 URLs:
+      // - (theme|entite-nommee)/<category>/<idUuid>
+      // - (theme|entite-nommee)/<idUuid>   => the <category> is optional
+      // https://router.vuejs.org/guide/essentials/route-matching-syntax.html#Custom-regex-in-params
+      path: '/theme/:idUuid(qr1.+)',
+      component: () => import("@views/ThemeMainView.vue"),
+    }, {
       path: '/theme/:categoryName',
       component: () => import("@views/ThemeOrNamedEntityIndexView.vue"),
       props: { tableName: "theme" }
@@ -43,6 +57,13 @@ const router = createRouter({
       path: '/entite-nommee',
       component: () => import("@views/ThemeOrNamedEntityCategoryIndexView.vue"),
       props: { tableName: "namedEntity" }
+    }, {
+      // "entite-nommee/qr1.+"
+      //    => we're looking for a main named entity
+      //    => redirect to NamedEntityMainView.
+      //    else, redirect to ThemeOrNamedEntityIndexView
+      path: '/entite-nommee/:idUuid(qr1.+)',
+      component: () => import("@views/NamedEntityMainView.vue")
     }, {
       path: '/entite-nommee/:categoryName',
       component: () => import("@views/ThemeOrNamedEntityIndexView.vue"),

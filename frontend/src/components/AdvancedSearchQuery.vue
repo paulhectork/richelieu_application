@@ -197,6 +197,9 @@ function itemToFormEntry(item) {
  * @param val1, val2: the two items to sort
  */
 function sortByValue(val1, val2) {
+  if ( val1.value === undefined ) {
+    console.log(val1, val2)
+  }
   return val1.value.toLowerCase() < val2.value.toLowerCase()
          ? -1
          : val1.value.toLowerCase() > val2.value.toLowerCase()
@@ -252,11 +255,11 @@ watch(props, (newProps, oldProps) => {
 
 onMounted(() => {
   // fetch data
-  axios.get(new URL("/i/theme", __API_URL__))
+  axios.get(new URL("/i/theme", __API_URL__).href, { params:{category:"all"} })
        .then(r => themeArray.value = r.data
                                       .map(itemToFormEntry)
                                       .sort((a,b) => sortByValue(a,b)) );
-  axios.get(new URL("/i/named-entity", __API_URL__))
+  axios.get(new URL("/i/named-entity", __API_URL__).href, { params:{category:"all"} })
        .then(r => namedEntityArray.value = r.data
                                             .map(itemToFormEntry)
                                             .sort((a,b) => sortByValue(a,b)) )

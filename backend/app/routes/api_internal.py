@@ -129,6 +129,7 @@ def index_theme():
     return an index of theme categories or an index of themes for a single category.
     the optional argument "category" determines what is returned:
     * category is null: an index of distinct categories is returned
+    * category == all: all themes are returned
     * category is not null (a category is given): all themes for this
         category are returned.
     """
@@ -136,6 +137,9 @@ def index_theme():
     print(request.headers)
     if not category_name:
         out = Theme.get_categories()
+    elif category_name == "all":
+        out = [ t[0].serialize_lite()
+                for t in db.session.execute(Theme.query).all() ]
     else:
         out = Theme.get_themes_for_category(category_name)
     return jsonify(out)
@@ -168,12 +172,16 @@ def index_named_entity():
     return an index of named entity categories or an index of named entities.
     the optional argument "category" determines what is returned:
     * category is null: an index of categories is returned
+    * category == "all": all distinct named entities are returned
     * category is not null (a category is given): all named entities for this
         category are returned.
     """
     category_name = request.args.get("category", None)
     if not category_name:
         out = NamedEntity.get_categories()
+    elif category_name == "all":
+        out = [ n[0].serialize_lite()
+                for n in db.session.execute(NamedEntity.query).all() ]
     else:
         out = NamedEntity.get_named_entities_for_category(category_name)
     return jsonify(out)

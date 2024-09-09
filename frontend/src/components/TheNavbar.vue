@@ -57,7 +57,7 @@ import { cleanClickOrTouchend } from "@utils/functions.js";
 const props = defineProps(["menuActive"]);
 const emit = defineEmits(["menuActiveUpdate"])
 
-const logoPath = "../src/assets/icons/logo-text.svg";
+const logoPath = "../src/assets/icons/logo-text.png";
 
 /**************************************************************/
 
