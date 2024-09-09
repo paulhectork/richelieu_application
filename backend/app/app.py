@@ -31,10 +31,10 @@ def config_app(cfgname:str):
     # https://readthedocs.org/projects/flask-cors/downloads/pdf/latest/
     # CORS(app)  # allow all. works, but raises security concerns
     #CORS(app, resources={ r"/i/*": {"origins": "*"} })  # slightly fancier equivalent of the above
-    CORS(app, origins=[ "https://quartier-richelieu-retour.inha.fr:443"   # apache frontend
-                      , "https://quartier-richelieu-retour.inha.fr:5173"  # vue/vite frontend (https)
-                      , "http://quartier-richelieu-retour.inha.fr:5173"   # vue/vite frontend (http)
-                      , "http://localhost:5173"                           # vue/vite frontend (http, as localhost)
+    CORS(app, origins=[ "https://quartier-richelieu-retour.inha.fr"   # apache frontend
+    #                  , "https://quartier-richelieu-retour.inha.fr:5173"  # vue/vite frontend (https)
+    #                  , "http://quartier-richelieu-retour.inha.fr:5173"   # vue/vite frontend (http)
+    #                  , "http://localhost:5173"                           # vue/vite frontend (http, as localhost)
                       ])
     return app
 

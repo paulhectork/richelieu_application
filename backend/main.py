@@ -24,7 +24,8 @@ def run(mode:str) -> None:
             app.run(port=5001, debug=True)
 
     finally:
-        atexit.register(deltmp) # delete temp files at exit, or exception
+#        atexit.register(deltmp) # delete temp files at exit, or exception
+        pass
 
     return
 

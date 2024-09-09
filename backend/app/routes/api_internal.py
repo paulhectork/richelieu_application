@@ -133,6 +133,7 @@ def index_theme():
         category are returned.
     """
     category_name = request.args.get("category", None)
+    print(request.headers)
     if not category_name:
         out = Theme.get_categories()
     else:
