@@ -20,6 +20,65 @@
       {{ tableName === "theme" ? "thèmes" : "entités nommées" }}&nbsp;:
       {{ capitalizeString(categoryName) }}</h1>
 
+    <!-- presentation text for each category -->
+    <div v-if="tableName === 'theme'">
+      <p v-if="categoryName==='consommer'">La notion de consommation fait
+        écho à la forte densité des activités économiques recensées dans
+        les rues du quartier au XIXe siècle. La bourse installée au palais
+        Brongniart est l'emblème du dynamisme commercial qui s'empare des x
+        rues adjacentes où se déroulent diverses transactions&nbsp;:
+        banques, alimentation, vente d'objets, ou hygiène et soins du corps.
+        Les secteurs sont variés et aisément identifiables à la lecture des
+        enseignes, devantures de boutiques, et affiches promotionnelles qui
+        abondent dans le corpus iconographique. Si les noms des commerces
+        et les marchandises proposées sont parfois au premier plan des
+        documents, une analyse plus approfondie des alignements de boutiques
+        placés en toile de fond de certaines estampes et photographies
+        améliore notre compréhension de la ville commerçante. Les gammes de
+        prix et les prestations mises en avant par les commerçants
+        fournissent des informations supplémentaires sur les mentalités
+        de la réclame publicitaire et sur l'évolution du niveau de vie.
+        Les brevets d'invention quant à eux soulignent les innovations à
+        l'œuvre et la dimension créatrice du développement économique.</p>
+      <p v-if="categoryName==='habiter'">Habiter est envisagé au sens
+        large, englobant à la fois les espaces privés et publics qui
+        composent le cadre de la vie quotidienne des citadins et des
+        citadines qui habitent ou fréquentent le quartier. Le dialogue
+        entre l'espace public, la nature, et l'évolution des formes
+        architecturales, qu'elles soient existantes ou projetés, se révèle
+        à travers divers médiums, des estampes aux photographies.
+        L'architecture domestique, tout comme celle des monuments, est
+        explorée à travers des documents graphiques produits par des
+        architectes et des entrepreneurs identifiés et met en lumière
+        aussi bien les grands édifices institutionnels que les habitations
+        plus modestes. Le laboratoire de l'urbain s'enrichit par une
+        attention portée à l'équipement de la ville, à travers la
+        modernisation du mobilier urbain, l'amélioration des réseaux et
+        moyens de transports, et la représentation de chantiers : un
+        dynamisme qui capte l'attention des observateurs. C'est un aperçu
+        de la fabrique de la ville, telle qu'elle a été conçue et vécue
+        par ses contemporains.</p>
+      <p v-if="categoryName==='représenter'"></p>
+      <p v-if="categoryName==='se divertir'"></p>
+      <p v-if="categoryName==='s\'habiller'"></p>
+      <p v-if="categoryName==='s\'informer'"></p>
+    </div>
+    <div v-else>
+      <p v-if="categoryName === 'acteurs et actrices'">1</p>
+      <p v-if="categoryName === 'banques'"></p>
+      <p v-if="categoryName === 'cafés et restaurants'"></p>
+      <p v-if="categoryName === 'commerces'"></p>
+      <p v-if="categoryName === 'épiceries et alimentation'"></p>
+      <p v-if="categoryName === 'évènements'"></p>
+      <p v-if="categoryName === 'institutions et organisations'"></p>
+      <p v-if="categoryName === 'mode et objets'"></p>
+      <p v-if="categoryName === 'personnalités et fiction'"></p>
+      <p v-if="categoryName === 'publications et photographies'"></p>
+      <p v-if="categoryName === 'santé'"></p>
+      <p v-if="categoryName === 'théâtres et spectacles'"></p>
+      <p v-if="categoryName === 'ville et architecture'"></p>
+    </div>
+
     <UiLoaderComponent v-if="loadState === 'loading'"></UiLoaderComponent>
     <IndexBase v-else
            :display="display"

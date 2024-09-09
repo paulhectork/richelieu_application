@@ -128,7 +128,7 @@ const queryParams = { theme: [ "espace public"
                              , "publicité"
                              , "mœurs"
                              ],
-                      themeBooleanOp: "or" };
+                      themeBooleanOp: "and" };
 const iiifIdUuidArray = [ "qr116f7dbcdb2884ccd8ea4160c07202ad3"  // MC55
                         , "qr14be40957a31c4767b80c3de152d094a0"  // MC315
                         , "qr1d15d16273e194973a295b618fb812540"  // BHVP23

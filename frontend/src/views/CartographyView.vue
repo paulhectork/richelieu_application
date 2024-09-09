@@ -1,43 +1,62 @@
-<!-- CartographyView.vue
-     a view for the cartography index
--->
-
 <template>
-  <h1>Index de la cartographie</h1>
-  <div><DataTableComponent :api-target="apiTarget"
-                           :process-response="processResponse"
-                           :columns-definition="columnsDefinition"
-  ></DataTableComponent></div>
+  <div class="cartography-wrapper">
+    <div id="map-main"></div>
+  </div>
+  <div class="warn-wrapper">
+    <div class="warn">
+      <p>Cette page est encore en développement</p>
+    </div>
+  </div>
+
+
 </template>
 
+
 <script setup>
-import axios from "axios";
-import DataTableComponent from "@components/DataTableComponent.vue";
-import { stringifyDate } from "@utils/stringifiers";
-import { fnToCartographyFile } from "@utils/url";
+import { onMounted, ref } from "vue";
 
-const apiTarget = new URL("/i/cartography", __API_URL__);
-const columnsDefinition = [ { data: "filename",
-                              title: "Image",
-                              render: (data,type,row,meta) => {
-                                return data != null
-                                ? `<img style="max-width: 100px" src="${data}">`
-                                : "Image manquante";
-                                }
-                            },
-                            { data: "date", title: "Date" },
-                            { data: "title", title: "Titre" } ];
+import L from "leaflet";
 
-/**
- * structure a response to fi t the model of `DataTables.data`
- * @param {Object} r: the res ponse returned by the API
- */
-function processResponse(r) {
-  return JSON.parse(r.request.response)
-             .map((e) => { e.date = stringifyDate(e.date);
-                           e.filename = e.filename.length
-                                        ? fnToCartographyFile(e.filename[0].url)
-                                        : undefined;
-                           return e; })
-}
+import { globalDefineMap } from "@utils/leafletUtils";
+
+/************************************************************/
+
+const map = ref();  // defined in onMounted
+
+/************************************************************/
+
+onMounted(() => {
+  map.value = globalDefineMap("map-main");
+  console.log(map.value);
+})
 </script>
+
+
+<style scoped>
+.cartography-viewer {
+  height: calc(100vh - var(--cs-navbar-height));
+  width: 100%;
+}
+#map-main {
+  height: calc(100vh - var(--cs-navbar-height));
+  width: 100%;
+}
+.warn-wrapper {
+  position: absolute;
+  transform: translateY(-100%);
+  height: 100%;
+  width: 100%;
+  z-index: 999;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+}
+.warn {
+  opacity: 1;
+  background-color: white;
+  border: var(--cs-border);
+}
+.warn > p {
+  margin: 30px;
+}
+</style>

@@ -69,36 +69,46 @@ export function buildWmsTile(serverUrl, layer, pane=undefined, minZoom=7, maxZoo
  * @returns: a leaflet map
  */
 export function globalDefineMap(mapId) {
-  // generic background tiles. dict of `{ mapName: layer }`
+  // generic background tiles. dict of `{ key: [ mapName, layer ] }`
   const backgroundTiles = {
-    "Carte de l'etat-major 1&nbsp;: 40 000 (1820-1866)": L.layerGroup([
+    etatMajor: [
+      "Carte de l'etat-major 1&nbsp;: 40 000 (1820-1866)",
+      L.layerGroup([ buildWmtsTile( "https://wxs.ign.fr/cartes/geoportail/wmts"
+                                  , "GEOGRAPHICALGRIDSYSTEMS.ETATMAJOR40"
+                                  , "bgPane"
+                                  , 7, 15.5 )
+                   , buildWmsTile( "https://wxs.ign.fr/cartes/geoportail/r/wms"
+                                 , "GEOGRAPHICALGRIDSYSTEMS.ETATMAJOR40"
+                                 , "bgPane"
+                                 , 15.5, 17 ) ])
+    ],
+    paris1906: [
+      "Carte de Paris (1906)",
       buildWmtsTile( "https://wxs.ign.fr/cartes/geoportail/wmts"
-                   , "GEOGRAPHICALGRIDSYSTEMS.ETATMAJOR40", "bgPane", 7, 15.5
-      ), buildWmsTile( "https://wxs.ign.fr/cartes/geoportail/r/wms"
-                     , "GEOGRAPHICALGRIDSYSTEMS.ETATMAJOR40", "bgPane", 15.5, 17
-      )
-    ]),
-    "Carte de Paris (1906)": buildWmtsTile( "https://wxs.ign.fr/cartes/geoportail/wmts"
-                     , "GEOGRAPHICALGRIDSYSTEMS.1900TYPEMAPS", "bgPane", 10, 15.5
-    ),
-    "Plan Vasserot (début XVIII<sup>e</sup> siècle)": L.tileLayer(
-      "https://tile.maps.huma-num.fr/uc2usU/d/Alpage_Vasserot_1830/{z}/{x}/{y}.png", {
-        pane: "bgPane",
-        opacity: 0.85,
-        minZoom: 14
-    }),
-    "Cadastre municipal (1900)": L.tileLayer(
-      "https://tile.maps.huma-num.fr/uc2usU/d/MOSA_1900_PARIS/{z}/{x}/{y}.png", {
-        pane: "bgPane",
-        opacity: 0.85
-    })
+                   , "GEOGRAPHICALGRIDSYSTEMS.1900TYPEMAPS"
+                   , "bgPane"
+                   , 10, 15.5 )
+    ],
+    vasserot: [
+      "Plan Vasserot (début XVIII<sup>e</sup> siècle)",
+      L.tileLayer( "https://tile.maps.huma-num.fr/uc2usU/d/Alpage_Vasserot_1830/{z}/{x}/{y}.png"
+                 , { pane: "bgPane",
+                     opacity: 0.85,
+                     minZoom: 14 })
+    ],
+    cadastreMunicipal: [
+      "Cadastre municipal (1900)",
+      L.tileLayer( "https://tile.maps.huma-num.fr/uc2usU/d/MOSA_1900_PARIS/{z}/{x}/{y}.png"
+                 , { pane: "bgPane",
+                     opacity: 0.85 })
+    ]
   }
 
   // basic map creation
   const map = L.map(mapId, {
     center: [ 48.8687452, 2.3363674 ],
     maxBounds: L.latLngBounds([ { lat: 48.8856701621242, lng: 2.3092982353700506 }
-                                , { lat: 48.829997780023035, lng: 2.3845843750075915 }
+                              , { lat: 48.829997780023035, lng: 2.3845843750075915 }
     ])
     , inertia: false  // inertia does weird things with the geojson layer
     , maxBoundsViscosity: 1.0
@@ -128,8 +138,11 @@ export function globalDefineMap(mapId) {
   );
   layerControl.addTo(map);
   Object.keys(backgroundTiles).forEach((key) => {
-    layerControl.addOverlay( backgroundTiles[key], key );
+    layerControl.addOverlay( backgroundTiles[key][1], backgroundTiles[key][0] );
   })
+
+  // vasserot is selected by default. quick and dirty
+  backgroundTiles.vasserot[1].addTo(map);
 
   return map;
 }

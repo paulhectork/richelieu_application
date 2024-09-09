@@ -79,7 +79,7 @@ export function indexDataFormatterThemeCategory(dataArr) {
     return { idUuid : undefined,
              href   : urlToFrontendThemeCategory(c.category_name).pathname,
              iiif   : null,   // todo
-             img    : null,   // todo
+             img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,   // todo
              text   : stringifyThemeOrNamedEntityCategory(c)
     }
   })
@@ -102,7 +102,7 @@ export function indexDataFormatterNamedEntityCategory(dataArr) {
     return { idUuid : undefined,
              href   : urlToFrontendNamedEntityCategory(c.category_name).pathname,
              iiif   : null,   // todo
-             img    : null,   // todo
+             img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
              text   : stringifyThemeOrNamedEntityCategory(c)
     }
   })

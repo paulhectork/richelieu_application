@@ -187,25 +187,21 @@ function resetForm() {
  * @param {string} item
  * @returns {Object}
  */
-function itemToFormEntry(item) {
-  return { "label": item.entry_name, "value": item.entry_name }
-}
+const  itemToFormEntry = (item) => {
+   return { "label": item.entry_name, "value": item.entry_name } }
 
 /**
  * sorter for an array of items created by `itemToFormEntry`
  * see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
  * @param val1, val2: the two items to sort
  */
-function sortByValue(val1, val2) {
-  if ( val1.value === undefined ) {
-    console.log(val1, val2)
-  }
-  return val1.value.toLowerCase() < val2.value.toLowerCase()
-         ? -1
-         : val1.value.toLowerCase() > val2.value.toLowerCase()
-         ? 1
-         : 0;  // val1 === val2
-}
+const sortByValue = (val1, val2) =>
+  val1.value.toLowerCase() < val2.value.toLowerCase()
+  ? -1
+  : val1.value.toLowerCase() > val2.value.toLowerCase()
+  ? 1
+  : 0;  // val1 === val2
+
 
 /**
  * handle a form submission. basically we clean the input data,

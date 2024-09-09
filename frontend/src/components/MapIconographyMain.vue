@@ -48,9 +48,7 @@ async function buildMap() {
     onEachFeature: (feature, layer) => {
       // fetch place info aynchronously and create a popup
       buildPlacePopup(feature.properties.id_uuid)
-      .then((popupContent) => {
-        layer.bindPopup(popupContent)
-      })
+      .then(popupContent => layer.bindPopup(popupContent) )
     }
   });
   gjPlace.addTo(_map);

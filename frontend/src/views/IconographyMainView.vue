@@ -65,20 +65,20 @@
 
       <div class="cartel-container">
         <table>
-          <tr v-if="iconography.theme.length">
+          <tr v-if="iconography.theme != null && iconography.theme.length">
             <td>{{ iconography.theme.length > 1 ? "Thèmes" : "Theme" }}</td>
             <td v-html="stringifyThemeArray(iconography.theme, true)"></td>
           </tr>
-          <tr v-if="iconography.named_entity.length">
+          <tr v-if="iconography.named_entity != null && iconography.named_entity.length">
             <td>{{ iconography.named_entity.length > 1 ? "Entités nommées" : "Entité nommée" }}</td>
             <td v-html="stringifyNamedEntityArray(iconography.named_entity, true)"></td>
           </tr>
 
-          <tr v-if="iconography.title.length > 1">
+          <tr v-if="iconography.title != null && iconography.title.length > 1">
             <td>Autre(s) titre(s)</td>
             <td>{{ stringifyGenericArray(iconography.title) }}</td>
           </tr>
-          <tr v-if="iconography.author.length">
+          <tr v-if="iconography.author != null && iconography.author.length">
             <td>{{ iconography.author.length > 1 ? "Auteurs ou autrices" : "Auteur ou autrice" }}</td>
             <td v-html="stringifyActorArray(iconography.author, false)"></td>
           </tr>
@@ -86,23 +86,23 @@
             <td>Corpus</td>
             <td>{{  iconography.corpus }}</td>
           </tr>
-          <tr v-if="iconography.date.length">
+          <tr v-if="iconography.date != null && iconography.date.length">
             <td>Date</td>
             <td>{{ stringifyDate(iconography.date) }}</td>
           </tr>
-          <tr v-if="iconography.publisher.length">
+          <tr v-if="iconography.publisher != null && iconography.publisher.length">
             <td>Édition</td>
-            <td v-html="stringifyActorArray(iconography.publisher, true)"></td>
+            <td v-html="stringifyActorArray(iconography.publisher, false)"></td>
           </tr>
-          <tr v-if="iconography.technique.length">
+          <tr v-if="iconography.technique != null && iconography.technique.length">
             <td>{{ iconography.technique.length > 1 ? "Techniques" : "Technique" }}</td>
             <td>{{ stringifyGenericArray(iconography.technique) }}</td>
           </tr>
-          <tr v-if="iconography.institution.length">
+          <tr v-if="iconography.institution != null && iconography.institution.length">
             <td>Institution</td>
             <td v-html="stringifyInstitutionArray(iconography.institution, false)"></td>
           </tr>
-          <tr v-if="iconography.inventory_number">
+          <tr v-if="iconography.inventory_number != null">
             <td>Numéro d'inventaire</td>
             <td>{{ iconography.inventory_number }}</td>
           </tr>

@@ -150,8 +150,8 @@ const queryParams     = { theme: [ "boutique"
                                        , "Popelin Ducarre Nouveautés"
                                        , "Madame Colas Lingerie Et Nouveautés"
                                        , "Maison Couchonnal Nouveautés" ]
-                        , themeBooleanOp: "or"
-                        , namedEntityBooleanOp: "or"
+                        , themeBooleanOp: "and"
+                        , namedEntityBooleanOp: "and"
                         };  // the parameters to run a backend advanced search query
 const footnotes       = {
   daumas2020: `J.-C Daumas (dir.), <i>Les révolutions du commerce. France,

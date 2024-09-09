@@ -1,5 +1,4 @@
 <template>
-  <h1>TODO UPDATE INDEX</h1>
   <h1>Articles</h1>
   <div class="article-index-wrapper">
     <ul class="list-invisible">
@@ -61,11 +60,12 @@ const articles = [ { title    : "La bourse et sa place",
                                  à la fin du XVIII<sup>e</sup> siècle`,
                      image    : "https://apicollections.parismusees.paris.fr/sites/default/files/styles/4k/collections/atoms/images/CAR/aze_carg010953_001.jpg?itok=n6xhEvvn",
                      urlSlug  : "cafe" }
-                 , { title    : "La ville en chantier",
-                     subtitle : "",
-                     image    : "https://apicollections.parismusees.paris.fr/sites/default/files/styles/4k/collections/atoms/images/CAR/lpdp_99044-16.jpg?itok=RomYNLfC",
-                     urlSlug  : "chantier" }
-                 , { title    : "La banque de france",
+                 // supprimer
+                 //, { title    : "La ville en chantier",
+                 //    subtitle : "",
+                 //    image    : "https://apicollections.parismusees.paris.fr/sites/default/files/styles/4k/collections/atoms/images/CAR/lpdp_99044-16.jpg?itok=RomYNLfC",
+                 //    urlSlug  : "chantier" }
+                 , { title    : "La Banque de France",
                      subtitle : `Économie et sociabilités des établissements environnants
                                  l'hôtel de Toulouse`,
                      image    : "https://apicollections.parismusees.paris.fr/sites/default/files/styles/4k/collections/atoms/images/CAR/lpdp_144183-16.jpg?itok=WAjQ3-3i",
@@ -74,10 +74,11 @@ const articles = [ { title    : "La bourse et sa place",
                      subtitle : "Habiter à travers les recueils d'architecture (1820-1830)",
                      image    : "https://apicollections.parismusees.paris.fr/sites/default/files/styles/4k/collections/atoms/images/CAR/aze_card16711_001.jpg?itok=bH0JRhsX",
                      urlSlug  : "habiter" }
-                 , { title    : "La patrimonialisation d'un quartier",
-                     subtitle : "",
-                     image    : "https://apicollections.parismusees.paris.fr/sites/default/files/styles/4k/collections/atoms/images/CAR/aze_carph015719_001.jpg?itok=JAeUjy5H",
-                     urlSlug  : "patrimonialisation" }
+                 // AJOUTER
+                 // , { title    : "La patrimonialisation d'un quartier",
+                 //     subtitle : "",
+                 //     image    : "https://apicollections.parismusees.paris.fr/sites/default/files/styles/4k/collections/atoms/images/CAR/aze_carph015719_001.jpg?itok=JAeUjy5H",
+                 //     urlSlug  : "patrimonialisation" }
                  , { title    : "Le mobilier urbain",
                      subtitle : "Reflet d'un quartier et de ses activités",
                      image    : "https://quartier-richelieu-data.inha.fr/statics/iconography/qr1f0c214cc309846228da9f7262144b638_compress.jpg",
@@ -91,11 +92,11 @@ const articles = [ { title    : "La bourse et sa place",
                      subtitle : "Les logiques spatiales du plus vieux métier du monde",
                      image    : "https://quartier-richelieu-data.inha.fr/statics/iconography/qr1f7350ffbb83543fe91938234376444d0.jpg",
                      urlSlug  : "prostitution" }
-                 , { title    : "Curiosités et mœurs",
-                     subtitle : "",
+                 , { title    : "Les marginaux du Palais-Royal",
+                     subtitle : "Donner à voir ce que l'on ne souhaite pas voir",
                      image    : "https://quartier-richelieu-data.inha.fr/statics/iconography/qr1d53e6b37c6334721b476381fec062660.png",
-                     urlSlug  : "curiosite" }
-                  ]
+                     urlSlug  : "marginaux" }
+                 ]
 
 /*******************************************/
 
