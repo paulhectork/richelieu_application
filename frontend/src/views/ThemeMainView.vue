@@ -84,12 +84,12 @@ const dataFilter = ref([]);    // the user-filtered iconography data, set from a
 const idUuid     = ref(route.params.idUuid);
 const backendLoaded = ref(false);  // when swittched to true, the loader is removed
 
-const associatedThemes      = ref([]); // themes most frequently associated with the current theme
+const associatedThemes        = ref([]); // themes most frequently associated with the current theme
 const associatedNamedEntities = ref([]); // named entites most frequently associated with the current theme
 
 // the backend URLs, defined as `computed` to handle reactivity
 const apiTargetTheme = computed(() =>
-  new URL(`/i/theme-name/${idUuid?.value}`, __API_URL__))
+  new URL(`/i/theme-name/${idUuid?.value}`, __API_URL__));
 const apiTargetIconography  = computed(() =>
   new URL(`/i/theme/${idUuid?.value}`, __API_URL__) );
 // the theme name

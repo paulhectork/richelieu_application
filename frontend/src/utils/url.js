@@ -43,7 +43,7 @@ export const urlToFrontendTheme = (categoryName, themeIdUuid) =>
  */
 export const urlToFrontendNamedEntityCategory = (categoryName) =>
   new URL( `/entite-nommee/${ encodeURIComponent(categoryName) }`
-         , window.location.origin)
+         , window.location.origin);
 
 /**
  * build an URL to a frontend page on a named entity, based on this NE's UUID

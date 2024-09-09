@@ -57,8 +57,8 @@ const display      = "concept";       // define the view to use in `IndexItem`
 
 const apiTarget = computed(() =>  // defined as a computed property to avoid manually updating the url on tableName.value's change.
   tableName.value === "theme"
-  ? new URL(`/i/theme/${categoryName.value}`, __API_URL__)
-  : new URL(`/i/named-entity/${categoryName.value}`, __API_URL__));
+  ? new URL("/i/theme", __API_URL__)
+  : new URL("/i/named-entity", __API_URL__));
 
 /*************************************************************/
 
@@ -72,8 +72,12 @@ function resetView() {
   categoryName.value = route.params.categoryName;
 }
 
+/**
+ * get backend data: fetch all theme or iconography
+ * resources for a single category
+ */
 function getData() {
-  axios.get(apiTarget.getter().href)
+  axios.get(apiTarget.getter().href, { params: {category:categoryName.value} })
   .then(r => r.data)
   .then(data => { dataFull.value = data;
                   dataFilter.value = tableName.value === "theme"
