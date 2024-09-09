@@ -126,16 +126,22 @@ def place_lite(place_uuid:str):
 @app.route("/i/theme")
 def index_theme():
     """
-    get all theme elements
+    return an index of theme categories or an index of themes for a single category.
+    the optional argument "category" determines what is returned:
+    * category is null: an index of distinct categories is returned
+    * category is not null (a category is given): all themes for this
+        category are returned.
     """
-    r = (db.session.query(Theme, Theme.iconography_count)
-                   .order_by(Theme.iconography_count.desc()) )
-    # to check the result: print( [_[0].iconography_count for _ in r.all()] )
-    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+    category_name = request.args.get("category", None)
+    if not category_name:
+        out = Theme.get_categories()
+    else:
+        out = Theme.get_themes_for_category(category_name)
+    return jsonify(out)
 
 
 @app.route("/i/theme/<id_uuid>")
-def main_theme(id_uuid):
+def main_theme(id_uuid:str):
     """fetch all iconographic resources related to a theme"""
     r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
     return jsonify([ t[0].serialize_full() for t in r.all() ])
@@ -154,19 +160,29 @@ def main_theme_name(id_uuid:str):
 # named_entity
 # *************************************************************************
 
+
 @app.route("/i/named-entity")
 def index_named_entity():
     """
-    get all named entity elements
+    return an index of named entity categories or an index of named entities.
+    the optional argument "category" determines what is returned:
+    * category is null: an index of categories is returned
+    * category is not null (a category is given): all named entities for this
+        category are returned.
     """
-    r = (db.session.query(NamedEntity, NamedEntity.iconography_count)
-                   .order_by(NamedEntity.iconography_count.desc()) )
-    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+    category_name = request.args.get("category", None)
+    if not category_name:
+        out = NamedEntity.get_categories()
+    else:
+        out = NamedEntity.get_named_entities_for_category(category_name)
+    return jsonify(out)
 
 
 @app.route("/i/named-entity/<id_uuid>")
-def main_named_entity(id_uuid):
-    """fetch all iconographic resources related to a named entity"""
+def main_named_entity(id_uuid:str):
+    """
+    fetch all iconographic resources related to a named entity.
+    """
     r = db.session.execute(NamedEntity.query.filter( NamedEntity.id_uuid == id_uuid ))
     return jsonify([ n[0].serialize_full() for n in r.all() ])
 

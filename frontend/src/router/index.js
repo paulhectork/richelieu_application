@@ -33,16 +33,24 @@ const router = createRouter({
       component: () => import("@views/CartographyView.vue")
     }, {
       path: '/theme',
-      name: 'Index des thèmes',
-      component: () => import("@views/ThemeIndexView.vue")
+      component: () => import("@views/ThemeOrNamedEntityCategoryIndexView.vue"),
+      props: { tableName: "theme" }  // https://router.vuejs.org/guide/essentials/passing-props.html#Object-mode
+    }, {
+      path: '/theme/:categoryName',
+      component: () => import("@views/ThemeOrNamedEntityIndexView.vue"),
+      props: { tableName: "theme" }
     }, {
       path: '/theme/:idUuid',
       name: 'Thème',
       component: () => import("@views/ThemeMainView.vue")
     }, {
       path: '/entite-nommee',
-      name: 'Index des entités nommées',
-      component: () => import("@views/NamedEntityIndexView.vue")
+      component: () => import("@views/ThemeOrNamedEntityCategoryIndexView.vue"),
+      props: { tableName: "namedEntity" }
+    }, {
+      path: '/entite-nommee/:categoryName',
+      component: () => import("@views/ThemeOrNamedEntityIndexView.vue"),
+      props: { tableName: "namedEntity" }
     }, {
       path: '/entite-nommee/:idUuid',
       name: 'Entité nommée',
