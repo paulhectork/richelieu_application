@@ -25,7 +25,7 @@
       <RouterLink to="/">
         <img :src="logoPath"
              id="logo-richelieu"
-             alt="logo du projet Richelieu: 'Quartier Richelieu' écrit en Garamond en noir sur fond blanc"
+             alt="logo du projet Richelieu"
         >
       </RouterLink>
     </h1>
