@@ -65,11 +65,11 @@
 
       <div class="cartel-container">
         <table>
-          <tr>
+          <tr v-if="iconography.theme.length">
             <td>{{ iconography.theme.length > 1 ? "Thèmes" : "Theme" }}</td>
             <td v-html="stringifyThemeArray(iconography.theme, true)"></td>
           </tr>
-          <tr>
+          <tr v-if="iconography.named_entity.length">
             <td>{{ iconography.named_entity.length > 1 ? "Entités nommées" : "Entité nommée" }}</td>
             <td v-html="stringifyNamedEntityArray(iconography.named_entity, true)"></td>
           </tr>
@@ -78,27 +78,27 @@
             <td>Autre(s) titre(s)</td>
             <td>{{ stringifyGenericArray(iconography.title) }}</td>
           </tr>
-          <tr>
+          <tr v-if="iconography.author.length">
             <td>{{ iconography.author.length > 1 ? "Auteurs ou autrices" : "Auteur ou autrice" }}</td>
-            <td v-html="stringifyActorArray(iconography.author, true)"></td>
+            <td v-html="stringifyActorArray(iconography.author, false)"></td>
           </tr>
           <tr v-if="iconography.corpus != null">
             <td>Corpus</td>
             <td>{{  iconography.corpus }}</td>
           </tr>
-          <tr>
+          <tr v-if="iconography.date.length">
             <td>Date</td>
             <td>{{ stringifyDate(iconography.date) }}</td>
           </tr>
-          <tr>
+          <tr v-if="iconography.publisher.length">
             <td>Édition</td>
             <td v-html="stringifyActorArray(iconography.publisher, true)"></td>
           </tr>
-          <tr>
+          <tr v-if="iconography.technique.length">
             <td>{{ iconography.technique.length > 1 ? "Techniques" : "Technique" }}</td>
             <td>{{ stringifyGenericArray(iconography.technique) }}</td>
           </tr>
-          <tr>
+          <tr v-if="iconography.institution.length">
             <td>Institution</td>
             <td v-html="stringifyInstitutionArray(iconography.institution, true)"></td>
           </tr>

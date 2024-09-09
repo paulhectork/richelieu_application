@@ -1,9 +1,9 @@
 /******************************************************
- *                                                    *
- *        transform objects (`[]`, `{}`) into         *
- *        string representations                      *
- *                                                    *
+ * transform objects (`[]`, `{}`) into
+ * string representations
  ******************************************************/
+
+import _ from "lodash";
 
 import { urlToFrontendActor
        , urlToFrontendTheme
@@ -12,13 +12,14 @@ import { urlToFrontendActor
 
 
 /**
- * capitalize the first letter of string str
+ * capitalize the first letter of string str (all other letters
+ * are switched to lowercase)
  * @param {string|Any} str: the string to capitalize
  * @returns str if we sent a string, else the input unchanged
  */
 export const capitalizeString = (str) =>
   str != null && typeof str === "string"
-  ? str.charAt(0).toUpperCase() + str.slice(1)
+  ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
   : str;
 
 /**
@@ -26,7 +27,7 @@ export const capitalizeString = (str) =>
  */
 export const capitalizeWords = (str) =>
   str != null && typeof str === "string"
-  ? str.split(" ").map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" ")
+  ? str.split(" ").map(s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()).join(" ")
   : str;
 
 /**
@@ -80,15 +81,20 @@ export function stringifyIconographyResource(i) {
   let out = "";
   let authors = stringifyActorArray(i.authors);
   let date = stringifyDate(i.date);
+  let truncateOpt = { length:30, omission:" [...]", separator:" " }
 
+  authors = authors.length && authors.length > 30
+  ? _.truncate(authors, truncateOpt)
+  : authors ;
   out += authors.length ? `${authors}, ` : "";
-  out += `<i>${ i.title[0] }</i>`
-         // attempt at a title-shortening that sometimes bugs.
-         // i.title.length && i.title[0].length > 30
-         // ? `<i>${ i.title[0].match(/^.{30}[^\s]*/g)[0] } [...] </i>` // shorten title if it's too long: take only first 30 chars
-         // : i.title.length && i.title[0].length <= 30
-         // ? `<i>${ i.title[0] }</i>`
-         // : " ";
+
+  out += i.title.length && i.title[0].length > 20
+         ? `<i>${ capitalizeWords(_.truncate(i.title[0], truncateOpt)) }</i>`
+         : i.title.length && i.title[0].length <= 20
+         ? `<i>${ capitalizeWords( i.title[0] ) }</i>`
+         : " ";
+  out += " ";
+
   out += date.length ? `(${date})` : "";
   return out;
 }
@@ -146,8 +152,10 @@ export function stringifyActorArray(actorArray, hyperlink=false) {
 }
 
 export function stringifyThemeArray(themeArray, hyperlink=false) {
-  const doHyperlink = (theme) => `<a href="${ urlToFrontendTheme(theme.id_uuid).href }"
-                                  >${theme.entry_name}</a>`;
+  const doHyperlink = (theme) =>
+    `<a href="${ urlToFrontendTheme(theme.category, theme.id_uuid).href }"
+     >${theme.entry_name}</a>`;
+
   let out = "";
   if ( themeArray != null && themeArray.length ) {
     themeArray.filter(a => a.entry_name != null).map((a, idx) => {
@@ -167,8 +175,9 @@ export function stringifyThemeArray(themeArray, hyperlink=false) {
 }
 
 export function stringifyNamedEntityArray(namedEntityArray, hyperlink=false) {
-  const doHyperlink = (ne) => `<a href="${ urlToFrontendNamedEntity(ne.id_uuid).href }"
-                               >${ne.entry_name}</a>`;
+  const doHyperlink = (ne) =>
+    `<a href="${ urlToFrontendNamedEntity(ne.category, ne.id_uuid).href }"
+     >${ne.entry_name}</a>`;
   let out = "";
   if ( namedEntityArray != null && namedEntityArray.length ) {
     namedEntityArray.filter(a => a.entry_name != null).map((a, idx) => {
