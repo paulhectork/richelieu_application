@@ -30,9 +30,11 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
   switch (mode) {
     case "backend-server":
       configVariables = {
-        //__API_URL__    : JSON.stringify("http://172.17.1.142:5000/i"),
-        __API_URL__    : JSON.stringify("https://quartier-richelieu-retour.inha.fr:5000"),
-        __STATICS_URL__: JSON.stringify("https://quartier-richelieu-data.inha.fr") // "http://richdata01.inha.fr")
+        // ye olde config
+        // __API_URL__    : JSON.stringify("https://quartier-richelieu-retour.inha.fr:5000"),
+        // __STATICS_URL__: JSON.stringify("https://quartier-richelieu-data.inha.fr")
+        __API_URL__    : JSON.stringify("https://quartier-richelieu-retour.inha.fr/i"),
+        __STATICS_URL__: JSON.stringify("https://quartier-richelieu-data.inha.fr/statics")
       };
       break;
     case "backend-local":
@@ -47,7 +49,7 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
     plugins: [ vue() ],
 //    server: {
 //     	hmr: {
-//		clientPort: 443  // https://github.com/vitejs/vite/issues/1653. deletes the websocket error but resources still don't load (without errors). le back ne reçoit pas la requête. 
+//		clientPort: 443  // https://github.com/vitejs/vite/issues/1653. deletes the websocket error but resources still don't load (without errors). le back ne reçoit pas la requête.
 //	}
 //    },
 	  //	    server: 'localhost',

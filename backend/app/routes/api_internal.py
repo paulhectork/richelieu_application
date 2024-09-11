@@ -126,17 +126,26 @@ def place_lite(place_uuid:str):
 @app.route("/i/theme")
 def index_theme():
     """
-    return an index of theme categories or an index of themes for a single category.
-    the optional argument "category" determines what is returned:
-    * category is null: an index of distinct categories is returned
-    * category == all: all themes are returned
-    * category is not null (a category is given): all themes for this
-        category are returned.
+    return an index of theme categories or an
+    index of themes for a single category.
+    2 optional arguments can be passed in the query string:
+    * "category" (null|str):
+        category determines the kind of index returned:
+        * category is null: an index of distinct categories is returned
+        * category == all: all themes are returned
+        * category is not null (a category is given): all themes for this
+            category are returned.
+    * "preview" (bool):
+        when category is None (returning an index of categories)
+        and preview is true, we'll also return a few themes as an example
     """
     category_name = request.args.get("category", None)
-    print(request.headers)
+    preview       = request.args.get("preview", None)
     if not category_name:
-        out = Theme.get_categories()
+        if not preview:
+            out = Theme.get_categories()#preview=False)
+        else:
+            out = Theme.get_categories()#preview=True)
     elif category_name == "all":
         out = [ t[0].serialize_lite()
                 for t in db.session.execute(Theme.query).all() ]
@@ -170,15 +179,25 @@ def main_theme_name(id_uuid:str):
 def index_named_entity():
     """
     return an index of named entity categories or an index of named entities.
-    the optional argument "category" determines what is returned:
-    * category is null: an index of categories is returned
-    * category == "all": all distinct named entities are returned
-    * category is not null (a category is given): all named entities for this
-        category are returned.
-    """
+    2 optional arguments can be passed in the query string:
+    * "category" (null|str):
+        category determines the kind of index returned:
+        * category is null: an index of distinct categories is returned
+        * category == all: all named entities are returned
+        * category is not null (a category is given): all named entities
+          for this category are returned.
+    * "preview" (bool):
+        when category is None (returning an index of categories)
+        and preview is true, we'll also return a few named entities as
+        an example
+"""
     category_name = request.args.get("category", None)
+    preview       = request.args.get("preview", None)
     if not category_name:
-        out = NamedEntity.get_categories()
+        if not preview:
+            out = NamedEntity.get_categories()#preview=False)
+        else:
+            out = NamedEntity.get_categories()#preview=True)
     elif category_name == "all":
         out = [ n[0].serialize_lite()
                 for n in db.session.execute(NamedEntity.query).all() ]
