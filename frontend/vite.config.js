@@ -45,6 +45,16 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
 
   return {
     plugins: [ vue() ],
+//    server: {
+//     	hmr: {
+//		clientPort: 443  // https://github.com/vitejs/vite/issues/1653. deletes the websocket error but resources still don't load (without errors). le back ne reçoit pas la requête. 
+//	}
+//    },
+	  //	    server: 'localhost',
+	  //	    port: 5174,
+//		    protocol: 'ws'
+//	    }
+//    },
     define: configVariables,
     resolve: {
       alias: {
