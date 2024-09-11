@@ -142,10 +142,7 @@ def index_theme():
     category_name = request.args.get("category", None)
     preview       = request.args.get("preview", None)
     if not category_name:
-        if not preview:
-            out = Theme.get_categories()#preview=False)
-        else:
-            out = Theme.get_categories()#preview=True)
+        out = Theme.get_categories(preview=preview)
     elif category_name == "all":
         out = [ t[0].serialize_lite()
                 for t in db.session.execute(Theme.query).all() ]
@@ -194,10 +191,7 @@ def index_named_entity():
     category_name = request.args.get("category", None)
     preview       = request.args.get("preview", None)
     if not category_name:
-        if not preview:
-            out = NamedEntity.get_categories()#preview=False)
-        else:
-            out = NamedEntity.get_categories()#preview=True)
+        out = NamedEntity.get_categories(preview=preview)
     elif category_name == "all":
         out = [ n[0].serialize_lite()
                 for n in db.session.execute(NamedEntity.query).all() ]

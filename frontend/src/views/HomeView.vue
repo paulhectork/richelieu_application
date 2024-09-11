@@ -3,6 +3,13 @@
     <div id="named-entity-wrapper"
          class="home-block home-block-even">
       <h1>Entités nommées</h1>
+      <ul class="preview-list list-invisible">
+        <li v-for="ne in namedEntities">
+          <HomeThemeOrNamedEntityPreview :resource="ne"
+                                         tableName="named_entity"
+          ></HomeThemeOrNamedEntityPreview>
+        </li>
+      </ul>
 
     </div>
     <div id="theme-wrapper"
@@ -46,7 +53,7 @@ function getData() {
 
   axios.get(themeTarget.href, params)
   .then(r => r.data)
-  .then(data => { themes.value = data })
+  .then(data => { themes.value = data; console.log(themes.value) })
   .catch();
   axios.get(namedEntityTarget.href, params)
   .then(r => r.data)

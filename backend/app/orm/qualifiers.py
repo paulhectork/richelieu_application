@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
-from sqlalchemy import ForeignKey, Text, Boolean, ARRAY
+from sqlalchemy import ForeignKey, Text, Boolean, ARRAY, TEXT
 from sqlalchemy.dialects import postgresql as psql
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import func, select
@@ -136,11 +136,13 @@ class Theme(db.Model):
         }
 
     @classmethod
-    def get_categories(cls) -> t.Dict:
+    def get_categories(cls, preview:bool) -> t.Dict:
         """
         return all categories mapped to the number
         of themes for that category. thumbnails for each
         category are selected manually and stored in `thumbnail_mapper`
+
+        if `preview`, include the 3 first theme.category_name as a list of strings
         """
         thumbnail_mapper = { "consommer"  : "qr11e03469c172e4e0e98a155d15489cdd0_thumbnail.jpg",
                              "habiter"    : "qr1c70f59a032b241478d17a61289839edc_thumbnail.jpg",
@@ -148,17 +150,33 @@ class Theme(db.Model):
                              "se divertir": "qr128b29a8e91a349989d4522e59e874681_thumbnail.jpg",
                              "s'habiller" : "qr15b61f33ed5874465a17335b3dabec35d_thumbnail.jpg",
                              "s'informer" : "qr13f4af1da6eee4caabdc8e39f30ac92a6_thumbnail.jpg"  }
-        query = (select( Theme.category
-                       , func.count(Theme.id_uuid).label("count"))
-                .group_by(Theme.category)
-                .order_by(Theme.category))
+        if not preview:
+            query = select( Theme.category
+                          , func.count(Theme.id_uuid).label("count"))
+        else:
+            query = select( Theme.category
+                          , func.count(Theme.id_uuid).label("count")
+                          , func.array_agg(Theme.entry_name, type_=ARRAY(TEXT))
+                            [0:3]
+                            .label("preview") )
+        query = query.group_by( Theme.category ).order_by( Theme.category )
         r = db.session.execute(query).all()
-        out = [ { "category_name": row[0],                       # str
-                  "count"        : row[1],                       # int
-                  "thumbnail"    : [ thumbnail_mapper[row[0]] ]  # t.List[str] (is a list for consistency with other serializations)
-                }
-                for row in r ]
+        # structure as JSON
+        if not preview:
+            out = [ { "category_name": row[0],                       # str
+                      "count"        : row[1],                       # int
+                      "thumbnail"    : [ thumbnail_mapper[row[0]] ]  # t.List[str] (is a list for consistency with other serializations)
+                    }
+                    for row in r ]
+        else:
+            out = [ { "category_name": row[0],                       # str
+                      "count"        : row[1],                       # int
+                      "thumbnail"    : [ thumbnail_mapper[row[0]] ], # t.List[str] (is a list for consistency with other serializations)
+                      "preview"      : row[2]                        # t.List[str]
+                    }
+                    for row in r ]
         return out
+
 
     @classmethod
     def get_themes_for_category(cls, category:str):
@@ -238,35 +256,50 @@ class NamedEntity(db.Model):
         }
 
     @classmethod
-    def get_categories(cls) -> t.Dict:
+    def get_categories(cls, preview:bool) -> t.Dict:
         """
         return all categories mapped to the
         number of named entities for that category
+        if `preview`, each category will be mapped to a string list of 3 named entities
         """
-        thumbnail_mapper = { "acteurs et actrices": "qr1003a5dfa14564d69a2e75dc3318d7c17_thumbnail.jpg",
-                             "banques": "qr11de4bc16498c4423b678dd112b30698f_thumbnail.jpg",
-                             "cafés et restaurants": "qr1ecd7392d03ae4690b46ca0b48d6a306b_thumbnail.jpg",
-                             "commerces": "qr12fe8eb0ffbab4973978313ed196f8b86_thumbnail.png",
-                             "épiceries et alimentation": "qr183ed41474751443e8906971a5c905fd4_thumbnail.jpg",
-                             "évènements": "qr1f0353117f52e4c39b3d85deff2c45fec_thumbnail.jpg",
+        thumbnail_mapper = { "acteurs et actrices"          : "qr1003a5dfa14564d69a2e75dc3318d7c17_thumbnail.jpg",
+                             "banques"                      : "qr11de4bc16498c4423b678dd112b30698f_thumbnail.jpg",
+                             "cafés et restaurants"         : "qr1ecd7392d03ae4690b46ca0b48d6a306b_thumbnail.jpg",
+                             "commerces"                    : "qr12fe8eb0ffbab4973978313ed196f8b86_thumbnail.png",
+                             "épiceries et alimentation"    : "qr183ed41474751443e8906971a5c905fd4_thumbnail.jpg",
+                             "évènements"                   : "qr1f0353117f52e4c39b3d85deff2c45fec_thumbnail.jpg",
                              "institutions et organisations": "qr1a879411aaa4d4582b22f19c7fb1c2891_thumbnail.jpg",
-                             "mode et objets": "qr1c37f846c694a460cb893aef61f8b9014_thumbnail.jpg",
-                             "personnalités et fiction": "qr14fb78a7405444466ae93af73058854e2_thumbnail.png",
+                             "mode et objets"               : "qr1c37f846c694a460cb893aef61f8b9014_thumbnail.jpg",
+                             "personnalités et fiction"     : "qr14fb78a7405444466ae93af73058854e2_thumbnail.png",
                              "publications et photographies": "qr1387abb06ea094ee995755d12d4331a5c_thumbnail.jpg",
-                             "santé": "qr162c6f039762f400582d68d92fa0cf113_thumbnail.jpg",
-                             "théâtres et spectacles": "qr15e18895353984bdb95b80107caf8e98c_thumbnail.jpg",
-                             "ville et architecture": "qr14ed31d174a8845219f452c6a09071628_thumbnail.jpg"
-                             }
-        query = (select( NamedEntity.category
-                       , func.count(NamedEntity.id_uuid).label("count"))
-                .group_by(NamedEntity.category)
-                .order_by(NamedEntity.category))
+                             "santé"                        : "qr162c6f039762f400582d68d92fa0cf113_thumbnail.jpg",
+                             "théâtres et spectacles"       : "qr15e18895353984bdb95b80107caf8e98c_thumbnail.jpg",
+                             "ville et architecture"        : "qr14ed31d174a8845219f452c6a09071628_thumbnail.jpg"
+                           }
+        if not preview:
+            query = select( NamedEntity.category
+                          , func.count(NamedEntity.id_uuid).label("count"))
+        else:
+            query = select( NamedEntity.category
+                          , func.count(NamedEntity.id_uuid).label("count")
+                          , func.array_agg(NamedEntity.entry_name, type_=ARRAY(TEXT))
+                            [0:3]
+                            .label("preview") )
+        query = query.group_by( NamedEntity.category ).order_by( NamedEntity.category )
         r = db.session.execute(query).all()
-        out = [ { "category_name": row[0],
-                  "count": row[1],
-                  "thumbnail": [ thumbnail_mapper[row[0]] if row[0] in thumbnail_mapper.keys() else "" ]
-                }
-                for row in r ]
+        if not preview:
+            out = [ { "category_name": row[0],
+                      "count": row[1],
+                      "thumbnail": [ thumbnail_mapper[row[0]] if row[0] in thumbnail_mapper.keys() else "" ]
+                    }
+                    for row in r ]
+        else:
+            out = [ { "category_name": row[0],                       # str
+                      "count"        : row[1],                       # int
+                      "thumbnail"    : [ thumbnail_mapper[row[0]] ], # t.List[str] (is a list for consistency with other serializations)
+                      "preview"      : row[2]                        # t.List[str]
+                    }
+                    for row in r ]
         return out
 
     @classmethod
