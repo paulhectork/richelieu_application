@@ -141,20 +141,20 @@ const currentFootnoteHtmlId  = ref("")        // the htmlId of the current footn
 const currentFootnotePos     = ref([])        // [x:float, y:float]. where to position the
 
 // url to component name mapper
-const urlMapper = { "bourse"             : "ArticleContentBourse.vue"
-                  , "vivienne"           : "ArticleContentVivienne.vue"
-                  , "mode"               : "ArticleContentMode.vue"
-                  , "menu"               : "ArticleContentMenu.vue"
-                  , "nature"             : "ArticleContentNature.vue"
-                  , "cafe"               : "ArticleContentCafe.vue"
-                  , "habiter"            : "ArticleContentHabiter.vue"
-                  , "patrimonialisation" : "ArticleContentPatrimonialisation.vue"
-                  , "mobilier"           : "ArticleContentMobilier.vue"
-                  , "theatre"            : "ArticleContentTheatre.vue"
-                  , "prostitution"       : "ArticleContentProstitution.vue"
-                  , "banque"             : "ArticleContentBanque.vue"
-                  , "marginaux"          : "ArticleContentMarginaux.vue"
-                  , "revolutions"        : "ArticleContentRevolutions.vue"
+const urlMapper = { "bourse"             : "ArticleContentBourse"
+                  , "vivienne"           : "ArticleContentVivienne"
+                  , "mode"               : "ArticleContentMode"
+                  , "menu"               : "ArticleContentMenu"
+                  , "nature"             : "ArticleContentNature"
+                  , "cafe"               : "ArticleContentCafe"
+                  , "habiter"            : "ArticleContentHabiter"
+                  , "patrimonialisation" : "ArticleContentPatrimonialisation"
+                  , "mobilier"           : "ArticleContentMobilier"
+                  , "theatre"            : "ArticleContentTheatre"
+                  , "prostitution"       : "ArticleContentProstitution"
+                  , "banque"             : "ArticleContentBanque"
+                  , "marginaux"          : "ArticleContentMarginaux"
+                  , "revolutions"        : "ArticleContentRevolutions"
 }
 
 /************************************************/
@@ -175,7 +175,7 @@ function loadCurrentArticleComponent(articleName) {
   let componentName = Object.keys(urlMapper).includes(articleName)
                       ? urlMapper[articleName]
                       : "ErrNotFound.vue";
-  return [ defineAsyncComponent(() => import(`../components/${componentName}` /* @vite-ignore */))
+  return [ defineAsyncComponent(() => import(`../components/${componentName}.vue`))
          , componentName === "ErrNotFound.vue"
          ];
 }
