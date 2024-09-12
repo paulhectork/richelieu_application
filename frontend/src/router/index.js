@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 
 
 /**
@@ -8,7 +8,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to,from,savedPosition) {  // https://router.vuejs.org/guide/advanced/scroll-behavior.html#Scroll-Behavior
+    if ( to.hash ) {
+      return { el: to.hash }
+    } else {
+      return { top: 0 }
+    }
+  },
   linkExactActiveClass: "selected",  // `.selected` is added to the `a` created using `RouterLink` for the currently active component
   routes: [
     {
