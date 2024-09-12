@@ -33,8 +33,7 @@
         </span>
       </div>
       <div class="resource-preview negative-default">
-        <span>
-          {{ resource.preview.join(" &mdash; " ) }}</span>
+        <span v-html="resource.preview"></span>
         </div>
     </div>
     </RouterLink>
@@ -67,10 +66,17 @@ onMounted(() => {
   if ( !["named_entity", "theme"].includes(props.tableName) ) {
     console.error(`HomeThemeOrNamedEntityPreview.onMounted: got "${props.tableName}" for "props.tableName", expected one of "named_entity", "theme"]`)
   }
-  resource.value = props.resource;
   tableName.value = props.tableName;
+  resource.value = props.resource;
 
-  setTimeout(dirtyResize, 100);
+  // create a string representation of `resource.preview` (Array<str>).
+  // we use a regex to set the string's content so that it's about the
+  // same length (visually) as that of `resource.value.category_name`
+  let p   = resource.value.preview.sort((a,b) => a.length - b.length)   // shorter elements of `preview` first
+                                  .join(" &mdash; " ),
+      len = Math.round(resource.value.category_name.length * 0.8),      // maximum allowed string size
+      rgx = new RegExp(`^.{${len}}.+?((?=\\s*&mdash;)|(?=$))`);         // match until the next &mdash; or end of line
+  resource.value.preview = p.match(rgx) !== null ? p.match(rgx)[0] : p;
 
 })
 
@@ -82,7 +88,7 @@ onMounted(() => {
 .preview-wrapper {
   border: var(--cs-border);
   background-color: var(--cs-main-default-bg);
-  margin: 3%;
+
 }
 .preview-inner-wrapper {
   display: grid;
@@ -95,13 +101,16 @@ onMounted(() => {
 }
 .resource-main {
   font-size: 100%;
+  font-size: max(min(3vh, 3vw), 16px);
+  white-space: nowrap;
   /*padding: 5px;*/
 }
 .resource-main > span {
-  background-color: red;
+  /*background-color: red;*/
 }
 .resource-main-text {
-  margin: 5px;
+  display: block;
+  padding: 5px 5px 3px 5px;
 }
 .resource-count {
   color: var(--cs-contrast-default)

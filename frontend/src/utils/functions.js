@@ -25,7 +25,6 @@ export function cleanClickOrTouchend(event) {
   return event
 }
 
-
 /**
  * check that an object is kind of empty.
  * this is a generic function that works for scalars

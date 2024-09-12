@@ -23,6 +23,8 @@
     <h1 id="app-title"
     >
       <RouterLink to="/">
+        <!-- the @ allows the logo to show in production build:
+          https://stackoverflow.com/a/70813323/17915803 -->
         <img src="@/assets/icons/logo-text.png"
              id="logo-richelieu"
              alt="logo du projet Richelieu"
@@ -51,14 +53,11 @@ import $ from "jquery";
 import { domStore } from "@stores/dom";
 import { clickOrTouchEvent } from "@globals";
 import { cleanClickOrTouchend } from "@utils/functions.js";
-// import Logo from "../src/assets/icons/logo-text.png";
 
 /**************************************************************/
 
 const props = defineProps(["menuActive"]);
 const emit = defineEmits(["menuActiveUpdate"])
-
-const logoPath = "@/assets/icons/logo-text.png";
 
 /**************************************************************/
 
