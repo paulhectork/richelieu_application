@@ -15,7 +15,7 @@ const router = createRouter({
   // however, redirections etc work fine with `createWebHashHistory`:
   //
   // history: createWebHashHistory(import.meta.env.BASE_URL),
-  histroy: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL),
 
   scrollBehavior(to,from,savedPosition) {  // https://router.vuejs.org/guide/advanced/scroll-behavior.html#Scroll-Behavior
     if ( to.hash ) {
