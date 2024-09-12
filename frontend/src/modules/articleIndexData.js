@@ -1,3 +1,9 @@
+/**
+ * a JSON representation of all articles: their title and subtitle,
+ * an URL pointing to an image and a slug to build an URL redirecting
+ * to the article's main page
+ */
+
 export const articles = [
   { title    : "La bourse et sa place",
     subtitle : `Le temple de l'argent en perspective&nbsp;: activités et

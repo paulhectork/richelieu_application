@@ -69,3 +69,14 @@ export const urlToFrontendInstitution = institutionIdUuid =>
   new URL(`/institution/${institutionIdUuid}`, window.location.origin);
 
 
+/**
+ * build an URL to a main article. articleSlug si the slug that
+ * allows us to point to a specific article: $root/article/$articleSlug
+ *
+ * @example: urlToArticleMain(bourse) returns an URL
+ *   pointing to localhost:5173/article/bourse
+ */
+export const urlToArticleMain = articleSlug =>
+  new URL(`/article/${articleSlug}`, window.location.origin);
+
+
