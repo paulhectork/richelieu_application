@@ -8,7 +8,15 @@ import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router
 
 
 const router = createRouter({
-  history: createWebHashHistory(import.meta.env.BASE_URL),
+  // production errors: can only access directly to the root url `/`
+  // https://vue-land.github.io/faq/production-page-refresh
+  // it's impossible to access to any other url (`/theme`) or
+  // reload a page other than the root. otherwise, we get a blank page.
+  // however, redirections etc work fine with `createWebHashHistory`:
+  //
+  // history: createWebHashHistory(import.meta.env.BASE_URL),
+  histroy: createWebHistory(import.meta.env.BASE_URL),
+
   scrollBehavior(to,from,savedPosition) {  // https://router.vuejs.org/guide/advanced/scroll-behavior.html#Scroll-Behavior
     if ( to.hash ) {
       return { el: to.hash }
