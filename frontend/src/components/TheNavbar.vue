@@ -23,7 +23,7 @@
     <h1 id="app-title"
     >
       <RouterLink to="/">
-        <img :src="logoPath"
+        <img src="@/assets/icons/logo-text.png"
              id="logo-richelieu"
              alt="logo du projet Richelieu"
         >
@@ -51,13 +51,14 @@ import $ from "jquery";
 import { domStore } from "@stores/dom";
 import { clickOrTouchEvent } from "@globals";
 import { cleanClickOrTouchend } from "@utils/functions.js";
+// import Logo from "../src/assets/icons/logo-text.png";
 
 /**************************************************************/
 
 const props = defineProps(["menuActive"]);
 const emit = defineEmits(["menuActiveUpdate"])
 
-const logoPath = "../src/assets/icons/logo-text.png";
+const logoPath = "@/assets/icons/logo-text.png";
 
 /**************************************************************/
 
