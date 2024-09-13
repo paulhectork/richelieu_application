@@ -125,7 +125,7 @@ import { onMounted, ref } from "vue";
 
 
 import UiButtonEye from "@components/UiButtonEye.vue";
-import UiButtonArrow from "@components/UiButtonArrow.vue";
+import UiButtonLink from "@components/UiButtonLink.vue";
 import UiButtonEllipsis from "@components/UiButtonEllipsis.vue";
 import { urlToFrontendTheme, urlToFrontendNamedEntity } from "@utils/url.js";
 

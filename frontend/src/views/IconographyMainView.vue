@@ -215,6 +215,13 @@ onUpdated(() => {
   border-top: var(--cs-border);
 }
 
+@media ( orientation:portrait ) {
+  .viewer-cartel-container {
+    grid-template-rows: 70vh 2fr;
+    grid-template-columns: 100%;
+  }
+}
+
 /*************************************/
 .viewer-container {
   display: grid;

@@ -25,28 +25,45 @@
         thumbnail    : <str>
      }
      ```
-
 -->
 
 <template>
   <div class="home-wrapper">
-    <div id="named-entity-wrapper"
+    <div id="theme-wrapper"
          class="home-block home-block-even home-block-row1">
-      <h1>Entités nommées</h1>
+      <div class="home-block-title-wrapper">
+        <h1>Thèmes</h1>
+        <div class="home-block-plus-wrapper">
+          <span>Voir plus</span>
+          <RouterLink to="/theme">
+            <UiButtonLink></UiButtonLink>
+          </RouterLink>
+        </div>
+      </div>
       <ul class="list-preview list-invisible">
-        <li v-for="ne in namedEntitiesFormatted">
-          <HomeItemPreview :resource="ne"
+        <li v-for="te in themesFormatted">
+          <HomeItemPreview :resource="te"
+                           display="category"
           ></HomeItemPreview>
         </li>
       </ul>
     </div>
 
-    <div id="theme-wrapper"
+    <div id="named-entity-wrapper"
          class="home-block home-block-odd home-block-row1">
-      <h1>Thèmes</h1>
+      <div class="home-block-title-wrapper">
+        <div class="home-block-plus-wrapper">
+          <span>Voir plus</span>
+          <RouterLink to="/entite-nommee">
+            <UiButtonLink></UiButtonLink>
+          </RouterLink>
+        </div>
+        <h1>Entités nommées</h1>
+      </div>
       <ul class="list-preview list-invisible">
-        <li v-for="te in themesFormatted">
-          <HomeItemPreview :resource="te"
+        <li v-for="ne in namedEntitiesFormatted">
+          <HomeItemPreview :resource="ne"
+                           display="category"
           ></HomeItemPreview>
         </li>
       </ul>
@@ -54,10 +71,19 @@
 
     <div id="article-wrapper"
          class="home-block home-block-even home-block-row2">
-      <h1>Articles</h1>
+      <div class="home-block-title-wrapper">
+        <h1>Articles</h1>
+        <div class="home-block-plus-wrapper">
+          <span>Voir plus</span>
+          <RouterLink to="/article">
+            <UiButtonLink></UiButtonLink>
+          </RouterLink>
+        </div>
+      </div>
       <ul class="list-invisible list-preview">
         <li v-for="ar in articlesFormatted">
           <HomeItemPreview :resource="ar"
+                           display="article"
           ></HomeItemPreview>
         </li>
       </ul>
@@ -65,7 +91,7 @@
 
     <div id="map-wrapper"
          class="home-block home-block-odd home-block-row2">
-      <div class="map-title-wrapper">
+      <div class="home-block-title-wrapper map-title-wrapper">
         <h1>Carte</h1>
       </div>
       <RouterLink to="/cartographie"
@@ -89,6 +115,7 @@ import axios from "axios";
 import $ from "jquery";
 import _ from "lodash";
 
+import UiButtonLink from "@components/UiButtonLink.vue";
 import HomeItemPreview from "@components/HomeItemPreview.vue";
 import { articles } from "@modules/articleIndexData.js";
 import { urlToFrontendNamedEntityCategory
@@ -117,11 +144,13 @@ const articlesFormatted      = ref([]);
  *   the preview items are related to.
  */
 function stringifyThemeOrNamedEntityPreview(preview, categoryName) {
-  let len = Math.round(categoryName.length * 0.8),               // maximum allowed string size
+  let len = Math.round(categoryName.length * 1.5),               // maximum allowed string size
       rgx = new RegExp(`^.{${len}}.+?((?=\\s*&mdash;)|(?=$))`);  // match until the next &mdash; or end of line
   preview = preview.sort((a,b) => a.length - b.length)           // shorter elements of `preview` first
                    .join(" &mdash; " );                          // transform array into &mdash-separated string
-  return preview.match(rgx) !== null ? preview.match(rgx)[0] : preview;
+  return preview.match(rgx) !== null
+         ? preview.match(rgx)[0]
+         : preview;
 }
 
 /**
@@ -209,68 +238,96 @@ onUnmounted(() =>
 <style scoped>
 .home-wrapper {
   display: grid;
-  grid-template-rows: 50% 50%;
-  grid-template-columns: 50% 50%;
+  grid-template-rows: 70% 70% 70% 70%;
+  grid-template-columns: 100%;
   height: 100%;
   width: 100%;
 }
-
-/***********************************/
-
 .home-block {
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: auto 2fr;
-  /*border-bottom: var(--cs-border);*/
+  grid-template-rows: max(25%,50px) 75%;  /* 50px: fallback on small viewports */
+  border-right: none;
+  border-bottom: var(--cs-border);
 }
-.home-block-even {
-  border-right: var(--cs-border);
+.home-block:not(:first-child) {
+  margin-top: 3vh;
+  margin-bottom: 5vh;
 }
+
+@media ( orientation: landscape ) {
+  .home-wrapper {
+    grid-template-rows: 50% 50%;
+    grid-template-columns: 50% 50%;
+  }
+  .home-block {
+    height: 100%;
+    border: none;
+  }
+  .home-block:not(:first-child) {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .home-block-even {
+    border-right: var(--cs-border);
+  }
+}
+
 
 /***********************************/
+/* title block styling */
 
-.home-block-odd > h1 {
-  text-align: right;
+.home-block-title-wrapper {
+  display: grid;
+  grid-template-columns: 2fr auto;
+  grid-template-rows: 100%;
+  align-items: center;
 }
 h1 {
   background-color: white;
-  width: 100%;
+  width: min-content;
   font-size: 300%;
   font-weight: normal;
+  text-wrap: nowrap;
+  margin:0% 0;
 }
-
-/************************************/
-
-.map-title-wrapper {
+.home-block-odd > .home-block-title-wrapper {
+  flex-direction: row-reverse;
+}
+.home-block-plus-wrapper {
   display: flex;
-  flex-direction: column;
-  width: 100%;
-  align-items: flex-end;
-  transform: translateY(25vh);
-}
-.map-title-wrapper > h1 {
-  width: fit-content;
-  padding: 10px;
-}
-.map-outer-wrapper {
-  min-height: 100%;
-  width: 100%;
-}
-.map-inner-wrapper {
-  display: flex;
-  align-items: end;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
-  min-width: 100%;
-  height: 100%;
-  overflow: hidden;
+  background-color: white;
+  border: var(--cs-border);
+  padding: 3px;
+  margin: 0 1vw;
 }
-.map-inner-wrapper > img {
-  height: auto;
-  object-fit: cover;
-  min-width: 100%;
+.home-block-plus-wrapper > * {
+  text-wrap: nowrap;
+}
+.home-block-plus-wrapper .button-link {
+  height: 5vh;
+  width: 5vh;
+  min-height: 30px;
+  min-width: 30px;
+}
+
+/* hide "en savoir plus" on small viewports */
+.home-block-plus-wrapper > span {
+  visibility: hidden;
+  width: 0;
+}
+@media ( min-width: 1200px ) {
+  .home-block-plus-wrapper > span {
+    visibility: visible;
+    width: auto;
+  }
 }
 
 /***********************************/
+/* .list-preview styling */
 
 .list-preview {
   display: flex;
@@ -291,4 +348,82 @@ h1 {
 .home-block-odd .list-preview {
   justify-content: end;
 }
+
+/************************************/
+/* map block styling */
+
+#map-wrapper {
+  min-width: 100%;
+  height: 100%;
+
+  display: grid;
+  grid-template-rows: 0% 100%;
+  grid-template-columns: 100%;
+}
+.map-title-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: flex-end;
+  transform: translateY(25vh);
+  flex-grow: 1;
+}
+.map-title-wrapper > h1 {
+  width: fit-content;
+  padding: 10px;
+  border: var(--cs-border);
+  margin-right: 5vw;
+  transition: background-color .5s;
+}
+.map-outer-wrapper {
+  overflow: hidden;
+}
+.map-inner-wrapper {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  min-height:100%;
+  min-width:100%;
+  overflow: hidden;
+}
+.map-inner-wrapper > img {
+  object-fit: contain;
+}
+
+.map-title-wrapper:has(+ .map-outer-wrapper:hover) > h1 {
+  /* this fancy selector targets `h1` when .map-outer-wrapper is hovered */
+  background-color: var(--cs-main-second-bg);
+  color: var(--cs-main-second);
+}
+.map-title-wrapper:has(+ .map-outer-wrapper:active) > h1 {
+  background-color: var(--cs-contrast-active-bg);
+}
+
+/*****************************************/
+/*`#named-entity-wrapper h1` is a bitch to style,
+  so we set a different style for when the screen is too
+  narrow, on the whole #named-entity-wrapper and on
+  its `.home-block-title-wrapper` */
+#named-entity-wrapper {
+  grid-template-rows: 1fr auto;
+}
+#named-entity-wrapper > .home-block-title-wrapper {
+  grid-template-columns: auto 2fr;
+  justify-items: right;
+}
+#named-entity-wrapper h1 {
+  text-wrap: wrap;
+  text-align: right;
+}
+@media ( min-width: 1200px ) {
+  #named-entity-wrapper {
+    /* on wide viewports, the grid is the same for
+      #named-entity-wrapper as it is for other blocks */
+    grid-template-rows: max(25%,50px) 75%;
+  }
+  #named-entity-wrapper h1 {
+    text-wrap: nowrap;
+  }
+}
+
 </style>

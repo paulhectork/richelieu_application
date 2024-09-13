@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 
 /**
@@ -108,6 +108,18 @@ const router = createRouter({
     }, {
       path: '/table-viewer',
       component: () => import("@views/TableViewerView.vue")
+    }, {
+      path: '/documentation/methodologie',
+      component: () => import("@views/DocumentationMethodologieView.vue")
+    }, {
+      path: '/documentation/api',
+      component: () => import("@views/DocumentationApiView.vue")
+    }, {
+      path: '/a-propos/equipe',
+      component: () => import("@views/AboutEquipeView.vue")
+    }, {
+      path: '/a-propos/projet',
+      component: () => import("@views/AboutProjetView.vue")
     }, {
       path: "/:pathMatch(.*)*",
       component: () => import("@views/ErrNotFoundView.vue")

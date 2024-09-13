@@ -36,7 +36,7 @@ export function indexDataFormatterIconography(dataArr) {
             href   : urlToFrontendIconography(c.id_uuid).pathname,
             iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
             img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0].url).href : null,
-            text   : stringifyIconographyResource(c) };
+            text   : stringifyIconographyResource(c, true) };
   })
 }
 

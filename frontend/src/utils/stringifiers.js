@@ -75,25 +75,36 @@ export function stringifyDate(d) {
  * generate a string representation of a single iconography object
  * (defined in the backend by: Iconography.serialize_lite())
  * @param {Object} i: the iconography object
+ * @param {bool} truncate: shorten author names and title to fit a small container
  * @returns String
  */
-export function stringifyIconographyResource(i) {
+export function stringifyIconographyResource(i, truncate) {
   let out = "";
   let authors = stringifyActorArray(i.authors);
   let date = stringifyDate(i.date);
   let truncateOpt = { length:30, omission:" [...]", separator:/[\s;,\[\]\(\)]+/g }
 
-  authors = authors.length && authors.length > 30
-  ? _.truncate(authors, truncateOpt)
-  : authors ;
-  out += authors.length ? `${authors}, ` : "";
+  if ( truncate == null ) {
+    console.error(" set an option for truncate ");
+  }
 
-  out += i.title.length && i.title[0].length > 20
-         ? `<i>${ capitalizeWords(_.truncate(i.title[0], truncateOpt)) }</i>`
-         : i.title.length && i.title[0].length <= 20
-         ? `<i>${ capitalizeWords( i.title[0] ) }</i>`
-         : " ";
-  out += " ";
+  if ( truncate ) {
+    authors = authors.length && authors.length > 30
+    ? _.truncate(authors, truncateOpt)
+    : authors ;
+    out += authors.length ? `${authors}, ` : "";
+
+    out += i.title.length && i.title[0].length > 20
+           ? `<i>${ capitalizeWords(_.truncate(i.title[0], truncateOpt)) }</i>`
+           : i.title.length && i.title[0].length <= 20
+           ? `<i>${ capitalizeWords( i.title[0] ) }</i>`
+           : " ";
+    out += " ";
+  } else {
+    out += authors.length ? `${authors}, ` : "";
+    out += i.title.length ? `<i>${i.title[0]}</i>` : ""
+    out += " ";
+  }
 
   out += date.length ? `(${date})` : "";
   return out;
@@ -221,10 +232,8 @@ export function stringifyInstitutionArray(institutionArray, hyperlink=false) {
 /**
  * elements that are associated with a resource always have the same
  * structure. here, we centralize their stringification.
- *
  * elements associated, are, for example, named entities that co-occur
  * with a theme. they are fetched from the backend.
- *
  * all associated elements are included in an `<a>`, with a redirection
  * to their main page.
  *

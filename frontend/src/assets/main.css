@@ -168,8 +168,8 @@
   --cs-main-second: var(--cs-white);
   --cs-main-second-bg: var(--cs-lightgrey);
 
-  --cs-main-active-bg: var(--cs-white);
-  --cs-main-active: var(--cs-seagreen);
+  --cs-main-active-bg: var(--cs-seagreen);
+  --cs-main-active: var(--cs-white);
 
   /**********************/
   --cs-negative-default: var(--cs-white);           /* font color */
@@ -376,7 +376,7 @@ button {
   background-color: var(--cs-main-default-bg);
 
   color: var(--cs-main-default);
-  border: double 1px;
+  border: var(--cs-border);
   cursor: grab;
   width: auto;
 
@@ -389,31 +389,33 @@ button:hover {
   border: var(--cs-border);
 }
 button:active {
-  background-color: var(--cs-seagreen);
-  color: var(--cs-main-default);
+  background-color: var(--cs-main-active-bg);
+  color: var(--cs-main-active);
   width: fit-content;
 }
 /* emulate .active state */
 button.button-activated {
-  background-color: var(--cs-seagreen);
-  color: var(--cs-main-default);
+  background-color: var(--cs-main-active-bg);
+  color: var(--cs-main-active);
   width: fit-content;
 }
 
 /**************************************************************************/
 /* svg */
 
-button > svg > path {
+button > svg > path  {
   stroke: var(--cs-main-default);
-  transition: stroke 0.2s;
+  fill: var(--cs-main-default);
+  transition: stroke 0.2s, fill .2s;
 }
 button:hover > svg > path {
   stroke: var(--cs-main-second);
+  fill: var(--cs-main-second);
   background-color: var(--cs-main-second-bg);
 }
 button:active > svg > path {
-  stroke: var(--cs-main-active);
   stroke: var(--cs-main-active-bg);
+  fill: var(--cs-main-active-bg);
 
 }
 

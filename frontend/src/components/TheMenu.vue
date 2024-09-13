@@ -87,7 +87,7 @@
             <li class="main-default">
               <RouterLink to="/a-propos/equipe"
                           class="menu-text"
-              >À propos</RouterLink>
+              >L'équipe</RouterLink>
             </li>
           </ul>
         </div>

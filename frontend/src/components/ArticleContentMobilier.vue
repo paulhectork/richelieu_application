@@ -55,7 +55,7 @@
       en lien avec l'alimentation
       <UiButtonEye data-key="qr1a98e4dd3d2b7432da0971c604bf34cc1"></UiButtonEye>&nbsp;
       <RouterLink to="/article/menu">
-        <UiButtonArrow orient="right"></UiButtonArrow>
+        <UiButtonLink orient="right"></UiButtonLink>
       </RouterLink>.
     </p>
     <p>Le jardin du Palais-Royal sert aussi de moteur en matière d'équipement
@@ -113,7 +113,7 @@
 import { onMounted, ref } from "vue";
 
 import UiButtonEye from "@components/UiButtonEye.vue";
-import UiButtonArrow from "@components/UiButtonArrow.vue";
+import UiButtonLink from "@components/UiButtonLink.vue";
 import UiButtonEllipsis from "@components/UiButtonEllipsis.vue";
 import { urlToFrontendTheme, urlToFrontendNamedEntity } from "@utils/url.js";
 

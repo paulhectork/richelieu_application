@@ -1,10 +1,3 @@
-
-<!-- PlaceMainView.vue
-
-     the main view for a single place, to see it on a map
-     and view all of its related iconography
--->
-
 <template>
   <WaitingToComeToLife></WaitingToComeToLife>
 </template>
@@ -16,5 +9,4 @@ import WaitingToComeToLife from '@components/WaitingToComeToLife.vue';
 
 
 <style scoped>
-
 </style>

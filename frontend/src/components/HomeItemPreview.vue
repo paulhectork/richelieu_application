@@ -1,6 +1,9 @@
 <!-- HomeThemeOrNamedEntity.vue
 
-     props: resource (Object). see below for its structure:
+     props:
+        resource (Object). see below for its structure.
+        display (string): one of 'article'|'category',
+          to set HTML style classes
 
      resource data model:
      {
@@ -28,22 +31,26 @@
        class="preview-wrapper main-default"
        :id="htmlId"
        :style="{ backgroundImage: resource.thumbnail
-                                          ? `url(${resource.thumbnail})`
-                                          : 'inherit' }"
+                                  ? `url(${resource.thumbnail})`
+                                  : 'inherit' }"
   >
     <RouterLink :to="resource.href.pathname">
       <div class="preview-inner-wrapper">
-        <div class="resource-main">
+        <div class="resource-main"
+             :class="props.display === 'category'
+                     ? 'resource-main-category'
+                     : 'resource-main-article'"
+        >
           <span class="title-main"
           >{{ resource.title_main }}</span>
           <span v-if="resource.title_second"
                 class="title-second"
-          >&mdash; {{ resource.title_second }}</span>
+          >&nbsp;&mdash; {{ resource.title_second }}</span>
         </div>
         <div v-if="resource.title_sub"
              class="resource-sub negative-default">
           <span v-html="resource.title_sub"></span>
-          </div>
+        </div>
       </div>
     </RouterLink>
   </div>
@@ -51,21 +58,16 @@
 
 
 <script setup>
-import { ref, onMounted, computed, setBlockTracking } from "vue";
-
-import $ from "jquery";
+import { ref, onMounted } from "vue";
 
 /*************************************************/
 
-const props = defineProps(["resource"]);
+const props = defineProps(["resource", "display"]);
 const resource = ref();
 const htmlId = `home-item-preview-${window.crypto.randomUUID()}`;
 
-// const dirtyResize = () => {
-//   const selector = `#${htmlId}`;
-//   if ( $(selector).length ) {
-//     $(selector).width( $(`${selector} .title-main`).width() + 10 );  // +10 accounts for margins
-// }}
+/*************************************************/
+
 
 onMounted(() => {
   resource.value = props.resource;
@@ -93,16 +95,38 @@ onMounted(() => {
 }
 .resource-main {
   font-size: 100%;
-  font-size: max(min(3vh, 3vw), 16px);
+  font-size: max(min(4vh, 4vw), 16px);
   display: flex;
   align-items: center;
   padding: 5px 5px 3px 5px;
+  background-color: var(--cs-main-default-bg);
+  transition: background-color .5s;
+}
+.resource-main-article {
+  margin: 5px;
+  border: var(--cs-border);
 }
 .title-second {
-  color: var(--cs-contrast-default)
+  color: var(--cs-contrast-default);
 }
 .resource-sub {
-  font-size: 80%;
+  font-size: max(min(2.3vh, 2.3vw), 70%);
   padding: 3px;
+}
+
+/*****************************************/
+
+.preview-wrapper:hover .resource-main {
+  background-color: var(--cs-main-second-bg);
+}
+.preview-wrapper:hover .resource-main,
+.preview-wrapper:hover .title-second,
+.preview-wrapper:active .resource-main,
+.preview-wrapper:active .title-second {
+  color: var(--cs-main-second);
+}
+.preview-wrapper:active .resource-main,
+.preview-wrapper:active .title-second {
+  background-color: var(--cs-contrast-active-bg);
 }
 </style>

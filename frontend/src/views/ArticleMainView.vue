@@ -63,7 +63,7 @@
 
           ></IiifViewer>
           <div class="iiif-cartel">
-            <p v-html="stringifyIconographyResource(iconographyMainCurrent)"></p>
+            <p v-html="stringifyIconographyResource(iconographyMainCurrent, truncate=false)"></p>
           </div>
         </div>
       </div>

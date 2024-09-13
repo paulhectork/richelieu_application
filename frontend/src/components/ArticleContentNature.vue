@@ -49,7 +49,7 @@
       Changé en cours il fut un temps aménagé
       pour abriter les activités boursières
       <RouterLink to="/article/bourse">
-        <UiButtonArrow orient="right"></UiButtonArrow>
+        <UiButtonLink orient="right"></UiButtonLink>
       </RouterLink> qui s'y tenaient sous une série d'arcades,
       avant d'être redessiné par Henri Labrouste dans les
       années 1860 pour l'agrément des usagers de la bibliothèque
@@ -154,7 +154,7 @@ import { onMounted, ref } from "vue";
 
 
 import UiButtonEye from "@components/UiButtonEye.vue";
-import UiButtonArrow from "@components/UiButtonArrow.vue";
+import UiButtonLink from "@components/UiButtonLink.vue";
 import UiButtonEllipsis from "@components/UiButtonEllipsis.vue";
 import { urlToFrontendTheme, urlToFrontendNamedEntity } from "@utils/url.js";
 
