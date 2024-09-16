@@ -6,15 +6,23 @@
     <img :src="item.img"
          class="fill-parent"
          loading="lazy"
-         >
+    >
     <p v-html="item.text"></p>
   </RouterLink>
 
-  <RouterLink v-if="display==='concept'"
+  <!--<RouterLink v-if="display==='concept'"
      class="index-item index-item-concept"
      :to="item.href"
      :style="{ 'background-image': `url(${item.img})` }"
+  >-->
+  <RouterLink v-if="display==='concept'"
+     class="index-item index-item-concept"
+     :to="item.href"
   >
+    <img :src="item.img"
+         class="fill-parent"
+         loading="lazy"
+    >
     <p v-html="item.text"></p>
   </RouterLink>
 
@@ -25,9 +33,6 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
-
-import { manifestToThumbnail } from "@utils/iiif.js";
 
 /**************************************************************/
 
@@ -67,14 +72,14 @@ p {
   grid-template-rows: 2fr auto;
   text-align: center;
 }
+/*
 .index-item-resource .img-container {
-  /*width: 100%;
-  height: 100%;*/
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
+*/
 .index-item-resource p {
   padding: 5px;
   height: min-content;
@@ -85,14 +90,13 @@ p {
  * concept view
  */
 .index-item-concept {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-
-  background-size: cover;
-  background-position: center center;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 2fr auto;
+  text-align: center;
 
   text-align: start;
+
 }
 .index-item-concept p {
   width: 100%;

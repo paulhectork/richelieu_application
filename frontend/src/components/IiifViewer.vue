@@ -93,7 +93,7 @@ async function buildOsdViewer(tileSequence, osdId) {
     showNavigator: true,
     navigatorAutoFade: true,
     showRotationControl: true,
-    prefixUrl: new URL("/statics/openseadragon-icons/", __STATICS_URL__).href,
+    prefixUrl: new URL("/openseadragon-icons/", __STATICS_URL__).href,
     navImages: osdNavImages
   });
   return viewer.value.addOnceHandler("open", () => {

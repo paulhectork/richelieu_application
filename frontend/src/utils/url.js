@@ -10,10 +10,12 @@
  * @returns {URL}  : the URL to that image
  */
 export const fnToCartographyFile = (fn) =>
-  new URL(`/cartography/${fn}`, __STATICS_URL__);
+  new URL(`cartography/${fn}`, __STATICS_URL__);
 
-export const fnToIconographyFile = (fn) =>
-  new URL(`/iconography/${fn}`, __STATICS_URL__);
+export const fnToIconographyFile = (fn) => {
+  console.log(__STATICS_URL__);
+  return new URL(`iconography/${fn}`, __STATICS_URL__)
+};
 
 /**
  * build an URL to a theme category.
