@@ -111,7 +111,6 @@ export function indexDataFormatterNamedEntityCategory(dataArr) {
 
 export function indexDataFormatterNamedEntity(dataArr) {
   return dataArr.map((c) => {
-    console.log(c.thumbnail[0], fnToIconographyFile(c.thumbnail[0]));
     return { idUuid : c.id_uuid,
              href   : urlToFrontendNamedEntity(c.category, c.id_uuid).pathname,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
