@@ -3,7 +3,7 @@
  -->
 
 <template>
-  <div class="menu-container fill-parent negative-default">
+  <div class="menu-wrapper fill-parent negative-default">
 
     <ul class="menu fill-parent border-bottom list-invisible">
       <li>
@@ -95,7 +95,7 @@
 
     </ul>
     <!--
-    <div class="menu-container-visual">
+    <div class="menu-wrapper-visual">
       <img :src="menuCropPath">
     </div>
     -->
@@ -220,7 +220,7 @@ a {
  * `.menu-subcategories` can be clicked to redirect.
  */
 
-.menu-container {
+.menu-wrapper {
   position: fixed;
   top: var(--cs-navbar-height);
   height: calc(100vh - var(--cs-navbar-height));
@@ -323,7 +323,7 @@ li > a.selected {
 }
 */
 /*
-.menu-container-visual {
+.menu-wrapper-visual {
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -331,7 +331,7 @@ li > a.selected {
   align-items: center;
   justify-content: center;
 }
-.menu-container-visual > img {
+.menu-wrapper-visual > img {
   min-width: 120%;
   object-fit: center;
 }

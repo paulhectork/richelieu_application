@@ -46,6 +46,12 @@ const props = defineProps(["item", "display"]);
   font-family: var(--cs-font-sans-serif-accentuate);
   border: var(--cs-border);
   margin: 7px;
+
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 2fr auto;
+  text-align: center;
+
 }
 img {
   object-fit: cover;
@@ -58,64 +64,28 @@ a {
 }
 p {
   margin: 0;
+  padding: 5px;
+  width: 100%;
+  border-top: var(--cs-border);
+  height: min-content;
 }
 .index-item:hover p {
   background-color: var(--cs-main-second-bg);
   color: var(--cs-main-second);
 }
 
-
-/**
- * ressource view
- */
-.index-item-resource {
-  display: grid;
-  grid-template-columns: 100%;
-  grid-template-rows: 2fr auto;
-  text-align: center;
-}
-/*
-.index-item-resource .img-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-*/
+/* ressource view */
 .index-item-resource p {
-  padding: 5px;
-  height: min-content;
-  border-top: var(--cs-border);
-}
-
-/**
- * concept view
- */
-.index-item-concept {
-  display: grid;
-  grid-template-columns: 100%;
-  grid-template-rows: 2fr auto;
   text-align: center;
-
-  text-align: start;
-
 }
-.index-item-concept p {
-  width: 100%;
-  padding: 3px 3px 0px 3px;
 
-  background-color: var(--cs-main-default-bg);
-  border-top: var(--cs-border);
+/* concept view */
+.index-item-concept p {
   font-variant: small-caps;
+  text-align: start;
 
   display: flex;
   justify-content: space-between;
   align-items: center;
-
 }
-/*
-.index-item-concept :deep(span:last-child) {
-  font-family: var(--cs-font-sans-serif);
-}
-*/
 </style>
