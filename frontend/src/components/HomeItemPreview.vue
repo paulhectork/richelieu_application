@@ -35,7 +35,10 @@
                                   : 'inherit' }"
   >
     <RouterLink :to="resource.href.pathname">
-      <div class="preview-inner-wrapper">
+      <div class="preview-inner-wrapper"
+           :class="props.display === 'category'
+                   ? 'preview-inner-wrapper-2row'
+                   : 'preview-inner-wrapper-1row'">
         <div class="resource-main"
              :class="props.display === 'category'
                      ? 'resource-main-category'
@@ -84,7 +87,12 @@ onMounted(() => {
   background-size: 150%;
   background-position: center;
 }
-.preview-inner-wrapper {
+.preview-inner-wrapper-1row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-inner-wrapper-2row {
   display: grid;
   grid-template-columns: 100%;
   grid-template-rows: 60% 40%;
