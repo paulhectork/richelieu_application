@@ -34,13 +34,13 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
         // __API_URL__    : JSON.stringify("https://quartier-richelieu-retour.inha.fr:5000"),
         // __STATICS_URL__: JSON.stringify("https://quartier-richelieu-data.inha.fr")
         __API_URL__    : JSON.stringify("https://quartier-richelieu-retour.inha.fr/i"),
-        __STATICS_URL__: JSON.stringify("https://quartier-richelieu-data.inha.fr/statics")
+        __STATICS_URL__: JSON.stringify("https://quartier-richelieu-retour.inha.fr/statics")
       };
       break;
     case "backend-local":
       configVariables = {
         __API_URL__    : JSON.stringify("http://localhost:5001/i"),
-        __STATICS_URL__: JSON.stringify("https://quartier-richelieu-data.inha.fr")//"http://richdata01.inha.fr")
+        __STATICS_URL__: JSON.stringify("https://quartier-richelieu-retour.inha.fr/statics")//"http://richdata01.inha.fr")
       };
       break;
   };
