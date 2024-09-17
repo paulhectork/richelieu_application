@@ -12,9 +12,8 @@
 export const fnToCartographyFile = (fn) =>
   new URL(`cartography/${fn}`, __STATICS_URL__);
 
-export const fnToIconographyFile = (fn) => {
-  return new URL(`iconography/${fn}`, __STATICS_URL__)
-};
+export const fnToIconographyFile = (fn) =>
+  new URL(`iconography/${fn}`, __STATICS_URL__);
 
 /**
  * build an URL to a theme category.
