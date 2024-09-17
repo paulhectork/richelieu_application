@@ -1,3 +1,4 @@
+import traceback
 import atexit
 import click
 
@@ -14,18 +15,17 @@ def run(mode:str) -> None:
     """
     configure and run the backend app
     """
-    try:
-        maketmp()  # create necessary files/dirs
+    maketmp()  # create necessary files/dirs
 
-        app = config_app(mode)
-        if mode == "test":
-            runner()
-        else:
+    app = config_app(mode)
+    if mode == "test":
+        runner()
+    else:
+        try:
             app.run(port=5001, debug=True)
-
-    finally:
-#        atexit.register(deltmp) # delete temp files at exit, or exception
-        pass
+        except Exception as e:
+            app.logger.error(traceback.format_exc())
+            raise e
 
     return
 
