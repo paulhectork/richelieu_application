@@ -27,7 +27,7 @@ def run(mode:str) -> None:
             app.run(port=5001, debug=True)
         except Exception as e:
             app.logger.error(traceback.format_exc())
-            raise e
+            raise e  # so far, we want the site to crash so we can find possible exceptions
 
     return
 
