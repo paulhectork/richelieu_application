@@ -13,7 +13,6 @@ export const fnToCartographyFile = (fn) =>
   new URL(`cartography/${fn}`, __STATICS_URL__);
 
 export const fnToIconographyFile = (fn) => {
-  console.log(__STATICS_URL__);
   return new URL(`iconography/${fn}`, __STATICS_URL__)
 };
 
