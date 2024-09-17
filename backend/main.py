@@ -21,6 +21,8 @@ def run(mode:str) -> None:
     if mode == "test":
         runner()
     else:
+        # the try...except + app.logger allows to display
+        # errors in the production env's journals
         try:
             app.run(port=5001, debug=True)
         except Exception as e:
