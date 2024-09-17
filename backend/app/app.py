@@ -52,10 +52,8 @@ def config_app(cfgname:str):
     # for more fine grained config than is done here, see:
     #   https://medium.com/@haroonayaz76/centralized-logging-system-in-flask-the-backbone-of-multithreaded-python-applications-in-depth-7bfc45aae1b3
     if cfgname == "prod":
-        print("!!!!!!!!!!!!!!!!!!!!!! cfgname = prod")
         format = "%(levelname)s in %(module)s: %(message)s"  # server journals aldready print datetime => no need to reprint them
     else:
-        print("!!!!!!!!!!!!!!!!!!!!!! cfgname != prod")
         format = "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
     default_handler.setFormatter(logging.Formatter(format))
 
