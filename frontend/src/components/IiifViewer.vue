@@ -25,7 +25,7 @@
        class="iiif-viewer"
   ></div>
   <img v-else
-       :src="fnToIconographyFile(backupImgUrl)"
+       :src="urlToIconographyFile(backupImgUrl)"
        :style="{ objectFit: backupImgDisplay === 'cover' ? 'cover' : 'contain'  }"
        class="static-viewer"
   >
@@ -39,7 +39,7 @@ import $ from "jquery";
 import OpenSeadragon from "openseadragon";
 
 import { manifestToTileSequence, osdNavImages } from "@utils/iiif";
-import { fnToIconographyFile } from "@utils/url";
+import { urlToIconographyFile, urlToOsdIcons } from "@utils/url";
 import UiLoaderComponent from "@components/UiLoaderComponent.vue";
 
 /********************************************/
@@ -93,7 +93,7 @@ async function buildOsdViewer(tileSequence, osdId) {
     showNavigator: true,
     navigatorAutoFade: true,
     showRotationControl: true,
-    prefixUrl: new URL("openseadragon-icons/", __STATICS_URL__).href,
+    prefixUrl: urlToOsdIcons().href,
     navImages: osdNavImages
   });
   return viewer.value.addOnceHandler("open", () => {

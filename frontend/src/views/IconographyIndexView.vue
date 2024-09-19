@@ -52,7 +52,7 @@ onMounted(() => {
 function processResponse(r) {
   return JSON.parse(r.request.response)
              .map((e) => { e.thumbnail = e.thumbnail.length
-                                         ? fnToIconographyFile(e.thumbnail[0])
+                                         ? urlToIconographyFile(e.thumbnail[0])
                                          : null;
                            return e })
 }
@@ -63,7 +63,7 @@ const columnsDefinition = [ { dataFilter: "thumbnail",
                                 // retrieve the image from a manifest if there is one
                                 return dataFilter != null
                                 // ? `<img src="${manifestToThumbnail(dataFilter)}">`
-                                ? `<img src="${fnToIconographyFile(dataFilter)}"
+                                ? `<img src="${urlToIconographyFile(dataFilter)}"
                                         alt="Image de: ${row.title[0]}">`
                                 : "Image manquante"
                               }

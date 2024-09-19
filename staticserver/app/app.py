@@ -10,7 +10,7 @@ import os
 STATICS             = os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), "statics"))
 STATICS_ICONOGRAPHY = os.path.abspath(os.path.join(STATICS, "iconography"))
 STATICS_CARTOGRAPHY = os.path.abspath(os.path.join(STATICS, "cartography"))
-
+STATICS_OSD         = os.path.abspath(os.path.join(STATICS, "openseadragon-icons"))
 
 app = Flask("RICH.DATA.STATICS", static_folder=STATICS)
 
@@ -34,4 +34,10 @@ def cartography(fn:str):
         return "Error: file not found", 404
 
 
-
+@app.route("/openseadragon-icons/<string:fn>")
+def osdicons(fn:str):
+    """send openseadragon icons to the frontend"""
+    if os.path.isfile(os.path.join(STATICS_OSD, fn)):
+        return send_file(os.path.join(STATICS_OSD, fn))
+    else:
+        return "Error: file not found", 404

@@ -9,11 +9,18 @@
  * @param {str} fn : the filename to the image
  * @returns {URL}  : the URL to that image
  */
-export const fnToCartographyFile = (fn) =>
+export const urlToCartographyFile = (fn) =>
   new URL(`cartography/${fn}`, __STATICS_URL__);
 
-export const fnToIconographyFile = (fn) =>
+export const urlToIconographyFile = (fn) =>
   new URL(`iconography/${fn}`, __STATICS_URL__);
+
+/**
+ * prefix URL to the openseadragon icons
+ */
+export const urlToOsdIcons = () => {
+  console.log(new URL("openseadragon-icons/", __STATICS_URL__));
+  return new URL("openseadragon-icons/", __STATICS_URL__)};
 
 /**
  * build an URL to a theme category.

@@ -57,7 +57,7 @@ import $ from "jquery";
 import OpenSeadragon from "openseadragon";
 
 import IiifViewer from "@components/IiifViewer.vue";
-import { fnToIconographyFile } from "@utils/url";
+import { urlToIconographyFile } from "@utils/url";
 
 /****************************************/
 

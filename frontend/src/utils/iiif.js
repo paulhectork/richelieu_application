@@ -1,7 +1,7 @@
-/*************************************************
- *     globally useful http and api requests     *
- *        string representations                 *
- *************************************************/
+/**
+ * globally useful http and api requests
+ * string representations
+ */
 
 import axios, { AxiosError } from "axios";
 

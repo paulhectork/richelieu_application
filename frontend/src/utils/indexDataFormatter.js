@@ -12,8 +12,8 @@
  * NamedEntity, Theme...)
  */
 
-import { fnToIconographyFile
-       , fnToCartographyFile
+import { urlToIconographyFile
+       , urlToCartographyFile
        , urlToFrontendPlace
        , urlToFrontendIconography
        , urlToFrontendTheme
@@ -35,7 +35,7 @@ export function indexDataFormatterIconography(dataArr) {
     return { idUuid : c.id_uuid,
             href   : urlToFrontendIconography(c.id_uuid).pathname,
             iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
-            img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0].url).href : null,
+            img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0].url).href : null,
             text   : stringifyIconographyResource(c, true) };
   })
 }
@@ -46,7 +46,7 @@ export function indexDataFormatterPlace(dataArr) {
     return { idUuid : c.id_uuid,
              href   : urlToFrontendPlace(c.id_uuid).pathname,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
-             img    : c.filename.length ? fnToCartographyFile(c.filename[0].url).href : null,
+             img    : c.filename.length ? urlToCartographyFile(c.filename[0].url).href : null,
              text   : c.address.length ? c.address[0].address : "Addresse inconnue" };
   })
 }
@@ -56,7 +56,7 @@ export function indexDataFormatterPlace(dataArr) {
 //     return { idUuid : c.id_uuid,
 //              href   : urlToFrontendTheme(c.id_uuid).pathname,
 //              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
-//              img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
+//              img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0]).href : null,
 //              text   : stringifyThemeOrNamedEntityResource(c)
 //
 //     }
@@ -68,7 +68,7 @@ export function indexDataFormatterPlace(dataArr) {
 //     return { idUuid : c.id_uuid,
 //              href   : urlToFrontendNamedEntity(c.category, c.id_uuid).pathname,
 //              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
-//              img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
+//              img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0]).href : null,
 //              text   : stringifyThemeOrNamedEntityResource(c)
 //     }
 //   })
@@ -79,7 +79,7 @@ export function indexDataFormatterThemeCategory(dataArr) {
     return { idUuid : undefined,
              href   : urlToFrontendThemeCategory(c.category_name).pathname,
              iiif   : null,   // todo
-             img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,   // todo
+             img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0]).href : null,   // todo
              text   : stringifyThemeOrNamedEntityCategory(c)
     }
   })
@@ -90,7 +90,7 @@ export function indexDataFormatterTheme(dataArr) {
     return { idUuid : c.id_uuid,
              href   : urlToFrontendTheme(c.category, c.id_uuid).pathname,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
-             img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
+             img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0]).href : null,
              text   : stringifyThemeOrNamedEntityResource(c)
 
     }
@@ -102,7 +102,7 @@ export function indexDataFormatterNamedEntityCategory(dataArr) {
     return { idUuid : undefined,
              href   : urlToFrontendNamedEntityCategory(c.category_name).pathname,
              iiif   : null,   // todo
-             img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
+             img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0]).href : null,
              text   : stringifyThemeOrNamedEntityCategory(c)
     }
   })
@@ -114,7 +114,7 @@ export function indexDataFormatterNamedEntity(dataArr) {
     return { idUuid : c.id_uuid,
              href   : urlToFrontendNamedEntity(c.category, c.id_uuid).pathname,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
-             img    : c.thumbnail.length ? fnToIconographyFile(c.thumbnail[0]).href : null,
+             img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0]).href : null,
              text   : stringifyThemeOrNamedEntityResource(c)
     }
   })

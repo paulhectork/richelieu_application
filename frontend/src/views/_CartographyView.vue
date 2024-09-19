@@ -14,7 +14,7 @@
 import axios from "axios";
 import DataTableComponent from "@components/DataTableComponent.vue";
 import { stringifyDate } from "@utils/stringifiers";
-import { fnToCartographyFile } from "@utils/url";
+import { urlToCartographyFile } from "@utils/url";
 
 const apiTarget = new URL("/i/cartography", __API_URL__);
 const columnsDefinition = [ { data: "filename",
@@ -36,7 +36,7 @@ function processResponse(r) {
   return JSON.parse(r.request.response)
              .map((e) => { e.date = stringifyDate(e.date);
                            e.filename = e.filename.length
-                                        ? fnToCartographyFile(e.filename[0].url)
+                                        ? urlToCartographyFile(e.filename[0].url)
                                         : undefined;
                            return e; })
 }

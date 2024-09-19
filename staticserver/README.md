@@ -6,10 +6,6 @@ In development, files on a remote server are not available to the local app.
 Instead of adding extra routes on the `backend` app that would oonly make sense
 in the development context, this app serves as a local statics file server.
 
-There are 2 routes:
-- `/cartography/<filename>`: serve a cartography image
-- `/iconography/<filename>`: serve an iconography image
-
 Filenames are listed in the `Filename` table of the Richelieu database.
 
 ---
