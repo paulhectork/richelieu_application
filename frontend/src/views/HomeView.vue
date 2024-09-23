@@ -117,7 +117,7 @@ import _ from "lodash";
 
 import UiButtonLink from "@components/UiButtonLink.vue";
 import HomeItemPreview from "@components/HomeItemPreview.vue";
-import { articles } from "@modules/articleIndexData.js";
+import { articles } from "@globals";
 import { urlToFrontendNamedEntityCategory
        , urlToFrontendThemeCategory
        , urlToArticleMain } from "@utils/url";
@@ -171,7 +171,7 @@ const formatCategoryArray = (arr, tableName) =>
   })
 
 /**
- * format the array of articles `articles` (see @modules/articleIndexData)
+ * format the array of articles `articles` (see @globals)
  * into an array that fits the HomeItemPreview data model.
  */
 const formatArticleArray = (arr) =>
@@ -187,7 +187,6 @@ const formatArticleArray = (arr) =>
  * hide the overfloweing `.home-block-row1 .list-preview > li` elements
  */
 function hideOverflow() {
-  console.log("hello !");
   document.querySelectorAll(".list-preview").forEach(parent => {
     let cuttingFloor = parent.offsetTop + parent.offsetHeight;  // children lower than that will be hidden
 

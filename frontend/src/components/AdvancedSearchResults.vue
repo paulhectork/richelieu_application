@@ -23,14 +23,11 @@ import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 const props = defineProps(["queryResults"]);
 const dataFull = ref([]);
 const dataFilter = ref([]);
-// const
 
-/******************************************/
 /******************************************/
 
 /******************************************/
 onMounted(() => {
-  console.log("hello");
   dataFull.value   = props.queryResults;
   dataFilter.value = indexDataFormatterIconography(dataFull.value);
 })

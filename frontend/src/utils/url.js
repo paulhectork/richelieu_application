@@ -18,9 +18,8 @@ export const urlToIconographyFile = (fn) =>
 /**
  * prefix URL to the openseadragon icons
  */
-export const urlToOsdIcons = () => {
-  console.log(new URL("openseadragon-icons/", __STATICS_URL__));
-  return new URL("openseadragon-icons/", __STATICS_URL__)};
+export const urlToOsdIcons = () =>
+  new URL("openseadragon-icons/", __STATICS_URL__);
 
 /**
  * build an URL to a theme category.

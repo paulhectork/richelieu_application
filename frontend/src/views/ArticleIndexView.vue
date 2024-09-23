@@ -30,7 +30,7 @@ import { ref, onMounted } from "vue";
 
 import $ from "jquery";
 
-import { articles } from "@modules/articleIndexData.js";
+import { articles } from "@globals";
 
 /*******************************************/
 
