@@ -31,12 +31,14 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
     case "backend-server":
       configVariables = {
         // ye olde config
+        __MODE__       : JSON.stringify("PROD"),
         __API_URL__    : JSON.stringify("https://quartier-richelieu-retour.inha.fr/i"),
         __STATICS_URL__: JSON.stringify("https://quartier-richelieu-retour.inha.fr/statics/")
       };
       break;
     case "backend-local":
       configVariables = {
+        __MODE__       : JSON.stringify("DEV"),
         __API_URL__    : JSON.stringify("http://localhost:5001/i"),
         __STATICS_URL__: JSON.stringify("http://localhost:9999")//"http://richdata01.inha.fr")
       };

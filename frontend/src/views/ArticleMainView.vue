@@ -267,8 +267,28 @@ function fetchIndex(newQueryParams) {
  * @param {Array<string>} iconographyIdUuidArray: the array of iconography uuids
  */
  function fetchIiif(iconographyIdUuidArray) {
-  let targetUrl = new URL(`/i/iconography-from-uuid`, __API_URL__);
+  // basic error checking : do some UiButtonEye@data-key
+  // items point to invalid data in `iconographyIdUuidArray` ?
+  if ( __MODE__ == "DEV" ) {
+    let iiifPointers = [];
+    $(".button-eye").each((i, obj) =>
+      iiifPointers.push( $(obj).attr("data-key") ));
+    let emptyPointers =
+          iiifPointers.filter(k => k==null),                              // empty @data-key in UiButtonEllipsis
+        missingFromPointers =
+          iiifPointers.filter(k => !iconographyIdUuidArray.includes(k)),  // what's in iconographyIdUuidArray but not iiifPointers
+        missingFromIdUuidArray =
+          iconographyIdUuidArray.filter(k => !iiifPointers.includes(k));  // what's in iiifPointers but not iconographyIdUuidArray
+    if ( emptyPointers.length ) {
+      console.error(`ArticleMainView.fetchIiif(): '${emptyPointers.length}' UiButtonEye@data-key are empty`); }
+    if ( missingFromIdUuidArray.length ) {
+      console.error("ArticleMainView.fetchIiif(): the following keys in 'iconographyIdUuidArray' are missing from 'iiifPointers':", missingFromIdUuidArray); }
+    if ( missingFromPointers.length ) {
+      console.error("ArticleMainView.fetchIiif(): the following items in 'iconographyIdUuidArrayKeys' are missing from 'iconographyIdUuidArray':", missingFromPointers); }
 
+  }
+  // fetch data
+  let targetUrl = new URL(`/i/iconography-from-uuid`, __API_URL__);
   axios.get( targetUrl.href, { params: { id_uuid: iconographyIdUuidArray },
                                paramsSerializer: { indexes:null } } )
        .then(r => {
@@ -283,7 +303,7 @@ function fetchIndex(newQueryParams) {
        })
        .catch(e => console.error("ArticleMainView.fetchIiif(): backend error with parameters:"
                                 , iconographyIdUuidArray, `error stack:`, e));
-  // erreurs axios/cors quand on refresh: ça ne pose pas de prolbème,
+  // erreurs axios/cors quand on refresh: ça ne pose pas de problème,
   // mais il y a une explication ici si besoin:
   // https://github.com/axios/axios/issues/801
 }
@@ -295,6 +315,25 @@ function fetchIndex(newQueryParams) {
  *   (strucutre: { <footnote key>: <footnote content> })
  */
 function setArticleFootnotes(footnotes) {
+  // basic error checking : do some UiButtonEllipsis@data-key
+  // items point to invalid data in `footnotes` ?
+  if ( __MODE__ == "DEV" ) {
+    const footnotePointers = [];
+    $(".button-ellipsis").each((i, obj) =>
+      footnotePointers.push( $(obj).attr("data-key") ));
+    let emptyPointers =
+          footnotePointers.filter(k => k==null),                              // empty @data-key in UiButtonEllipsis
+        missingFromPointers =
+          footnotePointers.filter(k => !Object.keys(footnotes).includes(k)),  // what's in footnotes but not footnotePointers
+        missingFromFootnotes =
+          Object.keys(footnotes).filter(k => !footnotePointers.includes(k));  // what's in footnotePointers but not footnotes
+    if ( emptyPointers.length ) {
+      console.error(`ArticleMainView.setArticleFootnotes(): '${emptyPointers.length}' UiButtonEllipsis@data-key are empty`); }
+    if ( missingFromFootnotes.length ) {
+      console.error("ArticleMainView.setArticleFootnotes(): the following keys in 'footnotes' are missing from 'footnotePointers':", missingFromFootnotes); }
+    if ( missingFromPointers.length ) {
+      console.error("ArticleMainView.setArticleFootnotes(): the following items in 'footnotesKeys' are missing from 'footnotes':", missingFromPointers); }
+  }
   articleFootnotes.value = footnotes;
 }
 
@@ -386,7 +425,7 @@ function registerArticleEvents() {
 }
 
 /**
- * make sure that the title, subtitle and author name are filled out
+ * make sure that the important data is filled out
  */
 function missingArticleData() {
   if ( !$(".article-header > h1").text().length
