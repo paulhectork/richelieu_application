@@ -151,7 +151,7 @@ class Iconography(db.Model):
                  "publisher"        : self.get_publisher(),              # t.List[t.Dict]
                  "theme"            : self.get_theme(),                  # t.List[t.Dict]
                  "named_entity"     : self.get_named_entity(),           # t.List[t.Dict]
-                 "admin_person"     : self.get_admin_person()            # t.List[t.Dict]
+                 # "admin_person"     : self.get_admin_person()            # t.List[t.Dict]
         }
 
 
@@ -228,7 +228,7 @@ class Cartography(db.Model):
                  "filename"         : self.get_filename(),           # t.List[t.Dict]
                  "licence"          : self.licence.serialize_lite(), # t.Dict
                  "place"            : self.get_place(),              # t.List[t.Dict]
-                 "admin_person"     : self.get_admin_person(),       # t.List[t.Dict]
+                 # "admin_person"     : self.get_admin_person(),       # t.List[t.Dict]
                  "institution"      : self.get_institution()         # t.List[t.Dict]
          }
 
@@ -284,7 +284,7 @@ class Directory(db.Model):
                  "date"         : self.date,
                  "licence"      : self.licence.serialize_lite(),
                  "address"      : self.licence.serialize_lite(),
-                 "admin_person" : self.get_admin_person(),
+                 # "admin_person" : self.get_admin_person(),
                  "institution"  : self.get_institution()
         }
 

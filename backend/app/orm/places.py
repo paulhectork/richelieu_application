@@ -122,7 +122,7 @@ class Place(db.Model):
                  "place_group"   : self.get_place_group(),     # t.List[t.Dict]
                  "address"       : self.get_address(),         # t.List[str]
                  "iconography"   : self.get_iconography(),     # t.List[t.Dict]
-                 "cartography"   : self.get_iconography()      # t.List[t.Dict]
+                 "cartography"   : self.get_cartography()      # t.List[t.Dict]
         }
 
 
@@ -202,6 +202,7 @@ class Address(db.Model):
                  "address" : self.address,  # str
                  "city"    : self.city,     # str
                  "country" : self.country,  # str
+                 "source"  : self.source,   # str
         }
 
 

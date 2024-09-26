@@ -100,7 +100,7 @@
           </tr>
           <tr v-if="iconography.institution != null && iconography.institution.length">
             <td>Institution</td>
-            <td v-html="stringifyInstitutionArray(iconography.institution, false)"></td>
+            <td v-html="stringifyInstitutionArray(iconography.institution, true)"></td>
           </tr>
           <tr v-if="iconography.inventory_number != null">
             <td>Numéro d'inventaire</td>
@@ -137,9 +137,10 @@
 
 
 <script setup>
-import axios from "axios";
 import { ref, watch, onMounted, onUpdated, computed } from "vue";
 import { useRoute } from "vue-router";
+
+import axios from "axios";
 
 import MapIconographyMain from "@components/MapIconographyMain.vue";
 import IiifViewer from "@components/IiifViewer.vue";

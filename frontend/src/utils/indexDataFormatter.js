@@ -19,10 +19,12 @@ import { urlToIconographyFile
        , urlToFrontendTheme
        , urlToFrontendNamedEntity
        , urlToFrontendNamedEntityCategory
-       , urlToFrontendThemeCategory } from "@utils/url";
+       , urlToFrontendThemeCategory
+       , urlToFrontendInstitution } from "@utils/url";
 import { stringifyIconographyResource
        , stringifyThemeOrNamedEntityResource
-       , stringifyThemeOrNamedEntityCategory } from "@utils/stringifiers";
+       , stringifyThemeOrNamedEntityCategory
+       , stringifyInstitutionResource } from "@utils/stringifiers";
 
 
 /**
@@ -30,18 +32,17 @@ import { stringifyIconographyResource
  * @param {Array} dataArr: the array of data to format.
  */
 
-export function indexDataFormatterIconography(dataArr) {
-  return dataArr.map((c) => {
+export const indexDataFormatterIconography = (dataArr) =>
+  dataArr.map((c) => {
     return { idUuid : c.id_uuid,
             href   : urlToFrontendIconography(c.id_uuid).pathname,
             iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
             img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0].url).href : null,
             text   : stringifyIconographyResource(c, true) };
   })
-}
 
-export function indexDataFormatterPlace(dataArr) {
-  return dataArr.map((c) => {
+export const indexDataFormatterPlace = (dataArr) =>
+  dataArr.map((c) => {
     if ( ! c.address.length ) console.log(c)
     return { idUuid : c.id_uuid,
              href   : urlToFrontendPlace(c.id_uuid).pathname,
@@ -49,33 +50,9 @@ export function indexDataFormatterPlace(dataArr) {
              img    : c.filename.length ? urlToCartographyFile(c.filename[0].url).href : null,
              text   : c.address.length ? c.address[0].address : "Addresse inconnue" };
   })
-}
 
-// export function indexDataFormatterTheme(dataArr) {
-//   return dataArr.map((c) => {
-//     return { idUuid : c.id_uuid,
-//              href   : urlToFrontendTheme(c.id_uuid).pathname,
-//              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
-//              img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0]).href : null,
-//              text   : stringifyThemeOrNamedEntityResource(c)
-//
-//     }
-//   })
-// }
-//
-// export function indexDataFormatterNamedEntity(dataArr) {
-//   return dataArr.map((c) => {
-//     return { idUuid : c.id_uuid,
-//              href   : urlToFrontendNamedEntity(c.category, c.id_uuid).pathname,
-//              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
-//              img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0]).href : null,
-//              text   : stringifyThemeOrNamedEntityResource(c)
-//     }
-//   })
-// }
-
-export function indexDataFormatterThemeCategory(dataArr) {
-  return dataArr.map((c) => {
+export const indexDataFormatterThemeCategory = (dataArr) =>
+  dataArr.map((c) => {
     return { idUuid : undefined,
              href   : urlToFrontendThemeCategory(c.category_name).pathname,
              iiif   : null,   // todo
@@ -83,10 +60,9 @@ export function indexDataFormatterThemeCategory(dataArr) {
              text   : stringifyThemeOrNamedEntityCategory(c)
     }
   })
-}
 
-export function indexDataFormatterTheme(dataArr) {
-  return dataArr.map((c) => {
+export const indexDataFormatterTheme = (dataArr) =>
+  dataArr.map((c) => {
     return { idUuid : c.id_uuid,
              href   : urlToFrontendTheme(c.category, c.id_uuid).pathname,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
@@ -95,10 +71,9 @@ export function indexDataFormatterTheme(dataArr) {
 
     }
   })
-}
 
-export function indexDataFormatterNamedEntityCategory(dataArr) {
-  return dataArr.map((c) => {
+export const indexDataFormatterNamedEntityCategory = (dataArr) =>
+  dataArr.map((c) => {
     return { idUuid : undefined,
              href   : urlToFrontendNamedEntityCategory(c.category_name).pathname,
              iiif   : null,   // todo
@@ -106,11 +81,9 @@ export function indexDataFormatterNamedEntityCategory(dataArr) {
              text   : stringifyThemeOrNamedEntityCategory(c)
     }
   })
-}
 
-
-export function indexDataFormatterNamedEntity(dataArr) {
-  return dataArr.map((c) => {
+export const indexDataFormatterNamedEntity = (dataArr) =>
+  dataArr.map((c) => {
     return { idUuid : c.id_uuid,
              href   : urlToFrontendNamedEntity(c.category, c.id_uuid).pathname,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
@@ -118,4 +91,13 @@ export function indexDataFormatterNamedEntity(dataArr) {
              text   : stringifyThemeOrNamedEntityResource(c)
     }
   })
-}
+
+export const indexDataFormatterInstitution = (dataArr) =>
+  dataArr.map((c) => {
+    return { idUuid : c.id_uuid,
+             href   : urlToFrontendInstitution(c.id_uuid).pathname,
+             iiif   : null,
+             img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0]).href : null, //TODO
+             text   : stringifyInstitutionResource(c)
+    }
+  })

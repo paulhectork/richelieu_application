@@ -93,6 +93,12 @@ const router = createRouter({
       path: '/lieu/:idUuid',
       component: () => import("@views/PlaceMainView.vue")
     }, {
+      path: '/institution',
+      component: () => import("@views/InstitutionIndexView.vue")
+    }, {
+      path: '/institution/:idUuid',
+      component: () => import("@views/InstitutionMainView.vue")
+    }, {
       path: '/index-combine',
       component: () => import("@views/AssociationIndexView.vue"),
       props: route => ({ toIdUuid   : route.query.toIdUuid,   // https://router.vuejs.org/guide/essentials/passing-props.html#Function-mode                        fromIdUuid : route.query.fromIdUuid

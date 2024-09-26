@@ -29,6 +29,11 @@
                           class="menu-text"
               >Lieux</RouterLink>
             </li>
+            <li class="main-default">
+              <RouterLink to="/institution"
+                          class="menu-text"
+              >Institution</RouterLink>
+            </li>
           </ul>
         </div>
       </li>
@@ -114,29 +119,6 @@ import Color from "color";
 
 /***************************************************/
 
-// store the currently used colors to avoid reusing them more than once on the screen
-// useless if we don't use `colorsDark`/`colorsLight` but instead `randomColorLight/Dark`
-const currentColors = ref({ light:undefined, dark:undefined });
-
-const colorsDark = [ "#586f53", "#6a536f", "#6f5358", "#476863", "#475d68", "#b82650"
-                   , "#c8184a", "#b61c1c", "#8e052c", "#810505", "#730000", "#660000"
-                   , "#590000", "#4c0000", "#400000"];
-const colorsLight = [ "#ff9393", "#fdbcb4", "#db6446", "#e67b5e", "#ecce69", "#e1c155"
-                    , "#ecb06d", "#e1c14b", "#e3b63c", "#e9a232", "#e06d52" ]
-
-
-/**************************************************/
-
-/**
- *  functions to get a random color from an array of predefined colors
- */
-const removeValFromArray = (arr, val) =>
-  _.pull(_.clone(arr), val);  // _.clone is to avoid modifying in-place the `arr`
-const getRandomColor = (arr, aldreadyUsedColor) =>
-    aldreadyUsedColor != null
-    ? _.sample( removeValFromArray(arr, aldreadyUsedColor) )
-    : _.sample(arr);
-
 /**
  * functions to get random colors.
  * - Math.random() > 0.5 ? ... allows to chose between two different gradiens for variety
@@ -158,22 +140,16 @@ onMounted(() => {
   // on hover, color the different clickable elements
 
   $(".menu-subcategories > li")
-  .on("mouseenter", (e) => {
-    // let color = getRandomColor(colorsLight, currentColors.value.light);
-    // currentColors.value.light = color;
-    let color = randomColorLight();
-    $(e.currentTarget).css({ backgroundColor: color });
-  })
+  .on("mouseenter", (e) =>
+    $(e.currentTarget).css({ backgroundColor: randomColorLight() })
+  )
   .on("mouseleave", (e) =>
     $(e.currentTarget).css({ backgroundColor: "var(--cs-main-default-bg)" }) );
 
   $(".menu-category:not(.has-subcategories)")
-  .on("mouseenter", (e) => {
-    // let color = getRandomColor(colorsDark, currentColors.value.dark);
-    // currentColors.value.dark = color;
-    let color = randomColorDark();
-    $(e.currentTarget).css({ backgroundColor: color });
-  })
+  .on("mouseenter", (e) =>
+    $(e.currentTarget).css({ backgroundColor: randomColorDark() })
+  )
   .on("mouseleave", (e) =>
     $(e.currentTarget).css({ backgroundColor: "var(--cs-negative-default-bg)" }) );
 })
@@ -245,7 +221,7 @@ a {
 @media ( orientation:landscape ) {
   .menu {
     grid-template-columns: 50% 50%;
-    grid-template-rows: repeat(3, max( 150px, calc(100%/3) ));    /* max/calc allows a min-height of 150px for all li elements */
+    grid-template-rows: repeat(3, max( 180px, calc(100%/3) ));    /* max/calc allows a min-height of 150px for all li elements */
   }
 }
 

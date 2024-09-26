@@ -98,28 +98,6 @@ def iconography_overall_date_range():
 
 
 # *************************************************************************
-# place
-# *************************************************************************
-
-@app.route("/i/place")
-def index_place():
-    """
-    get all `place` ressources
-    """
-    r = db.session.execute(Place.query)
-    return jsonify([  _[0].serialize_lite() for _ in r.all() ])
-
-
-@app.route("/i/place-lite/<place_uuid>")
-def place_lite(place_uuid:str):
-    """
-    get a single `place` item and return its `serialize_lite()` repr
-    """
-    r = db.session.execute(Place.query.filter(Place.id_uuid==place_uuid).limit(1))
-    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
-
-
-# *************************************************************************
 # theme
 # *************************************************************************
 
@@ -241,8 +219,108 @@ def institution():
     """
     get all institution elements
     """
-    r = db.session.execute(Institution.query)
-    return jsonify([ i[0].serialize_lite() for i in r.all() ])
+    # { <institution UUID>: <thumbnail filename> }
+    inst2thumb = { "qr1ea925dc913804199ac1c0576480da5aa": "qr1a9a823e79d324dcdada5a7eb1b761de3_thumbnail.jpg"   # "Paris Musées"
+                 , "qr18d6914c2135449f8ad5fc8300330c34c": "qr1a8db9e2be4f14571a99d814077ba4208_thumbnail.jpg"  # "Musée Carnavalet"
+                 , "qr1e592407a3eac4928bbf09cb9646b6442": "qr145c0ac40ad5d4840aa9c985751bcb92a_thumbnail.png"  # "Palais Galliera"
+                 , "qr10e70091de4a84c439d015709c8dc231f": "qr170575ace1f514f2e9651cf461963684e_thumbnail.jpg"  # "Maison de Balzac"
+                 , "qr10569e23940cc4e51a58a3c6e11ec5b15": "qr136ca7ccdb402484aad0ce11805a56b5d_thumbnail.jpg"  # "Maison Victor Hugo"
+                 , "qr18bd3abcff61c43589bd4832c4dffb09c": "qr1a64d9cdfbcc94140a5503525bcad6815_thumbnail.jpg"  # "Musée de la Vie Romantique"
+                 , "qr152fb32c9ed2b4d48a943b4009f79f744": "qr1000160a5037549298f09510d68b36625_thumbnail.jpg"  # "Petit Palais. Musée des Beaux-Arts de la Ville de Paris"
+                 , "qr19b5a6f70e5174a47be128d7d16cf871e": "qr1d4ddcb8f8589426e913118c89ab5ccdc_thumbnail.png"  # "Musée Bourdelle"
+                 , "qr1dd89263f396e4f4ea99c4e581056f6b9": "qr177380f23b1b34e2dba9a9daae0ef0ecc_thumbnail.png"  # "Musée de la Libération Leclerc Moulin"
+                 , "qr1882f452734fc4049ae13bab3ae018981": "qr118531ea2f689409d9aa2639d1ae70971_thumbnail.jpg"  # "Bibliothèques spécialisées de la Ville de Paris"
+                 , "qr1ca5f8a45cb6a47b3b061ab0fae4dea82": "qr174c20bfec0364b56baca363bdca8c545_thumbnail.png"  # "Bibliothèque historique de la Ville de Paris"
+                 , "qr14351c77b3dfa4111999c061af5a3a916": "qr1c32441bdb6124348bd672a93c6bdae58_thumbnail.jpg"  # "Bibliothèque de l'Hôtel de Ville"
+                 , "qr1ee06b75474624e36a51b81497bc9fbda": "qr1e0962628672d428e97e597b831995342_thumbnail.jpg"  # "Bibliothèque Marguerite Durand"
+                 , "qr13745abfe1ee94c73aa1fcd253b95430c": "qr120ab66fe685c41ba88dd15eeb5536493_thumbnail.jpg"  # "Bibliothèque Forney"
+                 , "qr16884f242eafd4ddf912de09ca781fb8a": "qr194bb5b3ae08a45b48d7c8bf23f98c039_thumbnail.jpg"  # "Médiathèque musicale de Paris"
+                 , "qr13b8e3da4301c4968ad2dbb09b9cf1dd5": "qr1716753b57de94d2b838007568d8a2147_thumbnail.png"  # "Bibliothèque des littératures policières"
+                 , "qr13d1f6905f87144c69215e1ec02617a6a": "qr1b6d1d2fd24c44befb21432d3f0a5fce1_thumbnail.png"  # "Bibliothèque du tourisme et des voyages - Germaine Tillion"
+                 , "qr1e60d7b097d4c4992af50cd72c04cc201": "qr16c11b578d5d34a4f9fa34c26280561ea_thumbnail.jpg"  # "Bibliothèque nationale de France"
+                 , "qr1216b8ae2f04d4f68b84af8b741acbfd7": "qr1cea1aed793b149e28369ac54fbb89b7a_thumbnail.jpg"  # "British Museum"
+                 , "qr1d6719fcd30c0411fb6aa6f518bec9339": "qr147e634fc598d47a48943a1abcf2f044b_thumbnail.jpg"  # "Institut national d'histoire de l'art"
+                 , "qr1f82c23e4552e492fb7b176e2440e914e": "qr1db9aaa7da856404a9e5cd61731730c6b_thumbnail.jpg"  # "Musée Albert Kahn"
+                 , "qr115bbf999ddf243c2ad45c8ab74e681c7": "qr12514d40f367e4bb5971772833d7d0d99_thumbnail.jpeg"  # "Archives de Paris"
+                 , "qr1f7eaf6cfa0984af6a19e19c34d023b95": "qr198bca81c64034f7687eb2c4070046c55_thumbnail.jpg"  # "Médiathèque Marguerite Duras"
+                 , "qr1d60bd0309bd248b08ee2278a574066c6": "qr1b05b286d81c240a6aaffd8f00361904d_thumbnail.jpg"  # "Bibliothèque municipale et partimoniale Villon"
+                 }
+    subq_count = (select(R_Institution.id_institution, func.count(R_Institution.id))
+                 .group_by(R_Institution.id_institution)
+                 .subquery() )
+    subq_id = (select(R_Institution.id_institution)
+              .filter(R_Institution.id_iconography != None))
+    q = (select(Institution.id_uuid, Institution.entry_name, subq_count.c.count)   # in a subquery, `subq.c` allows to get the columns of a subquery object. see: https://stackoverflow.com/a/30311684/17915803
+        .join(subq_count, subq_count.c.id_institution == Institution.id)
+        .filter(Institution.id.in_(subq_id)) )
+
+    r = db.session.execute(q)
+    return jsonify([ { "id_uuid"           : i[0],
+                       "entry_name"        : i[1],
+                       "iconography_count" : i[2],
+                       "thumbnail"         : [ inst2thumb[i[0]] ] }
+                     for i in r.all() ])
+
+
+@app.route("/i/institution/<string:id_uuid>")
+def main_institution(id_uuid: str):
+    """
+    return data for a specific institution
+    """
+    r = db.session.execute(select(Institution).filter(Institution.id_uuid == id_uuid))
+    return jsonify([ i[0].serialize_full() for i in r.all() ])
+
+@app.route("/i/institution-name/<string:id_uuid>")
+def main_institution_name(id_uuid:str):
+    """
+    get the name of an institution from its UUID
+    used in the main pages for an institution.
+    """
+    r = db.session.execute(select(Institution.entry_name)
+                          .filter(Institution.id_uuid == id_uuid) )
+    return jsonify([ n[0] for n in r.all() ])
+
+
+# *************************************************************************
+# place
+# *************************************************************************
+
+@app.route("/i/place")
+def index_place():
+    """
+    get all `place` ressources
+    """
+    r = db.session.execute(Place.query)
+    return jsonify([  _[0].serialize_lite() for _ in r.all() ])
+
+@app.route("/i/place/<string:id_uuid>")
+def place_main(id_uuid:str):
+    """
+    fetch a place from its `id_uuid` and return all iconography.
+    """
+    r = db.session.execute(select(Place).filter(Place.id_uuid == id_uuid))
+    return jsonify([ _[0].serialize_full() for _ in r.all() ])
+
+
+@app.route("/i/place-lite/<string:place_uuid>")
+def place_lite(place_uuid:str):
+    """
+    get a single `place` item and return its `serialize_lite()` repr
+    """
+    r = db.session.execute(Place.query.filter(Place.id_uuid==place_uuid).limit(1))
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+
+@app.route("/i/place-address/<string:id_uuid>")
+def place_address(id_uuid):
+    """
+    get an address for a place based on this place's `id_uuid`
+    """
+    r = db.session.execute(select( Address )
+                          .join( Address.r_address_place )
+                          .join( R_AddressPlace.place )
+                          .filter( Place.id_uuid == id_uuid )
+                          )
+    return jsonify([ addr[0].serialize_lite() for addr in r.all() ])
 
 
 # *************************************************************************
@@ -530,20 +608,6 @@ def association_index():
           .join(R_IconographyNamedEntity
                 .named_entity
                 .and_( NamedEntity.id_uuid == id_uuid ))))
-    # USELESS: these would be equivalent to an OR between
-    # different values of the same table (an SQL OUTER JOIN
-    # between from_id_uuid and to_id_uuid), where we want an
-    # INNER JOIN.
-    # by_named_entity_arr = lambda q, id_uuid_arr: (
-    #     (q.join(Iconography.r_iconography_named_entity)
-    #       .join(R_IconographyNamedEntity
-    #            .named_entity
-    #            .and_( NamedEntity.id_uuid.in_(id_uuid_arr) ))) )
-    # by_theme_arr = lambda q, id_uuid_arr: (
-    #     q.join(Iconography.r_iconography_theme)
-    #           .join(R_IconographyTheme
-    #                .theme
-    #                .and_( Theme.id_uuid.in_(id_uuid_arr) )))
 
     # 3) build query
     base_query = select(func.distinct(Iconography.id))  # base query
@@ -586,8 +650,6 @@ def association_index():
     # print(sqlparse.format(str(query), keyword_case="upper", reindent=True))
 
     return [ i[0].serialize_lite() for i in r.all() ]
-
-
 
 
 
