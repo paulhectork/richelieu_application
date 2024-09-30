@@ -13,7 +13,9 @@
 
     <UiLoaderComponent v-if="loadState==='loading'"></UiLoaderComponent>
     <div v-else-if="loadState==='loaded'">
-      <div class="map-block-wrapper"></div>
+      <div class="map-block-wrapper">
+        <MapPlaceMain :place="place"></MapPlaceMain>
+      </div>
       <div class="icono-block-wrapper">
         <IndexBase :data="dataFilter"
                    display="resource"
@@ -30,10 +32,13 @@ import { useRoute } from "vue-router";
 
 import axios from "axios";
 
-import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import UiLoaderComponent from "@components/UiLoaderComponent.vue";
+import MapPlaceMain from "@components/MapPlaceMain.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
+import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
+import { cartographySourcePriority } from "@globals";
+import { sortAddressBySource } from "@utils/array.js";
 
 /******************************************************************/
 
@@ -48,7 +53,6 @@ const loadState = ref("loading");
 
 const apiTargetPlace = new URL(`/i/place/${idUuid}`, __API_URL__);
 const apiTargetAddress = new URL(`/i/place-address/${idUuid}`, __API_URL__);
-const sourcePriority = [ "parcellaire1900", "vasserot", "feuille", "contemporain" ];
 
 /**
  * `address` as returned by the backend is an array of objects;
@@ -66,14 +70,6 @@ const computedAddress = computed(() =>
 
 /******************************************************************/
 
-/**
- * reorder the address array using the `source` of each address,
- * and in the order specified in `sourcePriority`.
-*/
-const reorderAddressArr = (addrArr) =>
-  addrArr.sort((a,b) =>
-    sourcePriority.indexOf(a.source) - sourcePriority.indexOf(b.source));
-
 async function getData() {
   Promise.all([
     axios.get(apiTargetPlace.href)
@@ -85,7 +81,7 @@ async function getData() {
     ,
     axios.get(apiTargetAddress.href)
     .then(r => r.data)
-    .then(data => { address.value = reorderAddressArr(data); })
+    .then(data => { address.value = sortAddressBySource(data); })
   ])
   .then(r => loadState.value = "loaded")
   .catch(e => { console.error(e);
@@ -101,5 +97,8 @@ onMounted(() => {
 
 
 <style scoped>
-
+.map-block-wrapper {
+  height: 40vh;
+  margin-bottom: 5vh;
+}
 </style>

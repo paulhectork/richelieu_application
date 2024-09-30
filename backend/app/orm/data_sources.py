@@ -207,11 +207,14 @@ class Cartography(db.Model):
                  for r in self.r_cartography_place ]
 
     def serialize_lite(self) -> t.Dict:
-        return { "id_uuid"  : self.id_uuid,               # str
-                 "title"    : self.title,                 # str
-                 "date"     : int4range2list(self.date),  # t.List[int]
-                 "place"    : self.get_place(),           # t.List[t.Dict]
-                 "filename" : self.get_filename()         # t.list[str]
+        return { "id_uuid"    : self.id_uuid,               # str
+                 "title"      : self.title,                 # str
+                 "date"       : int4range2list(self.date),  # t.List[int]
+                 "place"      : self.get_place(),           # t.List[t.Dict]
+                 "filename"   : self.get_filename(),        # t.list[str]
+                 "vector"     : self.vector,                # t.Dict
+                 "map_source" : self.map_source,            # str
+
         }
 
     def serialize_full(self) -> t.Dict:

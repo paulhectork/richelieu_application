@@ -10,6 +10,33 @@ import { urlToIconographyFile } from "@utils/url.js";
  * than constants defined in `vite.config.js`)
  */
 
+
+/**
+ * list to order `cartography` and `address` items related to a place,
+ * based on the value of sql column:
+ * `cartography.map_source`, `address.source`, `place.vector_source`.
+ * reordering can be done using:
+ * >>> arrayToSort.sort((a,b) =>
+ * ...   cartographySourcePriority.indexOf(a.source) - sourcePriority.indexOf(b.source) );
+ */
+export const cartographySourcePriority = [ "parcellaire1900"
+                                         , "vasserot"
+                                         , "feuille"
+                                         , "contemporain" ];
+
+/**
+ * values of database columns
+ * `cartography.map_source`, `address.source`, `place.vector_source`
+ * mapped to a human readable name
+ */
+export const cartographySourceMapper = {
+  vasserot        : "Atlas Vasserot (1810-1836)",
+  parcellaire1900 : "Plan parcellaire de Paris (fin XIX<sup>e</sup> s.)",
+  billaud         : "Plan de la galerie Colbert (années 1830)",
+  contemporain    : "Parcellaire contemporain",
+  feuille         : "Parcelles <q>&nbsp;à la feuille&nbsp;</q> (1809-1854)"
+}
+
 /**
  * is this a touchable browser?
  */
