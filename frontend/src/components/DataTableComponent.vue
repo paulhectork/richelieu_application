@@ -218,7 +218,7 @@ onMounted(() => {
 .datatable-container {
   margin: 10px;
   padding: 2px;
-  border: var(--cs-border)
+  border: var(--cs-main-border)
 }
 #datatable-index th {
   font-weight: bolder;
@@ -235,7 +235,7 @@ onMounted(() => {
 }
 #datatable-index.row-border td {
   border-top: none;
-  border-bottom: var(--cs-border);
+  border-bottom: var(--cs-main-border);
 }
 #datatable-index td:has(img) {
   display: table-cell;
@@ -243,7 +243,7 @@ onMounted(() => {
   justify-content: center;
 }
 #datatable-index img {
-  border: var(--cs-border);
+  border: var(--cs-main-border);
 }
 
 .dataTables_filter {

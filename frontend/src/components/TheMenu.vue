@@ -206,7 +206,7 @@ a {
   align-items: center;
   justify-content: center;
 
-  border-left: var(--cs-border);
+  border-left: var(--cs-main-border);
 }
 .menu {
   display: grid;
@@ -229,7 +229,7 @@ a {
 
 .menu > li {
   transition: background-color 0s;
-  border: var(--cs-border);
+  border: var(--cs-main-border);
   border-color: var(--cs-negative-default);
 }
 .menu-category {

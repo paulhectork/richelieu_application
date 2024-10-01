@@ -11,12 +11,27 @@
     <div class="mpm-map-wrapper">
       <div id="mpm-map"></div>
     </div>
-    <div class="mpm-address-wrapper">
-      <span v-html="computedCurrentAddress"></span>
+    <div v-if="currentAddress"
+         class="mpm-address-wrapper"
+    >
+      <!--
+        Adresse (<span class="source-desc"
+                       v-html="cartographySourceMapper[currentAddress.source]"
+        ></span>)&nbsp;: {{currentAddress.address}}
+      -->
+      <span class="mpm-address-cartel">
+        <span class="source-intro">Adresse</span> <br/>
+        <span class="source-desc"
+               v-html="cartographySourceMapper[currentAddress.source]"
+        ></span>
+      </span>
+      <span v-html="currentAddress.address"
+            class="source-address"
+      ></span>
     </div>
   </div>
   <div class="mpm-right-wrapper">
-    <span>Afficher la parcelle sur une autre source</span>
+    <span>Fonds cartographiques représentant la parcelle</span>
     <ul class="mpm-address-switch list-invisible"
     >
       <li v-for="c in sortedCartography">
@@ -55,12 +70,6 @@ const currentAddress = ref();
 const sortedCartography = sortCartographyBySource(place.cartography);
 const sortedAddress     = sortAddressBySource(place.address);
 
-const computedCurrentAddress = computed(() =>
-  currentAddress.value != null
-  ? `Adresse (${cartographySourceMapper[currentAddress.value.source]})&nbsp;: ${currentAddress.value.address}`
-  : ""
-)
-
 /************************************************************/
 
 /**
@@ -70,7 +79,7 @@ const computedCurrentAddress = computed(() =>
  *
  * the address is matched in 3 steps:
  * 1) try to get an address matching the newly selected `source`
- * 3) if that fails, get the first address in `sortedAddress`.
+ * 2) if that fails, get the first address in `sortedAddress`.
  * 4) if really nothing works, return undefined
  *
  * @param {String} _source: the newly defined source
@@ -81,16 +90,11 @@ function getCurrentAddress(_source) {
   if ( _source != null && place != null ) {
     // 1)
     matchedAddr = place.address.find(a => a.source===_source);
-    if ( matchedAddr !== undefined ) {
-      return matchedAddr;
-    }
-    // 2)
-    else {
-      return sortedAddress[0];
-    }
+    return matchedAddr !== undefined
+           ? matchedAddr       // 1)
+           : sortedAddress[0]  // 2)
   }
-  // 3)
-  return undefined
+  return undefined             // 3)
 }
 
 /**
@@ -143,10 +147,15 @@ function updateMap(_map, _source, _currentCartography) {
  * @param {String} _source: the new `source`, as a string
  */
 function sourceHook(_source) {
-  source.value = _source;
-  currentAddress.value = getCurrentAddress(source.value);
-  let currentCartography = place.cartography.find(c => c.map_source === source.value);
-  map.value = updateMap(map.value, source.value, currentCartography);
+  if ( _source != source.value ) {
+    source.value = _source;
+    currentAddress.value = getCurrentAddress(source.value);
+    //TODO: SOMETIMES, THERE'S A PROBLEM HERE (HARD TO REPRODUCE).
+    // POSSIBLY LINKED TO LIFECYCLE ISSUES ?
+    // OR THE `$event.target.value` is something other than the `button`?
+    let currentCartography = place.cartography.find(c => c.map_source === source.value);
+    map.value = updateMap(map.value, source.value, currentCartography);
+  }
 }
 
 /************************************************************/
@@ -160,34 +169,93 @@ onMounted(() => {
 
 
 <style scoped>
+/**
+ * global css styling:
+ * - in landscape mode, `.mpm-wrapper`
+ *   has a display:grid with 2 horizontal columns,
+ *   `mpm-left-wrapper` and `mpm-right-wrapper`.
+ * - in portrait mode, `.mpm-wrapper` has
+ *   a `display:flex` with `flex-direction:column-reverse`:
+ *   `mpm-right-wrapper` is on top of `mpm-left-wrapper`
+ */
 .mpm-wrapper {
   height: 100%;
-  display: grid;
+  /*display: grid;
   grid-template-rows: 100%;
   grid-template-columns: 70% 30%;
-  border: var(--cs-border);
+  border: var(--cs-main-border);
+  */
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  border: var(--cs-main-border);
 }
+
+@media ( orientation:landscape ) {
+  .mpm-wrapper {
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: 70% 30%;
+  }
+}
+
+/***********************************************/
+
 .mpm-left-wrapper {
   display: grid;
   grid-template-columns: 100%;
   grid-template-rows: 2fr auto;
-  border-right: var(--cs-border);
+  border-right: var(--cs-main-border);
+  height: 100%;
 }
 #mpm-map {
   height: 100%;
   width: 100%;
-  border-bottom: var(--cs-border);
+  border-bottom: var(--cs-main-border);
+  border-top: var(--cs-main-border);
 }
+@media ( orientation:landscape ) {
+  #mpm-map {
+    border-top: none;
+  }
+}
+.mpm-address-wrapper {
+  padding: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.source-intro {
+  text-decoration: underline;
+}
+.source-desc {
+  font-style: italic;
+}
+.source-address {
+  font-weight: bold;
+}
+
+/***********************************************/
+
 .mpm-right-wrapper {
   display: grid;
   grid-template-rows: auto 2fr;
   max-height: 100%;
   margin: 5px;
 }
+.mpm-right-wrapper > *:first-child {
+  margin: 5px;
+}
 .mpm-address-switch {
   display: flex;
   height: 100%;
-  flex-direction: column;
+  flex-direction: row;
+}
+@media ( orientation: landscape ) {
+  .mpm-address-switch {
+    flex-direction: column;
+  }
 }
 .mpm-address-switch > li {
   flex: 1 1 0px;

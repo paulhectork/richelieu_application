@@ -27,7 +27,7 @@
       >
         <!-- the @ allows the logo to show in production build:
           https://stackoverflow.com/a/70813323/17915803 -->
-        <img src="@/assets/icons/logo-text.png"
+        <img src="@/assets/icons/logo-text.svg"
              id="logo-richelieu"
              alt="logo du projet Richelieu"
         >

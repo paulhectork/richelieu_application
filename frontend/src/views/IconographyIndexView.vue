@@ -5,7 +5,7 @@
 <template>
   <h1>Iconographie</h1>
 
-  <UiLoaderComponent v-if="!isLoaded"></UiLoaderComponent>
+  <UiLoader v-if="!isLoaded"></UiLoader>
   <IndexBase v-else
              display="resource"
              :data="dataFilter"
@@ -18,7 +18,7 @@ import { onMounted, ref } from "vue";
 import axios from "axios";
 
 import IndexBase from "@components/IndexBase.vue";
-import UiLoaderComponent from "@components/UiLoaderComponent.vue";
+import UiLoader from "@components/UiLoader.vue";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 
 /******************************************/

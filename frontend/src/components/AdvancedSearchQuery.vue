@@ -1,4 +1,5 @@
-<!-- an advanced search form on the `iconography` SQL table.
+<!-- AdvancedSearchQuery.vue
+     an advanced search form on the `iconography` SQL table.
 
      this creates a JSON object with the query parameters,
      which are passed to the parent. the parent updates the
@@ -27,9 +28,9 @@
            :actions="true"
            id="advanced-search-form"
            submit-label="Lancer la recherche"
-           :submit-attrs="{ inputClass  : 'form-submit-input',
-                            wrapperClass: 'form-submit-wrapper',
-                            outerClass  : 'form-submit-outer' }"
+           :submit-attrs="{ inputClass   : 'form-submit-input',
+                            wrapperClass : 'form-submit-wrapper',
+                            outerClass   : 'form-submit-outer' }"
            @submit="onSubmit"
   >
 
@@ -43,9 +44,7 @@
     </div>
 
     <!-- select inputs -->
-    <div v-if="namedEntityArray.length
-               && themeArray.length
-               && institutionArray.length"
+    <div v-if="loadState === 'loaded'"
     >
       <div class="form-field-outer-wrapper">
         <FormKit type="fkBooleanOp"
@@ -86,6 +85,12 @@
                  :options="institutionArray"
         ></FormKit>
       </div>
+    </div>
+    <div v-else-if="loadState === 'loading'"
+         class="loader-wrapper"
+    >
+      <UiLoader
+      ></UiLoader>
     </div>
 
     <!-- free text inputs -->
@@ -152,13 +157,15 @@ import { reset } from "@formkit/core";
 import { useFormKitNodeById, FormKitMessages } from '@formkit/vue';
 import $ from "jquery";
 
+import UiLoader from "@components/UiLoader.vue";
 import FormRepeatableDate from "@components/FormRepeatableDate.vue";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams";
 
 /******************************************/
 
-const props = defineProps(["queryError"]);   // an error occured while fetching data from the backend
-const emit = defineEmits(['query-params']);  // to send the query params to the parent
+const props     = defineProps(["queryError"]);   // an error occured while fetching data from the backend
+const emit      = defineEmits(['query-params']);  // to send the query params to the parent
+const loadState = ref("loading");            // one of: `loading|loaded|error`
 
 const themeArray       = ref([]);                            // string array
 const namedEntityArray = ref([]);                            // string array
@@ -251,18 +258,28 @@ watch(props, (newProps, oldProps) => {
 
 onMounted(() => {
   // fetch data
-  axios.get(new URL("/i/theme", __API_URL__).href, { params:{category:"all"} })
-       .then(r => themeArray.value = r.data
-                                      .map(itemToFormEntry)
-                                      .sort((a,b) => sortByValue(a,b)) );
-  axios.get(new URL("/i/named-entity", __API_URL__).href, { params:{category:"all"} })
-       .then(r => namedEntityArray.value = r.data
-                                            .map(itemToFormEntry)
-                                            .sort((a,b) => sortByValue(a,b)) )
-  axios.get(new URL("/i/institution", __API_URL__))
-       .then(r => institutionArray.value = r.data
-                                            .map(itemToFormEntry)
-                                            .sort((a,b) => sortByValue(a,b)) );
+  Promise.all([
+    axios.get(new URL("/i/theme", __API_URL__).href, { params:{category:"all"} })
+         .then(r => themeArray.value = r.data
+                                        .map(itemToFormEntry)
+                                        .sort((a,b) => sortByValue(a,b)) )
+    ,
+    axios.get(new URL("/i/named-entity", __API_URL__).href, { params:{category:"all"} })
+         .then(r => namedEntityArray.value = r.data
+                                              .map(itemToFormEntry)
+                                              .sort((a,b) => sortByValue(a,b)) )
+
+    ,
+    axios.get(new URL("/i/institution", __API_URL__))
+         .then(r => institutionArray.value = r.data
+                                              .map(itemToFormEntry)
+                                              .sort((a,b) => sortByValue(a,b)) )
+
+  ])
+  .then(() => loadState.value = "loaded")
+  .catch(e => { console.error(e);
+                loadState.value = "error"
+              });
 
   // else, on `mousedown` on the submit button, it is redimensionned...
   $("#advanced-search-form .form-submit-input").css({width: "100%"});
@@ -287,12 +304,14 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: end;
-
 }
 .form-field-outer-wrapper {
-  border-top: var(--cs-border);
+  border-top: var(--cs-main-border);
 }
 .form-field-outer-wrapper:first-child {
   border-top: none;
+}
+.loader-wrapper {
+  min-height: 20vh;
 }
 </style>

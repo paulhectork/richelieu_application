@@ -9,26 +9,8 @@ import { urlToFrontendActor
        , urlToFrontendTheme
        , urlToFrontendNamedEntity
        , urlToFrontendInstitution } from "@utils/url";
-
-
-/**
- * capitalize the first letter of string str (all other letters
- * are switched to lowercase)
- * @param {string|Any} str: the string to capitalize
- * @returns str if we sent a string, else the input unchanged
- */
-export const capitalizeString = (str) =>
-  str != null && typeof str === "string"
-  ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
-  : str;
-
-/**
- * same as above, but all words are capitalized, instead of just the first letter
- */
-export const capitalizeWords = (str) =>
-  str != null && typeof str === "string"
-  ? str.split(" ").map(s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()).join(" ")
-  : str;
+import { capitalizeFirstChar
+       , capitalizeWords } from "@utils/strings";
 
 /**
  * generic function to create a string representation

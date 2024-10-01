@@ -246,18 +246,18 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   overflow: scroll;
-  border-top: var(--cs-border);
+  border-top: var(--cs-main-border);
   border-left: none;
   padding: 5px;
 }
 .sidebar-iiif-wrapper {
-  border:var(--cs-border);
+  border:var(--cs-main-border);
   height: 100%;
 }
 @media ( orientation: landscape ) {
   .sidebar-wrapper {
     border-top: none;
-    border-left: var(--cs-border);
+    border-left: var(--cs-main-border);
   }
 }
 </style>

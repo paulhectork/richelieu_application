@@ -12,36 +12,44 @@
 
 <template>
   <!-- display the combined index -->
-  <div v-if="error !== true">
+  <div v-if="loadState === 'loading'">
+    <UiLoader></UiLoader>
+  </div>
+  <div v-else-if="loadState === 'loaded'">
     <h1 v-if="Object.keys(from).length && Object.keys(to).length">
-      {{ capitalizeString(from.entryName) }} <!--({{ from.table }})-->
+      {{ capitalizeFirstChar(from.entryName) }} <!--({{ from.table }})-->
       &amp;
-      {{ capitalizeString(to.entryName) }} <!--({{ to.table }})-->
+      {{ capitalizeFirstChar(to.entryName) }} <!--({{ to.table }})-->
     </h1>
 
     <div class="index-wrapper">
-      <div v-if="loaded"
-           class="index-wrapper">
-        <p v-if="dataFull.length === 1">
+
+      <p v-if="dataFull.length === 1">
         {{ dataFull.length }} ressource est associée à cette combinaison.</p>
-        <p v-else-if="dataFull.length > 1">
-          {{ dataFull.length }} ressources sont associées à cette combinaison.
-        </p>
-        <p v-else>Aucun résultat ne correspond à cette combinaison.</p>
+      <p v-else-if="dataFull.length > 1">
+        {{ dataFull.length }} ressources sont associées à cette combinaison.
+      </p>
+      <p v-else>Aucun résultat ne correspond à cette combinaison.</p>
 
-        <IndexBase :data="dataFilter"
-                   display="resource"
-        ></IndexBase>
-      </div>
+      <p>Voir tous les résultats pour
+        <RouterLink :to="`/${from.table === 'named_entity' ? 'entite-nommee' : from.table}/${from.idUuid}`"
+                    v-html="from.entryName"
+        ></RouterLink>
+        et
+        <RouterLink :to="`/${to.table === 'named_entity' ? 'entite-nommee' : to.table}/${to.idUuid}`"
+                    v-html="to.entryName"
+        ></RouterLink>.
+      </p>
 
-      <div v-else>
-        <UiLoaderComponent></UiLoaderComponent>
-      </div>
+      <IndexBase :data="dataFilter"
+                 display="resource"
+      ></IndexBase>
+
     </div>
   </div>
 
   <!-- display an error message -->
-  <div v-if="error === true">
+  <div v-if="loadState === 'error'">
     <ErrNotFound></ErrNotFound>
   </div>
 
@@ -55,21 +63,22 @@ import axios from "axios";
 
 import IndexBase from "@components/IndexBase.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
-import UiLoaderComponent from "@components/UiLoaderComponent.vue";
+import UiLoader from "@components/UiLoader.vue";
 
-import { capitalizeString } from "@utils/stringifiers";
+import { capitalizeFirstChar  } from "@utils/strings";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter.js";
 
 /***************************************/
 
 const props = defineProps([ "toIdUuid", "fromIdUuid", "fromTable", "toTable" ]);
 
-const from       = ref({});     // { <entryName>: "...", <idUuid>: "qr1...", <table>: "table name" }
-const to         = ref({});     // { <entryName>: "...", <idUuid>: "qr1...", <table>: "table name" }
+const from       = ref({});     // { entryName: "...", idUuid: "qr1...", table: "table name" }
+const to         = ref({});     // { entryName: "...", idUuid: "qr1...", table: "table name" }
 const dataFull   = ref([]);     // array of iconography objects (without filtering). populated in `getData`
 const dataFilter = ref([]);     // array of iconography objects (with optional filtering)
-const loaded     = ref(false);  // switched to true once the backend has returned results, with no error.
-const error      = ref(false);  // switched to true if an error occurs
+// const loaded     = ref(false);  // switched to true once the backend has returned results, with no error.
+// const error      = ref(false);  // switched to true if an error occurs
+const loadState  = ref("loading");  // "loading"/"loaded"/"error"
 
 /***************************************/
 
@@ -135,30 +144,6 @@ async function getNames() {
  * the search module.
  */
 async function getData() {
-  // build query params (if we don't trust `props.(from|to)Table`
-  // and want to map the props tables to tablenames ourselves)
-  // let fromKey, toKey;
-  // switch ( props.fromTable ) {
-  //   case "named_entity":
-  //     fromKey = "named_entity";
-  //     break;
-  //   case "theme":
-  //     fromKey = "theme";
-  //     break;
-  //   default:
-  //     throw new Error(`AssociationIndexView.getData(): invalid table name in "props.fromTable": "${from.value.table}"`)
-  // }
-  // switch ( to.toTable ) {
-  //   case "named_entity":
-  //     toKey = "namedEntity";
-  //     break;
-  //   case "theme":
-  //     toKey = "theme";
-  //     break;
-  //   default:
-  //     throw new Error(`AssociationIndexView.getData(): invalid table name in "props.toTable": "${from.value.table}"`)
-  // }
-
   // build params. we expect that `props.fromTable`
   // and `props.toTable` are valid table names.
   const params = { from_table  : props.fromTable,
@@ -168,17 +153,19 @@ async function getData() {
   const tgt = new URL("/i/association/index", __API_URL__);
 
   // run the query and populate the `dataFull` and `dataFilter` refs
-  return axios.get(tgt.href, { params:params })
+  return axios
+         .get(tgt.href, { params:params })
          .then(r => r.data)
          .then(data => { dataFull.value   = data;
                          dataFilter.value = indexDataFormatterIconography(dataFull.value);
-                         loaded.value     = true; });
+                         loadState.value  = "loaded"; })
+         .catch(e => { loadState.value = "error"; console.error(e); });
          // TODO ERROR HANDLING?????
 }
 
 onMounted(() => {
-  getNames().catch((e) => { error.value = true; console.error(e) });
-  getData().catch((e) => { error.value = true; console.error(e) });
+  getNames().catch((e) => { loadState.value = "error"; console.error(e) });
+  getData().catch((e) => { loadState.value = "error"; console.error(e) });
 })
 </script>
 

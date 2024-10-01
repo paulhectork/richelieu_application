@@ -124,9 +124,9 @@
   /**
    * OUR COLOR THEME
    *
-   * we define 3 modes, each which 3 states. all have foreground/background combos.
-   * `main` and `negative` are full-page color themes (light and dark, respectively)
-   * `contrast` is for visually contrasted elements
+   * we define 3 modes, `main`, `negative` and `link`, each which 3 states.
+   * `main` and `negative` have foreground/background combos and are meant
+   * for full blocks or full pages. `link` is only used for `<a>` html els.
    *
    * >>>> `main`        : the base state, white on black: common text and elements.
    * ---> `main-default`: the base state
@@ -146,22 +146,8 @@
    *                          element. this insists on a change of state, or
    *                          on an action from the user.
    **********************
-   * >>>> `contrast`        : for contrasting elements. this is thought for
-   *                          big blocks that have a special meaning in
-   *                          term of UI/UX and not just for basic buttons.
-   * ---> `contrast-default`: the base state
-   * ---> `contrast-second` : when we want to shine a light on an element, or
-   *                          for hovering
-   * ---> `contrast-active` : when an action is triggered.
-   **********************
-   * >>>> `link` : is a special, micro state for normal links (in text)
-   *
-   * of course, there may be special cases where we'll use a color
-   * theme different from the 3 states defined above, but keep it
-   * to a minimum.
+   * >>>> `link` : is a special theme, for normal links (in text)
    */
-   /*TODO DELETE CONTRAST ? it's only used once, in `IconographyMain`, and
-     could be replaced with --cs-negative-*
 
   /**********************/
   --cs-main-default: var(--cs-black);           /* font color */
@@ -173,6 +159,9 @@
   --cs-main-active-bg: var(--cs-seagreen);
   --cs-main-active: var(--cs-white);
 
+  --cs-main-alt-fontcolor: var(--cs-lightgrey);  /* alternative font color */
+  --cs-main-border: 1px solid black;           /* default border styling */
+
   /**********************/
   --cs-negative-default: var(--cs-white);           /* font color */
   --cs-negative-default-bg: var(--cs-black);        /* background color */
@@ -183,26 +172,13 @@
   --cs-negative-active-bg: var(--cs-white);
   --cs-negative-active: var(--cs-seagreen);
 
-  /**********************/
-  --cs-contrast-default: var(--cs-lightgrey);
-  --cs-contrast-default-bg: var(--cs-darkgrey);
-
-  --cs-contrast-second: var(--cs-white);
-  --cs-contrast-second-bg: var(--cs-lightgrey);
-
-  --cs-contrast-active: var(--cs-white);
-  --cs-contrast-active-bg: var(--cs-seagreen);
+  --cs-negative-border: 1px solid white;
 
   /**********************/
   --cs-link-default: var(--cs-plum);
   --cs-link-default-bg: var(--cs-main-default-bg);
   --cs-link-visited: var(--cs-darkplum);
   --cs-link-visited-bg: var(--cs-main-default-bg);
-
-  /**
-   * OTHER CUSTOM DEFINITIONS
-   */
-  --cs-border: 1px solid black;
 
   /*
   the navbar's height is AT LEAST 50px, if the screen is bigger, it is 7vh.
@@ -282,7 +258,7 @@ td {
 }
 tr,
 td {
-  border-bottom: var(--cs-border);
+  border-bottom: var(--cs-main-border);
   /*height: 5vh;*/
   width: 100%;
 }
@@ -320,25 +296,11 @@ q {
   color: var(--cs-negative-active-bg);
 }
 
-.contrast-default {
-  color: var(--cs-contrast-default) !important;
-  background-color: var(--cs-contrast-default-bg)  !important;
-}
-.contrast-second {
-  background-color: var(--cs-contrast-second-bg);
-  color: var(--cs-contrast-second);
-}
-.contrast-active {
-  color: var(--cs-contrast-active);
-  background-color: var(--cs-contrast-active-bg);
-}
-
-
 /**************************************************************************/
 /* globally used classes */
 
 .border-bottom {
-  border-bottom: var(--cs-border);
+  border-bottom: var(--cs-main-border);
 }
 
 .fill-parent {
@@ -410,7 +372,7 @@ button {
   background-color: var(--cs-main-default-bg);
 
   color: var(--cs-main-default);
-  border: var(--cs-border);
+  border: var(--cs-main-border);
   cursor: grab;
   width: auto;
 
@@ -420,7 +382,7 @@ button {
 button:hover {
   background-color: var(--cs-main-second-bg);
   color: var(--cs-main-second);
-  border: var(--cs-border);
+  border: var(--cs-main-border);
 }
 button:active {
   background-color: var(--cs-main-active-bg);
@@ -462,10 +424,10 @@ button:active > svg > path {
 }
 .leaflet-popup-content-wrapper {
   border-radius: 0 !important;
-  border: var(--cs-border) !important;
+  border: var(--cs-main-border) !important;
 }
 .leaflet-popup-tip {
-  border: var(--cs-border) !important;
+  border: var(--cs-main-border) !important;
   box-shadow: unset !important;
 }
 .leaflet-popup a {
@@ -494,7 +456,7 @@ button:active > svg > path {
 }
 .formkit-inner > input {
   width: 100%;
-  border: var(--cs-border);
+  border: var(--cs-main-border);
 }
 .form-submit-input {
   margin-top: min(3vh, 15%);
@@ -519,13 +481,13 @@ button:active > svg > path {
 /* select2 */
 
 .select2-selection {
-  border: var(--cs-border) !important;
+  border: var(--cs-main-border) !important;
   border-radius: 0 !important;
   height: 100% !important;
 }
 .select2-results__option--highlighted {
-  background-color: var(--cs-contrast-default-bg) !important;
-  color: var(--cs-contrast-default) !important;
+  background-color: var(--cs-main-active-bg) !important;
+  color: var(--cs-main-active) !important;
 }
 .form-boolean-flag-wrapper .select2-container {
   height: 100% !important
@@ -563,3 +525,36 @@ button:active > svg > path {
 .slideInOut-leave-active {
   transition: max-height .7s ease-in-out, visibility .7s ease-in-out;
 }
+
+
+/* OLD ADDITIONAL COLOR THEME: CONTRAST */
+/* DOCUMENTATION */
+/* >>>> `contrast`        : for contrasting elements. this is thought for*/
+/*                          big blocks that have a special meaning in*/
+/*                          term of UI/UX and not just for basic buttons.*/
+/* ---> `contrast-default`: the base state*/
+/* ---> `contrast-second` : when we want to shine a light on an element, or*/
+/*                          for hovering*/
+/* ---> `contrast-active` : when an action is triggered.*/
+
+/* VARIABLES */
+/*--cs-contrast-default: var(--cs-lightgrey);*/
+/*--cs-contrast-default-bg: var(--cs-darkgrey);*/
+/*--cs-contrast-second: var(--cs-white);*/
+/*--cs-contrast-second-bg: var(--cs-lightgrey);*/
+/*--cs-contrast-active: var(--cs-white);*/
+/*--cs-contrast-active-bg: var(--cs-seagreen);*/
+
+/* CLASSES */
+/* .contrast-default {*/
+/*   color: var(--cs-contrast-default) !important;*/
+/*   background-color: var(--cs-contrast-default-bg)  !important;*/
+/* }*/
+/* .contrast-second {*/
+/*   background-color: var(--cs-contrast-second-bg);*/
+/*   color: var(--cs-contrast-second);*/
+/* }*/
+/* .contrast-active {*/
+/*   color: var(--cs-contrast-active);*/
+/*   background-color: var(--cs-contrast-active-bg);*/
+/* }*/

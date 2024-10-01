@@ -87,7 +87,7 @@
                  :data="iconographyIndex"
                  display="resource"
       ></IndexBase>
-      <UiLoaderComponent v-else></UiLoaderComponent>
+      <UiLoader v-else></UiLoader>
     </div>
 
   </div>
@@ -118,7 +118,7 @@ import $ from "jquery";
 import IndexBase from "@components/IndexBase.vue";
 import IiifViewer from "@components/IiifViewer.vue";
 import ArticleFootnote from "@components/ArticleFootnote.vue";
-import UiLoaderComponent from "@components/UiLoaderComponent.vue";
+import UiLoader from "@components/UiLoader.vue";
 import { stringifyIconographyResource } from "@utils/stringifiers.js";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams.js";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter.js";
@@ -460,7 +460,7 @@ onUnmounted(() => {
 .article-viewer-wrapper {
   display: flex;
   flex-direction: column-reverse;
-  border-bottom: var(--cs-border);
+  border-bottom: var(--cs-main-border);
 }
 @media ( orientation: landscape ) {
   .article-viewer-wrapper {
@@ -494,7 +494,7 @@ onUnmounted(() => {
 .iiif-cartel {
   width: 100%;
   text-align: center;
-  border-top: var(--cs-border);
+  border-top: var(--cs-main-border);
   margin: 0;
   display: flex;
   align-items: center;
@@ -507,7 +507,7 @@ onUnmounted(() => {
 
 .article-wrapper {
   padding: 0 1vw;
-  border-left: var(--cs-border);
+  border-left: var(--cs-main-border);
   font-size: 16px;
 }
 .article-index-wrapper {

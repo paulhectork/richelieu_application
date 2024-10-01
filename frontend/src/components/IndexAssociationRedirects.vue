@@ -67,7 +67,7 @@
 <script setup>
 import { onMounted, ref, computed } from "vue";
 
-import { capitalizeString } from "@utils/stringifiers";
+import { capitalizeFirstChar  } from "@utils/strings.js";
 
 /*****************************************/
 
@@ -92,8 +92,8 @@ const introString = computed(() => {
   }
   // else, build the intro string
   let s = props.to.length === 1
-          ? capitalizeString( tableToNameMapper[props.toTable][0] )  // singular
-          : capitalizeString( tableToNameMapper[props.toTable][1] ); // plural
+          ? capitalizeFirstChar( tableToNameMapper[props.toTable][0] )  // singular
+          : capitalizeFirstChar( tableToNameMapper[props.toTable][1] ); // plural
   s += " ";
   s += props.to.length === 1 && tableToNameMapper[props.toTable][2] === "m"    // masc singular
        ? "associé"

@@ -1,4 +1,4 @@
-<!-- UiLoaderComponent.vue
+<!-- UiLoader.vue
 
     a very simple CSS loader. its height can be set on the parent. -->
 
@@ -22,7 +22,7 @@
 .loader {
   width: 48px;
   height: 48px;
-  border: var(--cs-border);
+  border: var(--cs-main-border);
   border-radius: 50%;
   display: inline-block;
   position: relative;

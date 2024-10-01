@@ -20,7 +20,7 @@
   <div v-else>
     <h1>{{ institutionName }}</h1>
 
-    <UiLoaderComponent v-if="loadState==='loading'"></UiLoaderComponent>
+    <UiLoader v-if="loadState==='loading'"></UiLoader>
     <div v-if="loadState==='loaded'">
       <p><strong>{{ institution.iconography?.length }} ressources iconographiques</strong>
         sont conservées par cette institution.</p>
@@ -59,7 +59,7 @@ import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 
 import IndexBase from "@components/IndexBase.vue";
-import UiLoaderComponent from "@components/UiLoaderComponent.vue";
+import UiLoader from "@components/UiLoader.vue";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { stringifyInstitutionArray } from "@utils/stringifiers";
 

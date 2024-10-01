@@ -82,7 +82,7 @@ onMounted(() => {
 
 <style scoped>
 .preview-wrapper {
-  border: var(--cs-border);
+  border: var(--cs-main-border);
   background-color: var(--cs-main-default-bg);
   background-size: 150%;
   background-position: center;
@@ -112,10 +112,10 @@ onMounted(() => {
 }
 .resource-main-article {
   margin: 5px;
-  border: var(--cs-border);
+  border: var(--cs-main-border);
 }
 .title-second {
-  color: var(--cs-contrast-default);
+  color: var(--cs-main-alt-fontcolor);
 }
 .resource-sub {
   font-size: max(min(2.3vh, 2.3vw), 70%);
@@ -135,6 +135,7 @@ onMounted(() => {
 }
 .preview-wrapper:active .resource-main,
 .preview-wrapper:active .title-second {
-  background-color: var(--cs-contrast-active-bg);
+  background-color: var(--cs-main-active-bg);
+  color: var(--cs-main-active);
 }
 </style>

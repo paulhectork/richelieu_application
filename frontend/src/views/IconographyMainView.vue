@@ -50,12 +50,12 @@
         </div>
 
         <div class="viewer-selector">
-          <button :class="viewerType === 'osd' ? 'contrast-default' : ''"
+          <button :class="viewerType === 'osd' ? 'button-activated' : ''"
                   @click="(e) => toggleViewer(e)"
                   @touchend="(e) => toggleViewer(e)"
                   value="osd"
           >Image</button>
-          <button :class="viewerType === 'leaflet' ? 'contrast-default' : ''"
+          <button :class="viewerType === 'leaflet' ? 'button-activated' : ''"
                   @click="(e) => toggleViewer(e)"
                   @touchend="(e) => toggleViewer(e)"
                   value="leaflet"
@@ -213,7 +213,7 @@ onUpdated(() => {
 .viewer-cartel-container {
   display: grid;
   grid-template-columns: 50% 50%;
-  border-top: var(--cs-border);
+  border-top: var(--cs-main-border);
 }
 
 @media ( orientation:portrait ) {
@@ -236,7 +236,7 @@ onUpdated(() => {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  border-top: var(--cs-border);
+  border-top: var(--cs-main-border);
 }
 .viewer-selector > button {
   width: 50%;
@@ -245,7 +245,7 @@ onUpdated(() => {
 /*************************************/
 
 .cartel-container {
-  border-left: var(--cs-border);
+  border-left: var(--cs-main-border);
 }
 
 table {
@@ -267,6 +267,6 @@ td:first-child {
   width: 100%;
 }
 .external-links > a:last-child {
-  border-left: var(--cs-border);
+  border-left: var(--cs-main-border);
 }
 </style>

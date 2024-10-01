@@ -9,7 +9,7 @@
   <div v-else>
     <h1>Institutions</h1>
 
-    <UiLoaderComponent v-if="loadState==='loading'"></UiLoaderComponent>
+    <UiLoader v-if="loadState==='loading'"></UiLoader>
     <IndexBase v-else
                display="concept"
                :data="dataFilter"
@@ -25,9 +25,8 @@ import { useRoute } from "vue-router";
 import axios from "axios";
 
 import { indexDataFormatterInstitution } from "@utils/indexDataFormatter";
-import {capitalizeString} from "@utils/stringifiers";
 
-import UiLoaderComponent from "@components/UiLoaderComponent.vue";
+import UiLoader from "@components/UiLoader.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
 

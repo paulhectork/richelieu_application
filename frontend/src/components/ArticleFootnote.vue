@@ -85,7 +85,7 @@ onUnmounted(() => {
   left: 50px;
   top: 50px;
   background-color: var(--cs-main-default-bg);
-  border: var(--cs-border)
+  border: var(--cs-main-border)
 }
 .footnote-outer-wrapper p {
   margin: 5px;

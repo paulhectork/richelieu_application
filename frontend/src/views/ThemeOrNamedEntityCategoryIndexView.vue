@@ -51,7 +51,7 @@
 
     <h1>Index des {{ tableName === "theme" ? "thèmes" : "entités nommées" }}</h1>
 
-    <UiLoaderComponent v-if="loadState === 'loading'"></UiLoaderComponent>
+    <UiLoader v-if="loadState === 'loading'"></UiLoader>
     <IndexBase v-else
                :display="display"
                :data="dataFilter"
@@ -73,7 +73,7 @@ import axios from "axios";
 
 import { indexDataFormatterThemeCategory
        , indexDataFormatterNamedEntityCategory } from "@utils/indexDataFormatter";
-import UiLoaderComponent from "@components/UiLoaderComponent.vue";
+import UiLoader from "@components/UiLoader.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
 

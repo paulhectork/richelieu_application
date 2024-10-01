@@ -103,13 +103,13 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin: 0;
-  border: var(--cs-border);
+  border: var(--cs-main-border);
   padding: 0;
 }
 .form-radio-option {
   flex-grow: 1;
   margin: 3px;
-  border: var(--cs-border);
+  border: var(--cs-main-border);
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -125,8 +125,8 @@ onMounted(() => {
   color: var(--cs-main-second)
 }
 .form-radio-option-selected {
-  background-color: var(--cs-contrast-default-bg);
-  color: var(--cs-contrast-default);
+  background-color: var(--cs-main-active-bg);
+  color: var(--cs-main-active);
 }
 .form-radio-option:checked {
   background-color: var(--cs-main-second-bg);

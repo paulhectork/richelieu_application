@@ -33,11 +33,22 @@
       <table>
         <tr v-for="d in data" class="animate__animated animate__bounceInUp">
           <td>
-            <button class="text-container" v-html="d.text" :value="d.href"></button>
-            <RouterLink :to="d.href"
-                        class="button-arrow-container">
-              <UiButtonArrow orient="right"></UiButtonArrow>
-            </RouterLink>
+            <span class="place-text"
+                  v-html="capitalizeFirstChar(d.text)"
+            ></span>
+            <div class="buttons-outer-wrapper">
+              <div class="button-wrapper">
+                <UiButtonMap :value="d.href"
+                             @click="displayVector"
+                ></UiButtonMap>
+              </div>
+              <RouterLink :to="d.href"
+                          class="button-wrapper"
+              >
+                <UiButtonLink></UiButtonLink>
+              </RouterLink>
+
+            </div>
           </td>
         </tr>
       </table>
@@ -51,28 +62,32 @@
 </template>
 
 <script setup>
-import axios from "axios";
 import { onMounted, onUpdated, onBeforeUnmount, ref } from "vue";
+
+import axios from "axios";
 import $ from "jquery";
 import "leaflet";
-
 import "leaflet/dist/leaflet.css";
 
-import UiButtonArrow from "@components/UiButtonArrow.vue";
+import UiButtonLink from "@components/UiButtonLink.vue";
+import UiButtonMap from "@components/UiButtonMap.vue";
 import { globalDefineMap } from "@utils/leafletUtils.js";
 import { clickOrTouchEvent } from "@globals";
+import { capitalizeFirstChar } from "@utils/strings";
 
+/******************************************************/
 
 const props = defineProps(["display", "data"])
 const map = ref();  // will be defined in `onMounted`
 
+/******************************************************/
 
 /**
  * when clicking a place, display it on the map
- * @param {HTML Event} e: the click or touchend event
+ * @param {Event} e: the click or touchend event
  */
 function displayVector(e) {
-  const placeUrl = $(e.target).val();
+  const placeUrl = e.currentTarget.value;
   const placeUuid = placeUrl.split(/\//g).at(-1);  // extract the place's UUID from the URL
   const placeUuidTarget = new URL(`/i/place-lite/${placeUuid}`, __API_URL__);
 
@@ -97,14 +112,10 @@ function displayVector(e) {
           // events
           layer.on({
             // interactive style
-            mouseover: (e) => {
-              e.target.setStyle({ fillOpacity: 1 });
-            },
-            mouseout: (e) => {
-              e.target.setStyle({ fillOpacity: 0.5 });
-            },
+            mouseover: (e) => e.target.setStyle({ fillOpacity: 1 }),
+            mouseout : (e) => e.target.setStyle({ fillOpacity: 0.5 }),
             // redirect to PlaceMainView when clicking on the geojson
-            click: () => { window.location.href = placeUrl },
+            click   : () => { window.location.href = placeUrl },
             touchend: () => { window.location.href = placeUrl }
           })
         }
@@ -116,40 +127,10 @@ function displayVector(e) {
 
 }
 
+/******************************************************/
 
 onMounted(() => {
   map.value = globalDefineMap("place-map");
-
-  console.log(clickOrTouchEvent);
-  $(".text-container").on(clickOrTouchEvent, displayVector);
-})
-
-// the index has been added
-onUpdated(() => {
-  /**
-   * option1
-   * on hover, show the vector.
-   * on click, redirect to the main place page.
-   * advantages    : no need for two buttons;
-   * disadvantages : doesn't work on mobile
-   */
-  // $(".text-container").on("mouseover", displayVector);
-
-  /**
-   * option2
-   * on click of the place name, show the vector
-   * on click of the button, redirect to the main place page
-   * advantages    : this logic works on mobile and desktop
-   * disadvantages : the two button system will be confusing
-   */
-  // onUpdated isn't fired, so i put the thing in `onMounted`.
-  $(".text-container").on(clickOrTouchEvent, displayVector);
-
-})
-
-onBeforeUnmount(() => {
-  document.querySelector(".text-container")
-          .removeEventListener(clickOrTouchEvent, displayVector)
 })
 </script>
 
@@ -161,7 +142,7 @@ onBeforeUnmount(() => {
   overflow: scroll;
   grid-template-rows: 100%;
   grid-template-columns: 50% 50%;
-  border-top: var(--cs-border);
+  border-top: var(--cs-main-border);
 }
 
 /******************************/
@@ -171,10 +152,9 @@ onBeforeUnmount(() => {
 }
 table {
   /*border-collapse: collapse;*/
-  border-right: var(--cs-border);
-  border-left: var(--cs-border);
+  border-right: var(--cs-main-border);
+  border-left: var(--cs-main-border);
 }
-
 td {
   padding: 0;
   display: flex;
@@ -182,17 +162,18 @@ td {
   justify-content: space-between;
   align-items: center;
 }
-
-td>button {
-  flex-grow: 3;
-  flex-shrink: 1;
+td > .buttons-outer-wrapper {
+  display: flex;
+  flex-direction: row;
 }
-
-.button-arrow-container {
+.place-text {
+  font-variant-caps: small-caps;
+  font-family: var(--cs-font-sans-serif-accentuate);
+}
+.button-wrapper {
   flex-shrink: 2;
 }
-
-.button-arrow-container>button {
+.button-wrapper > button {
   display: block;
   height: 5vh;
   width: 5vh;

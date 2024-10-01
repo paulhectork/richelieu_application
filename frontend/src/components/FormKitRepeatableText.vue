@@ -158,7 +158,7 @@ label {
 input {
   margin: .5% 0;
   flex-grow: 2;
-  border: var(--cs-border);
+  border: var(--cs-main-border);
 }
 .button-container > button {
   display: inline-table;

@@ -11,7 +11,7 @@
   <div v-else>
     <h1>{{ computedAddress }}</h1>
 
-    <UiLoaderComponent v-if="loadState==='loading'"></UiLoaderComponent>
+    <UiLoader v-if="loadState==='loading'"></UiLoader>
     <div v-else-if="loadState==='loaded'">
       <div class="map-block-wrapper">
         <MapPlaceMain :place="place"></MapPlaceMain>
@@ -32,7 +32,7 @@ import { useRoute } from "vue-router";
 
 import axios from "axios";
 
-import UiLoaderComponent from "@components/UiLoaderComponent.vue";
+import UiLoader from "@components/UiLoader.vue";
 import MapPlaceMain from "@components/MapPlaceMain.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
@@ -98,7 +98,15 @@ onMounted(() => {
 
 <style scoped>
 .map-block-wrapper {
-  height: 40vh;
+  min-height: 300px;
+  height: 60vh;
   margin-bottom: 5vh;
+}
+@media ( orientation:landscape ) {
+  .map-block-wrapper {
+    height: 40vh;
+    margin-bottom: 5vh;
+  }
+
 }
 </style>

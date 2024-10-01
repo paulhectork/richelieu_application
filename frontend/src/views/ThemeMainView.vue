@@ -11,50 +11,27 @@
 <template>
   <h1>{{ formattedThemeName }}</h1>
 
-  <UiLoaderComponent v-if="!backendLoaded"></UiLoaderComponent>
+  <UiLoader v-if="!backendLoaded"></UiLoader>
   <div v-else>
-    <p><strong>{{ theme.iconography_count }} ressources iconographiques</strong>
-      sont associées à ce thème.</p>
+    <p><strong>{{ theme.iconography_count }}
+      <span v-if="theme.iconography_count > 1"> ressources iconographiques</span>
+      <span v-else> ressource iconographique</span>
+    </strong> sont associées à ce thème.</p>
 
-      <IndexAssociationRedirects v-if="associatedThemes.length"
-                              fromTable="theme"
-                              toTable="theme"
-                              :to="associatedThemes"
-                              :from="{ entry_name: theme.entry_name
-                                     , id_uuid: theme.id_uuid }"
-      ></IndexAssociationRedirects>
-
-      <IndexAssociationRedirects v-if="associatedNamedEntities.length"
-                              fromTable="theme"
-                              toTable="named_entity"
-                              :to="associatedNamedEntities"
-                              :from="{ entry_name: theme.entry_name
-                                     , id_uuid: theme.id_uuid }"
-      ></IndexAssociationRedirects>
-
-    <!--
-    <p v-if="associatedThemes.length && associatedThemes.length > 1"
-       v-html="`Les <strong>${associatedThemes.length} thèmes</strong> les
-                plus fréquemment associés au thème <i>${themeName }</i> sont:
-                ${ stringifyAssociated(associatedThemes, 'theme') }.`"
-    ></p>
-    <p v-else-if="associatedThemes.length===1"
-       v-html="`<strong>Le thème</strong> le plus fréquemment associé
-                au thème <i>${themeName }</i> est:
-                ${ stringifyAssociated(associatedThemes, 'theme') }.`"
-    ></p>
-
-    <p v-if="associatedNamedEntities.length && associatedNamedEntities.length > 1"
-       v-html="`Les <strong>${associatedNamedEntities.length} entités nommées</strong> les
-                plus fréquemment associées au thème <i>${themeName}</i> sont:
-                ${ stringifyAssociated(associatedNamedEntities, 'namedEntity') }.`"
-    ></p>
-    <p v-else-if="associatedThemes.length===1"
-       v-html="`<strong>L'entité nommée</strong> la plus fréquemment associée
-                au thème <i>${themeName }</i> est:
-                ${ stringifyAssociated(associatedNamedEntities, 'namedEntity') }.`"
-    ></p>
-    -->
+    <IndexAssociationRedirects v-if="associatedThemes.length"
+                            fromTable="theme"
+                            toTable="theme"
+                            :to="associatedThemes"
+                            :from="{ entry_name: theme.entry_name
+                                   , id_uuid: theme.id_uuid }"
+    ></IndexAssociationRedirects>
+    <IndexAssociationRedirects v-if="associatedNamedEntities.length"
+                            fromTable="theme"
+                            toTable="named_entity"
+                            :to="associatedNamedEntities"
+                            :from="{ entry_name: theme.entry_name
+                                   , id_uuid: theme.id_uuid }"
+    ></IndexAssociationRedirects>
 
     <IndexBase :data="dataFilter"
                display="resource"
@@ -69,10 +46,11 @@ import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 
 import IndexBase from "@components/IndexBase.vue";
-import UiLoaderComponent from "@components/UiLoaderComponent.vue";
+import UiLoader from "@components/UiLoader.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
-import { stringifyAssociated, capitalizeString, capitalizeWords } from "@utils/stringifiers";
+// import { stringifyAssociated } from "@utils/stringifiers";
+import { capitalizeWords } from "@utils/strings";
 
 /**************************************************/
 

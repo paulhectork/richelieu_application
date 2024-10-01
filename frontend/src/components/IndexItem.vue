@@ -44,7 +44,7 @@ const props = defineProps(["item", "display"]);
 <style scoped>
 .index-item {
   font-family: var(--cs-font-sans-serif-accentuate);
-  border: var(--cs-border);
+  border: var(--cs-main-border);
   margin: 7px;
 
   display: grid;
@@ -66,7 +66,7 @@ p {
   margin: 0;
   padding: 5px;
   width: 100%;
-  border-top: var(--cs-border);
+  border-top: var(--cs-main-border);
   height: min-content;
 }
 .index-item:hover p {

@@ -27,7 +27,7 @@
 .warn {
   opacity: 1;
   background-color: white;
-  border: var(--cs-border);
+  border: var(--cs-main-border);
 }
 .warn > p {
   margin: 30px;

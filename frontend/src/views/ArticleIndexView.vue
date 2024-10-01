@@ -55,7 +55,7 @@ const hideOverlayOnMouseLeave = (e)  =>
   }
 }
 .article-item {
-  border: var(--cs-border);
+  border: var(--cs-main-border);
   margin: 20px 5px;
   background-position: center;
   position: relative;  /* for the article overlays */
@@ -67,7 +67,7 @@ const hideOverlayOnMouseLeave = (e)  =>
 h2, h3 {
   background-color: var(--cs-main-default-bg);
   width: fit-content;
-  border: var(--cs-border);
+  border: var(--cs-main-border);
   border-left: none;
   padding: 3px 3px 1px 3px;
 }

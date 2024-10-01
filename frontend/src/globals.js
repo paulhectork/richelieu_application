@@ -30,11 +30,11 @@ export const cartographySourcePriority = [ "parcellaire1900"
  * mapped to a human readable name
  */
 export const cartographySourceMapper = {
-  vasserot        : "Atlas Vasserot (1810-1836)",
-  parcellaire1900 : "Plan parcellaire de Paris (fin XIX<sup>e</sup> s.)",
+  vasserot        : "Atlas Vasserot, 1810-1836",
+  parcellaire1900 : "Plan parcellaire de Paris, fin XIX<sup>e</sup> s.",
   billaud         : "Plan de la galerie Colbert (années 1830)",
   contemporain    : "Parcellaire contemporain",
-  feuille         : "Parcelles <q>&nbsp;à la feuille&nbsp;</q> (1809-1854)"
+  feuille         : "Parcelles <q>&nbsp;à la feuille&nbsp;</q>, 1809-1854"
 }
 
 /**

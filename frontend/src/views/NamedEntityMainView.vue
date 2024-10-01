@@ -10,55 +10,36 @@
 <template>
   <h1>{{ namedEntityName }}</h1>
 
-  <UiLoaderComponent v-if="!backendLoaded"></UiLoaderComponent>
-  <div v-else>
-    <p><strong>{{ namedEntity.iconography_count }}</strong>
-      ressources iconographiques sont associées à cette entité nommée.</p>
+  <UiLoader v-if="loadState === 'loading'"></UiLoader>
+
+  <div v-else-if="loadState === 'loaded'">
+    <p><strong>{{ namedEntity.iconography_count }}
+      <span v-if="namedEntity.iconography_count > 1"> ressources iconographiques</span>
+      <span v-else>ressource iconographique</span>
+    </strong> sont associées à cette entité nommée.</p>
 
     <IndexAssociationRedirects v-if="associatedThemes.length"
-                              fromTable="named_entity"
-                              toTable="theme"
-                              :to="associatedThemes"
-                              :from="{ entry_name: namedEntity.entry_name
-                                     , id_uuid: namedEntity.id_uuid }"
+                               fromTable="named_entity"
+                               toTable="theme"
+                               :to="associatedThemes"
+                               :from="{ entry_name: namedEntity.entry_name
+                                      , id_uuid: namedEntity.id_uuid }"
     ></IndexAssociationRedirects>
 
     <IndexAssociationRedirects v-if="associatedNamedEntities.length"
-                              fromTable="named_entity"
-                              toTable="named_entity"
-                              :to="associatedNamedEntities"
-                              :from="{ entry_name: namedEntity.entry_name
-                                     , id_uuid: namedEntity.id_uuid }"
+                               fromTable="named_entity"
+                               toTable="named_entity"
+                               :to="associatedNamedEntities"
+                               :from="{ entry_name: namedEntity.entry_name
+                                      , id_uuid: namedEntity.id_uuid }"
     ></IndexAssociationRedirects>
-
-    <!--
-    <p v-if="associatedThemes.length && associatedThemes.length > 1"
-       v-html="`Les <strong>${associatedThemes.length} thèmes</strong> les
-                plus fréquemment associés à l'entité nommée <i>${ namedEntityName }</i> sont:
-                ${ stringifyAssociated(associatedThemes, 'theme') }.`"
-    ></p>
-    <p v-else-if="associatedThemes.length===1"
-       v-html="`<strong>Le thème</strong> le plus fréquemment associé
-                à l'entité nommée <i>${ namedEntityName }</i> est:
-                ${ stringifyAssociated(associatedThemes, 'theme') }.`"
-    ></p>
-
-    <p v-if="associatedNamedEntities.length && associatedNamedEntities.length > 1"
-       v-html="`Les <strong>${associatedNamedEntities.length} entités nommées</strong> les
-                plus fréquemment associés à l'entité nommée <i>${namedEntityName}</i> sont:
-                ${ stringifyAssociated(associatedNamedEntities, 'namedEntity') }.`"
-    ></p>
-    <p v-else-if="associatedThemes.length===1"
-       v-html="`<strong>L'entité nommée</strong> la plus fréquemment associée
-                à l'entité nommée <i>${ namedEntityName }</i> est:
-                ${ stringifyAssociated(associatedNamedEntities, 'namedEntity') }.`"
-    ></p>
-    -->
 
     <IndexBase :data="dataFilter"
                display="resource"
     ></IndexBase>
   </div>
+
+  <ErrNotFound v-else-if="loadState === 'error'"></ErrNotFound>
 </template>
 
 
@@ -67,12 +48,11 @@ import { onMounted, ref, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 
+import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
-import UiLoaderComponent from "@components/UiLoaderComponent.vue";
+import UiLoader from "@components/UiLoader.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
-
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
-import { stringifyAssociated, capitalizeString, capitalizeWords } from "@utils/stringifiers";
 
 /**************************************************/
 
@@ -82,7 +62,7 @@ const namedEntityName = ref("");    // the name of the namedEntity.
 const dataFull        = ref([]);    // the complete iconography  data, set from a watcher
 const dataFilter      = ref([]);    // the user-filtered iconography data, set from a watcher
 const idUuid          = ref(route.params.idUuid);
-const backendLoaded   = ref(false);  // when swittched to true, the loader is removed
+const loadState       = ref("loading");  // loading/loaded/error
 
 const associatedThemes      = ref([]); // themes most frequently associated with the current named entity
 const associatedNamedEntities = ref([]); // named entites most frequently associated with the current named entity
@@ -104,12 +84,13 @@ function getData() {
   axios.get(apiTargetNamedEntity.getter().href).then(r => {
     namedEntityName.value = r.data.length ? r.data[0] : undefined;
   })
-  axios.get(apiTargetIconography.getter().href).then(r => {
-    backendLoaded.value = true;
-    if ( r.data.length ) {
-      namedEntity.value = r.data[0]
-    }
+  .catch(e => { loadState.value = 'error'; console.error(e) });
+
+  axios.get(apiTargetIconography.getter().href)
+  .then(r => {
+    if ( r.data.length ) { namedEntity.value = r.data[0]; loadState.value = 'loaded'; }
   })
+  .catch(e => { loadState.value = 'error'; console.error(e) });
 }
 
 /**
@@ -127,6 +108,7 @@ function getAssociated() {
 watch(namedEntity, (newNamedEntity, oldNamedEntity) => {
   dataFull.value   = newNamedEntity.iconography;
   dataFilter.value = indexDataFormatterIconography(dataFull.value);
+  console.log(dataFilter.value);
 })
 
 watch(() => route.params.idUuid, (newIdUuid, oldIdUuid) => {
