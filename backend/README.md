@@ -7,6 +7,8 @@
 ### Installation
 
 ```bash
+sudo apt install libpq-dev  # pour utiliser `psycopg2`. ATTENTION: INSTALLATION SYSTEM-WIDE
+
 python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt
@@ -14,13 +16,48 @@ pip install -r requirements.txt
 
 ### Utilisation
 
-Pour utiliser l'application, il faut un dossier `./app/utils/confidentials`
-qui contient un fichier JSON avec les bons identifiants de connexion à la BDD
-postgres. Le fichier est nommé `postgresql_credentials_local.json` pour la
-BDD locale, `postgresql_credentials_remote.json` pour une BDD sur serveur.
+L'application peut être lancée avec différentes configurations (notamment la BDD à 
+laquelle se connecter). En ligne de commande, l'argument `-m` `--mode` permet de
+sélectionner une configuration: 
 
 ```bash
-python main.py -d local  # ou `remote` pour se connecter à la BDD sur serveur
+# si on veut lancer l'application sur machine locale
+python main.py -m dev
+
+# si on veut lancer des tests sur machine locale
+python main.py -m test
+
+# si on veut lancer l'application sur serveur
+python main.py -m prod
+```
+
+### Configurations
+
+Le fichier `app/config.py` liste toutes les configurations possibles. Chaque config
+correspond à une classe. Les identifiants de connexion aux différentes BDD se trouvent 
+dans des fichiers `json`, dans le dossier `app/utils/confidentials/`. Il faut pointer 
+vers ces fichiers dans `app/config.py`:
+
+```python
+# module app/config.py
+class TEST:
+  # on pointe ici vers le fichier `json` contenant les accès à la BDD
+  with open(os.path.join(CONFIDENTIALS, "postgresql_credentials_local.json"), mode="r") as fh:
+    params = json.load(fh)
+```
+
+Les fichiers de connexion dans `app/utils/confidentials` ont la structure 
+décrite ci-dessous. Il faut que les données dedans correspondent aux 
+identifiants de la BDD à laquelle on veut se connecter:
+
+```json
+// fichier de connexion dans app/utils/confidentials/
+{
+  "username": "<votre nom d'utilisateur.ice>", 
+  "password": "<votre mdp>",
+  "uri": "<l'URI de connexion à la BDD>",
+  "db": "<le nom de la BDD>"
+}
 ```
 
 ---

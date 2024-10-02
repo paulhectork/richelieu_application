@@ -10,16 +10,25 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "animate.css": "^4.1.1",
     "axios": "^1.6.2",
     "datatables.net-dt": "^1.13.8",
+    "futil-js": "^1.76.2",
     "jquery": "^3.7.1",
+    "leaflet": "^1.9.4",
+    "lodash": "^4.17.21",
+    "openseadragon": "^4.1.1",
     "pinia": "^2.1.7",
+    "select2": "^4.1.0-rc.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
+    "@formkit/vue": "^1.6.5",
+    "@types/jquery": "^3.5.30",
     "@vitejs/plugin-vue": "^4.4.0",
     "@vue/test-utils": "^2.4.1",
+    "color": "^4.2.3",
     "eslint": "^8.49.0",
     "eslint-plugin-vue": "^9.17.0",
     "jsdom": "^22.1.0",

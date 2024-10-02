@@ -1,0 +1,118 @@
+<!-- PlaceMainView.vue
+
+     the main view for a single place, to see it on a map
+     and view all of its related iconography
+-->
+
+<template>
+  <div v-if="loadState==='error'">
+    <ErrNotFound></ErrNotFound>
+  </div>
+  <div v-else>
+    <h1>{{ computedAddress }}</h1>
+
+    <UiLoader v-if="loadState==='loading'"></UiLoader>
+    <div v-else-if="loadState==='loaded'">
+      <div class="map-block-wrapper">
+        <MapPlaceMain :place="place"></MapPlaceMain>
+      </div>
+      <div class="icono-block-wrapper">
+        <p><strong>{{ place.iconography.length }}</strong>
+          <span v-if="place.iconography.length > 1"><strong> ressources iconographiques</strong> sont associées</span>
+          <span v-else><strong> ressource iconographique</strong> est associée</span>
+          à ce lieu.
+        </p>
+
+        <IndexBase :data="dataFilter"
+                   display="resource"
+        ></IndexBase>
+      </div>
+    </div>
+  </div>
+</template>
+
+
+<script setup>
+import { onMounted, ref, computed } from "vue";
+import { useRoute } from "vue-router";
+
+import axios from "axios";
+
+import UiLoader from "@components/UiLoader.vue";
+import MapPlaceMain from "@components/MapPlaceMain.vue";
+import ErrNotFound from "@components/ErrNotFound.vue";
+import IndexBase from "@components/IndexBase.vue";
+import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
+import { cartographySourcePriority } from "@globals";
+import { sortAddressBySource } from "@utils/array.js";
+
+/******************************************************************/
+
+const route = useRoute();
+const idUuid = route.params.idUuid;
+const address = ref([]);  // array of addresses related to that place. fetched from backend
+const source = ref("");   // currently used `source` for `Place.vector_source`, `Address.source` and `Cartography.map_source`
+const place = ref({});    // fetched from backend
+const dataFull = ref([]);   // iconography data. fetched from backend
+const dataFilter = ref([]); // iconography data. fetched from backend
+const loadState = ref("loading");
+
+const apiTargetPlace = new URL(`/i/place/${idUuid}`, __API_URL__);
+const apiTargetAddress = new URL(`/i/place-address/${idUuid}`, __API_URL__);
+
+/**
+ * `address` as returned by the backend is an array of objects;
+ * represent it as a string, or undefined.
+ * if `source` is defined, then select address by its source;
+ * else, by the order specified in `sourcePriority`
+ */
+const computedAddress = computed(() =>
+  source.value && address.value?.filter(a => a.source === source.value).length
+  ? address.value.filter(a => a.source === source.value)[0].address
+  : address.value.length
+  ? address.value[0].address
+  : undefined
+)
+
+/******************************************************************/
+
+async function getData() {
+  Promise.all([
+    axios.get(apiTargetPlace.href)
+    .then(r => r.data)
+    .then(data => { place.value = data[0];
+                    dataFull.value = place.value.iconography;
+                    dataFilter.value = indexDataFormatterIconography(place.value.iconography);
+     })
+    ,
+    axios.get(apiTargetAddress.href)
+    .then(r => r.data)
+    .then(data => { address.value = sortAddressBySource(data); })
+  ])
+  .then(r => loadState.value = "loaded")
+  .catch(e => { console.error(e);
+                loadState.value = "error" });
+}
+
+/******************************************************************/
+
+onMounted(() => {
+  getData()
+});
+</script>
+
+
+<style scoped>
+.map-block-wrapper {
+  min-height: 300px;
+  height: 60vh;
+  margin-bottom: 5vh;
+}
+@media ( orientation:landscape ) {
+  .map-block-wrapper {
+    height: 40vh;
+    margin-bottom: 5vh;
+  }
+
+}
+</style>

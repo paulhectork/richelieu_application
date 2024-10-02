@@ -32,8 +32,7 @@ class Institution(db.Model):
     entry_name    : Mapped[str] = mapped_column(Text, nullable=False)
     description   : Mapped[str] = mapped_column(Text, nullable=True)
 
-    r_institution : Mapped[t.List["R_Institution"]] = relationship("R_Institution"
-                                                                 , back_populates="institution")
+    r_institution : Mapped[t.List["R_Institution"]] = relationship("R_Institution", back_populates="institution")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, value):
@@ -41,23 +40,26 @@ class Institution(db.Model):
 
     def get_iconography(self):
         return [ r.iconography.serialize_lite()
-                 for r in self.r_institution ]
+                 for r in self.r_institution
+                 if r.iconography is not None ]
 
     def get_cartography(self):
         return [ r.cartography.serialize_lite()
-                 for r in self.r_institution ]
+                 for r in self.r_institution
+                 if r.cartography is not None ]
 
     def get_directory(self):
         return [ r.directory.serialize_lite()
-                 for r in self.r_institution ]
+                 for r in self.r_institution
+                 if r.directory is not None ]
 
     def serialize_lite(self):
-        return { "id_uuid"       : self.id_uuid,         # str
+        return { "id_uuid"    : self.id_uuid,      # str
                  "entry_name" : self.entry_name }  # str
 
     def serialize_full(self):
-        return { "id_uuid"        : self.id_uuid,               # str
-                 "entry_name"  : self.entry_name,        # str
+        return { "id_uuid"     : self.id_uuid,            # str
+                 "entry_name"  : self.entry_name,         # str
                  "description" : self.description,        # str
                  "iconography" : self.get_iconography(),  # t.Dict
                  "cartography" : self.get_cartography(),  # t.Dict
@@ -81,7 +83,7 @@ class Licence(db.Model):
     entry_name  : Mapped[str] = mapped_column(Text, nullable=False)
     description : Mapped[str] = mapped_column(Text, nullable=True)
 
-    filename    : Mapped[t.List["Filename"]]        = relationship("Filename", back_populates="licence")
+    filename    : Mapped[t.List["Filename"]]    = relationship("Filename", back_populates="licence")
     iconography : Mapped[t.List["Iconography"]] = relationship("Iconography", back_populates="licence")
     cartography : Mapped[t.List["Cartography"]] = relationship("Cartography", back_populates="licence")
     directory   : Mapped[t.List["Directory"]]   = relationship("Directory", back_populates="licence")
@@ -90,14 +92,26 @@ class Licence(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
-    def serialize_light(self):
-        return { "id_uuid"       : self.id_uuid,         # str
+    def get_filename(self):
+        return [ f.serialize_lite() for f in self.filename ]
+
+    def get_iconography(self):
+        return [ i.serialize_lite() for i in self.iconography ]
+
+    def get_cartography(self):
+        return [ c.serialize_lite() for c in self.cartography ]
+
+    def serialize_lite(self):
+        return { "id_uuid"    : self.id_uuid,      # str
                  "entry_name" : self.entry_name }  # str
 
     def serialize_full(self):
-        return { "id_uuid"        : self.id_uuid,        # str
-                 "entry_name"  : self.entry_name,  # str
-                 "description" : self.description  # str
+        return { "id_uuid"     : self.id_uuid,           # str
+                 "entry_name"  : self.entry_name,        # str
+                 "description" : self.description,       # str
+                 "iconography" : self.get_iconography(), # t.Dict
+                 "cartography" : self.get_cartography(), # t.Dict
+                 "filename"    : self.get_filename()     # t.Dict
         }
 
 
@@ -116,17 +130,40 @@ class AdminPerson(db.Model):
     last_name      : Mapped[str] = mapped_column(Text, nullable=False)
     id_persistent  : Mapped[int] = mapped_column(Text, nullable=True)
 
-    r_admin_person : Mapped[t.List["R_AdminPerson"]] = relationship("R_AdminPerson"
-                                                                  , back_populates="admin_person")
+    r_admin_person : Mapped[t.List["R_AdminPerson"]] = relationship("R_AdminPerson", back_populates="admin_person")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
-    def serialize_lite(self):
-        return { "id_uuid"       : self.id_uuid,
-                 "first_name" : self.first_name,
-                 "last_name"  : self.last_name }
+    def get_r_admin_person_iconography(self):
+        return [ r.iconography.serialize_lite()
+                 for r in self.r_admin_person
+                 if r.iconography is not None ]
 
+    def get_r_admin_person_cartography(self):
+        return [ r.cartography.serialize_lite()
+                 for r in self.r_admin_person
+                 if r.cartography is not None ]
+
+    def get_r_admin_person_directory(self):
+        return [ r.directory.serialize_lite()
+                 for r in self.r_admin_person
+                 if r.directory is not None ]
+
+    def serialize_lite(self):
+        return { "id_uuid"    : self.id_uuid,      # str
+                 "first_name" : self.first_name,   # str
+                 "last_name"  : self.last_name }   # str
+
+    def serialize_full(self):
+        return { "id_uuid"       : self.id_uuid,                          # str
+                 "first_name"    : self.first_name,                       # str
+                 "last_name"     : self.last_name,                        # str
+                 "id_persistent" : self.id_persistent,                    # str
+                 "cartography"   : self.get_r_admin_person_cartography(), # t.List[t.Dict]
+                 "iconography"   : self.get_r_admin_person_iconography(), # t.List[t.Dict]
+                 "directory"     : self.get_r_admin_person_directory(),   # t.List[t.Dict]
+        }
 
 

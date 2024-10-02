@@ -1,5 +1,6 @@
 @charset "UTF-8";
 @import "./fonts/galliard/stylesheet.css";
+@import "animate.css";
 
 
 /**************************************************************************
@@ -7,84 +8,212 @@
  *                                                                        *
  * responsive design rules: there are TWO VIEWPORT SIZES,                 *
  * with occasional variants.                                              *
- * (1) default is mobile:                                                 *
- *     `@media ( max-width: 900px )`                                      *
- *     (this one is always targeted implicitly                            *
- * (2) computer screen / tablet :                                         *
- *     `@media ( min-width: 900px ) and ( orientation: landscape )`       *
- * (3) sometimes, a 3rd rule is used:                                     *
+ * (1) default is mobile/portrait:                                        *
+ *     `@media ( orientation:portrait )`                                  *
+ *     (this one is always targeted implicitly)                           *
+ * (2) computer screen/tablet/landscape :                                 *
  *     `@media ( orientation: landscape )`                                *
- *     (=> defines a layout for a landscape screen, no matter its size)   *
  *                                                                        *
- * - `.navbar` height (and `main-navbar-wrapper`) are defined by (3)      *
  **************************************************************************/
 
 
-/***********************************************
- *              basic definitions              *
- ***********************************************/
+/**************************************************************************/
+/* font definitions */
+
+/**
+ * EB garamond font definition. adapted from
+ * https://github.com/georgd/EB-Garamond/blob/master/html/garastyle.css
+ * and the ITC galliard font declaration
+ */
+ @font-face {
+  font-family: 'eb-garamond';
+  src:  url('./fonts/eb-garamond/ttf/EBGaramond12-Regular.ttf') format('truetype'),
+  	    url('./fonts/eb-garamond/otf/EBGaramond12-Regular.otf') format('opentype');
+  font-style: normal;
+}
+/*
 @font-face {
-  font-family: "urlaub-grotesk";
-  src: url("./fonts/Urlaub-Grotesk-Regular.otf") format("opentype");
+  font-family: "eb-garamond";
+  src:  url('./fonts/eb-garamond/ttf/EBGaramond08-Regular.ttf') format('truetype'),
+      	url('./fonts/eb-garamond/otf/EBGaramond08-Regular.otf') format('opentype');
+  font-style: normal;
+}
+*/
+@font-face {
+  font-family: "eb-garamond";
+  src:  url('./fonts/eb-garamond/ttf/EBGaramond12-Italic.ttf') format('truetype'),
+  	    url('./fonts/eb-garamond/otf/EBGaramond12-Italic.otf') format('opentype');
+  font-style: italic;
+}
+/*
+@font-face {
+  font-family: "eb-garamond";
+  src:  url('./fonts/eb-garamond/ttf/EBGaramond08-Italic.ttf') format('truetype'),
+  	    url('./fonts/eb-garamond/otf/EBGaramond08-Italic.otf') format('opentype');
+  font-style: italic;
+}
+*/
+/*
+@font-face {
+	font-family: "eb-garamond";
+  src:	url('./fonts/eb-garamond/ttf/EBGaramond-Initials.ttf') format('truetype'),
+  	url('./fonts/eb-garamond/otf/EBGaramond-Initials.otf') format('opentype');
+  font-style: normal;
+}
+*/
+@font-face {
+  font-family: "eb-garamond-sc";
+  src:  url('./fonts/eb-garamond/ttf/EBGaramondSC12-Regular.ttf') format('truetype'),
+  	    url('./fonts/eb-garamond/otf/EBGaramondSC12-Regular.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'urlaub-grotesk';
+  src: url('./fonts/urlaub-grotesk/fonts/Urlaub-Grotesk-Regular.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/urlaub-grotesk/fonts/Urlaub-Grotesk-Regular.woff2') format('woff2'), /* Modern Browsers */
+       url('./fonts/urlaub-grotesk/fonts/Urlaub-Grotesk-Regular.otf') format('opentype'), /* Safari, Android, iOS */
+       url('./fonts/urlaub-grotesk/fonts/Urlaub-Grotesk-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: "mels";
+  src: url("./fonts/mels/Mels-Regular.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: "mels";
+  src: url("./fonts/mels/Mels-Italic.otf") format("opentype");
+  font-weight: normal;
+  font-style: italic;
+}
+
+/**************************************************************************/
+/* root */
 
 :root {
   /**
    * FONT DEFINITIONS
    */
-  --cs-font-serif: "ITC Galliard Std";
-  --cs-font-sans-serif: "urlaub-grotesk", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --cs-font-serif: "eb-garamond";
+  --cs-font-sans-serif: "urlaub-grotesk", "mels", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --cs-font-sans-serif-accentuate: "mels", "urlaub-grotesk", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";;
 
   /**
    * COLOR DEFINITIONS
    */
-  --cs-plum: #710551;
-  --cs-pink: #ffb0ff;
+  --cs-white: #ffffff;
   --cs-black: #000000;
+  --cs-plum: #710551;
   --cs-duck: #00553e;
   --cs-seagreen: #8fc7b1;
-  --cs-gold: #da9902;
-  --cs-blue: #001bde;
   --cs-darkgrey: #212529;
   --cs-lightgrey: #adb5bd;
   --cs-darkplum: #680059;
+
+  /* nice colors that aren't used
+  --cs-pink: #ffb0ff;
+  --cs-gold: #da9902;
+  --cs-blue: #001bde; */
+
   /*--cs-lightplum: #a2004e;*/
 
-  --cs-main: black;                 /* main text color */
-  --cs-bg-main: white;              /* main background color */
+  /**
+   * OUR COLOR THEME
+   *
+   * we define 3 modes, `main`, `negative` and `link`, each which 3 states.
+   * `main` and `negative` have foreground/background combos and are meant
+   * for full blocks or full pages. `link` is only used for `<a>` html els.
+   *
+   * >>>> `main`        : the base state, white on black: common text and elements.
+   * ---> `main-default`: the base state
+   * ---> `main-second` : either for text that we want to shine a light
+   *                      on, or for buttons and interactive stuff that
+   *                      is being hovered
+   * ---> `main-active` : when an action is triggered on an interactive
+   *                      element. this insists on a change of state, or
+   *                      on an action from the user.
+   **********************
+   * >>>> `negative`        : white on black. intended for full pages
+   * ---> `negative-default`: the base state
+   * ---> `negative-second` : either for text that we want to shine a light
+   *                          on, or for buttons and interactive stuff that
+   *                          is being hovered
+   * ---> `negative-active` : when an action is triggered on an interactive
+   *                          element. this insists on a change of state, or
+   *                          on an action from the user.
+   **********************
+   * >>>> `link` : is a special theme, for normal links (in text)
+   */
 
-  --cs-second: var(--cs-lightgrey);   /* secondary text color */
-  --cs-bg-second: white;            /* secondary background color */
+  /**********************/
+  --cs-main-default: var(--cs-black);           /* font color */
+  --cs-main-default-bg: var(--cs-white);        /* background color */
 
-  --cs-bg-focus: var(--cs-lightgrey);  /* focus background color */
-  --cs-focus: white;                 /* focus text color */
+  --cs-main-second: var(--cs-white);
+  --cs-main-second-bg: var(--cs-lightgrey);
 
-  --cs-link: var(--cs-plum);
-  --cs-link-focus: var(--cs-link);
+  --cs-main-active-bg: var(--cs-seagreen);
+  --cs-main-active: var(--cs-white);
+
+  --cs-main-alt-fontcolor: var(--cs-lightgrey);  /* alternative font color */
+  --cs-main-border: 1px solid black;           /* default border styling */
+
+  /**********************/
+  --cs-negative-default: var(--cs-white);           /* font color */
+  --cs-negative-default-bg: var(--cs-black);        /* background color */
+
+  --cs-negative-second: var(--cs-white);
+  --cs-negative-second-bg: var(--cs-lightgrey);
+
+  --cs-negative-active-bg: var(--cs-white);
+  --cs-negative-active: var(--cs-seagreen);
+
+  --cs-negative-border: 1px solid white;
+
+  /**********************/
+  --cs-link-default: var(--cs-plum);
+  --cs-link-default-bg: var(--cs-main-default-bg);
   --cs-link-visited: var(--cs-darkplum);
+  --cs-link-visited-bg: var(--cs-main-default-bg);
+
+  /*
+  the navbar's height is AT LEAST 50px, if the screen is bigger, it is 7vh.
+  the main part of the app's height is calc(100vh - var(--cs-navbar-height))
+  */
+  --cs-navbar-height: max(7vh, 50px);
+
+  /*
+  --cs-sidebar-width-desktop: 25vw;
+  --cs-sidebar-width-mobile: 60vw;
+  */
+
+  --cs-fontsize-title: max(14px, 2.5vh);
+  --cs-fontsize-article: 16px;
+  --cs-fontsize-main-mobile: 10pt/*max(15px, 1.5vh)*/;
+  --cs-fontsize-main-desktop: 12pt /*max(17px, 1.75vh)*/;
+  --cs-fontsize-menu-mobile: /*var(--cs-fontsize-main-mobile)*/;
+  --cs-fontsize-menu-desktop: 115% /*var(--cs-fontsize-main-desktop)*/;
+  --cs-fontsize-legend: 125%;
+
+  --cs-color-transition: 0.25s;
 
   /**
-   * OTHER DEFINITIONS
+   *  ANIMATE.CSS GLOBALS
    */
-  --cs-border: 1px solid black;
-  --cs-navbar-height-mobile: 7vh;
-  --cs-navbar-height-desktop: 9vh;
-  --cs-fontsize-title: max(14px, 2.5vh);
-  --cs-fontsize-main-mobile: max(15px, 1.5vh);
-  --cs-fontsize-main-desktop: max(17px, 1.75vh);
-  --cs-fontsize-menu-mobile: var(--cs-fontsize-main-mobile);
-  --cs-fontsize-menu-desktop: var(--cs-fontsize-main-desktop);
-  --cs-fontsize-legend: 125%;
+   --animate-duration: .75s;
+
 }
 
-/***********************************************
- *                global styles                *
- ***********************************************/
- *,
- *::before,
- *::after {
+/**************************************************************************/
+/* global styles for elements */
+
+*
+, *::before
+, *::after {
   box-sizing: border-box;
 }
 
@@ -94,36 +223,84 @@ body {
   height: 100%;
   width: 100%;
 
-  color: var(--cs-main);
-  background-color: var(--cs-bg-main);
-
   font-weight: 500;
-  font-family: var(--cs-font-serif);
+  font-family: var(--cs-font-sans-serif);
   font-size: var(--cs-fontsize-main-desktop);
 }
 
-a {
-  color: var(--cs-link);
+h1,h2,h3,h4,h5,h6 {
+  font-family: var(--cs-font-serif);
 }
-a:focus {
-  color: var(--cs-link-focus);
+h1 {
+  font-family: "eb-garamond-sc";
+  font-variant: small-caps;
+}
+
+a {
+  color: var(--cs-link-default);
+  background-color: var(--cs-link-default-bg);
 }
 a:visited {
   color: var(--cs-link-visited);
+  background-color: var(--cs-link-visited-bg);
 }
 
-.secondary {
-  background-color: var(--cs-bg-second);
-  color: var(--cs-second);
+
+table {
+  border-spacing: 0;
+  table-layout: fixed;
+  /*border-collapse: collapse;*/
+  width: 100%;
+}
+td {
+  padding: 0 5% 0 5%;
+
+}
+tr,
+td {
+  border-bottom: var(--cs-main-border);
+  /*height: 5vh;*/
+  width: 100%;
 }
 
-.focus {
-  color: var(--cs-focus);
-  background-color: var(--cs-bg-focus);
+q {
+  quotes: "«" "»" "‹" "›";
 }
+
+/**************************************************************************/
+/* classes defining color patterns */
+
+.main-default {
+  color: var(--cs-main-default);
+  background-color: var(--cs-main-default-bg);
+}
+.main-second {
+  color: var(--cs-main-second);
+  background-color: var(--cs-main-second-bg);
+}
+.main-active {
+  color: var(--cs-main-active);
+  background-color: var(--cs-main-active-bg);
+}
+
+.negative-default {
+  color: var(--cs-negative-default);
+  background-color: var(--cs-negative-default-bg);
+}
+.negative-second {
+  color: var(--cs-negative-second);
+  background-color: var(--cs-negative-second-bg);
+}
+.negative-active {
+  color: var(--cs-negative-active);
+  color: var(--cs-negative-active-bg);
+}
+
+/**************************************************************************/
+/* globally used classes */
 
 .border-bottom {
-  border-bottom: var(--cs-border);
+  border-bottom: var(--cs-main-border);
 }
 
 .fill-parent {
@@ -135,3 +312,249 @@ a:visited {
   top: 0;
   position: sticky;
 }
+
+/* use in a div or `p` outisde a `q` to create a multiline quote*/
+.multi-line-quote-wrapper {
+  line-height: 1.3;
+  font-style: italic;
+  padding: 5% 0% 5% 15%;
+}
+
+/* to have an <ul> with no list-specific style elements */
+.list-invisible {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+  margin-top: 0;
+
+}
+
+/**************************************************************************/
+/* scollbar */
+
+main,
+.sidebar-wrapper,
+.main-wrapper,
+.menu-wrapper {
+  /* without overflow: auto, there will always be a visible scrollbar,
+    even when there's nothing to scroll to */
+  overflow: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cs-darkplum) white;
+}
+main::-webkit-scrollbar-track,
+.sidebar-wrapper::-webkit-scrollbar-track,
+.main-wrapper::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  background-color: white;
+}
+main::-webkit-scrollbar,
+.sidebar-wrapper::-webkit-scrollbar,
+.main-wrapper::-webkit-scrollbar {
+  width: 5px;
+  background-color: white;
+}
+main::-webkit-scrollbar-thumb,
+.sidebar-wrapper::-webkit-scrollbar-thumb,
+.main-wrapper::-webkit-scrollbar-thumb {
+  background-color: black;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+/**************************************************************************/
+/* generic button styling */
+
+button {
+  margin: 2px;
+  font-family: var(--cs-font-sans-serif-accentuate);
+  padding: 3px 5px 1px 5px;
+  background-color: var(--cs-main-default-bg);
+
+  color: var(--cs-main-default);
+  border: var(--cs-main-border);
+  cursor: grab;
+  width: auto;
+
+  transition: color var(--cs-color-transition);
+  transition: background-color var(--cs-color-transition);
+}
+button:hover {
+  background-color: var(--cs-main-second-bg);
+  color: var(--cs-main-second);
+  border: var(--cs-main-border);
+}
+button:active {
+  background-color: var(--cs-main-active-bg);
+  color: var(--cs-main-active);
+  width: fit-content;
+}
+/* emulate .active state */
+button.button-activated {
+  background-color: var(--cs-main-active-bg);
+  color: var(--cs-main-active);
+  width: fit-content;
+}
+
+/**************************************************************************/
+/* svg */
+
+button > svg > path  {
+  stroke: var(--cs-main-default);
+  fill: var(--cs-main-default);
+  transition: stroke 0.2s, fill .2s;
+}
+button:hover > svg > path {
+  stroke: var(--cs-main-second);
+  fill: var(--cs-main-second);
+  background-color: var(--cs-main-second-bg);
+}
+button:active > svg > path {
+  stroke: var(--cs-main-active-bg);
+  fill: var(--cs-main-active-bg);
+
+}
+
+/**************************************************************************/
+/* leaflet */
+
+.leaflet-popup-content-wrapper {
+  box-shadow: unset !important;
+  font-family: sans-serif;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 0 !important;
+  border: var(--cs-main-border) !important;
+}
+.leaflet-popup-tip {
+  border: var(--cs-main-border) !important;
+  box-shadow: unset !important;
+}
+.leaflet-popup a {
+  color: var(--cs-link-default) !important;
+}
+.leaflet-popup a:visited {
+  color: var(--cs-link-visited) !important;
+}
+
+/**************************************************************************/
+/* formkit */
+
+.formkit-outer {
+  margin-bottom: min(2vh, 10px);
+}
+.formkit-label {
+  font-weight: bold;
+}
+.formkit-messages {
+  list-style: none;
+  color: var(--cs-plum);
+  font-family: var(--cs-font-sans-serif);
+}
+.formkit-inner {
+  border: none;
+}
+.formkit-inner > input {
+  width: 100%;
+  border: var(--cs-main-border);
+}
+.form-submit-input {
+  margin-top: min(3vh, 15%);
+  width: 100%;
+  background-color: var(--cs-seagreen);
+}
+
+.form-field-outer-wrapper {
+  display: grid;
+  grid-template-columns: 15% 85%;
+}
+.form-field-outer-wrapper > * {
+  margin: 3px;
+}
+.button-container > button {
+  display: inline-table;
+  width: 30px;
+  height: 30px;
+}
+
+/**************************************************************************/
+/* select2 */
+
+.select2-selection {
+  border: var(--cs-main-border) !important;
+  border-radius: 0 !important;
+  height: 100% !important;
+}
+.select2-results__option--highlighted {
+  background-color: var(--cs-main-active-bg) !important;
+  color: var(--cs-main-active) !important;
+}
+.form-boolean-flag-wrapper .select2-container {
+  height: 100% !important
+}
+
+/**************************************************************************/
+/* vue transitions */
+/* see: https://vuejs.org/guide/built-ins/transition.html */
+
+.v-enter-active
+, .v-leave-active {
+  transition: opacity var(--cs-color-transition) ease;
+}
+.v-enter-from
+, .v-leave-to {
+  opacity: 0;
+}
+
+/* slideInOut: slide in and out an element */
+.slideInOut-enter-from
+, .slideInOut-leave-to {
+  max-height: 0;
+  visibility: hidden;
+  overflow: hidden;
+}
+.slideInOut-enter-to
+, .slideInOut-leave-from {
+  max-height: 150%;
+  visibility: visible;
+  overflow: hidden;
+}
+.slideInOut-enter-active {
+  transition: max-height .7s ease-in-out, visibility .7s ease-in-out;
+}
+.slideInOut-leave-active {
+  transition: max-height .7s ease-in-out, visibility .7s ease-in-out;
+}
+
+
+/* OLD ADDITIONAL COLOR THEME: CONTRAST */
+/* DOCUMENTATION */
+/* >>>> `contrast`        : for contrasting elements. this is thought for*/
+/*                          big blocks that have a special meaning in*/
+/*                          term of UI/UX and not just for basic buttons.*/
+/* ---> `contrast-default`: the base state*/
+/* ---> `contrast-second` : when we want to shine a light on an element, or*/
+/*                          for hovering*/
+/* ---> `contrast-active` : when an action is triggered.*/
+
+/* VARIABLES */
+/*--cs-contrast-default: var(--cs-lightgrey);*/
+/*--cs-contrast-default-bg: var(--cs-darkgrey);*/
+/*--cs-contrast-second: var(--cs-white);*/
+/*--cs-contrast-second-bg: var(--cs-lightgrey);*/
+/*--cs-contrast-active: var(--cs-white);*/
+/*--cs-contrast-active-bg: var(--cs-seagreen);*/
+
+/* CLASSES */
+/* .contrast-default {*/
+/*   color: var(--cs-contrast-default) !important;*/
+/*   background-color: var(--cs-contrast-default-bg)  !important;*/
+/* }*/
+/* .contrast-second {*/
+/*   background-color: var(--cs-contrast-second-bg);*/
+/*   color: var(--cs-contrast-second);*/
+/* }*/
+/* .contrast-active {*/
+/*   color: var(--cs-contrast-active);*/
+/*   background-color: var(--cs-contrast-active-bg);*/
+/* }*/

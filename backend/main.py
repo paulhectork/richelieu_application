@@ -1,25 +1,33 @@
+import traceback
 import atexit
 import click
 
-from app.utils.io import maketmp, deltmp, write_credfile, read_credfile
-
+from app.app import config_app
+from app.utils.io import maketmp, deltmp # , write_credfile, read_credfile
+from app.tests.runner import runner
 
 @click.command()
-@click.option("--database", "-d"
-              , type=click.Choice(["local", "remote"])
-              , help="a key pointing to the credentials and database to use"
-              , required=True)
-def run(database:str) -> None:
+@click.option( "--mode", "-m"
+             , type=click.Choice(["dev", "test", "prod"])
+             , help="choose the app configuration: database connexion and other parameters. see `app/config.py`"
+             , required=True)
+def run(mode:str) -> None:
     """
-    configure and run  the backend app
+    configure and run the backend app
     """
-    try:
-        maketmp()                       # create necessary files/dirs
-        write_credfile(database)        # write the credential file to use
-        from app.app import app         # avoid import errors
-        app.run(port=5000, debug=True)  # run the app
-    finally:
-        atexit.register(deltmp)         # delete temp files at exit, or exception
+    maketmp()  # create necessary files/dirs
+
+    app = config_app(mode)
+    if mode == "test":
+        runner()
+    else:
+        # the try...except + app.logger allows to display
+        # errors in the production env's journals
+        try:
+            app.run(port=5001, debug=True)
+        except Exception as e:
+            app.logger.error(traceback.format_exc())
+            raise e  # so far, we want the site to crash so we can find possible exceptions
 
     return
 
