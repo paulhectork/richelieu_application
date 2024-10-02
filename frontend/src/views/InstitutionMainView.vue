@@ -56,10 +56,13 @@
 <script setup>
 import { onMounted, ref, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+
 import axios from "axios";
 
+import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
 import UiLoader from "@components/UiLoader.vue";
+
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { stringifyInstitutionArray } from "@utils/stringifiers";
 

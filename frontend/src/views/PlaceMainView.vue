@@ -17,6 +17,12 @@
         <MapPlaceMain :place="place"></MapPlaceMain>
       </div>
       <div class="icono-block-wrapper">
+        <p><strong>{{ place.iconography.length }}</strong>
+          <span v-if="place.iconography.length > 1"><strong> ressources iconographiques</strong> sont associées</span>
+          <span v-else><strong> ressource iconographique</strong> est associée</span>
+          à ce lieu.
+        </p>
+
         <IndexBase :data="dataFilter"
                    display="resource"
         ></IndexBase>

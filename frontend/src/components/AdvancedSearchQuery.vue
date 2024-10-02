@@ -307,6 +307,7 @@ onMounted(() => {
 }
 .form-field-outer-wrapper {
   border-top: var(--cs-main-border);
+  padding: 1vh 0;
 }
 .form-field-outer-wrapper:first-child {
   border-top: none;
