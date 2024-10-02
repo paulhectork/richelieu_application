@@ -107,11 +107,12 @@
    */
   --cs-white: #ffffff;
   --cs-black: #000000;
-  --cs-plum: #710551;
   --cs-duck: #00553e;
   --cs-seagreen: #8fc7b1;
   --cs-darkgrey: #212529;
   --cs-lightgrey: #adb5bd;
+  --cs-plum: #710551;
+  --cs-lightplum: #c93e9f;  /* #c93e5a */
   --cs-darkplum: #680059;
 
   /* nice colors that aren't used
@@ -124,11 +125,12 @@
   /**
    * OUR COLOR THEME
    *
-   * we define 3 modes, `main`, `negative` and `link`, each which 3 states.
-   * `main` and `negative` have foreground/background combos and are meant
-   * for full blocks or full pages. `link` is only used for `<a>` html els.
+   * we define 2 color themes `main` and `negative`, each which 4 states.
+   * they have foreground/background combos. `main` is used on "normal" pages,
+   * `negative` when arriving on a main data page (IconographyMainView...). see
+   * App.vue/toThemeNegative for an array of routes that use negative theme.
    *
-   * >>>> `main`        : the base state, white on black: common text and elements.
+   * >>>> `main`        : the base state, black on white: common text and elements.
    * ---> `main-default`: the base state
    * ---> `main-second` : either for text that we want to shine a light
    *                      on, or for buttons and interactive stuff that
@@ -136,6 +138,8 @@
    * ---> `main-active` : when an action is triggered on an interactive
    *                      element. this insists on a change of state, or
    *                      on an action from the user.
+   * ---> `main-link-*` : the font-color of all <a> elements
+   *
    **********************
    * >>>> `negative`        : white on black. intended for full pages
    * ---> `negative-default`: the base state
@@ -145,11 +149,11 @@
    * ---> `negative-active` : when an action is triggered on an interactive
    *                          element. this insists on a change of state, or
    *                          on an action from the user.
-   **********************
-   * >>>> `link` : is a special theme, for normal links (in text)
+   * ---> `negative-link-*` : the font-color of all <a> elements
    */
 
   /**********************/
+
   --cs-main-default: var(--cs-black);           /* font color */
   --cs-main-default-bg: var(--cs-white);        /* background color */
 
@@ -162,23 +166,24 @@
   --cs-main-alt-fontcolor: var(--cs-lightgrey);  /* alternative font color */
   --cs-main-border: 1px solid black;           /* default border styling */
 
+  --cs-main-link-default: var(--cs-plum);        /* <a> colors*/
+  --cs-main-link-visited: var(--cs-plum);    /* <a> colors*/
+
   /**********************/
+
   --cs-negative-default: var(--cs-white);           /* font color */
   --cs-negative-default-bg: var(--cs-black);        /* background color */
 
   --cs-negative-second: var(--cs-white);
   --cs-negative-second-bg: var(--cs-lightgrey);
 
-  --cs-negative-active-bg: var(--cs-white);
-  --cs-negative-active: var(--cs-seagreen);
+  --cs-negative-active-bg: var(--cs-seagreen);
+  --cs-negative-active: var(--cs-white);
+
+  --cs-negative-link-default: var(--cs-lightplum);    /* <a> colors*/
+  --cs-negative-link-visited: var(--cs-lightplum);    /* <a> colors*/
 
   --cs-negative-border: 1px solid white;
-
-  /**********************/
-  --cs-link-default: var(--cs-plum);
-  --cs-link-default-bg: var(--cs-main-default-bg);
-  --cs-link-visited: var(--cs-darkplum);
-  --cs-link-visited-bg: var(--cs-main-default-bg);
 
   /*
   the navbar's height is AT LEAST 50px, if the screen is bigger, it is 7vh.
@@ -237,30 +242,40 @@ h1 {
 }
 
 a {
-  color: var(--cs-link-default);
-  background-color: var(--cs-link-default-bg);
+  color: var(--cs-main-link-default);
 }
 a:visited {
-  color: var(--cs-link-visited);
-  background-color: var(--cs-link-visited-bg);
+  color: var(--cs-main-link-visited);
 }
 
+.negative-default a,
+.negative-second a,
+.negative-active a {
+  color: var(--cs-negative-link-default);
+}
+.negative-default a:visited,
+.negative-second a:visited,
+.negative-active a:visited {
+  color: var(--cs-negative-link-visited);
+}
 
 table {
   border-spacing: 0;
   table-layout: fixed;
-  /*border-collapse: collapse;*/
   width: 100%;
 }
 td {
   padding: 0 5% 0 5%;
 
 }
-tr,
-td {
+tr, td {
   border-bottom: var(--cs-main-border);
-  /*height: 5vh;*/
   width: 100%;
+}
+.negative-default tr, .negative-default td,
+.negative-second tr, .negative-second td,
+.negative-active tr, .negative-active td {
+  border-bottom: var(--cs-negative-border);
 }
 
 q {
@@ -302,6 +317,11 @@ q {
 .border-bottom {
   border-bottom: var(--cs-main-border);
 }
+.negative-default .border-bottom,
+.negative-second .border-bottom,
+.negative-active .border-bottom {
+  border-bottom: var(--cs-negative-border);
+}
 
 .fill-parent {
   width: 100%;
@@ -342,10 +362,18 @@ main,
   scrollbar-width: thin;
   scrollbar-color: var(--cs-darkplum) white;
 }
+
 main::-webkit-scrollbar-track,
 .sidebar-wrapper::-webkit-scrollbar-track,
 .main-wrapper::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  background-color: white;
+}
+
+main::-webkit-scrollbar,
+.sidebar-wrapper::-webkit-scrollbar,
+.main-wrapper::-webkit-scrollbar {
+  width: 5px;
   background-color: white;
 }
 main::-webkit-scrollbar,
@@ -362,6 +390,70 @@ main::-webkit-scrollbar-thumb,
   border-radius: 5px;
 }
 
+/* negative colors. since we have 3 negative classes and a lot of webkit,
+   the selectors get to be pretty long :)
+*/
+.negative-default .sidebar-wrapper,
+.negative-default .main-wrapper,
+.negative-default .menu-wrapper
+.negative-second .sidebar-wrapper,
+.negative-second .main-wrapper,
+.negative-second .menu-wrapper,
+.negative-active .sidebar-wrapper,
+.negative-active .main-wrapper,
+.negative-active .menu-wrapper {
+  scrollbar-color: var(--cs-lightplum) white;
+}
+.negative-default main::-webkit-scrollbar-track,
+.negative-default .sidebar-wrapper::-webkit-scrollbar-track,
+.negative-default .main-wrapper::-webkit-scrollbar-track,
+.negative-second main::-webkit-scrollbar-track,
+.negative-second .sidebar-wrapper::-webkit-scrollbar-track,
+.negative-second .main-wrapper::-webkit-scrollbar-track,
+.negative-active main::-webkit-scrollbar-track,
+.negative-active .sidebar-wrapper::-webkit-scrollbar-track,
+.negative-active .main-wrapper::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(1,1,1,0.3);
+  background-color: black;
+}
+
+.negative-default main::-webkit-scrollbar,
+.negative-default .sidebar-wrapper::-webkit-scrollbar,
+.negative-default .main-wrapper::-webkit-scrollbar,
+.negative-second main::-webkit-scrollbar,
+.negative-second .sidebar-wrapper::-webkit-scrollbar,
+.negative-second .main-wrapper::-webkit-scrollbar,
+.negative-active main::-webkit-scrollbar,
+.negative-active .sidebar-wrapper::-webkit-scrollbar,
+.negative-active .main-wrapper::-webkit-scrollbar {
+  background-color: black;
+}
+.negative-default main::-webkit-scrollbar,
+.negative-default .sidebar-wrapper::-webkit-scrollbar,
+.negative-default .main-wrapper::-webkit-scrollbar,
+.negative-second main::-webkit-scrollbar,
+.negative-second .sidebar-wrapper::-webkit-scrollbar,
+.negative-second .main-wrapper::-webkit-scrollbar,
+.negative-active main::-webkit-scrollbar,
+.negative-active .sidebar-wrapper::-webkit-scrollbar,
+.negative-active .main-wrapper::-webkit-scrollbar
+{
+  background-color: black;
+}
+.negative-default main::-webkit-scrollbar-thumb,
+.negative-default .sidebar-wrapper::-webkit-scrollbar-thumb,
+.negative-default .main-wrapper::-webkit-scrollbar-thumb
+.negative-second main::-webkit-scrollbar-thumb,
+.negative-second .sidebar-wrapper::-webkit-scrollbar-thumb,
+.negative-second .main-wrapper::-webkit-scrollbar-thumb,
+.negative-active main::-webkit-scrollbar-thumb,
+.negative-active .sidebar-wrapper::-webkit-scrollbar-thumb,
+.negative-active .main-wrapper::-webkit-scrollbar-thumb {
+  background-color: white;
+  border: 1px solid white;
+}
+
+
 /**************************************************************************/
 /* generic button styling */
 
@@ -371,6 +463,7 @@ button {
   padding: 3px 5px 1px 5px;
   background-color: var(--cs-main-default-bg);
 
+  background-color: var(--cs-main-default-bg);
   color: var(--cs-main-default);
   border: var(--cs-main-border);
   cursor: grab;
@@ -382,7 +475,6 @@ button {
 button:hover {
   background-color: var(--cs-main-second-bg);
   color: var(--cs-main-second);
-  border: var(--cs-main-border);
 }
 button:active {
   background-color: var(--cs-main-active-bg);
@@ -396,10 +488,31 @@ button.button-activated {
   width: fit-content;
 }
 
+/* negative color theme */
+.negative-default button {
+  background-color: var(--cs-negative-default-bg);
+  color: var(--cs-negative-default);
+  border: var(--cs-negative-border);
+}
+.negative-default button:hover,
+.negative-second button {
+  background-color: var(--cs-negative-second-bg);
+  color: var(--cs-negative-second);
+}
+.negative-default button:active {
+  background-color: var(--cs-negative-active-bg);
+  color: var(--cs-negative-active);
+}
+.negative-default button.button-activated,
+.negative-active button {
+  background-color: var(--cs-negative-active-bg);
+  color: var(--cs-negative-active);
+}
+
 /**************************************************************************/
 /* svg */
 
-button > svg > path  {
+svg > path  {
   stroke: var(--cs-main-default);
   fill: var(--cs-main-default);
   transition: stroke 0.2s, fill .2s;
@@ -412,8 +525,24 @@ button:hover > svg > path {
 button:active > svg > path {
   stroke: var(--cs-main-active-bg);
   fill: var(--cs-main-active-bg);
-
 }
+
+.negative-default svg > path {
+  stroke: var(--cs-negative-default);
+  fill: var(--cs-negative-default);
+}
+.negative-second button > svg > path,
+.negative-default button:hover > svg > path {
+  stroke: var(--cs-negative-second);
+  fill: var(--cs-negative-second);
+  background-color: var(--cs-negative-second-bg);
+}
+.negative-active button > svg > path,
+.negative-default button:active > svg > path {
+  stroke: var(--cs-negative-active-bg);
+  fill: var(--cs-negative-active-bg);
+}
+
 
 /**************************************************************************/
 /* leaflet */
@@ -431,10 +560,10 @@ button:active > svg > path {
   box-shadow: unset !important;
 }
 .leaflet-popup a {
-  color: var(--cs-link-default) !important;
+  color: var(--cs-main-link-default) !important;
 }
 .leaflet-popup a:visited {
-  color: var(--cs-link-visited) !important;
+  color: var(--cs-main-link-visited) !important;
 }
 
 /**************************************************************************/

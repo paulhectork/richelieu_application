@@ -125,10 +125,10 @@ h1 > a {
   transform-origin: bottom left;
 }
 #burger:hover > span {
-  background-color: var(--cs-link-default);
+  background-color: var(--cs-main-link-default);
 }
 .burger-cross > span {
-  background-color: var(--cs-link-default) !important;
+  background-color: var(--cs-main-link-default) !important;
   max-width: 7.5vh;
 }
 .burger-cross > span:nth-child(2) {
@@ -159,7 +159,7 @@ h1 > a {
   font-weight: 500;
 }
 #app-title:hover {
-  color: var(--cs-link-default);
+  color: var(--cs-main-link-default);
 }
 
 @media ( orientation: landscape ) {

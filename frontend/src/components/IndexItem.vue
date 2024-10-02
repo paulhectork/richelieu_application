@@ -51,7 +51,6 @@ const props = defineProps(["item", "display"]);
   grid-template-columns: 100%;
   grid-template-rows: 2fr auto;
   text-align: center;
-
 }
 img {
   object-fit: cover;
@@ -87,5 +86,20 @@ p {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+/* negative theme */
+.negative-default .index-item {
+  border: var(--cs-negative-border);
+}
+.negative-default p {
+  border-top: var(--cs-negative-border);
+}
+.negative-default a {
+  color: var(--cs-negative-default);
+}
+.negative-default .index-item:hover p {
+  background-color: var(--cs-negative-second-bg);
+  color: var(--cs-negative-second);
 }
 </style>

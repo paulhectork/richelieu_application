@@ -2,9 +2,11 @@
      this component is the starting point for the app.
      it manages basic app-wide processes.
 
-     2 importants actions happen here:
+     3 importants actions happen here:
      - log the window orientation in `domStore` (landscape or portrait)
      - handling the showing/hiding of the menu (see below).
+     - switching color theme between light/dark, based on the route's path
+       (see `toThemeNegative` and `maybeChangeTheme`)
 
      interaction between App.vue, TheMenu.vue and TheNavbar.vue:
      how is the menu displayed ?
@@ -33,7 +35,7 @@
     <!-- content + navbar -->
     <div class="main-wrapper fill-parent">
       <!-- main content: pages -->
-      <main>
+      <main :class="themeNegative ? 'negative-default' : 'main-default'">
         <RouterView></RouterView>  <!-- display content that corresponds to a url targeted by `router-link` -->
       </main>
       <!-- sidebar -->
@@ -59,8 +61,19 @@ import TheSidebar from "@components/TheSidebar.vue";
 
 /**********************************************************/
 
-const route = useRoute();
-const menuActive = ref(false);
+const route         = useRoute();
+const menuActive    = ref(false);
+const themeNegative = ref(false);
+
+// if route.path matches anything in this regex, a negative color theme will be set.
+const toThemeNegative = [ /^\/entite-nommee\/qr1/g
+                        , /^\/entite-nommee\/[^\/]+\/qr1/g
+                        , /^\/theme\/qr1/g
+                        , /^\/theme\/[^\/]+\/qr1/g
+                        , /^\/iconographie\/qr1/g
+                        , /^\/institution\/qr1/g
+                        , /^\/lieu\/qr1/g
+                        ];
 
 /**********************************************************/
 
@@ -74,28 +87,36 @@ function calcWindowOrientation() {
   }, 1000)
 }
 
-function updateMenuActive(newState) {
+/**
+ * when changing page, close the menu
+ */
+const updateMenuActive = (newState) =>
   menuActive.value = newState;
-}
 
-// doesn't work: the event is fired multiple times and so the menu is
-// closed and reopened instantly.
-// function closeMenuOnEscape(e) {
-//   if ( menuActive.value === true && e.key === "Enter" ) {
-//     menuActive.value = !menuActive.value;
-//     console.log(e, e.key, menuActive.value);
-//   }
-// }
+/**
+ * if `route.path` matches any of the regexes in `toThemeNegative`,
+ * set `themeNegative` to `true`, which will change the page's color theme.
+ */
+const maybeChangeTheme = () =>
+  themeNegative.value =
+    toThemeNegative.find(rgx => route.path.match(rgx) ) !== undefined;
 
 /**********************************************************/
 
-// on page change, close the menu + scroll `main` back to top of page
+/**
+ * on page change,
+ * - close the menu
+ * - scroll `main` back to top of page
+ * - set a negative theme if necessary
+ */
 watch(route, (newRoute, oldRoute) => {
+  maybeChangeTheme();
   menuActive.value = false;
   $("main").scrollTop(0);
 })
 
 onMounted(() => {
+  maybeChangeTheme();
   calcWindowOrientation();
   addEventListener("resize", calcWindowOrientation);
   // $(document).on("keyup", closeMenuOnEscape)

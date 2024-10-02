@@ -39,7 +39,7 @@ function scroller(direction) {
   const allowed = ["up", "down"];
 
   if ( !allowed.includes(direction) ) {
-    throw new Error(`DataTableComponent.scroller: 'direction' must be one of '${allowed}', got '${direction}'`)
+    throw new Error(`UiUpDownScroller.scroller: 'direction' must be one of '${allowed}', got '${direction}'`)
   } else if (direction === "up") {
     window.scrollTo({ top:document.querySelector("body")
                                   .getBoundingClientRect()

@@ -116,6 +116,7 @@ onMounted(() => {
 }
 .title-second {
   color: var(--cs-main-alt-fontcolor);
+  text-wrap: nowrap;
 }
 .resource-sub {
   font-size: max(min(2.3vh, 2.3vw), 70%);

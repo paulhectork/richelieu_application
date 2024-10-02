@@ -199,6 +199,10 @@ onMounted(() => {
   }
 }
 
+.negative-default .mpm-wrapper {
+  border: var(--cs-negative-border);
+}
+
 /***********************************************/
 
 .mpm-left-wrapper {
@@ -213,11 +217,6 @@ onMounted(() => {
   width: 100%;
   border-bottom: var(--cs-main-border);
   border-top: var(--cs-main-border);
-}
-@media ( orientation:landscape ) {
-  #mpm-map {
-    border-top: none;
-  }
 }
 .mpm-address-wrapper {
   padding: 5px;
@@ -234,6 +233,19 @@ onMounted(() => {
 }
 .source-address {
   font-weight: bold;
+}
+
+.negative-default .mpm-left-wrapper {
+  border-right: var(--cs-negative-border);
+}
+.negative-default #mpm-map {
+  border-bottom: var(--cs-negative-border);
+  border-top: var(--cs-negative-border);
+}
+@media ( orientation:landscape ) {
+  #mpm-map, .negative-default #mpm-map {
+    border-top: none;
+  }
 }
 
 /***********************************************/

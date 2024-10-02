@@ -42,6 +42,17 @@
   border-radius: 50%;
 }
 
+.negative-default .loader,
+.negative-second .loader,
+.negative-active .loader {
+  border: var(--cs-negative-border);
+}
+.negative-default .loader:after,
+.negative-second .loader:after,
+.negative-active .loader:after {
+  background: var(--cs-negative-default);
+}
+
 @keyframes rotation {
   0% {
     transform: rotate(0deg);

@@ -159,6 +159,7 @@ onMounted(() => {
 <style scoped>
 h1 {
   font-family: var(--cs-font-sans-serif-accentuate);
+  color: var(--cs-negative-default);
   margin: 0;
   font-size: 20px;
 }

@@ -215,7 +215,9 @@ onUpdated(() => {
   grid-template-columns: 50% 50%;
   border-top: var(--cs-main-border);
 }
-
+.negative-default .viewer-cartel-container {
+  border-top: var(--cs-negative-border);
+}
 @media ( orientation:portrait ) {
   .viewer-cartel-container {
     grid-template-rows: 70vh 2fr;
@@ -224,6 +226,7 @@ onUpdated(() => {
 }
 
 /*************************************/
+
 .viewer-container {
   display: grid;
   grid-template-columns: 100%;
@@ -238,6 +241,9 @@ onUpdated(() => {
   justify-content: space-around;
   border-top: var(--cs-main-border);
 }
+.negative-default .viewer-selector {
+  border-top: var(--cs-negative-border);
+}
 .viewer-selector > button {
   width: 50%;
 }
@@ -247,7 +253,9 @@ onUpdated(() => {
 .cartel-container {
   border-left: var(--cs-main-border);
 }
-
+.negative-default .cartel-container {
+  border-left: var(--cs-negative-border);
+}
 table {
   height: 100%;
 }
@@ -268,5 +276,8 @@ td:first-child {
 }
 .external-links > a:last-child {
   border-left: var(--cs-main-border);
+}
+.negative-default .external-links > a:last-child {
+  border-left: var(--cs-negative-border);
 }
 </style>
