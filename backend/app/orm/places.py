@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from sqlalchemy.dialects import postgresql as psql
 from sqlalchemy import ForeignKey, Text
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, func
 import typing as t
 import intervals
 
@@ -95,34 +95,37 @@ class Place(db.Model):
 
         return [ a.serialize_lite() for a in address_objs ]
 
-    # def serialize_lite(self) -> t.Dict:
-    #     return { "id_uuid"  : self.id_uuid,      # str
-    #              "vector"   : self.vector,       # t.Dict
-    #              "centroid" : self.centroid,     # t.Dict
-    #     }
+    def get_iconography_count(self) -> int:
+        """returns  the number of iconography resources linked to the current place"""
+        return db.session.execute(
+            select( func.count(R_IconographyPlace.id) )
+            .filter( R_IconographyPlace.id_place == self.id )
+        ).all()[0][0]
 
     def serialize_lite(self) -> t.Dict:
         """object representation of `Place` for the Place index page"""
-        return { "id_uuid"  : self.id_uuid,               # str
-                 "date"     : int4range2list(self.date),  # t.List[int]
-                 "filename" : self.get_filename_index(),  # t.List[t.Dict]
-                 "address"  : self.get_address_index(),   # t.List[t.Dict]
-                 "vector"   : self.vector,                # t.Dict
-                 "centroid" : self.centroid               # t.Dict
+        return { "id_uuid"           : self.id_uuid,                # str
+                 "date"              : int4range2list(self.date),   # t.List[int]
+                 "filename"          : self.get_filename_index(),   # t.List[t.Dict]
+                 "address"           : self.get_address_index(),    # t.List[t.Dict]
+                 "vector"            : self.vector,                 # t.Dict
+                 "centroid"          : self.centroid,               # t.Dict
+                 "iconography_count" : self.get_iconography_count() # int
         }
 
     def serialize_full(self) -> t.Dict:
-        return { "id_uuid"       : self.id_uuid,               # str
-                 "id_richelieu"  : self.id_richelieu,          # str
-                 "date"          : int4range2list(self.date),  # t.List[int]
-                 "centroid"      : self.centroid,              # t.Dict
-                 "vector"        : self.vector,                # t.Dict
-                 "vector_source" : self.vector_source,         # str
+        return { "id_uuid"           : self.id_uuid,                  # str
+                 "id_richelieu"      : self.id_richelieu,             # str
+                 "date"              : int4range2list(self.date),     # t.List[int]
+                 "centroid"          : self.centroid,                 # t.Dict
+                 "vector"            : self.vector,                   # t.Dict
+                 "vector_source"     : self.vector_source,            # str
+                 "iconography_count" : self.get_iconography_count(),  # int
 
-                 "place_group"   : self.get_place_group(),     # t.List[t.Dict]
-                 "address"       : self.get_address(),         # t.List[str]
-                 "iconography"   : self.get_iconography(),     # t.List[t.Dict]
-                 "cartography"   : self.get_cartography()      # t.List[t.Dict]
+                 "place_group"       : self.get_place_group(),     # t.List[t.Dict]
+                 "address"           : self.get_address(),         # t.List[str]
+                 "iconography"       : self.get_iconography(),     # t.List[t.Dict]
+                 "cartography"       : self.get_cartography()      # t.List[t.Dict]
         }
 
 
@@ -220,6 +223,6 @@ class Address(db.Model):
 
 
 from .data_sources import Cartography
-from .relationships import R_AddressPlace, R_CartographyPlace
+from .relationships import R_AddressPlace, R_CartographyPlace, R_IconographyPlace
 
 

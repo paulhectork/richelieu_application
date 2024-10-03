@@ -8,8 +8,13 @@ import typing as t
 # **************************************************
 
 
-GEOJSON_GEOMETRY_TYPES = [ "Point", "LineString", "Polygon", "MultiPoint"
-                         , "MultiLineString", "MultiPolygon" ]
+GEOJSON_GEOMETRY_TYPES = [ "Point"
+                         , "LineString"
+                         , "Polygon"
+                         , "MultiPoint"
+                         , "MultiLineString"
+                         , "MultiPolygon"
+                         ]
 
 
 def geometry_to_feature(geometry:t.Dict, custom_properties:t.Dict=None) -> t.Dict:

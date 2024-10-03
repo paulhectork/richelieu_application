@@ -165,7 +165,7 @@ def index_named_entity():
         when category is None (returning an index of categories)
         and preview is true, we'll also return a few named entities as
         an example
-"""
+    """
     category_name = request.args.get("category", None)
     preview       = request.args.get("preview", None)
     if not category_name:
@@ -201,13 +201,13 @@ def main_named_entity_name(id_uuid:str):
 # cartography
 # *************************************************************************
 
-@app.route("/i/cartography")
-def index_cartography():
-    """
-    get all `cartography` ressources.
-    """
-    r = db.session.execute(Cartography.query)
-    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
+# @app.route("/i/cartography")
+# def index_cartography():
+#     """
+#     get all `cartography` ressources.
+#     """
+#     r = db.session.execute(Cartography.query)
+#     return jsonify([ _[0].serialize_lite() for _ in r.all() ])
 
 
 # *************************************************************************
@@ -291,7 +291,7 @@ def index_place():
     get all `place` ressources
     """
     r = db.session.execute(Place.query)
-    return jsonify([  _[0].serialize_lite() for _ in r.all() ])
+    return jsonify([ _[0].serialize_lite() for _ in r.all() ])
 
 @app.route("/i/place/<string:id_uuid>")
 def place_main(id_uuid:str):
@@ -330,15 +330,36 @@ def place_address(id_uuid):
 @app.route("/i/directory")
 def index_directory():
     """
-    get all directory ressources
+    get all directory ressources. currently unused (?)
     """
     r = db.session.execute(Directory.query)
     return jsonify([ _[0].serialize_lite() for _ in r.all() ])
 
 
 # *************************************************************************
+# CartographyView.vue routes (frontend cartographic interface)
+# *************************************************************************
+
+@app.route("/i/cartography-main/places")
+def cartography_places():
+    """
+    get all places and return them as a geojson FeatureCollection
+    """
+    places = [ p[0].serialize_lite()
+               for p in db.session.execute( Place.query ).all() ]
+    places = [
+        geometry_to_feature( geometry=p["vector"]
+                           , custom_properties={ "iconography_count": p["iconography_count"],
+                                                 "id_uuid": p["id_uuid"] })
+               for p in places ]
+    places = featurelist_to_featurecollection(places)
+    return jsonify(places)
+
+
+# *************************************************************************
 # advanced search
 # *************************************************************************
+
 @app.route("/i/search/iconography", methods=["GET", "POST"])
 def advanced_search_iconography():
     """
