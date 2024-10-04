@@ -54,7 +54,7 @@ import { onMounted, ref, computed } from "vue";
 import L from "leaflet";
 import $ from "jquery";
 
-import { globalDefineMap } from "@utils/leafletUtils.js";
+import { globalDefineMap } from "@utils/leaflet.js";
 import { cartographySourceMapper, cartographySourcePriority } from "@globals";
 import { sortCartographyBySource, sortAddressBySource } from "@utils/array.js";
 import { urlToCartographyFile } from "@utils/url.js";

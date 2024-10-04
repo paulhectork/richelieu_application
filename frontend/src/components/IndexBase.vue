@@ -29,6 +29,9 @@
           {...}
         ]
         ```
+        itemsPerRow: int|undefined
+          the maximum number of items to display per row. so far it's only used
+          by `CartographyPlaceInfo`
 -->
 
 <template>
@@ -41,7 +44,11 @@
                @input="textFilter"
       ></FormKit>
     </div>
-    <div class="index-inner-wrapper animate__animated animate__slideInLeft">
+    <div class="index-inner-wrapper animate__animated animate__slideInLeft"
+         :style="{ 'grid-template-columns': props.itemsPerRow
+                                            ? `repeat(${props.itemsPerRow}, calc(100%/${props.itemsPerRow})`
+                                            : 'auto' }"
+    >
       <IndexItem v-for="d in dataFilter"
                  :item="d"
                  :display="display"
@@ -57,9 +64,11 @@ import IndexItem from "@components/IndexItem.vue";
 
 /*******************************************************/
 
-const props = defineProps([ "display"  // which component to use for rendering a component: `resource` => `IndexItem.vue`, `concept` => `IndexItem.vue`
-                          , "data" ])  // the data to display.
-const dataFull   = ref([]);    // all items of the index
+const props = defineProps([ "display"      // which component to use for rendering a component: `resource` => `IndexItem.vue`, `concept` => `IndexItem.vue`
+                          , "data"         // data to display
+                          , "itemsPerRow"  // (optional) number of items to display for each row
+                          ])  // the data to display.
+const dataFull   = ref([]);  // all items of the index
 const dataFilter = ref([]);  // index items filtered in `.index-filter-wrapper`
 
 /*******************************************************/

@@ -23,9 +23,9 @@ Il faut avoir un terminal par application (un pour le back, un pour le front
 et un pour `staticserver` si on s'en sert).
 
 ```bash
-# utilisation en local
-cd staticserver && python main.py                      # terminal 1
-cd backend && python main.py -m dev                    # terminal 2
+# utilisation en local, avec des environnements python nommés `env/`
+cd staticserver  && source env/bin/activate && python main.py                      # terminal 1
+cd backend && source env/bin/activate && python main.py -m dev                    # terminal 2
 cd frontend && npm run dev -- --mode backend-local     # terminal 3
 ```
 

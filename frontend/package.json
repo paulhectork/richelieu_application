@@ -12,6 +12,7 @@
   "dependencies": {
     "animate.css": "^4.1.1",
     "axios": "^1.6.2",
+    "chroma-js": "^3.1.1",
     "datatables.net-dt": "^1.13.8",
     "futil-js": "^1.76.2",
     "jquery": "^3.7.1",
@@ -28,7 +29,6 @@
     "@types/jquery": "^3.5.30",
     "@vitejs/plugin-vue": "^4.4.0",
     "@vue/test-utils": "^2.4.1",
-    "color": "^4.2.3",
     "eslint": "^8.49.0",
     "eslint-plugin-vue": "^9.17.0",
     "jsdom": "^22.1.0",

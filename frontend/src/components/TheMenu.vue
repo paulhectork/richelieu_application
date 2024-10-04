@@ -115,24 +115,10 @@ import { domStore } from "@stores/dom";
 
 import $ from "jquery";
 import _ from "lodash";
-import Color from "color";
+
+import { randomColorDark, randomColorLight } from "@utils/colors";
 
 /***************************************************/
-
-/**
- * functions to get random colors.
- * - Math.random() > 0.5 ? ... allows to chose between two different gradiens for variety
- * - toFixed(1) rounds to .1 => we yield a random color from
- *     a discrete scale made of 10 steps (0..0.9).
- */
-const randomColorLight = () =>
-  Math.random() > 0.5
-  ? new Color("#8dc6af").mix(new Color("#67e5cc"), Math.random().toFixed(1))
-  : new Color("#67e57e").mix(new Color("#67e57e"), Math.random().toFixed(1));
-const randomColorDark = () =>
-  Math.random() > 0.5
-  ? new Color("#700045").mix(new Color("#510708"), Math.random().toFixed(1))
-  : new Color("#510b07").mix(new Color("#030191"), Math.random().toFixed(1));
 
 /**************************************************/
 

@@ -20,7 +20,7 @@ import { ref, onMounted } from "vue";
 
 import $ from "jquery";
 
-import { globalDefineMap } from "@utils/leafletUtils";
+import { globalDefineMap } from "@utils/leaflet";
 import { urlToFrontendPlace } from "@utils/url";
 
 /******************************************************/

@@ -71,7 +71,7 @@ import "leaflet/dist/leaflet.css";
 
 import UiButtonLink from "@components/UiButtonLink.vue";
 import UiButtonMap from "@components/UiButtonMap.vue";
-import { globalDefineMap } from "@utils/leafletUtils.js";
+import { globalDefineMap } from "@utils/leaflet.js";
 import { clickOrTouchEvent } from "@globals";
 import { capitalizeFirstChar } from "@utils/strings";
 

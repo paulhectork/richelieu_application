@@ -355,7 +355,6 @@ def cartography_places():
     places = featurelist_to_featurecollection(places)
     return jsonify(places)
 
-
 # *************************************************************************
 # advanced search
 # *************************************************************************
