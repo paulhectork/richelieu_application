@@ -45,9 +45,7 @@
       ></FormKit>
     </div>
     <div class="index-inner-wrapper animate__animated animate__slideInLeft"
-         :style="{ 'grid-template-columns': props.itemsPerRow
-                                            ? `repeat(${props.itemsPerRow}, calc(100%/${props.itemsPerRow})`
-                                            : 'auto' }"
+         :style="computedStyle"
     >
       <IndexItem v-for="d in dataFilter"
                  :item="d"
@@ -58,7 +56,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 
 import IndexItem from "@components/IndexItem.vue";
 
@@ -70,6 +68,15 @@ const props = defineProps([ "display"      // which component to use for renderi
                           ])  // the data to display.
 const dataFull   = ref([]);  // all items of the index
 const dataFilter = ref([]);  // index items filtered in `.index-filter-wrapper`
+
+/**
+ * if there is a props.itemsPerRow, set the grid-template-columns.
+ * else, just go with what's aldready defined in the css
+ */
+const computedStyle = computed(() =>
+  (props.itemsPerRow)
+  ? `grid-template-columns: repeat(${props.itemsPerRow}, calc(100%/${props.itemsPerRow})`
+  : '')
 
 /*******************************************************/
 

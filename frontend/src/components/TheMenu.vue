@@ -32,7 +32,7 @@
             <li class="main-default">
               <RouterLink to="/institution"
                           class="menu-text"
-              >Institution</RouterLink>
+              >Institutions</RouterLink>
             </li>
           </ul>
         </div>
