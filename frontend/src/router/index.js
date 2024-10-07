@@ -112,9 +112,10 @@ const router = createRouter({
       path: '/article/:articleName',
       component: () => import("@views/ArticleMainView.vue")
     }, {
-      path: '/table-viewer',
-      component: () => import("@views/TableViewerView.vue")
-    }, {
+    //}, {
+    //  path: '/table-viewer',
+    //  component: () => import("@views/TableViewerView.vue")
+    //}, {
       path: '/documentation/methodologie',
       component: () => import("@views/DocumentationMethodologieView.vue")
     }, {
