@@ -14,7 +14,11 @@
   <div class="cartography-outer-wrapper"
        :class="{ 'right-visible': displayRight }"
   >
-    <div class="cartography-controller-wrapper"></div>
+    <div class="cartography-controller-outer-wrapper"
+         :class="{ 'cartography-controller-visible' : displayLeft }"
+    ><!--<CartographyController @close-cartography-controller="closeCartographyController"
+                            @filter=""
+    ></CartographyController>--></div>
 
     <div class="cartography-wrapper">
       <div id="map-main"></div>
@@ -25,7 +29,7 @@
          v-if="placeIdUuid !== undefined"
     >
       <CartographyPlaceInfo :placeIdUuid="placeIdUuid"
-                            @close="closeCartographyPlaceInfo"
+                            @close-place-info="closeCartographyPlaceInfo"
       ></CartographyPlaceInfo>
     </div>
     <!--</Transition>-->
@@ -39,8 +43,10 @@ import { onMounted, ref, watch } from "vue";
 
 import axios from "axios";
 import L from "leaflet";
+import $ from "jquery";
 
 import CartographyPlaceInfo from "@components/CartographyPlaceInfo.vue";
+import CartographyController from "@components/CartographyController.vue";
 
 import { globalDefineMap } from "@utils/leaflet";
 import { colorScaleBlue, colorScaleRed } from "@utils/colors";
@@ -50,10 +56,12 @@ import { colorScaleBlue, colorScaleRed } from "@utils/colors";
 const map          = ref();  // defined in onMounted
 const places       = ref([]);
 const placeIdUuid  = ref();  // when this is set, an indx of iconography resources of the place with place.id_uuid == placeIdUuid will be displayed
+const displayLeft  = ref(false);  // when true, the left block (controller) will be displayed
 const displayRight = ref(false);  // when true, the right block will be displayed
 const loadState    = ref("loading");  // loading/loaded/error
 
-const transDur     = 500;  // transition duration
+const transDur     = 500;  // transition duration in JS
+const transDurCss  = ".5s";  // transition duration in CSS
 
 // [ [min,max], color ]
 const colorClasses = [ [ [321, Infinity], colorScaleRed(0/7) ] // marina's color scale: '#000000'
@@ -69,15 +77,20 @@ const colorClasses = [ [ [321, Infinity], colorScaleRed(0/7) ] // marina's color
 /************************************************************/
 
 /**
- * when receiving a `close` event from CartographyPlaceInfo,
+ * when receiving a `closePlaceInfo` event from CartographyPlaceInfo,
  * hide the `.cartography-place-wrapper` before unmounting
  * the `CartographyPlaceInfo`. the setTimeout allows to be
  * sure that `.cartography-place-wrapper` has been hidden before
  * unmounting
  */
 function closeCartographyPlaceInfo() {
-  displayRight.value = false;
-  setTimeout(() => { placeIdUuid.value = undefined }, 500);
+  displayRight.value = false;  // trigger the animation slideout of the sidebar
+  setTimeout(() => { placeIdUuid.value = undefined }, transDur);  // remove the sidebar
+}
+
+function closeCartographyController() {
+  displayLeft.value = false;
+  console.log("closing");
 }
 
 function getData() {
@@ -88,8 +101,65 @@ function getData() {
   ])
 }
 
-function addPlacesToMap(_map, _places) {
+/**
+ * add 2 controls: one to display the `CartographyController` component,
+ * the other to display the presentation.
+ */
+function addControls(_map) {
+  const ctrlOpener = new L.Control({ position: "bottomleft" }),
+        presOpener = new L.Control({ position: "bottomleft" });
+  // create the controls and add a click listener
+  ctrlOpener.onAdd = function () {
+    this._div = L.DomUtil.create("div", "custom-controller");
+    this._div.innerHTML = `<button>ctrl</button>`;
+    L.DomEvent.on(this._div, "click", () => { displayLeft.value = true }, this);
+    return this._div;
+  }
+  presOpener.onAdd = function () {
+    this._div = L.DomUtil.create("div", "custom-controller");
+    this._div.innerHTML = `<button>pres</button>`;
+    return this._div
+  }
+  // when removing the elements, remove the event listeners
+  ctrlOpener.onRemove = function() {
+    L.DomEvent.off(this._div, "click", context=this); }
+  presOpener.onRemove = function() {
+    L.DomEvent.off(this._div, "click", context=this); }
 
+  ctrlOpener.addTo(_map);
+  presOpener.addTo(_map);
+  return _map;
+}
+
+/**
+ * create an infobox and add it to `map`. `info.update()` will
+ * display an explanative text.
+ */
+function addInfo(_map) {
+  const info = L.control();
+  info.onAdd = function () {
+    this._div = L.DomUtil.create("div", "infobox");
+    this.update();
+    return this._div;
+  }
+  info.update = function (props) {
+    this._div.innerHTML =
+      `<h4>Nombre de ressources iconographiques associées&nbsp:</h4>
+      ${props && props.iconography_count
+        ? props.iconography_count
+        : "Passer la souris au dessus d'une parcelle"}`;
+  }
+  info.addTo(_map);
+  return [ _map, info ];
+}
+
+/**
+ * add the places as a geoJson to the map
+ */
+function addPlaces(_map, _places) {
+  let info;
+  [ _map, info ] = addInfo(_map);
+  // _map = addControls(_map);
 
   const gjPlaces = L.geoJSON(places.value, {
     style: (feature) => {
@@ -106,10 +176,13 @@ function addPlacesToMap(_map, _places) {
       return {
         fillColor: colorClasses.find( (c) => comparator(c[0], iconographyCount) )[1],  // if iconographyCount is in a range defined in `colorClasses`, select the color
         fillOpacity: .5,
+        color: "black",
+        weight: 1
       }
     },
 
     onEachFeature: (feature, layer) => {
+      // on click, change the opacity of the layer and display a sidebar
       layer.on("click", (e) => {
         // set the data, which will trigger mounting/display of CartographyPlaceInfo
         placeIdUuid.value = undefined;
@@ -120,16 +193,20 @@ function addPlacesToMap(_map, _places) {
         layer.setStyle({ fillOpacity:1 });
         // zoom to the clicked layer
         //TODO fix yank here ?
-        setTimeout(() => {        // wait for the size animation to complete...
-          _map.fitBounds(layer.getBounds())
-        }, transDur);
+        setTimeout(() => _map.fitBounds(layer.getBounds()), transDur);  // wait for the size animation to complete...
       });
-      // layer.on("mouseover", (e) =>
-      //   layer.setStyle({ color: layer.options.fillColor })  // works sometimes but then bugs
-      // );
-      // layer.on("mouseout", (e) => {
-      //   layer.resetStyle()}  // definitely doesn't work
-      // )
+
+      // on hover, change the color and weight of the border
+      layer.on("mouseover", (e) => {
+        if ( layer.feature.geometry.type !== "Point" )  // style changes don't work on markers (geoJson "Point")
+          layer.setStyle({ color: layer.options.fillColor, weight: 3 })
+        info.update(layer.feature.properties);
+      });
+      layer.on("mouseout", (e) => {
+        if ( layer.feature.geometry.type !== "Point" )
+          layer.setStyle({ color: "black", weight: 1 });
+        info.update();
+      })
     }
   });
   gjPlaces.addTo(_map);
@@ -160,27 +237,25 @@ watch(placeIdUuid, (newId, oldId) =>
 onMounted(() => {
   map.value = globalDefineMap("map-main");  // synchronous
   getData().then(() => {
-    map.value = addPlacesToMap( map.value, places.value ) });
+    map.value = addPlaces( map.value, places.value ) });
 })
 </script>
 
 
 <style scoped>
 .cartography-outer-wrapper {
-  height: calc(100vh - var(--cs-navbar-height));
+  height: 100%;
   width: 100%;
 
   display: grid;
   grid-template-columns: 30% 100% 30%;
 
   transform: translateX(-30%);
-  transition: grid-template-columns v-bind("transDur");
+  transition: grid-template-columns v-bind("transDurCss");
 }
-
 .cartography-outer-wrapper.right-visible {
   grid-template-columns: 30% 70% 30%;
 }
-
 .cartography-place-wrapper {
   z-index: 400;
   height: 100%;
@@ -190,7 +265,53 @@ onMounted(() => {
 /**************************************/
 
 #map-main {
-  height: calc(100vh - var(--cs-navbar-height));
+  height: 100%;
   width: 100%;
 }
+#map-main :deep(.infobox) {
+  padding: 6px 8px;
+  color: black;
+  font-family: var(--cs-font-sans-serif);
+  background-color: var(--cs-main-default-bg);
+  border: var(--cs-main-border);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  z-index: 999;
+}
+#map-main :deep(.leaflet-control) {
+  border-radius: 0;
+  border: var(--cs-main-border);
+}
+#map-main :deep(.infobox h4) {
+  margin: 0;
+  font-family: var(--cs-font-serif);
+  font-variant-caps: small-caps;
+  color: #777;
+  font-size: 120%;
+}
+#map-main :deep(.leaflet-bottom.leaflet-left) {
+  display: flex;
+  flex-direction: row;
+}
+#map-main :deep(.leaflet-bottom.leaflet-left .leaflet-control) {
+  border: none;
+}
+#map-main :deep(.leaflet-bottom.leaflet-left button) {
+  height: max(4vh, 50px);
+  width: max(4vh, 50px) ;
+}
+
+/**************************************/
+
+.cartography-controller-outer-wrapper {
+  z-index: 1001;
+  background-color: var(--cs-main-default-bg);
+  color: var(--cs-main-default);
+  border-right: var(--cs-main-border);
+}
+.cartography-controller-visible {
+  transform: translateX(100%);
+  height: 100%;
+  width: 100%;
+}
+
 </style>

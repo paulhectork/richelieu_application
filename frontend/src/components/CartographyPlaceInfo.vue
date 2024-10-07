@@ -14,8 +14,8 @@
        :id="`cpi-${ placeIdUuid }`"
   >  <!-- cpi = CartographyPlaceInfo -->
     <div class="cpi-closer-wrapper">
-      <UiButtonCross @click="emit('close')"
-                     @touchend="emit('close')"
+      <UiButtonCross @click="emit('closePlaceInfo')"
+                     @touchend="emit('closePlaceInfo')"
       ></UiButtonCross>
     </div>
     <div class="cpi-inner-wrapper">
@@ -69,7 +69,7 @@ import { capitalizeFirstChar } from "@utils/strings";
 /***************************************/
 
 const props                 = defineProps(["placeIdUuid"]);
-const emit                  = defineEmits(["close"]);
+const emit                  = defineEmits(["closePlaceInfo"]);
 
 const placeIdUuid           = ref("");
 const place                 = ref();
@@ -83,7 +83,7 @@ const loadStatePlace        = ref("loading");  // loading/loaded/error
 /**
  * emit an event to close this component on pressing `keydown.escape`
  */
-const escHandler = (e) => e.key === "Escape" ? emit("close") : "";
+const escHandler = (e) => e.key === "Escape" ? emit("closePlaceInfo") : "";
 
 /**
  * UNUSED: it also closes the component when dragging the map around.
@@ -105,23 +105,21 @@ function resetData() {
 }
 
 function getData() {
-  return Promise.all([
-    axios.get(new URL(`/i/place/${placeIdUuid.value}`, __API_URL__))
-    .then(r => r.data[0])
-    .then(data => {
-      place.value = data;
-      iconographyDataFilter.value = indexDataFormatterIconography(place.value.iconography);
-      loadStatePlace.value = "loaded";
-    })
-    .catch(e => { console.error(e); loadStatePlace.value = "error" })
-    ,
-    axios.get(new URL(`/i/place-address/${placeIdUuid.value}`, __API_URL__))
-    .then(r => r.data)
-    .then(sortAddressBySource)
-    .then(r => { address.value = r[0];
-                 loadStateAddress.value = "loaded" })
-    .catch(e => { console.error(e); loadStateAddress.value = "error" })
-  ])
+  axios.get(new URL(`/i/place/${placeIdUuid.value}`, __API_URL__))
+  .then(r => r.data[0])
+  .then(data => {
+    place.value = data;
+    iconographyDataFilter.value = indexDataFormatterIconography(place.value.iconography);
+    loadStatePlace.value = "loaded";
+  })
+  .catch(e => { console.error(e); loadStatePlace.value = "error" });
+
+  axios.get(new URL(`/i/place-address/${placeIdUuid.value}`, __API_URL__))
+  .then(r => r.data)
+  .then(sortAddressBySource)
+  .then(r => { address.value = r[0];
+               loadStateAddress.value = "loaded" })
+  .catch(e => { console.error(e); loadStateAddress.value = "error" })
 }
 
 /****************************************/
