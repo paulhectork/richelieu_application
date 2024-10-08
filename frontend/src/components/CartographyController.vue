@@ -9,6 +9,57 @@
 
     <div class="cc-inner-wrapper">
       <h2>Filtrer les données</h2>
+
+      <div class="cc-form-wrapper">
+        <FormKit type="form"
+                 name="cartographyController"
+                 :actions="true"
+                 id="cartography-controller"
+                 submit-label="Lancer la recherche"
+                 :submit-attrs="{ inputClass   : 'form-submit-input',
+                                  wrapperClass : 'form-submit-wrapper',
+                                  outerClass   : 'form-submit-outer' }"
+            @submit="''/*onSubmit*/"
+        >
+          <FormKit type="fkSelect"
+                   placeholder="Sélectionner une addresse"
+                   name="address"
+                   label="Addresse"
+                   help="Sélectionner une ou plusieurs addresses"
+                   :options="places.features.map(x => {
+                    return { label : x.properties.address[0].address,
+                             value : x.properties.address[0].id_uuid  }})"
+                   @input="console.log('filterAddress')"
+          ></FormKit>
+
+          <FormKit type="fkSlider"
+                   outer-class="fk-range"
+                   name="iconography-count"
+                   id="iconography-count"
+                   label="Nombre de ressources iconographiques"
+                   help="Filtrer par nombre de ressources iconographiques"
+                   number="integer"
+                   :step="1"
+                   :minVal="Math.min.apply(null,
+                     places.features.map(x => x.properties.iconography_count))"
+                   :maxVal="Math.max.apply(null,
+                     places.features.map(x => x.properties.iconography_count))"
+                   @input="console.log('filterIconographyCount')"
+          ></FormKit>
+
+          <FormKit v-if="cartographySources.length"
+                   type="fkSelect"
+                   name="cartography-source"
+                   id="cartography-source"
+                   label="Changer de source cartographique"
+                   help="Sélectionner une autre source cartographique"
+                   :options="cartographySources"
+                   :multiple="false"
+                   @input="console.log('filterCartographySource')"
+          ></FormKit>
+
+        </FormKit>
+      </div>
     </div>
 
   </div>
@@ -18,26 +69,48 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from "vue";
 
+import axios from "axios";
 import $ from "jquery";
 
 import UiButtonCross from "@components/UiButtonCross.vue";
 
+import { cartographySourceMapper } from "@globals";
+import { sortCartographyBySource } from "@utils/array";
+
 /***************************************/
 
-const emit = defineEmits(["closeCartographyController", "filter"]);
+const emit               = defineEmits(["closeCartographyController"
+                                       , "filterAddress"
+                                       , "filterIconographyCount"
+                                       , "filterCartographySource" ]);
+const props              = defineProps(["places"]);
+const places             = props.places;  // the whole place geoJson
+const cartographySources = ref([]);  // [{ value: "...", label: "..." }]
 
 /***************************************/
 
 /**
  * emit an event to close this component on pressing `keydown.escape`
  */
- const escHandler = (e) => e.key === "Escape" ? emit("closeCartographyController") : "";
+const escHandler = (e) => e.key === "Escape" ? emit("closeCartographyController") : "";
+
+function getData() {
+  axios.get(new URL("/i/cartography-main/cartography-sources", __API_URL__))
+  .then(r => r.data)
+  .then(data => sortCartographyBySource(data))
+  .then(data => data.map(x => {
+    return { label: cartographySourceMapper[x], value: x }}))
+  .then(data => { cartographySources.value = data });
+}
+
+const onSubmit = () => {};
 
 /***************************************/
 
 onMounted(() => {
-
+  getData();
   $(document).on("keydown", escHandler);
+
 })
 onUnmounted(() => {
   $(document).off("keydown", escHandler);
@@ -65,5 +138,13 @@ onUnmounted(() => {
 }
 h2 {
   margin: 0 auto;
+}
+
+/**************************************/
+
+.fk-range :deep(.formkit-inner) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 </style>

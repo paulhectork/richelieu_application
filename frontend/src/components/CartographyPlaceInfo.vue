@@ -1,4 +1,4 @@
-<!-- CartographyPlaceInfo.vue
+w<!-- CartographyPlaceInfo.vue
 
      information on a place, displayed in `CartographyView.vue`,
      when clicking on a place feature on the map, in a sidebar.

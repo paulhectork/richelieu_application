@@ -15,6 +15,8 @@
                       with a `value` key containing the form data and a
                       `label` key containing the displayed data.
                       (of course, `label` and `value` can be the same)
+     * `multiple`   : (bool) : if `true`, then it's a multi-option select.
+                      else, single option. defaults to true
 
      style notes:
      according to the docs, it's best to set sizes
@@ -73,29 +75,44 @@ const optionsArray = props.context.options || [];       // array of all the poss
 const placeholder  = props.context.placeholder != null
                      ? props.context.placeholder
                      : "Sélectionner une valeur";
-
-/****************************************/
+const multiple     = [ true, false, 0, 1 ].includes(props.context.multiple)  // is it a boolean ?
+                     ? props.context.multiple
+                     : true
+console.log(props.context.multiple, multiple);
 
 /****************************************/
 
 onMounted(() => {
   $(`#${selectId}`).select2({
-    multiple: true,
+    multiple: multiple,
     placeholder: placeholder,
-    data: optionsArray.map((o, idx) => { return { id: `${selectId}-data-${idx}`,
-                                                  value: o.value,
-                                                  text: o.label }
+    data: optionsArray.map((o, idx) => {
+      return { id    : `${selectId}-data-${idx}`,
+               value : o.value,
+               text  : o.label }
     }),
     // propagate the selected values to FormKit.
     // triggered when adding / removing an element from the selection
     // see: https://formkit.com/essentials/architecture#setting-values
     // and: https://select2.org/programmatic-control/retrieving-selections#using-the-data-method
+    //
+    // `templateResult` and `templateSelection` return `data.text`
+    // enclosed in HTML: this is to ensure that HTML markup inside
+    // options will be properly displayed.
+    // this is will not affect what is sent to the formkit form.
     templateSelection: (data, container) => {
-      selectNode.input( $(`#${selectId}`).select2("data")           // $(`#${selectId}`).select2("data") returns an array of selected values
-                                         .filter(x => !x.disabled)  // placeholder is disabled => remove it
-                                         .map(x => x.value) )       // retrieve the @value attribute of the selected options
-      return data.text;
-    }
+
+      // ERROR ON SINGLE INPUT SELECT.
+      // SEE: https://select2.org/programmatic-control/retrieving-selections#using-the-data-method
+      selectNode.input(           // .input() will send data to the FormKit form
+        $(`#${selectId}`)
+        .select2("data")           // $(`#${selectId}`).select2("data") returns an array of selected values
+        .filter(x => !x.disabled)  // placeholder is disabled => remove it
+        .map(x => x.value)        // retrieve the @value attribute of the selected options
+      )
+      return $(`<span>${data.text}</span>`);
+    },
+    templateResult: (data) => $(`<span>${data.text}</span>`)
   });
 })
 </script>

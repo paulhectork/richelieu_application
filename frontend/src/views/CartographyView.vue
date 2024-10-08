@@ -16,9 +16,11 @@
   >
     <div class="cartography-controller-outer-wrapper"
          :class="{ 'cartography-controller-visible' : displayLeft }"
-    ><!--<CartographyController @close-cartography-controller="closeCartographyController"
+    ><CartographyController @close-cartography-controller="closeCartographyController"
                             @filter=""
-    ></CartographyController>--></div>
+                            :places="places"
+                            v-if="displayLeft"
+    ></CartographyController></div>
 
     <div class="cartography-wrapper">
       <div id="map-main"></div>
@@ -159,7 +161,7 @@ function addInfo(_map) {
 function addPlaces(_map, _places) {
   let info;
   [ _map, info ] = addInfo(_map);
-  // _map = addControls(_map);
+  _map = addControls(_map);
 
   const gjPlaces = L.geoJSON(places.value, {
     style: (feature) => {

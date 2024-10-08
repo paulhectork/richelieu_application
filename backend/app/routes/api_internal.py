@@ -349,11 +349,27 @@ def cartography_places():
                for p in db.session.execute( Place.query ).all() ]
     places = [
         geometry_to_feature( geometry=p["vector"]
-                           , custom_properties={ "iconography_count": p["iconography_count"],
-                                                 "id_uuid": p["id_uuid"] })
+                           , custom_properties={
+                               "address"           : p["address"],
+                               "iconography_count" : p["iconography_count"],
+                               "id_uuid"           : p["id_uuid"]
+                           })
                for p in places ]
     places = featurelist_to_featurecollection(places)
     return jsonify(places)
+
+@app.route("/i/cartography-main/cartography-sources")
+def cartography_sources():
+    """
+    get a list of all distinct Cartography.map_source
+    and return it as a list of strings
+    """
+    sources = (db.session
+              .execute( select(func.distinct(Cartography.map_source)) )
+              .all())
+    sources = [ s[0] for s in sources ]
+    return jsonify(sources)
+
 
 # *************************************************************************
 # advanced search
