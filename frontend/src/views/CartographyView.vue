@@ -135,19 +135,19 @@ function addControls(_map) {
     L.DomEvent.on(this._div, "click", () => { displayLeft.value = true }, this);
     return this._div;
   }
-  presOpener.onAdd = function () {
-    this._div = L.DomUtil.create("div", "custom-controller");
-    this._div.innerHTML = `<button>pres</button>`;
-    return this._div
-  }
+  // presOpener.onAdd = function () {
+  //   this._div = L.DomUtil.create("div", "custom-controller");
+  //   this._div.innerHTML = `<button>pres</button>`;
+  //   return this._div
+  // }
   // when removing the elements, remove the event listeners
   ctrlOpener.onRemove = function() {
     L.DomEvent.off(this._div, "click", context=this); }
-  presOpener.onRemove = function() {
-    L.DomEvent.off(this._div, "click", context=this); }
+  // presOpener.onRemove = function() {
+  //   L.DomEvent.off(this._div, "click", context=this); }
 
   ctrlOpener.addTo(_map);
-  presOpener.addTo(_map);
+  // presOpener.addTo(_map);
   return _map;
 }
 
