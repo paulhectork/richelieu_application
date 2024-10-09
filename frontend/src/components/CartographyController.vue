@@ -163,12 +163,29 @@ onUnmounted(() => {
 }
 .cc-inner-wrapper {
   margin: 0 3vh;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 5% 2fr;
+
 }
 h2 {
   margin: 0 auto;
 }
 
 /**************************************/
+
+.cc-form-wrapper > #cartography-controller {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-x: scroll;
+  padding: 2%;
+}
+
+:deep(.formkit-outer) {
+  margin: 5% 0;
+}
 
 .fk-range :deep(.formkit-inner) {
   display: flex;
