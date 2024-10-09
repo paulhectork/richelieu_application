@@ -78,38 +78,50 @@ const placeholder  = props.context.placeholder != null
 const multiple     = [ true, false, 0, 1 ].includes(props.context.multiple)  // is it a boolean ?
                      ? props.context.multiple
                      : true
-console.log(props.context.multiple, multiple);
 
 /****************************************/
 
 onMounted(() => {
+  // single select select2 need an empty `html:option` as their 1st element
+  // https://select2.org/placeholders#single-select-placeholders
+  if ( !multiple ) { $(`#${selectId}`).prepend("<option></option>") };
+
   $(`#${selectId}`).select2({
     multiple: multiple,
     placeholder: placeholder,
+    allowClear: true,
     data: optionsArray.map((o, idx) => {
       return { id    : `${selectId}-data-${idx}`,
-               value : o.value,
-               text  : o.label }
+               text  : o.label,
+               value : o.value }
     }),
     // propagate the selected values to FormKit.
     // triggered when adding / removing an element from the selection
     // see: https://formkit.com/essentials/architecture#setting-values
     // and: https://select2.org/programmatic-control/retrieving-selections#using-the-data-method
     //
-    // `templateResult` and `templateSelection` return `data.text`
-    // enclosed in HTML: this is to ensure that HTML markup inside
-    // options will be properly displayed.
-    // this is will not affect what is sent to the formkit form.
+    // `templateResult` and `templateSelection` return jQuery objects
+    // containing the text: this is to ensure that HTML markup is not escaped.
+    // see: https://select2.org/selections#built-in-escaping
     templateSelection: (data, container) => {
 
-      // ERROR ON SINGLE INPUT SELECT.
-      // SEE: https://select2.org/programmatic-control/retrieving-selections#using-the-data-method
-      selectNode.input(           // .input() will send data to the FormKit form
-        $(`#${selectId}`)
-        .select2("data")           // $(`#${selectId}`).select2("data") returns an array of selected values
-        .filter(x => !x.disabled)  // placeholder is disabled => remove it
-        .map(x => x.value)        // retrieve the @value attribute of the selected options
-      )
+      if ( multiple === true ) {
+        let newInput = $(`#${selectId}`)
+                       .select2("data")           // $(`#${selectId}`).select2("data") returns an array of selected values
+                       .filter(x => !x.disabled)  // placeholder is disabled => remove it
+                       .map(x => x.value)         // retrieve the @value attribute of the selected options
+        selectNode.input(newInput)
+
+      } else {
+        // for some reason, `select2("data")` only works on multi-input.
+        // for single input, we retrieve the HTML contenxt of the clicked element
+        // and then use it to extract a `value` from `optionsArray`, which will be send to parent
+        let label    = $(`#${selectId}`).find(":selected").text();  // html text of the clicked element
+        if ( label && label.length ) {  // don't run if what is selected is the empty placeholder
+          let newInput = optionsArray.filter(x => x.label === label)[0].value;
+          selectNode.input(newInput)           // .input() will send data to the FormKit form
+        }
+      }
       return $(`<span>${data.text}</span>`);
     },
     templateResult: (data) => $(`<span>${data.text}</span>`)

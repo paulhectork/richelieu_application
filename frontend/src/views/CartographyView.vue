@@ -50,7 +50,7 @@ import $ from "jquery";
 import CartographyPlaceInfo from "@components/CartographyPlaceInfo.vue";
 import CartographyController from "@components/CartographyController.vue";
 
-import { globalDefineMap } from "@utils/leaflet";
+import { globalDefineMap, layerBounds } from "@utils/leaflet";
 import { colorScaleBlue, colorScaleRed } from "@utils/colors";
 
 /************************************************************/
@@ -113,7 +113,25 @@ function addControls(_map) {
   // create the controls and add a click listener
   ctrlOpener.onAdd = function () {
     this._div = L.DomUtil.create("div", "custom-controller");
-    this._div.innerHTML = `<button>ctrl</button>`;
+    this._div.innerHTML = // pure html, contains the equivalent of `@components/UiButtonFilter.vue`
+      `<button>
+        <svg width="80%"
+             height="80%"
+             viewBox="-2 -2 27 27"
+             fill="none"
+             xmlns="http://www.w3.org/2000/svg"
+             aria-label="Filtrer les données. En cliquant ce bouton, il sera possible de cliquer les données. Le dessin vectoriel représente un filtre."
+        >
+          <title>Filtrer les données></title>
+          <desc>En cliquant ce bouton, il sera possible de cliquer les données.
+            Le dessin vectoriel représente un filtre.</desc>
+          <path fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M15 10.5A3.502 3.502 0 0 0 18.355 8H21a1 1 0 1 0 0-2h-2.645a3.502 3.502 0 0 0-6.71 0H3a1 1 0 0 0 0 2h8.645A3.502 3.502 0 0 0 15 10.5zM3 16a1 1 0 1 0 0 2h2.145a3.502 3.502 0 0 0 6.71 0H21a1 1 0 1 0 0-2h-9.145a3.502 3.502 0 0 0-6.71 0H3z"
+                fill="#000000"
+          />
+        </svg>
+      </button>`;
     L.DomEvent.on(this._div, "click", () => { displayLeft.value = true }, this);
     return this._div;
   }
@@ -164,6 +182,8 @@ function addPlaces(_map, _places) {
   _map = addControls(_map);
 
   const gjPlaces = L.geoJSON(places.value, {
+    pointToLayer:  (gjPoint, latLng) =>
+      L.circleMarker(latLng, { radius: 6, pane: "markerPane" }),  // style is defined in the `style` function below
     style: (feature) => {
       // option1: continuous scale opacity variant
       // let opacityCalc = (c, _max) => .5 + c / (_max * 2),
@@ -177,9 +197,14 @@ function addPlaces(_map, _places) {
             comparator = (range, num) => range[0] <= num && num <= range[1];
       return {
         fillColor: colorClasses.find( (c) => comparator(c[0], iconographyCount) )[1],  // if iconographyCount is in a range defined in `colorClasses`, select the color
-        fillOpacity: .5,
+        fillOpacity: feature.geometry.type === "Point"
+                     ? 1
+                     : 0.5,
         color: "black",
-        weight: 1
+        weight: 1,
+        // zIndex: feature.geometry.type === "Point"
+        //         ? 1000
+        //         : 4
       }
     },
 
@@ -195,18 +220,16 @@ function addPlaces(_map, _places) {
         layer.setStyle({ fillOpacity:1 });
         // zoom to the clicked layer
         //TODO fix yank here ?
-        setTimeout(() => _map.fitBounds(layer.getBounds()), transDur);  // wait for the size animation to complete...
+        setTimeout(() => _map.fitBounds(layerBounds(layer)), transDur);  // wait for the size animation to complete...
       });
 
       // on hover, change the color and weight of the border
       layer.on("mouseover", (e) => {
-        if ( layer.feature.geometry.type !== "Point" )  // style changes don't work on markers (geoJson "Point")
-          layer.setStyle({ color: layer.options.fillColor, weight: 3 })
+        layer.setStyle({ color: layer.options.fillColor, weight: 3 })
         info.update(layer.feature.properties);
       });
       layer.on("mouseout", (e) => {
-        if ( layer.feature.geometry.type !== "Point" )
-          layer.setStyle({ color: "black", weight: 1 });
+        layer.setStyle({ color: "black", weight: 1 });
         info.update();
       })
     }

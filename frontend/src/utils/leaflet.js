@@ -94,20 +94,20 @@ export function globalDefineMap(mapId) {
       "Carte de Paris (1906)",
       buildWmtsTile( "https://wxs.ign.fr/cartes/geoportail/wmts"
                    , "GEOGRAPHICALGRIDSYSTEMS.1900TYPEMAPS"
-                   , "bgPane"
+                   // , "bgPane"
                    , 10, 15.5 )
     ],
     vasserot: [
       "Plan Vasserot (début XVIII<sup>e</sup> siècle)",
       L.tileLayer( "https://tile.maps.huma-num.fr/uc2usU/d/Alpage_Vasserot_1830/{z}/{x}/{y}.png"
-                 , { pane: "bgPane",
+                 , { // pane: "bgPane",
                      opacity: 0.85,
                      minZoom: 14 })
     ],
     cadastreMunicipal: [
       "Cadastre municipal (1900)",
       L.tileLayer( "https://tile.maps.huma-num.fr/uc2usU/d/MOSA_1900_PARIS/{z}/{x}/{y}.png"
-                 , { pane: "bgPane",
+                 , { // pane: "bgPane",
                      opacity: 0.85 })
     ]
   }
@@ -127,17 +127,17 @@ export function globalDefineMap(mapId) {
   });
 
   // define the panes so that `backgroundTiles` may be added to `map`
-  map.createPane("basePane");  // default map tiles
-  map.getPane("basePane").style.zIndex = "0";
-  map.createPane("bgPane");  // custom background panes retrieved from WMS/WMTS
-  map.getPane("bgPane").style.zIndex = "1";
-  map.createPane("dataPane");  // actual data added on top of the map: raster images, shapes...
-  map.getPane("dataPane").style.zIndex = "2";
+  // map.createPane("basePane");  // default map tiles
+  // map.getPane("basePane").style.zIndex = "0";
+  // map.createPane("bgPane");  // custom background panes retrieved from WMS/WMTS
+  // map.getPane("bgPane").style.zIndex = "1";
+  // map.createPane("dataPane");  // actual data added on top of the map: raster images, shapes...
+  // map.getPane("dataPane").style.zIndex = "2";
 
   // add background tiles and a controller to enable/disable background tiles
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    pane: "basePane",
+    // pane: "basePane",
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
 
@@ -162,5 +162,20 @@ export function globalDefineMap(mapId) {
 }
 
 
+/**
+ * get layer bounds for a point or another geojson feature
+ * returns
+ *    the bound of a geojson feature if the feature is not a point
+ *    or bounds determined from its LatLng if the feature is a point
+ * @param {Object} layer: the leaflet layer corresponding to a geojson feature
+ */
+export const layerBounds = (layer) => {
+  let pointBounds = { lat: 0.0005434656870164645/2, lng: -0.0005838759503453694/2 }  // distances from which to get the points
+  return layer.feature.geometry.type !== "Point"
+  ? layer.getBounds()
+  : [ [ layer.getLatLng().lat - pointBounds.lat, layer.getLatLng().lng - pointBounds.lat ]
+    , [ layer.getLatLng().lat + pointBounds.lat, layer.getLatLng().lng + pointBounds.lat ]
+    ]
+}
 
 
