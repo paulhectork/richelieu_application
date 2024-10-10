@@ -95,36 +95,45 @@ onMounted(() => {
                text  : o.label,
                value : o.value }
     }),
-    // propagate the selected values to FormKit.
-    // triggered when adding / removing an element from the selection
-    // see: https://formkit.com/essentials/architecture#setting-values
-    // and: https://select2.org/programmatic-control/retrieving-selections#using-the-data-method
     //
-    // `templateResult` and `templateSelection` return jQuery objects
-    // containing the text: this is to ensure that HTML markup is not escaped.
+    // `templateResult` and `templateSelection` must return jQuery objects
+    // to ensure that HTML markup within `data.text` is not escaped.
     // see: https://select2.org/selections#built-in-escaping
-    templateSelection: (data, container) => {
-
-      if ( multiple === true ) {
-        let newInput = $(`#${selectId}`)
-                       .select2("data")           // $(`#${selectId}`).select2("data") returns an array of selected values
-                       .filter(x => !x.disabled)  // placeholder is disabled => remove it
-                       .map(x => x.value)         // retrieve the @value attribute of the selected options
-        selectNode.input(newInput)
-
-      } else {
-        // for some reason, `select2("data")` only works on multi-input.
-        // for single input, we retrieve the HTML contenxt of the clicked element
-        // and then use it to extract a `value` from `optionsArray`, which will be send to parent
-        let label    = $(`#${selectId}`).find(":selected").text();  // html text of the clicked element
-        if ( label && label.length ) {  // don't run if what is selected is the empty placeholder
-          let newInput = optionsArray.filter(x => x.label === label)[0].value;
-          selectNode.input(newInput)           // .input() will send data to the FormKit form
-        }
-      }
-      return $(`<span>${data.text}</span>`);
-    },
+    templateSelection: (data, container) => $(`<span>${data.text}</span>`),
     templateResult: (data) => $(`<span>${data.text}</span>`)
+  });
+
+  /**
+   * propagate the selected values to FormKit.
+   * "change.select2" is triggered when adding / removing an element
+   * from the selection, or clearing the selection altogether
+   *
+   * for some reason, we must use a different way to retrieve data
+   * on multi and single-input select2 elements.
+   *    - `select2("data")` only works on multi-input.
+   *    - for single input, we retrieve the HTML content of the
+   *      clicked element and then use it to extract a `value` from
+   *      `optionsArray`, which will be send to parent
+   *
+   * see: https://formkit.com/essentials/architecture#setting-values
+   *      https://select2.org/programmatic-control/events
+   *      retrieval of multi-input: https://select2.org/programmatic-control/retrieving-selections#using-the-data-method
+   */
+  $(`#${selectId}`).on("change.select2", (e) => {
+    let newInput = [];
+    if ( multiple === true ) {
+        newInput = $(`#${selectId}`)
+                   .select2("data")           // $(`#${selectId}`).select2("data") returns an array of selected values
+                   .filter(x => !x.disabled)  // placeholder is disabled => remove it
+                   .map(x => x.value)         // retrieve the @value attribute of the selected options
+    } else {
+      let label    = $(`#${selectId}`).find(":selected").text();  // html text of the clicked element
+      if ( label && label.length ) {                              // don't run if what is selected is the empty placeholder
+        newInput = optionsArray.filter(x => x.label === label)[0].value;
+      }
+    }
+    selectNode.input(newInput);  // propagate the results to formkit
+
   });
 })
 </script>

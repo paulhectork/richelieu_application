@@ -29,7 +29,7 @@
                    :options="places.features.map(x => {
                     return { label : x.properties.address[0].address,
                              value : x.properties.address[0].id_uuid  }})"
-                   @input="handleAddress"
+                   @input="data => emit('filterAddress', data)"
           ></FormKit>
 
           <FormKit type="fkSlider"
@@ -44,7 +44,7 @@
                      places.features.map(x => x.properties.iconography_count))"
                    :maxVal="Math.max.apply(null,
                      places.features.map(x => x.properties.iconography_count))"
-                   @input="handleIconographyCount"
+                   @input="data => emit('filterIconographyCount', data)"
           ></FormKit>
 
           <FormKit v-if="cartographySources.length"
@@ -55,7 +55,7 @@
                    help="Sélectionner une autre source cartographique"
                    :options="cartographySources"
                    :multiple="false"
-                   @input="handleCartographySource"
+                   @input="data => emit('filterCartographySource', data)"
           ></FormKit>
 
         </FormKit>
@@ -87,13 +87,6 @@ const props              = defineProps(["places"]);
 const places             = props.places;  // the whole place geoJson
 const cartographySources = ref([]);  // [{ value: "...", label: "..." }]
 
-
-const currentFilters = {
-  address           : [],        // Array<string>: the selected addresses. display all if empty
-  iconographyCount  : [],        // Array<integer>: the min/max range of iconographies to display
-  cartographySource : "default"  // string: which cartography source to use. if "default", show all that's in the `Place` database, regardless of source
-}
-
 /***************************************/
 
 /**
@@ -108,27 +101,6 @@ function getData() {
   .then(data => data.map(x => {
     return { label: cartographySourceMapper[x], value: x }}))
   .then(data => { cartographySources.value = data; });
-}
-
-/**
- * handle an address selection filter change in `CartographyController`
- */
-function handleAddress() {
-  console.log(1)
-}
-
-/**
- * handle an iconography count filter change in `CartographyController`
- */
-function handleIconographyCount() {
-  console.log(2)
-}
-
-/**
- * handle a cartography source change in `CartographyController`
- */
-function handleCartographySource() {
-  console.log(3)
 }
 
 const onSubmit = () => {};

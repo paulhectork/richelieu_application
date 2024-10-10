@@ -17,7 +17,9 @@
     <div class="cartography-controller-outer-wrapper"
          :class="{ 'cartography-controller-visible' : displayLeft }"
     ><CartographyController @close-cartography-controller="closeCartographyController"
-                            @filter=""
+                            @filter-address="handleAddress"
+                            @filter-iconography-count="handleIconographyCount"
+                            @filter-cartography-source="handleCartographySource"
                             :places="places"
                             v-if="displayLeft"
     ></CartographyController></div>
@@ -46,6 +48,7 @@ import { onMounted, ref, watch } from "vue";
 import axios from "axios";
 import L from "leaflet";
 import $ from "jquery";
+import _ from "lodash";
 
 import CartographyPlaceInfo from "@components/CartographyPlaceInfo.vue";
 import CartographyController from "@components/CartographyController.vue";
@@ -56,11 +59,20 @@ import { colorScaleBlue, colorScaleRed } from "@utils/colors";
 /************************************************************/
 
 const map          = ref();  // defined in onMounted
-const places       = ref([]);
+const places       = ref({});  // the default geoJson with no filters. not modified after being fetched from the backend
 const placeIdUuid  = ref();  // when this is set, an indx of iconography resources of the place with place.id_uuid == placeIdUuid will be displayed
 const displayLeft  = ref(false);  // when true, the left block (controller) will be displayed
 const displayRight = ref(false);  // when true, the right block will be displayed
 const loadState    = ref("loading");  // loading/loaded/error
+
+const lflPlaces    = ref();     // the places geoJson as a leaflet L.geoJSON object. this object only contains features that match the user filters defined in `CartographyController`. it is this object that is actually added to the map
+const lflHoverInfo = ref();     // an L.controller that displays info on hover
+
+const currentFilters = ref({
+  address           : [],        // Array<string>: the selected addresses. display all if empty
+  iconographyCount  : [],        // Array<integer>: the min/max range of iconographies to display
+  cartographySource : "default"  // string: which cartography source to use. if "default", show all that's in the `Place` database, regardless of source
+});
 
 const transDur     = 500;  // transition duration in JS
 const transDurCss  = ".5s";  // transition duration in CSS
@@ -99,18 +111,37 @@ function getData() {
   return Promise.all([
     axios.get(new URL("/i/cartography-main/places", __API_URL__))
     .then(r => r.data)
-    .then(data => { places.value = data; })
+    .then(data => { places.value = data;
+                    // lflPlaces.value = data;
+     })
   ])
 }
 
 /**
- * add 2 controls: one to display the `CartographyController` component,
- * the other to display the presentation.
+ * add 3 controls:
+ *    - infoHover  : a control that displays data when hovering over a geojson feature
+ *    - ctrlOpener : to display the `CartographyController` component on click,
+ *    - presOpener : to display the intro presentation on click.
  */
 function addControls(_map) {
-  const ctrlOpener = new L.Control({ position: "bottomleft" }),
+
+  const infoHover  = new L.control({ position: "topright" }),
+        ctrlOpener = new L.Control({ position: "bottomleft" }),
         presOpener = new L.Control({ position: "bottomleft" });
-  // create the controls and add a click listener
+
+  // create the controls and necessary methods: info listeners, update...
+  infoHover.onAdd = function () {
+    this._div = L.DomUtil.create("div", "infobox");
+    this.update();
+    return this._div;
+  }
+  infoHover.update = function (props) {  // when the content of infoHover changes
+    this._div.innerHTML =
+      `<h4>Nombre de ressources iconographiques associées&nbsp:</h4>
+      ${props && props.iconography_count
+        ? props.iconography_count
+        : "Passer la souris au dessus d'une parcelle"}`;
+  }
   ctrlOpener.onAdd = function () {
     this._div = L.DomUtil.create("div", "custom-controller");
     this._div.innerHTML = // pure html, contains the equivalent of `@components/UiButtonFilter.vue`
@@ -135,64 +166,36 @@ function addControls(_map) {
     L.DomEvent.on(this._div, "click", () => { displayLeft.value = true }, this);
     return this._div;
   }
-  // presOpener.onAdd = function () {
-  //   this._div = L.DomUtil.create("div", "custom-controller");
-  //   this._div.innerHTML = `<button>pres</button>`;
-  //   return this._div
-  // }
+  presOpener.onAdd = function () {
+    this._div = L.DomUtil.create("div", "custom-controller");
+    this._div.innerHTML = `<button>pres</button>`;
+    return this._div
+  }
+
   // when removing the elements, remove the event listeners
   ctrlOpener.onRemove = function() {
     L.DomEvent.off(this._div, "click", context=this); }
-  // presOpener.onRemove = function() {
-  //   L.DomEvent.off(this._div, "click", context=this); }
+  presOpener.onRemove = function() {
+    L.DomEvent.off(this._div, "click", context=this); }
 
   ctrlOpener.addTo(_map);
-  // presOpener.addTo(_map);
-  return _map;
-}
+  presOpener.addTo(_map);
+  infoHover.addTo(_map);
 
-/**
- * create an infobox and add it to `map`. `info.update()` will
- * display an explanative text.
- */
-function addInfo(_map) {
-  const info = L.control();
-  info.onAdd = function () {
-    this._div = L.DomUtil.create("div", "infobox");
-    this.update();
-    return this._div;
-  }
-  info.update = function (props) {
-    this._div.innerHTML =
-      `<h4>Nombre de ressources iconographiques associées&nbsp:</h4>
-      ${props && props.iconography_count
-        ? props.iconography_count
-        : "Passer la souris au dessus d'une parcelle"}`;
-  }
-  info.addTo(_map);
-  return [ _map, info ];
+  return[ _map, infoHover ];
 }
 
 /**
  * add the places as a geoJson to the map
  */
 function addPlaces(_map, _places) {
-  let info;
-  [ _map, info ] = addInfo(_map);
-  _map = addControls(_map);
+  const info = lflHoverInfo.value;
 
-  const gjPlaces = L.geoJSON(places.value, {
+  const leafletPlaces = L.geoJSON(_places, {
     pointToLayer:  (gjPoint, latLng) =>
       L.circleMarker(latLng, { radius: 6, pane: "markerPane" }),  // style is defined in the `style` function below
     style: (feature) => {
-      // option1: continuous scale opacity variant
-      // let opacityCalc = (c, _max) => .5 + c / (_max * 2),
-      //     countArr    = _places.features.map(p => p.properties.iconography_count),  // array of number of iconography_counts
-      //     countMax    = Math.max.apply(null, countArr),
-      //     countMin    = Math.min.apply(null, countArr);
-      // return { fillOpacity: opacityCalc(feature.properties.iconography_count, countMax) }},
-
-      // option2: discrete colors
+      // set color based on iconography count
       const iconographyCount = feature.properties.iconography_count,
             comparator = (range, num) => range[0] <= num && num <= range[1];
       return {
@@ -201,10 +204,7 @@ function addPlaces(_map, _places) {
                      ? 1
                      : 0.5,
         color: "black",
-        weight: 1,
-        // zIndex: feature.geometry.type === "Point"
-        //         ? 1000
-        //         : 4
+        weight: 1
       }
     },
 
@@ -216,7 +216,7 @@ function addPlaces(_map, _places) {
         displayRight.value = true;
         placeIdUuid.value = feature.properties.id_uuid;
         // set the style: opacity of 1 on the clicked layer
-        gjPlaces.resetStyle();  // revert the opacity for all layers
+        leafletPlaces.resetStyle();  // revert the opacity for all layers
         layer.setStyle({ fillOpacity:1 });
         // zoom to the clicked layer
         //TODO fix yank here ?
@@ -234,12 +234,97 @@ function addPlaces(_map, _places) {
       })
     }
   });
-  gjPlaces.addTo(_map);
-  _map.fitBounds(gjPlaces.getBounds());
-  return _map;
+  leafletPlaces.addTo(_map);
+  _map.fitBounds(leafletPlaces.getBounds());
+  return [ _map, leafletPlaces ];
+}
+
+
+/**
+ * the 3 handle* functions update `currentFilters` with newly filtered
+ * data from `CartographyController`. this will trigger the `watch(currentFilters)`
+ * below to update the places geoJson and add it to the map.
+ * in the `handle*` functions, the whole `currentFilters` is redefined
+ * because just setting a new value for a property won't trigger the `watch()`
+ */
+ function handleAddress(newAddress) {
+  currentFilters.value = {
+    address: newAddress,
+    iconographyCount: currentFilters.value.iconographyCount,
+    cartographySource: currentFilters.value.cartographySource
+  };
+}
+
+/**
+ * handle an iconography count filter change in `CartographyController`
+ */
+function handleIconographyCount(newIconographyCount) {
+  currentFilters.value = {
+    address: currentFilters.value.address,
+    iconographyCount: newIconographyCount,
+    cartographySource: currentFilters.value.cartographySource
+  };
+}
+
+/**
+ * handle a cartography source change in `CartographyController`
+ */
+function handleCartographySource() {
+  console.log(3)
 }
 
 /************************************************************/
+
+/**
+ * when changing filters in `CartographyController`, update
+ * the displayed geoJson.
+ */
+watch(currentFilters, (newFilters, oldFilters) => {
+  // 1) variables
+  let _map          = map.value,
+      placesGeoJson = _.cloneDeep(places.value),  // without _.cloneDeep(), the modifications done to placesGeoJson below would be repercuted to `places.value`, which would break everything
+      placesLeaflet = lflPlaces.value,
+      changeAddress           = newFilters.address !== oldFilters.address,
+      changeIconographyCount  = newFilters.iconographyCount !== oldFilters.iconographyCount,
+      changeCartographySource = newFilters.cartographySource !== oldFilters.cartographySource;
+
+  // 2) define functions for each individual filter
+  const updateByIconographyCount = (geoJsonObj) => {
+    if ( newFilters.iconographyCount != null    // if newFilters.iconographyCount is null or has no len, this filter is not set => reset back to the original placesGeoJson
+         && newFilters.iconographyCount.length
+    ) {
+      geoJsonObj.features = geoJsonObj.features.filter(f =>
+      newFilters.iconographyCount[0] <= f.properties.iconography_count
+      && f.properties.iconography_count <= newFilters.iconographyCount[1]);
+    }
+    return geoJsonObj
+  }
+  const updateByAddress = (geoJsonObj) => {
+    console.log(newFilters.address);
+    if ( newFilters.address != null && newFilters.address.length ) {
+      geoJsonObj.features = geoJsonObj.features.filter(f =>
+        newFilters.address.includes(f.properties.address[0].id_uuid));
+    }
+    return geoJsonObj;
+  }
+
+  console.log(0, placesGeoJson.features.length);
+
+  // 3) pass placesGeoJson through all the filters
+  //TODO find a way to combine the different filters
+  if ( changeIconographyCount ) {
+    placesGeoJson = updateByIconographyCount(placesGeoJson);
+    console.log(1, placesGeoJson.features.length);
+  }
+  if ( changeAddress ) {
+    placesGeoJson = updateByAddress(placesGeoJson);
+    console.log(2, placesGeoJson.features.length);
+  }
+
+  // 4) update the map
+  _map.removeLayer(placesLeaflet);
+  [ map.value, lflPlaces.value ] = addPlaces( _map, placesGeoJson );
+})
 
 /**
  * when (un)mounting `CartographyPlaceInfo`, the size of the map changes.
@@ -261,8 +346,9 @@ watch(placeIdUuid, (newId, oldId) =>
 
 onMounted(() => {
   map.value = globalDefineMap("map-main");  // synchronous
+  [ map.value, lflHoverInfo.value ] = addControls(map.value);
   getData().then(() => {
-    map.value = addPlaces( map.value, places.value ) });
+    [ map.value, lflPlaces.value ] = addPlaces( map.value, places.value ) });
 })
 </script>
 
