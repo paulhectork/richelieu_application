@@ -100,6 +100,7 @@ function getData() {
   .then(data => sortCartographyBySource(data))
   .then(data => data.map(x => {
     return { label: cartographySourceMapper[x], value: x }}))
+  .then(data => [{ label: "Fonds par défaut", value: "default" }].concat(data))  // add the default value as the first element of `data`
   .then(data => { cartographySources.value = data; });
 }
 

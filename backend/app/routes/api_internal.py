@@ -371,6 +371,17 @@ def cartography_sources():
     return jsonify(sources)
 
 
+@app.route("/i/cartography-main/cartography/<string:cartography_source>")
+def cartography_for_source(cartography_source:str):
+    """
+    return a list of Cartography objects with Cartography.map_source == cartography_source
+    """
+    r = (db.session
+        .execute( select(Cartography).filter(Cartography.map_source == cartography_source) )
+        .all())
+    return jsonify([ c[0].serialize_lite() for c in r ])
+
+
 # *************************************************************************
 # advanced search
 # *************************************************************************
