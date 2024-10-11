@@ -21,6 +21,7 @@
                             @filter-iconography-count="handleIconographyCount"
                             @filter-cartography-source="handleCartographySource"
                             :places="places"
+                            :currentFeatureCount="currentFeatureCount"
                             v-if="displayLeft"
     ></CartographyController></div>
 
@@ -65,13 +66,15 @@ const displayRight = ref(false);  // when true, the right block will be displaye
 const loadState    = ref("loading");  // loading/loaded/error
 
 // leaflet objects
-const map          = ref();  // defined in onMounted
-const lflPlaces    = ref();     // the places geoJson as a leaflet L.geoJSON object. this object only contains features that match the user filters defined in `CartographyController`. it is this object that is actually added to the map
-const lflHoverInfo = ref();     // an L.controller that displays info on hover
+const lflMap            = ref();  // L.Map, defined in onMounted
+const lflPlaces         = ref();  // L.GeoJSON: the places geoJson as a leaflet L.geoJSON object. this object only contains features that match the user filters defined in `CartographyController`. it is this object that is actually added to the map
+const lflHoverInfo      = ref();  // an L.Controller that displays info on hover
+const lflFallBackBounds = ref();  // L.LatLngBounds
 
 // data from the backend
-const places       = ref({});  // the default geoJson with no filters. not modified after being fetched from the backend
+const places               = ref({});  // the default geoJson with no filters. not modified after being fetched from the backend
 const cartographyForSource = ref();  // { source: "sourceName", features: [] }
+const currentFeatureCount = ref();  // number of features currently displayed on the map
 
 // user filters defined in CartographyCOntroller
 const currentFilters = ref({
@@ -254,13 +257,15 @@ const onEachLayer = (layer, leafletGeoJson, _map) => {
 
 /**
  * add the geoJson `places` to the map `_map`
+ * @param {L.Map} _map: the leaflet map
+ * @param {Object} _places: the geoJson data to add to the map
+ * @param {bool} init: is it the first time this function is called ?
  */
-function addPlaces(_map, _places) {
+function addPlaces(_map, _places, init) {
   // define the geojson
   const leafletPlaces = L.geoJSON(_places, {
     style: styleFeature,
-    pointToLayer:  (gjPoint, latLng) =>
-      L.circleMarker(latLng, { radius: 6, pane: "markerPane" })  // style is defined in the `style` function below
+    pointToLayer:  (gjPoint, latLng) => L.circleMarker( latLng, { radius: 6, pane: "markerPane" })  // style is defined in the `style` function below
   });
   // add event listeners for each layer (1 layer = 1 feature in the geoJson).
   // this is equivalent to `onEachFeature` inside `L.geoJSON`, but we add the
@@ -269,9 +274,27 @@ function addPlaces(_map, _places) {
   leafletPlaces.eachLayer((layer) => onEachLayer(layer, leafletPlaces, _map));
 
   // add to map and set the global variables
+  if ( init ) { lflFallBackBounds.value = leafletPlaces.getBounds() };  // save the bounds of the full original geojson layer, in case we later add a geoJson feature with 0 layers (in which case we won't be able to compute bounds)
   leafletPlaces.addTo(_map);
-  _map.fitBounds(leafletPlaces.getBounds());
+  _map.fitBounds( _places.features.length
+                ? leafletPlaces.getBounds()
+                : lflFallBackBounds.value );
   return [ _map, leafletPlaces ];
+}
+
+/**
+ * add data to the map and set the global variables
+ * @param {L.Map} _map: the leaflet map
+ * @param {Object} _places: the geoJson data to add to the map
+ * @param {bool} init: is it the first time this function is called ?
+ * @param {undefined | Object}: data to update `_cartographyForSource` with. if undefined, it won't be updated
+ */
+function mapSetter(_map, placesGeoJson, init, _cartographyForSource) {
+  if ( _cartographyForSource != null ) {
+    cartographyForSource.value = _cartographyForSource;
+  }
+  currentFeatureCount.value = placesGeoJson.features.length;
+  [ lflMap.value, lflPlaces.value ] = addPlaces( _map, placesGeoJson, init );
 }
 
 /************************************************************/
@@ -317,7 +340,7 @@ function handleCartographySource(newCartographySource) {
  */
 watch(currentFilters, async (newFilters, oldFilters) => {
   // 1) variables
-  let _map                  = map.value,
+  let _map                  = lflMap.value,
       placesGeoJson         = _.cloneDeep(places.value),  // without _.cloneDeep(), the modifications done to placesGeoJson below would be repercuted to `places.value`, which would break everything
       placesLeaflet         = lflPlaces.value,
       _cartographyForSource = cartographyForSource.value,
@@ -421,10 +444,8 @@ watch(currentFilters, async (newFilters, oldFilters) => {
     console.log("> 2 :", placesGeoJson.features.length);
     placesGeoJson = updateByAddress(placesGeoJson);
     _map.removeLayer(placesLeaflet);
-    cartographyForSource.value = _cartographyForSource;
-    [ map.value, lflPlaces.value ] = addPlaces( _map, placesGeoJson );
 
-    console.error("CartographyView.watch(currentFiters) : if the filtering returns a geoJson with no features, there will be errors. add fallback")
+    mapSetter(_map, placesGeoJson, false, _cartographyForSource);
   });
 })
 
@@ -434,23 +455,24 @@ watch(currentFilters, async (newFilters, oldFilters) => {
  * - on mount: buggy zooms
  * - on unmount: data positionned where `CartographyPlaceInfo` used to be
  *   is not displayed.
- * so, when (un)mounting, call `map.invalidateSize()` to force the redraw.
- * it's supposed to be possible to use `map.on(resize)` to do this,
+ * so, when (un)mounting, call `lflMap.invalidateSize()` to force the redraw.
+ * it's supposed to be possible to use `lflMap.on(resize)` to do this,
  * but it doesn't work.
  */
 watch(placeIdUuid, (newId, oldId) =>
-  oldId !== undefined && newId === undefined && map.value != undefined    // unmount
-  ? map.value.invalidateSize()
-  : oldId === undefined && newId !== undefined && map.value != undefined  // mount
-  ? setTimeout(() => map.value.invalidateSize(), transDur)  // the setTimeout is to wait for the transition to complete
+  oldId!==undefined && newId===undefined && lflMap.value!==undefined    // unmount
+  ? lflMap.value.invalidateSize()
+  : oldId===undefined && newId!==undefined && lflMap.value!==undefined  // mount
+  ? setTimeout(() => lflMap.value.invalidateSize(), transDur)  // the setTimeout is to wait for the transition to complete
   : ''
 )
 
 onMounted(() => {
-  map.value = globalDefineMap("map-main");  // synchronous
-  [ map.value, lflHoverInfo.value ] = addControls(map.value);
-  getPlaces().then(() => {
-    [ map.value, lflPlaces.value ] = addPlaces( map.value, places.value ) });
+  lflMap.value = globalDefineMap("map-main");  // synchronous
+  [ lflMap.value, lflHoverInfo.value ] = addControls( lflMap.value );
+  getPlaces().then(() =>
+    mapSetter(lflMap.value, places.value, true, undefined) );
+
 })
 </script>
 

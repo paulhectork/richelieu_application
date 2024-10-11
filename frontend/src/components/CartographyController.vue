@@ -9,17 +9,26 @@
 
     <div class="cc-inner-wrapper">
       <h2>Filtrer les données</h2>
+      <h3>
+        <span v-if="props.currentFeatureCount>1">{{ currentFeatureCount }}
+          parcelles correspondent</span>
+        <span v-else-if="props.currentFeatureCount===1">{{ currentFeatureCount }}
+          parcelle correspond</span>
+        <span v-else>Aucune parcelle ne correspond</span>
+        à la sélection.
+      </h3>
 
       <div class="cc-form-wrapper">
         <FormKit type="form"
                  name="cartographyController"
-                 :actions="true"
                  id="cartography-controller"
                  submit-label="Lancer la recherche"
                  :submit-attrs="{ inputClass   : 'form-submit-input',
                                   wrapperClass : 'form-submit-wrapper',
                                   outerClass   : 'form-submit-outer' }"
-            @submit="''/*onSubmit*/"
+                 @submit="''/*onSubmit*/"
+                 :actions="false"
+                 @input="console.log('changed')"
         >
           <FormKit type="fkSelect"
                    placeholder="Sélectionner une addresse"
@@ -79,12 +88,13 @@ import { sortCartographyBySource } from "@utils/array";
 
 /***************************************/
 
-const emit               = defineEmits(["closeCartographyController"
-                                       , "filterAddress"
-                                       , "filterIconographyCount"
-                                       , "filterCartographySource" ]);
-const props              = defineProps(["places"]);
-const places             = props.places;  // the whole place geoJson
+const emit   = defineEmits(["closeCartographyController"
+                           , "filterAddress"
+                           , "filterIconographyCount"
+                           , "filterCartographySource" ]);
+const props  = defineProps([ "places"
+                           , "currentFeatureCount" ]);
+const places = props.places;  // the whole place geoJson
 const cartographySources = ref([]);  // [{ value: "...", label: "..." }]
 
 /***************************************/
@@ -122,8 +132,9 @@ onUnmounted(() => {
 
 <style scoped>
 .cc-outer-wrapper {
-  height: 100%;
+  max-height: 100%;
   width: 100%;
+  overflow: scroll;
 }
 .cc-closer-wrapper {
   display: flex;
@@ -136,7 +147,7 @@ onUnmounted(() => {
 }
 .cc-inner-wrapper {
   margin: 0 3vh;
-  height: 100%;
+  max-height: 100%;
   display: grid;
   grid-template-columns: 100%;
   grid-template-rows: 5% 2fr;
@@ -144,6 +155,10 @@ onUnmounted(() => {
 }
 h2 {
   margin: 0 auto;
+}
+h3 {
+  margin: 0 auto;
+  height: fit-content;
 }
 
 /**************************************/
