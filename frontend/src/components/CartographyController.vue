@@ -59,7 +59,6 @@
                    :options="places.features.map(x => {
                     return { label : x.properties.address[0].address,
                              value : x.properties.address[0].id_uuid  }})"
-                   @input="''/*data => emit('filterAddress', data)*/"
           ></FormKit>
 
           <FormKit type="fkSlider"
@@ -74,7 +73,16 @@
                      places.features.map(x => x.properties.iconography_count))"
                    :maxVal="Math.max.apply(null,
                      places.features.map(x => x.properties.iconography_count))"
-                   @input="''/*data => emit('filterIconographyCount', data)*/"
+          ></FormKit>
+
+          <FormKit v-if="cartographyGranularities.length"
+                   type="fkSelect"
+                   name="cartographyGranularity"
+                   id="cartography-granularity"
+                   label="Changer d'échelle de précision"
+                   help="Sélectionner une échelle de précision pour les parcelles"
+                   :options="cartographyGranularities"
+                   :multiple="false"
           ></FormKit>
 
           <FormKit v-if="cartographySources.length"
@@ -85,7 +93,6 @@
                    help="Sélectionner une autre source cartographique"
                    :options="cartographySources"
                    :multiple="false"
-                   @input="''/*data => emit('filterCartographySource', data)*/"
           ></FormKit>
 
         </FormKit>
@@ -117,6 +124,7 @@ const props  = defineProps([ "places"
                            , "currentFeatureCount" ]);
 const places = props.places;  // the whole place geoJson
 const cartographySources = ref([]);  // [{ value: "...", label: "..." }]
+const cartographyGranularities = ref([]);
 
 /***************************************/
 
@@ -125,14 +133,25 @@ const cartographySources = ref([]);  // [{ value: "...", label: "..." }]
  */
 const escHandler = (e) => e.key === "Escape" ? emit("closeCartographyController") : "";
 
-function getData() {
-  axios.get(new URL("/i/cartography-main/cartography-sources", __API_URL__))
+function getSources() {
+  axios.get(new URL("/i/cartography-main/cartography/source", __API_URL__))
   .then(r => r.data)
   .then(data => sortCartographyBySource(data))
   .then(data => data.map(x => {
     return { label: cartographySourceMapper[x], value: x }}))
   .then(data => [{ label: "Fonds par défaut", value: "default" }].concat(data))  // add the default value as the first element of `data`
   .then(data => { cartographySources.value = data; });
+}
+
+function getGranularities() {
+  let sorter = ["parcelle", "point", "galerie", "aile", "ensemble"];
+  axios.get(new URL("/i/cartography-main/cartography/granularity", __API_URL__))
+  .then(r => r.data)
+  .then(data => data.sort((a,b) =>
+    sorter.indexOf(a) - sorter.indexOf(b)))
+  .then(data => data.map(x => { return {label:x, value:x} }))
+  .then(data => [{ label: "Par défault", value: "default" }].concat(data))
+  .then(data => { cartographyGranularities.value = data; });
 }
 
 function emitFilterUpdate(inputData) {
@@ -143,17 +162,23 @@ function emitFilterUpdate(inputData) {
     cartographySource:                                     // String | Undefined. if inputData.cartographySource is a string, then a source has been selected, and return it. otherwise, return undefined
       typeof inputData.cartographySource === 'string' || inputData.cartographySource instanceof String
       ? inputData.cartographySource
+      : undefined,
+    cartographyGranularity:
+      typeof inputData.cartographyGranularity === 'string' || inputData.cartographyGranularity instanceof String
+      ? inputData.cartographyGranularity
       : undefined
   }
   emit("filterUpdate", newFilter);
 }
+
 
 const onSubmit = () => {};
 
 /***************************************/
 
 onMounted(() => {
-  getData();
+  getSources();
+  getGranularities();
   $(document).on("keydown", escHandler);
 
 })

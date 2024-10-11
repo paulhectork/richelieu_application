@@ -12,7 +12,7 @@ import { cartographySourcePriority } from "@globals";
  */
 export const sortAddressBySource = (arr) =>
   arr.sort((a,b) =>
-    arr.indexOf(a.source) - cartographySourcePriority.indexOf(b.source));
+    cartographySourcePriority.indexOf(a.source) - cartographySourcePriority.indexOf(b.source));
 
 /**
  * reorder an array of `cartography` objects by the order specified in `cartographySourcePriority`

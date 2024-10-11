@@ -217,7 +217,7 @@ class Address(db.Model):
                  "source"  : self.source,               # str
                  "date"    : int4range2list(self.date), # t.List[int]
 
-                 "place": self.get_place(),             # t.List[t.Dict]
+                 "place"    : self.get_place(),             # t.List[t.Dict]
                  "directory": self.get_directory()      # t.List[t.Dict]
         }
 

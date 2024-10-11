@@ -358,7 +358,7 @@ def cartography_places():
     places = featurelist_to_featurecollection(places)
     return jsonify(places)
 
-@app.route("/i/cartography-main/cartography-sources")
+@app.route("/i/cartography-main/cartography/source")
 def cartography_sources():
     """
     get a list of all distinct Cartography.map_source
@@ -371,7 +371,7 @@ def cartography_sources():
     return jsonify(sources)
 
 
-@app.route("/i/cartography-main/cartography/<string:cartography_source>")
+@app.route("/i/cartography-main/cartography/source/<string:cartography_source>")
 def cartography_for_source(cartography_source:str):
     """
     return a list of Cartography objects with Cartography.map_source == cartography_source
@@ -379,6 +379,29 @@ def cartography_for_source(cartography_source:str):
     r = (db.session
         .execute( select(Cartography).filter(Cartography.map_source == cartography_source) )
         .all())
+    return jsonify([ c[0].serialize_lite() for c in r ])
+
+
+@app.route("/i/cartography-main/cartography/granularity")
+def cartography_granularity():
+    """
+    get a list of all distinct `Cartography.granularity` values
+    and return it as a list of strings
+    """
+    gran = (db.session
+           .execute( select(func.distinct(Cartography.granularity)) )
+           .all())
+    gran = [ g[0] for g in gran ]
+    return jsonify(gran)
+
+@app.route("/i/cartography-main/cartography/granularity/<string:cartography_granularity>")
+def cartography_for_granularity(cartography_granularity: str):
+    """
+    get all cartography sources for a certain granularity
+    """
+    r = (db.session
+        .execute( select(Cartography).filter(Cartography.granularity == cartography_granularity) )
+        .all() )
     return jsonify([ c[0].serialize_lite() for c in r ])
 
 

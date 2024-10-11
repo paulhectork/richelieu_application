@@ -93,10 +93,11 @@ const lflInfoHover      = ref();  // an L.Controller that displays info on hover
 const lflFallBackBounds = ref();  // L.LatLngBounds
 
 // data from the backend
-const places               = ref({});  // the default geoJson describing places, with no filters. not modified after being fetched from the backend
-const placesFilter         = ref({});  // the geoJson describing places, with filters
-const cartographyForSource = ref();    // { source: "sourceName", features: [] }
-const currentFeatureCount = ref();     // number of features currently displayed on the map
+const places                    = ref({});  // the default geoJson describing places, with no filters. not modified after being fetched from the backend
+const placesFilter              = ref({});  // the geoJson describing places, with filters
+const cartographyForSource      = ref();    // { source: "sourceName", features: [] }. `features` contains all rows of the `Cartography` table with the same "sourceName"
+const cartographyForGranularity = ref();    // { granularity: "granularityName", features: [] }. `features` contains all rows of the `Cartography` table with the same "granularityName"
+const currentFeatureCount = ref();          // number of features currently displayed on the map
 
 const transDur     = 500;  // transition duration in JS
 const transDurCss  = ".5s";  // transition duration in CSS
@@ -131,10 +132,14 @@ function getInitPlaces() {
 }
 
 const getCartographyForSource = (cartographySource) =>
-  axios.get(new URL(`/i/cartography-main/cartography/${cartographySource}`, __API_URL__))
+  axios.get(new URL(`/i/cartography-main/cartography/source/${cartographySource}`, __API_URL__))
   .then(r => r.data)
   .then(data => { return { "source": cartographySource, "features": data } });
 
+const getCartographyForGranularity = (cartographyGranularity) =>
+  axios.get(new URL(`/i/cartography-main/cartography/granularity/${cartographyGranularity}`, __API_URL__))
+  .then(r => r.data)
+  .then(data => { return { "granularity": cartographyGranularity, "features": data } });
 
 /************************************************************/
 /** leaflet stuff */
@@ -318,16 +323,6 @@ function addPlaces(init) {
   return;
 }
 
-/**
- * add data to the map and set the global variables
- * @param {L.Map} _map: the leaflet map
- * @param {Object} _places: the geoJson data to add to the map
- * @param {bool} init: is it the first time this function is called ?
- * @param {undefined | Object}: data to update `_cartographyForSource` with. if undefined, it won't be updated
- */
-function mapSetter(init) {
-}
-
 /************************************************************/
 /** handler for CartographyController */
 
@@ -342,11 +337,16 @@ function mapSetter(init) {
  * @param {Object} newFilter: the filter emitted by CartographyController.
  */
 function handleFilterUpdate(newFilter) {
-  // 1) variables
-  let placesGeoJson           = _.cloneDeep(places.value),  // without _.cloneDeep(), the modifications done to placesGeoJson below would be repercuted to `places.value`, which would break everything
-      _cartographyForSource   = cartographyForSource.value,
-      changeCartographySource = cartographyForSource.value?.source !== newFilter.cartographySource;
 
+  // 1) variables
+  let placesGeoJson                = _.cloneDeep(places.value),  // without _.cloneDeep(), the modifications done to placesGeoJson below would be repercuted to `places.value`, which would break everything
+      _cartographyForSource        = cartographyForSource.value,
+      _cartographyForGranularity   = cartographyForGranularity.value,
+      changeCartographySource      = _cartographyForSource?.source !== newFilter.cartographySource,
+      changeCartographyGranularity = _cartographyForGranularity?.granularity !== newFilter.cartographyGranularity;
+
+      console.log(_cartographyForGranularity?.granularity !== newFilter.cartographyForGranularity,
+    _cartographyForGranularity?.granularity, newFilter.cartographyGranularity);
   /**
    * this function updates the `_places` geojson by
    * 1) only keeping features for which we can find a vector in `_cartography`.
@@ -407,25 +407,25 @@ function handleFilterUpdate(newFilter) {
    *    _cartographyForSource: the newly fetched cartography matching the user defined-source
    */
   const updateByCartographySource = async (geoJsonObj) => {
-    console.log(`for : °${newFilter.cartographySource}°`);
+    // console.log(`for : °${newFilter.cartographySource}°`);
     if (  newFilter.cartographySource == null
        || newFilter.cartographySource === ""
        || newFilter.cartographySource.length === 0  // string of length 0
        || newFilter.cartographySource === "default"
     ) {
       // use the default cartography source => no need to change it
-      console.log("case 1")
+      // console.log("case 1")
       return [ geoJsonObj, _cartographyForSource ];
     } else if ( !changeCartographySource ) {
       // a non-default cartography source is used, but it's the same as
       // `_cartographyForSource` so no need to re-fetch it from the backend
-      console.log("case 2");
+      // console.log("case 2");
       geoJsonObj = updatePlacesByCartography(geoJsonObj, _cartographyForSource);
       return [ geoJsonObj , _cartographyForSource ];
     } else {
       // a non-default cartography source is used and
       // we need to fetch it from the backend
-      console.log("case 3");
+      // console.log("case 3");
       return getCartographyForSource(newFilter.cartographySource)
              .then(r => {
               _cartographyForSource = r
@@ -434,24 +434,62 @@ function handleFilterUpdate(newFilter) {
             });
     }
   }
+  /**
+   * the same but for cartography.granuarity instead of cartography.source
+   */
+  const updateByCartographyGranularity = async (geoJsonObj) => {
+    if (  newFilter.cartographyGranularity == null
+       || newFilter.cartographyGranularity === ""
+       || newFilter.cartographyGranularity.length === 0  // string of length 0
+       || newFilter.cartographyGranularity === "default"
+    ) {
+      // default granularity => return default geojson
+      return [ geoJsonObj, _cartographyForGranularity ]
+    } else if ( !changeCartographyGranularity ) {
+      // data has aldready been fetched => no need to refetch it
+      geoJsonObj = updatePlacesByCartography(geoJsonObj, _cartographyForGranularity);
+      return [ geoJsonObj, _cartographyForGranularity ];
+    } else {
+      // granularity has changed => refetch
+      return getCartographyForGranularity(newFilter.cartographyGranularity)
+             .then(r => {
+               _cartographyForGranularity = r;
+               console.log(_cartographyForGranularity);
+               geoJsonObj = updatePlacesByCartography(geoJsonObj, _cartographyForGranularity);
+               return [ geoJsonObj, _cartographyForGranularity ];
+             });
+    }
+  }
+
+  ///////////////////////////////////////////////
+  // SEEMS TO WORK. CHECK IT OUT MORE + SEE IF
+  // I CAN REDUCE THE NUMBER OF TIMES THIS IS
+  // TRIGGERED, ESPECIALLY ON MOUNTING
+  // (TRIGGERED 3 TIMES ? )
+  ///////////////////////////////////////////////
 
   // 3) run the process, update the map and update globals.
   // all 3 `updateBy` functions are run: verifications are done within each
   // of them to check if there's a need to re-filter the data.
-  console.log("> 0 :", placesGeoJson.features.length);
+  // console.log("> 0 :", placesGeoJson.features.length);
   updateByCartographySource(placesGeoJson)
   .then(r => {
     [ placesGeoJson, _cartographyForSource ] = r;
-    console.log("> 1 :", placesGeoJson.features.length);
-    placesGeoJson = updateByIconographyCount(placesGeoJson);
-    console.log("> 2 :", placesGeoJson.features.length);
-    placesGeoJson = updateByAddress(placesGeoJson);
-    console.log("> 3 :", placesGeoJson.features.length);
+    updateByCartographyGranularity(placesGeoJson)
+    .then(r => {
+      [ placesGeoJson, _cartographyForGranularity ] = r;
+        // console.log("> 1 :", placesGeoJson.features.length);
+        placesGeoJson = updateByIconographyCount(placesGeoJson);
+        // console.log("> 2 :", placesGeoJson.features.length);
+        placesGeoJson = updateByAddress(placesGeoJson);
+        // console.log("> 3 :", placesGeoJson.features.length);
 
-    placesFilter.value = placesGeoJson;
-    currentFeatureCount.value = placesGeoJson.features.length;
-    cartographyForSource.value = _cartographyForSource;
-    addPlaces(false);
+        placesFilter.value = placesGeoJson;
+        currentFeatureCount.value = placesGeoJson.features.length;
+        cartographyForGranularity.value = _cartographyForGranularity;
+        cartographyForSource.value = _cartographyForSource;
+        addPlaces(false);
+    })
   });
 
 }
