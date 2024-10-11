@@ -17,9 +17,7 @@
     <div class="cartography-controller-outer-wrapper"
          :class="{ 'cartography-controller-visible' : displayLeft }"
     ><CartographyController @close-cartography-controller="closeCartographyController"
-                            @filter-address="handleAddress"
-                            @filter-iconography-count="handleIconographyCount"
-                            @filter-cartography-source="handleCartographySource"
+                            @filter-update="handleFilterUpdate"
                             :places="places"
                             :currentFeatureCount="currentFeatureCount"
                             v-if="displayLeft"
@@ -68,13 +66,14 @@ const loadState    = ref("loading");  // loading/loaded/error
 // leaflet objects
 const lflMap            = ref();  // L.Map, defined in onMounted
 const lflPlaces         = ref();  // L.GeoJSON: the places geoJson as a leaflet L.geoJSON object. this object only contains features that match the user filters defined in `CartographyController`. it is this object that is actually added to the map
-const lflHoverInfo      = ref();  // an L.Controller that displays info on hover
+const lflInfoHover      = ref();  // an L.Controller that displays info on hover
 const lflFallBackBounds = ref();  // L.LatLngBounds
 
 // data from the backend
-const places               = ref({});  // the default geoJson with no filters. not modified after being fetched from the backend
-const cartographyForSource = ref();  // { source: "sourceName", features: [] }
-const currentFeatureCount = ref();  // number of features currently displayed on the map
+const places               = ref({});  // the default geoJson describing places, with no filters. not modified after being fetched from the backend
+const placesFilter         = ref({});  // the geoJson describing places, with filters
+const cartographyForSource = ref();    // { source: "sourceName", features: [] }
+const currentFeatureCount = ref();     // number of features currently displayed on the map
 
 // user filters defined in CartographyCOntroller
 const currentFilters = ref({
@@ -100,11 +99,18 @@ const colorClasses = [ [ [321, Infinity], colorScaleRed(0/7) ] // marina's color
 /************************************************************/
 /** ajax stuff */
 
-function getPlaces() {
+/**
+ * fetch the Place table as a geoJson from the backend.
+ * only used in `onMounted()`, after creating the map.
+ */
+function getInitPlaces() {
   return Promise.all([
     axios.get(new URL("/i/cartography-main/places", __API_URL__))
     .then(r => r.data)
-    .then(data => { places.value = data; })
+    .then(data => { places.value              = data;
+                    placesFilter.value        = data;  // by default, no filters are applied
+                    currentFeatureCount.value = data.features.length;
+                  })
   ])
 }
 
@@ -141,9 +147,10 @@ function closeCartographyController() {
  *    - ctrlOpener : to display the `CartographyController` component on click,
  *    - presOpener : to display the intro presentation on click.
  */
-function addControls(_map) {
+function addControls() {
 
-  const infoHover  = new L.control({ position: "topright" }),
+  const _map       = lflMap.value,
+        infoHover  = new L.control({ position: "topright" }),
         ctrlOpener = new L.Control({ position: "bottomleft" }),
         presOpener = new L.Control({ position: "bottomleft" });
 
@@ -200,7 +207,9 @@ function addControls(_map) {
   presOpener.addTo(_map);
   infoHover.addTo(_map);
 
-  return [ _map, infoHover ];
+  lflInfoHover.value = infoHover;
+  // lflMap.value       = _map;
+  return;
 }
 
 /**
@@ -227,8 +236,9 @@ const styleFeature = (feature) => {
  * @param {L.GeoJSON} leafletGeoJson: the geoJson the layer belongs to
  * @param {L.Map} _map: the leaflet map the geoJson is on.
  */
-const onEachLayer = (layer, leafletGeoJson, _map) => {
-  const info = lflHoverInfo.value;
+const onEachLayer = (layer, leafletGeoJson) => {
+  const info = lflInfoHover.value,
+        _map = lflMap.value;
 
   // on click, change the opacity of the layer and display a sidebar
   layer.on("click", (e) => {
@@ -261,7 +271,13 @@ const onEachLayer = (layer, leafletGeoJson, _map) => {
  * @param {Object} _places: the geoJson data to add to the map
  * @param {bool} init: is it the first time this function is called ?
  */
-function addPlaces(_map, _places, init) {
+function addPlaces(init) {
+  let _map    = lflMap.value,
+      _places = placesFilter.value;
+
+  // remove the old geoJson if it exists
+  if ( lflPlaces.value )  _map.removeLayer(lflPlaces.value);
+
   // define the geojson
   const leafletPlaces = L.geoJSON(_places, {
     style: styleFeature,
@@ -276,10 +292,14 @@ function addPlaces(_map, _places, init) {
   // add to map and set the global variables
   if ( init ) { lflFallBackBounds.value = leafletPlaces.getBounds() };  // save the bounds of the full original geojson layer, in case we later add a geoJson feature with 0 layers (in which case we won't be able to compute bounds)
   leafletPlaces.addTo(_map);
+  console.log(_places.features.length, lflFallBackBounds.value);
   _map.fitBounds( _places.features.length
                 ? leafletPlaces.getBounds()
                 : lflFallBackBounds.value );
-  return [ _map, leafletPlaces ];
+
+  lflPlaces.value = leafletPlaces;
+  // lflMap.value    = _map;
+  return;
 }
 
 /**
@@ -289,64 +309,27 @@ function addPlaces(_map, _places, init) {
  * @param {bool} init: is it the first time this function is called ?
  * @param {undefined | Object}: data to update `_cartographyForSource` with. if undefined, it won't be updated
  */
-function mapSetter(_map, placesGeoJson, init, _cartographyForSource) {
-  if ( _cartographyForSource != null ) {
-    cartographyForSource.value = _cartographyForSource;
-  }
-  currentFeatureCount.value = placesGeoJson.features.length;
-  [ lflMap.value, lflPlaces.value ] = addPlaces( _map, placesGeoJson, init );
+function mapSetter(init) {
 }
 
 /************************************************************/
-/** handers for CartographyControllers */
-
-//TODO see if the entire formkit form can listen to changes on its components
-// to centralize definition of currentFilters.
+/** handler for CartographyController */
 
 /**
- * the 3 handle* functions update `currentFilters` with newly filtered
- * data from `CartographyController`. this will trigger the `watch(currentFilters)`
- * below to update the places geoJson and add it to the map.
- * in the `handle*` functions, the whole `currentFilters` is redefined
- * because just setting a new value for a property won't trigger the `watch()`
+ * when the `CartographyController` form emits a new
+ * user-defined filter (`newFilter`),
+ * 1) generate a new geoJson for places matching `newFilter`.
+ *    this includes filtering `places.value` to match `newFilter`
+ *    and modifying each the feature's geometries to match
+ *    `newFilter.cartographySource`, if necessary
+ * 2) add the new geoJson to the map.
+ * @param {Object} newFilter: the filter emitted by CartographyController.
  */
- function handleAddress(newAddress) {
-  currentFilters.value = {
-    address           : newAddress,
-    iconographyCount  : currentFilters.value.iconographyCount,
-    cartographySource : currentFilters.value.cartographySource
-  };
-}
-function handleIconographyCount(newIconographyCount) {
-  currentFilters.value = {
-    address           : currentFilters.value.address,
-    iconographyCount  : newIconographyCount,
-    cartographySource : currentFilters.value.cartographySource
-  };
-}
-function handleCartographySource(newCartographySource) {
-  currentFilters.value = {
-    address           : currentFilters.value.address,
-    iconographyCount  : currentFilters.value.iconographyCount,
-    cartographySource : newCartographySource
-  }
-}
-
-/************************************************************/
-
-/**
- * when changing filters in `CartographyController`, update
- * the displayed geoJson.
- */
-watch(currentFilters, async (newFilters, oldFilters) => {
+function handleFilterUpdate(newFilter) {
   // 1) variables
-  let _map                  = lflMap.value,
-      placesGeoJson         = _.cloneDeep(places.value),  // without _.cloneDeep(), the modifications done to placesGeoJson below would be repercuted to `places.value`, which would break everything
-      placesLeaflet         = lflPlaces.value,
-      _cartographyForSource = cartographyForSource.value,
-      // changeAddress           = newFilters.address !== oldFilters.address
-      //changeIconographyCount  = newFilters.iconographyCount !== oldFilters.iconographyCount,
-      changeCartographySource = newFilters.cartographySource !== oldFilters.cartographySource;
+  let placesGeoJson           = _.cloneDeep(places.value),  // without _.cloneDeep(), the modifications done to placesGeoJson below would be repercuted to `places.value`, which would break everything
+      _cartographyForSource   = cartographyForSource.value,
+      changeCartographySource = cartographyForSource.value?.source !== newFilter.cartographySource;
 
   /**
    * this function updates the `_places` geojson by
@@ -373,42 +356,46 @@ watch(currentFilters, async (newFilters, oldFilters) => {
   // 2) define functions for each individual filter
   /**
    * only keep the features in `geoJsonObj` with an iconography_count
-   * contained in the range `newFilters.iconographyCount`
+   * contained in the range `newFilter.iconographyCount`
    */
   const updateByIconographyCount = (geoJsonObj) => {
-    // if newFilters.iconographyCount is null or has no len, this filter is not set => reset back to the original placesGeoJson
-    if ( newFilters.iconographyCount != null && newFilters.iconographyCount.length ) {
+    // if newFilter.iconographyCount is null or has no len, this filter is not set => reset back to the original placesGeoJson
+    if ( newFilter.iconographyCount != null && newFilter.iconographyCount.length ) {
       geoJsonObj.features = geoJsonObj.features.filter(f =>
-        newFilters.iconographyCount[0] <= f.properties.iconography_count
-        && f.properties.iconography_count <= newFilters.iconographyCount[1]);
+        newFilter.iconographyCount[0] <= f.properties.iconography_count
+        && f.properties.iconography_count <= newFilter.iconographyCount[1]);
     }
     return geoJsonObj
   }
   /**
    * only keep the features in `geoJsonObj` that have an address contained
-   * within `newFilters.address`
+   * within `newFilter.address`
    */
   const updateByAddress = (geoJsonObj) => {
-    // console.log(newFilters.address);
-    if ( newFilters.address != null && newFilters.address.length ) {
+    // console.log(newFilter.address);
+    if ( newFilter.address != null && newFilter.address.length ) {
       geoJsonObj.features = geoJsonObj.features.filter(f =>
-        newFilters.address.includes(f.properties.address[0].id_uuid));
+        newFilter.address.includes(f.properties.address[0].id_uuid));
     }
     return geoJsonObj;
   }
   /**
    * only keep the features in `geoJsonObj` that can be represented by
-   * the source `newFilters.cartographySource` and update the vector
-   * of these features to come from the source `newFilters.cartographySources`.
+   * the source `newFilter.cartographySource` and update the vector
+   * of these features to come from the source `newFilter.cartographySources`.
    * this function is different than the 2 above because it is async and requires
    * to fetch data from the backend.
+   *
+   * @returns:
+   *    geoJsonObj: the geoJson object after filtering
+   *    _cartographyForSource: the newly fetched cartography matching the user defined-source
    */
   const updateByCartographySource = async (geoJsonObj) => {
-    console.log(`for : °${newFilters.cartographySource}°`);
-    if (  newFilters.cartographySource == null
-       || newFilters.cartographySource === ""
-       || newFilters.cartographySource.length === 0  // string of length 0
-       || newFilters.cartographySource === "default"
+    console.log(`for : °${newFilter.cartographySource}°`);
+    if (  newFilter.cartographySource == null
+       || newFilter.cartographySource === ""
+       || newFilter.cartographySource.length === 0  // string of length 0
+       || newFilter.cartographySource === "default"
     ) {
       // use the default cartography source => no need to change it
       console.log("case 1")
@@ -423,7 +410,7 @@ watch(currentFilters, async (newFilters, oldFilters) => {
       // a non-default cartography source is used and
       // we need to fetch it from the backend
       console.log("case 3");
-      return getCartographyForSource(newFilters.cartographySource)
+      return getCartographyForSource(newFilter.cartographySource)
              .then(r => {
               _cartographyForSource = r
               geoJsonObj = updatePlacesByCartography(geoJsonObj, _cartographyForSource);
@@ -432,22 +419,28 @@ watch(currentFilters, async (newFilters, oldFilters) => {
     }
   }
 
-  // 3) run the process and update globals (done in an if...else because
+  // 3) run the process, update the map and update globals.
   // all 3 `updateBy` functions are run: verifications are done within each
   // of them to check if there's a need to re-filter the data.
+  console.log("> 0 :", placesGeoJson.features.length);
   updateByCartographySource(placesGeoJson)
   .then(r => {
     [ placesGeoJson, _cartographyForSource ] = r;
-    console.log("°°°", placesGeoJson.features.length);
     console.log("> 1 :", placesGeoJson.features.length);
     placesGeoJson = updateByIconographyCount(placesGeoJson);
     console.log("> 2 :", placesGeoJson.features.length);
     placesGeoJson = updateByAddress(placesGeoJson);
-    _map.removeLayer(placesLeaflet);
+    console.log("> 3 :", placesGeoJson.features.length);
 
-    mapSetter(_map, placesGeoJson, false, _cartographyForSource);
+    placesFilter.value = placesGeoJson;
+    currentFeatureCount.value = placesGeoJson.features.length;
+    cartographyForSource.value = _cartographyForSource;
+    addPlaces(false);
   });
-})
+
+}
+
+/************************************************************/
 
 /**
  * when (un)mounting `CartographyPlaceInfo`, the size of the map changes.
@@ -467,13 +460,14 @@ watch(placeIdUuid, (newId, oldId) =>
   : ''
 )
 
+/************************************************************/
+
 onMounted(() => {
   lflMap.value = globalDefineMap("map-main");  // synchronous
-  [ lflMap.value, lflHoverInfo.value ] = addControls( lflMap.value );
-  getPlaces().then(() =>
-    mapSetter(lflMap.value, places.value, true, undefined) );
-
+  addControls(lflMap.value);
+  getInitPlaces().then(() => addPlaces(true))
 })
+
 </script>
 
 

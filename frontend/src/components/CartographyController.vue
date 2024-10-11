@@ -28,7 +28,7 @@
                                   outerClass   : 'form-submit-outer' }"
                  @submit="''/*onSubmit*/"
                  :actions="false"
-                 @input="console.log('changed')"
+                 @input="emitFilterUpdate"
         >
           <FormKit type="fkSelect"
                    placeholder="Sélectionner une addresse"
@@ -38,12 +38,12 @@
                    :options="places.features.map(x => {
                     return { label : x.properties.address[0].address,
                              value : x.properties.address[0].id_uuid  }})"
-                   @input="data => emit('filterAddress', data)"
+                   @input="''/*data => emit('filterAddress', data)*/"
           ></FormKit>
 
           <FormKit type="fkSlider"
                    outer-class="fk-range"
-                   name="iconography-count"
+                   name="iconographyCount"
                    id="iconography-count"
                    label="Nombre de ressources iconographiques"
                    help="Filtrer par nombre de ressources iconographiques"
@@ -53,18 +53,18 @@
                      places.features.map(x => x.properties.iconography_count))"
                    :maxVal="Math.max.apply(null,
                      places.features.map(x => x.properties.iconography_count))"
-                   @input="data => emit('filterIconographyCount', data)"
+                   @input="''/*data => emit('filterIconographyCount', data)*/"
           ></FormKit>
 
           <FormKit v-if="cartographySources.length"
                    type="fkSelect"
-                   name="cartography-source"
+                   name="cartographySource"
                    id="cartography-source"
                    label="Changer de source cartographique"
                    help="Sélectionner une autre source cartographique"
                    :options="cartographySources"
                    :multiple="false"
-                   @input="data => emit('filterCartographySource', data)"
+                   @input="''/*data => emit('filterCartographySource', data)*/"
           ></FormKit>
 
         </FormKit>
@@ -80,6 +80,7 @@ import { onMounted, onUnmounted, ref } from "vue";
 
 import axios from "axios";
 import $ from "jquery";
+import _ from "lodash";
 
 import UiButtonCross from "@components/UiButtonCross.vue";
 
@@ -89,9 +90,8 @@ import { sortCartographyBySource } from "@utils/array";
 /***************************************/
 
 const emit   = defineEmits(["closeCartographyController"
-                           , "filterAddress"
-                           , "filterIconographyCount"
-                           , "filterCartographySource" ]);
+                           , "filterUpdate"
+                           ]);
 const props  = defineProps([ "places"
                            , "currentFeatureCount" ]);
 const places = props.places;  // the whole place geoJson
@@ -112,6 +112,19 @@ function getData() {
     return { label: cartographySourceMapper[x], value: x }}))
   .then(data => [{ label: "Fonds par défaut", value: "default" }].concat(data))  // add the default value as the first element of `data`
   .then(data => { cartographySources.value = data; });
+}
+
+function emitFilterUpdate(inputData) {
+  inputData = _.cloneDeep(inputData);  // transform proxies into normal objects
+  const newFilter = {
+    address: inputData.address || [],                      // Array<String?> | Proxy<Array<String?>>
+    iconographyCount: inputData.iconographyCount || [],    // Array<Number?> | Proxy<Array<Number?>>
+    cartographySource:                                     // String | Undefined. if inputData.cartographySource is a string, then a source has been selected, and return it. otherwise, return undefined
+      typeof inputData.cartographySource === 'string' || inputData.cartographySource instanceof String
+      ? inputData.cartographySource
+      : undefined
+  }
+  emit("filterUpdate", newFilter);
 }
 
 const onSubmit = () => {};
