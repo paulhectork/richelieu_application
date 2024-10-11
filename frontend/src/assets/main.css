@@ -192,6 +192,12 @@
   --cs-navbar-height: max(7vh, 50px);
 
   /*
+  in portrait mode, the sidebar is a horizontal banner on
+  the bottom of the page. this is its size.
+  */
+  --cs-portrait-footer-height: 10vh;
+
+  /*
   --cs-sidebar-width-desktop: 25vw;
   --cs-sidebar-width-mobile: 60vw;
   */

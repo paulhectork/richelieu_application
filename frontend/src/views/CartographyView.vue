@@ -1,6 +1,26 @@
-<!--
+<!-- CartographyController.vue
+     an cartographic interface to explore spatial
+     (Places & Cartography tables) and image data (Iconography table).
+     based on Marina Hervieu's prototype : https://github.com/MapunaH/code-stage
 
-     based on: https://github.com/MapunaH/code-stage
+     lifecycle for updating the map's data:
+     * onMounted:
+        - the map is defined
+        - controllers are added
+        - the places geoJSON is fetched from the backend.
+          it is stored in 2 refs:
+          - `places`, a geoJSON which is never changed after being created,
+            stores the initial state of the map.
+          - `placesFilter` is a geoJSON that can be modified according to
+            user filters. it's this element that's added to the leaflet map.
+            onMounted, `placesFilter` is a copy of `places`.
+        - `placesFilter` is added to the map as an L.GeoJSON
+     * on emit of CartographyController.filterUpdate:
+        - `placesFilter` is redefined by filtering `places` using
+            the user defined filters, and by fetching/updating its
+            geometries from the backend
+        - the old leaflet geoJSON is removed from the map.
+        - `placesFilter` is added to the map as a geoJSON.
 
      the displaying of the right block (CartographyPlaceInfo) is
      determined by the value of `displayRight` and `placeIdUuid`.
@@ -20,7 +40,10 @@
                             @filter-update="handleFilterUpdate"
                             :places="places"
                             :currentFeatureCount="currentFeatureCount"
-                            v-if="displayLeft"
+                            v-if="placesFilter !== undefined
+                                  && Object.keys(placesFilter).length
+                                  && places !== undefined
+                                  && Object.keys(places).length"
     ></CartographyController></div>
 
     <div class="cartography-wrapper">
@@ -74,13 +97,6 @@ const places               = ref({});  // the default geoJson describing places,
 const placesFilter         = ref({});  // the geoJson describing places, with filters
 const cartographyForSource = ref();    // { source: "sourceName", features: [] }
 const currentFeatureCount = ref();     // number of features currently displayed on the map
-
-// user filters defined in CartographyCOntroller
-const currentFilters = ref({
-  address           : [],        // Array<string>: the selected addresses. display all if empty
-  iconographyCount  : [],        // Array<integer>: the min/max range of iconographies to display
-  cartographySource : "default"  // string: which cartography source to use. if "default", show all that's in the `Place` database, regardless of source
-});
 
 const transDur     = 500;  // transition duration in JS
 const transDurCss  = ".5s";  // transition duration in CSS
@@ -472,18 +488,34 @@ onMounted(() => {
 
 
 <style scoped>
+/**
+ * about the style:
+ *
+ * the page is contained by .cartography-outer-wrapper
+ * which is divided in 3 hztl blocks. by default, the
+ * center block is visible, left and right are hidden.
+ *
+ * to display the left, block, `transform: translateX()`
+ * is used to make the left block visible
+ *
+ * to display the right block, the whole `.cartography-outer-wrapper`'s
+ * grid-template-column is updated:
+ * - block 1 (CartographyController) is not changed
+ * - block 2 (#map-main): width is reduced
+ * - block 2 (CartographyPlaceInfo): width is augmented to make it visible.
+ */
 .cartography-outer-wrapper {
-  height: 100%;
+  height: calc(100vh - var(--cs-navbar-height) - var(--cs-portrait-footer-height));
   width: 100%;
-
   display: grid;
-  grid-template-columns: 30% 100% 30%;
+  grid-template-rows: 100%;
+  grid-template-columns: 100% 100% 100%;
 
-  transform: translateX(-30%);
+  transform: translateX(-100%);
   transition: grid-template-columns v-bind("transDurCss");
 }
 .cartography-outer-wrapper.right-visible {
-  grid-template-columns: 30% 70% 30%;
+  grid-template-columns: 100% 0% 100%;
 }
 .cartography-place-wrapper {
   z-index: 400;
@@ -491,11 +523,28 @@ onMounted(() => {
   width: 100%;
 }
 
+@media ( orientation:landscape ) {
+  .cartography-outer-wrapper {
+    height: calc(100vh - var(--cs-navbar-height));
+    grid-template-columns: 30% 100% 30%;
+    transform: translateX(-30%);
+  }
+  .cartography-outer-wrapper.right-visible {
+    grid-template-columns: 30% 70% 30%;
+  }
+}
+
 /**************************************/
 
 #map-main {
-  height: 100%;
+  height: calc(100vh - var(--cs-navbar-height) - var(--cs-portrait-footer-height));
   width: 100%;
+  overflow-y: hidden;
+}
+@media ( orientation:landscape ) {
+  #map-main {
+    height: calc(100vh - var(--cs-navbar-height));
+  }
 }
 #map-main :deep(.infobox) {
   padding: 6px 8px;
@@ -536,6 +585,7 @@ onMounted(() => {
   background-color: var(--cs-main-default-bg);
   color: var(--cs-main-default);
   border-right: var(--cs-main-border);
+  transition: transform v-bind(transDurCss);
 }
 .cartography-controller-visible {
   transform: translateX(100%);

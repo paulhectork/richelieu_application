@@ -148,13 +148,15 @@ onUnmounted(() => {
   overflow-y: scroll;
   overflow-x: hidden;
 
-  /* on mobile, TheSidebar is on the bottom of the page
-     with a height of 15vh; on desktop, it is on the side
-     of the page width a width of 10vw.
-   */
+  /*
+  on mobile, TheSidebar is on the bottom of the page
+  with a height of var(--cs-portrait-footer-height).
+  on desktop, it is on the side of the page width a
+  width of 10%.
+  */
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: 85% 15%;
+  grid-template-rows: calc(100% - var(--cs-portrait-footer-height)) var(--cs-portrait-footer-height);
 
   margin-top: var(--cs-navbar-height);
   height: calc(100vh - var(--cs-navbar-height));
