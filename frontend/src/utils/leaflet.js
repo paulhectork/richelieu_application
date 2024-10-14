@@ -61,11 +61,11 @@ export function buildWmsTile(serverUrl, layer, pane=undefined, minZoom=7, maxZoo
     {
       pane: pane !== undefined && pane !== "" ? pane : "tilePane",  // if no pane is defined, add the default value
       layers: layer,
-      minZoom : minZoom,
-      maxZoom : maxZoom,
+      minZoom: minZoom,
+      maxZoom: maxZoom,
       version: "1.3.0",
       uppercase: true,
-      attribution : "<a href='https://www.geoportail.gouv.fr/'>IGN-F/Geoportail</a>",
+      attribution: "<a href='https://www.geoportail.gouv.fr/'>IGN-F/Geoportail</a>",
     }
   )
 }
@@ -177,5 +177,44 @@ export const layerBounds = (layer) => {
     , [ layer.getLatLng().lat + pointBounds.lat, layer.getLatLng().lng + pointBounds.lat ]
     ]
 }
+
+/**
+ * generates a default marker at position `latLng`
+ * @example in an L.geoJSON's options:
+ *    pointToLayer: (gjPoint, latLng) => lflDefaultMarker(latLng);
+ * @param {<Array<Array<Number>>> | L.LatLng} latLng: point to place the map on
+ * @returns
+ */
+export const lflDefaultMarker = (latLng) =>
+  L.circleMarker(latLng, { radius: 6, pane: "markerPane" });
+
+/**
+ * default `style` function for a geoGson.
+ * see:
+ *  https://leafletjs.com/reference.html#path
+ * @param {L.Feature} feature: the feature we're styling
+ * @returns {Object}
+ */
+export const lflDefaultStyle = (feature) => {
+  return { stroke: true,
+           color: "var(--cs-main-default)",
+           weight: 1,
+           fillColor: "var(--cs-plum)",
+           fillOpacity: 0.5,
+           className: "place-gj"
+         }
+}
+
+/**
+ * default mouseover and mouseout actions on a layer
+ * @param {L.Layer} layer
+ */
+export const lflDefaultMouseOver = (layer) => {
+  console.log(layer);
+  layer.setStyle({ color: layer.options.fillColor, weight: 3 })
+};
+export const lflDefaultMouseOut = (layer) =>
+  layer.setStyle({ color: "black", weight: 1 });
+
 
 

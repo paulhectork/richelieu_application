@@ -31,7 +31,8 @@
 
     <div class="index-container">
       <table>
-        <tr v-for="d in data" class="animate__animated animate__bounceInUp">
+        <tr v-for="d in data"
+            class="animate__animated animate__bounceInUp">
           <td>
             <span class="place-text"
                   v-html="capitalizeFirstChar(d.text)"
@@ -71,7 +72,12 @@ import "leaflet/dist/leaflet.css";
 
 import UiButtonLink from "@components/UiButtonLink.vue";
 import UiButtonMap from "@components/UiButtonMap.vue";
-import { globalDefineMap } from "@utils/leaflet.js";
+
+import { globalDefineMap
+       , lflDefaultMarker
+       , lflDefaultStyle
+       , lflDefaultMouseOver
+       , lflDefaultMouseOut  } from "@utils/leaflet.js";
 import { clickOrTouchEvent } from "@globals";
 import { capitalizeFirstChar } from "@utils/strings";
 
@@ -105,15 +111,16 @@ function displayVector(e) {
     const gjPlace = L.geoJSON(
       JSON.parse(r.request.response)[0].vector,  // données geojson
       {
-        style: { className: "place-gj" },
+        style: lflDefaultStyle,
+        pointToLayer: (gjPoint, latLng) => lflDefaultMarker(latLng),
         onEachFeature: (feature, layer) => {
           // the layer will be removed
           layer.toRemove = true;
           // events
           layer.on({
             // interactive style
-            mouseover: (e) => e.target.setStyle({ fillOpacity: 1 }),
-            mouseout : (e) => e.target.setStyle({ fillOpacity: 0.5 }),
+            mouseover: (e) => lflDefaultMouseOver(layer),
+            mouseout : (e) => lflDefaultMouseOut(layer),
             // redirect to PlaceMainView when clicking on the geojson
             click   : () => { window.location.href = placeUrl },
             touchend: () => { window.location.href = placeUrl }

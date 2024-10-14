@@ -54,7 +54,11 @@ import { onMounted, ref, computed } from "vue";
 import L from "leaflet";
 import $ from "jquery";
 
-import { globalDefineMap } from "@utils/leaflet.js";
+import { globalDefineMap
+       , lflDefaultMarker
+       , lflDefaultStyle
+       , lflDefaultMouseOver
+       , lflDefaultMouseOut } from "@utils/leaflet.js";
 import { cartographySourceMapper, cartographySourcePriority } from "@globals";
 import { sortCartographyBySource, sortAddressBySource } from "@utils/array.js";
 import { urlToCartographyFile } from "@utils/url.js";
@@ -104,14 +108,15 @@ function updateMap(_map, _source, _currentCartography) {
   // define the new vector (GeoJSON) and raster layers (ImageOverlay)
   let vector, raster;
   vector = L.geoJSON(_currentCartography.vector, {
-    style: { className: "place-gj" },
+    style: lflDefaultStyle, //{ className: "place-gj" },
     className: "to-remove",
+    pointToLayer: (gjPoint, latLng) => lflDefaultMarker(latLng),
     onEachFeature: (feature, layer) => {
       layer.toRemove = true;  // flag to make sure that the layer will be removed
       layer.on({
         // interactive style
-        mouseover: (e) => e.target.setStyle({ fillOpacity: 1 }),
-        mouseout : (e) => e.target.setStyle({ fillOpacity: 0.5 }),
+        mouseover: (e) => lflDefaultMouseOver(layer),
+        mouseout : (e) => lflDefaultMouseOut(layer),
       })
     }
   });

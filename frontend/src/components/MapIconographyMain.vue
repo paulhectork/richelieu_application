@@ -18,9 +18,11 @@
 import axios from "axios";
 import { ref, onMounted } from "vue";
 
-import $ from "jquery";
-
-import { globalDefineMap } from "@utils/leaflet";
+import { globalDefineMap
+       , lflDefaultMarker
+       , lflDefaultStyle
+       , lflDefaultMouseOver
+       , lflDefaultMouseOut } from "@utils/leaflet";
 import { urlToFrontendPlace } from "@utils/url";
 
 /******************************************************/
@@ -45,10 +47,13 @@ async function buildPlacePopup(placeUuid) {
 async function buildMap() {
   const _map = await globalDefineMap(props.lflId);
   const gjPlace = L.geoJSON(props.placeGeoJson, {
+    pointToLayer: (gjPoint, latLng) => lflDefaultMarker(latLng),
+    style: lflDefaultStyle,
     onEachFeature: (feature, layer) => {
       // fetch place info aynchronously and create a popup
-      buildPlacePopup(feature.properties.id_uuid)
-      .then(popupContent => layer.bindPopup(popupContent) )
+      buildPlacePopup(feature.properties.id_uuid).then(popupContent => layer.bindPopup(popupContent));
+      layer.on("mouseover", (e) => lflDefaultMouseOver(layer));
+      layer.on("mouseout", (e) => lflDefaultMouseOut(layer));
     }
   });
   gjPlace.addTo(_map);

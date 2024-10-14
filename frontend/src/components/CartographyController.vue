@@ -28,7 +28,14 @@
       ></UiButtonCross>
     </div>
 
-    <div class="cc-inner-wrapper">
+    <div v-if="places == null"
+         class="cc-inner-wrapper"
+    >
+      <UiLoader></UiLoader>
+    </div>
+    <div class="cc-inner-wrapper"
+         v-else
+    >
       <h2>Filtrer les données</h2>
       <h3>
         <span v-if="props.currentFeatureCount>1">{{ currentFeatureCount }}
@@ -111,6 +118,7 @@ import $ from "jquery";
 import _ from "lodash";
 
 import UiButtonCross from "@components/UiButtonCross.vue";
+import UiLoader from "@components/UiLoader.vue";
 
 import { cartographySourceMapper } from "@globals";
 import { sortCartographyBySource } from "@utils/array";
@@ -131,7 +139,8 @@ const cartographyGranularities = ref([]);
 /**
  * emit an event to close this component on pressing `keydown.escape`
  */
-const escHandler = (e) => e.key === "Escape" ? emit("closeCartographyController") : "";
+const escHandler = (e) =>
+  e.key === "Escape" ? emit("closeCartographyController") : "";
 
 function getSources() {
   axios.get(new URL("/i/cartography-main/cartography/source", __API_URL__))
