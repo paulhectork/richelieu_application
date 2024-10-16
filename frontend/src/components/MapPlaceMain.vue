@@ -166,7 +166,7 @@ function sourceHook(_source) {
 /************************************************************/
 
 onMounted(() => {
-  map.value = globalDefineMap("mpm-map");
+  map.value = globalDefineMap("mpm-map")[0];
   let _source = sortCartographyBySource(props.place.cartography)[0].map_source
   sourceHook(_source);
 })

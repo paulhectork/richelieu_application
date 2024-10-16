@@ -3,6 +3,24 @@
      (Places & Cartography tables) and image data (Iconography table).
      based on Marina Hervieu's prototype : https://github.com/MapunaH/code-stage
 
+     page structure:
+     * left : CartographyController
+        a controller that contains a form that allows to filter
+        which places are displayed.
+        - its display is controller by `displayLeft`
+     * center : this component
+     * right : CartographyPlaceInfo
+        a block that is displayed when a plot is clicked and shows
+        (mostly) the iconography related to it
+        - its display depends on `displayRight` and `placeIdUuid`.
+           - `placeIdUuid` controls the creation of `CartographyPlaceInfo`
+           - `displayRight` (bool) changes the CSS display to allow the
+             block to be visible.
+     * modal :
+        an explanatory modal displayed when opening the map,
+        or when clicking on UiButtonQuestion
+        - is display is controlled by `displayModal`
+
      lifecycle for updating the map's data:
      * onMounted:
         - the map is defined
@@ -22,11 +40,6 @@
         - the old leaflet geoJSON is removed from the map.
         - `placesFilter` is added to the map as a geoJSON.
 
-     the displaying of the right block (CartographyPlaceInfo) is
-     determined by the value of `displayRight` and `placeIdUuid`.
-     - `placeIdUuid` controls the creation of `CartographyPlaceInfo`
-     - `displayRight` (bool) changes the CSS display to allow the
-       block to be visible.
 -->
 
 <template>
@@ -61,26 +74,12 @@
       ></CartographyPlaceInfo>
     </div>
 
-    <div v-if="displayModal"
-         class="c-modal-outer-wrapper"
-    >
-      <div class="c-modal-inner-wrapper negative-default">
-        <div class="c-modal-title-wrapper">
-          <h1>Cartographie du Quartier</h1>
-          <span><UiButtonCross @click="displayModal=false">
-          </UiButtonCross></span>
-        </div>
-        <div class="c-modal-text-wrapper">
-          <div class="c-modal-text">
-            <p>Qui iusto officia nam non vel consequatur commodi sit. Pariatur est similique explicabo quaerat. Quia optio exercitationem cum magnam. Eius earum vitae autem earum tenetur placeat veniam enim.</p>
-            <p>Quaerat officia harum error consectetur veritatis quia. Unde ut aut voluptas id. Fugiat harum assumenda neque possimus occaecati.</p>
-            <p>Non ab eveniet ab. Nam eligendi esse harum velit quia. Aut aperiam molestias nemo in. Quis corrupti odio aut amet corporis.</p>
-            <p>Vitae qui quas quaerat et. Amet sunt inventore sed velit. Est repellendus vero iusto illo perspiciatis nisi. Cum ut maxime et necessitatibus molestiae.</p>
-            <p>Ea explicabo eius totam. Unde sed eligendi fugiat ut voluptas magnam. Quibusdam nemo amet reiciendis asperiores ex labore. Tempore ut itaque ipsum sint sit quaerat tenetur. Qui aperiam quia sunt vitae minima consectetur. Voluptatem iusto vitae rem.</p>
-          </div>
-        </div>
-      </div>
+    <div class="c-modal-container">
+      <CartographyModal v-if="displayModal===true"
+                       @close-cartography-modal="closeCartographyModal"
+      ></CartographyModal>
     </div>
+
   </div>
 </template>
 
@@ -90,42 +89,46 @@ import { onMounted, ref, watch, h } from "vue";
 
 import axios from "axios";
 import L from "leaflet";
-import $ from "jquery";
+import $, { map } from "jquery";
 import _ from "lodash";
 
-import UiButtonCross from "@components/UiButtonCross.vue";
+import CartographyModal from "@components/CartographyModal.vue";
 import CartographyPlaceInfo from "@components/CartographyPlaceInfo.vue";
 import CartographyController from "@components/CartographyController.vue";
 
 import { uiButtonPlus, uiButtonFilter, uiButtonQuestion } from "@utils/ui";
-import { globalDefineMap, layerBounds, lflDefaultMarker } from "@utils/leaflet";
 import { colorScaleBlue, colorScaleRed } from "@utils/colors";
+import { globalDefineMap
+       , layerBounds
+       , lflDefaultMarker
+       , getLayerByName } from "@utils/leaflet";
 
 /************************************************************/
 
 // state holders
-const placeIdUuid = ref();  // when this is set, an indx of iconography resources of the place with place.id_uuid == placeIdUuid will be displayed
-const displayLeft = ref(false);  // when true, the left block (controller) will be displayed
-const displayRight = ref(false);  // when true, the right block will be displayed
-const displayModal = ref(true);  // when true, display an explanatory modal
-const loadState = ref("loading");  // loading/loaded/error
+const placeIdUuid        = ref();  // when this is set, an indx of iconography resources of the place with place.id_uuid == placeIdUuid will be displayed
+const displayLeft        = ref(false);  // when true, the left block (controller) will be displayed
+const displayRight       = ref(false);  // when true, the right block will be displayed
+const displayModal       = ref(true);  // when true, display an explanatory modal
+const currentlyFiltering = ref(false);      // flag to ensure that one `onFilterUpdate` is finished before a new one is started
+const loadState          = ref("loading");  // loading/loaded/error
 
 // leaflet objects
-const lflMap = ref();  // L.Map, defined in onMounted
-const lflPlaces = ref();  // L.GeoJSON: the places geoJson as a leaflet L.geoJSON object. this object only contains features that match the user filters defined in `CartographyController`. it is this object that is actually added to the map
-const lflInfoHover = ref();  // an L.Controller that displays info on hover
+const lflMap            = ref();  // L.Map, defined in onMounted
+const lflPlaces         = ref();  // L.GeoJSON: the places geoJson as a leaflet L.geoJSON object. this object only contains features that match the user filters defined in `CartographyController`. it is this object that is actually added to the map
+const lflInfoHover      = ref();  // an L.Controller that displays info on hover
+const lflLayerControl   = ref();  // L.Control.Layers: used to programatically change background layers
 const lflFallBackBounds = ref();  // L.LatLngBounds
 
 // data from the backend
-const places = ref({});  // the default geoJson describing places, with no filters. not modified after being fetched from the backend
-const placesFilter = ref({});  // the geoJson describing places, with filters
-const cartographyForSource = ref();    // { source: "sourceName", features: [] }. `features` contains all rows of the `Cartography` table with the same "sourceName"
+const places                    = ref({});  // the default geoJson describing places, with no filters. not modified after being fetched from the backend
+const placesFilter              = ref({});  // the geoJson describing places, with filters
+const cartographyForSource      = ref();    // { source: "sourceName", features: [] }. `features` contains all rows of the `Cartography` table with the same "sourceName"
 const cartographyForGranularity = ref();    // { granularity: "granularityName", features: [] }. `features` contains all rows of the `Cartography` table with the same "granularityName"
-const currentFeatureCount = ref();          // number of features currently displayed on the map
+const currentFeatureCount       = ref();    // number of features currently displayed on the map
 
-const currentlyFiltering = ref(false);      // flag to ensure that one `onFilterUpdate` is finished before a new one is started
-
-const transDur = 500;  // transition duration in JS
+// css
+const transDur    = 500;  // transition duration in JS
 const transDurCss = ".5s";  // transition duration in CSS
 
 // [ [min,max], color ]
@@ -168,8 +171,9 @@ const getCartographyForGranularity = (cartographyGranularity) =>
     .then(r => r.data)
     .then(data => { return { "granularity": cartographyGranularity, "features": data } });
 
+
 /************************************************************/
-/** leaflet stuff */
+/** DOM manipulation / emit handlers */
 
 /**
  * when receiving a `closePlaceInfo` event from CartographyPlaceInfo,
@@ -186,8 +190,15 @@ function closeCartographyPlaceInfo() {
 
 function closeCartographyController() {
   displayLeft.value = false;
-  console.log("closing");
 }
+
+function closeCartographyModal() {
+  displayModal.value = false;
+}
+
+
+/************************************************************/
+/** leaflet stuff */
 
 /**
  * add 4 controls:
@@ -456,10 +467,10 @@ const updateByAddress = (geoJsonObj, address) => {
  *    _cartographyForGranularity: the newly fetched cartography
  *      matching the user defined-source
  */
-const updateByCartographySource = async (geoJsonObj
-  , changeCartographySource
-  , cartographySource
-  , _cartographyForSource) => {
+const updateByCartographySource = async ( geoJsonObj
+                                        , changeCartographySource
+                                        , cartographySource
+                                        , _cartographyForSource) => {
   // console.log(`for : °${newFilter.cartographySource}°`);
   if (cartographySource == null
     || cartographySource === ""
@@ -504,10 +515,10 @@ const updateByCartographySource = async (geoJsonObj
  *    _cartographyForGranularity: the newly fetched cartography
  *      matching the user defined-source
  */
-const updateByCartographyGranularity = async (geoJsonObj
-  , changeCartographyGranularity
-  , cartographyGranularity
-  , _cartographyForGranularity) => {
+const updateByCartographyGranularity = async ( geoJsonObj
+                                             , changeCartographyGranularity
+                                             , cartographyGranularity
+                                             , _cartographyForGranularity ) => {
   if (cartographyGranularity == null
     || cartographyGranularity === ""
     || cartographyGranularity.length === 0  // string of length 0
@@ -529,6 +540,7 @@ const updateByCartographyGranularity = async (geoJsonObj
       });
   }
 }
+
 
 /** main process */
 
@@ -580,6 +592,20 @@ function onFilterUpdate(newFilter) {
         placesGeoJson = updateByAddress(placesGeoJson, newFilter.address);
         // console.log("> 3 :", placesGeoJson.features.length);
 
+        // if we're switching to "parcellaire1900" or "vasserot",
+        // programatically update the background tile layer.
+        if ( changeCartographySource
+           && ["parcellaire1900", "vasserot"].includes(newFilter.cartographySource)
+        ) {
+          // remove all the background layers
+          lflLayerControl.value._layers.forEach( l => lflMap.value.removeLayer(l.layer) );
+          // add the one corresponding to newFilter.cartographySource
+          let mapper = { vasserot: "Atlas Vasserot (1810-1836)",
+                         parcellaire1900: "Cadastre municipal (1900)" };
+          let l = getLayerByName(lflLayerControl.value, mapper[newFilter.cartographySource]);
+          lflMap.value.addLayer(l);
+        }
+
         placesFilter.value = placesGeoJson;
         currentFeatureCount.value = placesGeoJson.features.length;
         cartographyForGranularity.value = _cartographyForGranularity;
@@ -614,7 +640,7 @@ watch(placeIdUuid, (newId, oldId) =>
 /************************************************************/
 
 onMounted(() => {
-  lflMap.value = globalDefineMap("map-main");  // synchronous
+  [ lflMap.value, lflLayerControl.value ] = globalDefineMap("map-main");  // synchronous
   addControls(lflMap.value);
   getInitPlaces().then(() => addPlaces(true))
 })
@@ -760,7 +786,6 @@ onMounted(() => {
   text-wrap: nowrap;
 }
 
-
 /**************************************/
 
 .cartography-controller-outer-wrapper {
@@ -775,55 +800,6 @@ onMounted(() => {
   transform: translateX(100%);
   height: 100%;
   width: 100%;
-}
-
-/***************************************/
-
-.c-modal-outer-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  transform: translateX(30%);
-  z-index: 1000;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background-color: RGBA(113, 5, 81, .5); /* var(--cs-plum) in rgba with .3 opacity */
-}
-
-.c-modal-inner-wrapper {
-  height: 70%;
-  width: 70%;
-  border: var(--cs-negative-border);
-
-  display: grid;
-  grid-template-columns: 100%;
-  grid-template-rows: 15% 85%;
-}
-.c-modal-title-wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 3%;
-  border-bottom: var(--cs-negative-border);
-}
-.c-modal-title-wrapper > h1 {
-  margin: 0px;
-}
-.c-modal-title-wrapper :deep(.button-cross) {
-  height: 5vh;
-  width: 5vh;
-}
-.c-modal-text-wrapper {
-  margin: 5%;
-  max-height: 100%;
-  overflow: scroll;
-  max-height: 100%;
 }
 
 </style>

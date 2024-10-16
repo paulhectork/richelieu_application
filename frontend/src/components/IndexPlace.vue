@@ -137,7 +137,7 @@ function displayVector(e) {
 /******************************************************/
 
 onMounted(() => {
-  map.value = globalDefineMap("place-map");
+  map.value = globalDefineMap("place-map")[0];
 })
 </script>
 

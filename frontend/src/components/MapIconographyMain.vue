@@ -45,7 +45,7 @@ async function buildPlacePopup(placeUuid) {
 }
 
 async function buildMap() {
-  const _map = await globalDefineMap(props.lflId);
+  const _map = globalDefineMap(props.lflId)[0];
   const gjPlace = L.geoJSON(props.placeGeoJson, {
     pointToLayer: (gjPoint, latLng) => lflDefaultMarker(latLng),
     style: lflDefaultStyle,
