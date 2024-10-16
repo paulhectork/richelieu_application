@@ -722,6 +722,13 @@ def association_index():
     return [ i[0].serialize_lite() for i in r.all() ]
 
 
+@app.route("/i/raise")
+def do_raise():
+    """test error raising and printing in prod"""
+    print(r"%%%%% this should raise")
+    raise ValueError("\n%%%%% hello ! \n%%%%% this has raised. \n%%%%% goodbye !")
+
+
 
 
 
