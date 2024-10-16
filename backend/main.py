@@ -24,7 +24,8 @@ def run(mode:str) -> None:
         # the try...except + app.logger allows to display
         # errors in the production env's journals
         try:
-            app.run(port=5001, debug=True)
+            debug = True if mode != "prod" else False  # disable debug mode in prod 
+            app.run(port=5001, debug=debug)
         except Exception as e:
             app.logger.error(traceback.format_exc())
             raise e  # so far, we want the site to crash so we can find possible exceptions
