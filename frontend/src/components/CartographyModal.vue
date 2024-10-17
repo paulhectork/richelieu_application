@@ -28,7 +28,22 @@
               associées.</li>
             <li>Le bouton <span class="ui-button-demo"><UiButtonFilter>
               </UiButtonFilter></span> permet d'afficher une barre contenant
-              des filtres pour sélectionner les parcelles à afficher.</li>
+              des filtres pour sélectionner les parcelles à afficher.
+              <ul>
+                <li><code>Addresse</code> permet de sélectionner les addresses
+                  à afficher sur la carte.</li>
+                <li><code>Nombre de ressources iconographiques</code> permet
+                  de n'afficher les parcelles qui ne contiennent qu'un certain nombre
+                  de ressources iconographiques.</li>
+                <li><code>Granularité</code> permet de sélectionner les parcelles
+                  à afficher en fonction de leur échelle de précision, selon qu'elles
+                  représentent un bâtiment entier ou juste une partie. Par défault, un
+                  mélange est affiché.</li>
+                <li><code>Source cartographique</code> permet de changer de fond de carte
+                  et d'afficher la parcelle correspondant à ce fond. Cela permet de voir
+                  l'évolution parcellaire sur différentes sources historiques.</li>
+              </ul>
+            </li>
             <li>Le bouton <span class="ui-button-demo"><UiButtonQuestion>
               </UiButtonQuestion></span> permet d'afficher ce texte de
               présentation.</li>
@@ -76,7 +91,7 @@ onMounted(() =>
   left: 0;
   height: 100%;
   width: 100%;
-  transform: translateX(30%);
+  transform: translateX(100%);
   z-index: 1000;
 
   display: flex;
@@ -87,31 +102,31 @@ onMounted(() =>
 }
 
 .c-modal-inner-wrapper {
-  height: 70%;
-  width: 70%;
+  height: 90%;
+  width: 80%;
   border: var(--cs-negative-border);
 
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: 15% 85%;
+  grid-template-rows: auto 2fr;
 }
 .c-modal-title-wrapper {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 0 3%;
+  padding: 3% 3%;
   border-bottom: var(--cs-negative-border);
 }
 .c-modal-title-wrapper > h1 {
-  margin: 0px;
+  margin: 0;
 }
 .c-modal-title-wrapper :deep(.button-cross) {
   height: 5vh;
   width: 5vh;
 }
 .c-modal-text-wrapper {
-  margin: 5%;
+  margin: 1% 5%;
   max-height: 100%;
   overflow: scroll;
   max-height: 100%;
@@ -122,5 +137,26 @@ onMounted(() =>
   width: 25px;
   transform: translateY(15%);
 }
+
+li > ul > li {
+  margin: 5px 0;
+}
+code {
+  background-color: var(--cs-main-default-bg);
+  color: var(--cs-main-default);
+  font-size: 90%;
+  padding: 0 2px;
+}
+
+@media ( orientation:landscape ) {
+  .c-modal-outer-wrapper {
+    transform: translateX(30%);
+  }
+  .c-modal-inner-wrapper {
+    height: 70%;
+    width: 70%;
+  }
+}
+
 
 </style>

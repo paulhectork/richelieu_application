@@ -66,17 +66,15 @@
     </div>
 
     <!--<Transition name="slideInOut">-->
-    <div class="cartography-place-wrapper"
-         v-if="placeIdUuid !== undefined"
-    >
+    <div class="cartography-place-wrapper" v-if="placeIdUuid !== undefined">
       <CartographyPlaceInfo :placeIdUuid="placeIdUuid"
-                            @close-place-info="closeCartographyPlaceInfo"
-      ></CartographyPlaceInfo>
+                            @close-place-info="closeCartographyPlaceInfo">
+      </CartographyPlaceInfo>
     </div>
 
     <div class="c-modal-container">
-      <CartographyModal v-if="displayModal===true"
-                       @close-cartography-modal="closeCartographyModal"
+      <CartographyModal v-if="displayModal === true"
+                        @close-cartography-modal="closeCartographyModal"
       ></CartographyModal>
     </div>
 
@@ -88,7 +86,7 @@
 import { onMounted, ref, watch, h } from "vue";
 
 import axios from "axios";
-import L from "leaflet";
+import L, { control } from "leaflet";
 import $, { map } from "jquery";
 import _ from "lodash";
 
@@ -101,34 +99,35 @@ import { colorScaleBlue, colorScaleRed } from "@utils/colors";
 import { globalDefineMap
        , layerBounds
        , lflDefaultMarker
-       , getLayerByName } from "@utils/leaflet";
+       , getLayerByName
+       , mapCenter } from "@utils/leaflet";
 
 /************************************************************/
 
 // state holders
-const placeIdUuid        = ref();  // when this is set, an indx of iconography resources of the place with place.id_uuid == placeIdUuid will be displayed
-const displayLeft        = ref(false);  // when true, the left block (controller) will be displayed
-const displayRight       = ref(false);  // when true, the right block will be displayed
-const displayModal       = ref(true);  // when true, display an explanatory modal
+const placeIdUuid = ref();  // when this is set, an indx of iconography resources of the place with place.id_uuid == placeIdUuid will be displayed
+const displayLeft = ref(false);  // when true, the left block (controller) will be displayed
+const displayRight = ref(false);  // when true, the right block will be displayed
+const displayModal = ref(true);  // when true, display an explanatory modal
 const currentlyFiltering = ref(false);      // flag to ensure that one `onFilterUpdate` is finished before a new one is started
-const loadState          = ref("loading");  // loading/loaded/error
+const loadState = ref("loading");  // loading/loaded/error
 
 // leaflet objects
-const lflMap            = ref();  // L.Map, defined in onMounted
-const lflPlaces         = ref();  // L.GeoJSON: the places geoJson as a leaflet L.geoJSON object. this object only contains features that match the user filters defined in `CartographyController`. it is this object that is actually added to the map
-const lflInfoHover      = ref();  // an L.Controller that displays info on hover
-const lflLayerControl   = ref();  // L.Control.Layers: used to programatically change background layers
+const lflMap = ref();  // L.Map, defined in onMounted
+const lflPlaces = ref();  // L.GeoJSON: the places geoJson as a leaflet L.geoJSON object. this object only contains features that match the user filters defined in `CartographyController`. it is this object that is actually added to the map
+const lflInfoHover = ref();  // an L.Controller that displays info on hover
+const lflLayerControl = ref();  // L.Control.Layers: used to programatically change background layers
 const lflFallBackBounds = ref();  // L.LatLngBounds
 
 // data from the backend
-const places                    = ref({});  // the default geoJson describing places, with no filters. not modified after being fetched from the backend
-const placesFilter              = ref({});  // the geoJson describing places, with filters
-const cartographyForSource      = ref();    // { source: "sourceName", features: [] }. `features` contains all rows of the `Cartography` table with the same "sourceName"
+const places = ref({});  // the default geoJson describing places, with no filters. not modified after being fetched from the backend
+const placesFilter = ref({});  // the geoJson describing places, with filters
+const cartographyForSource = ref();    // { source: "sourceName", features: [] }. `features` contains all rows of the `Cartography` table with the same "sourceName"
 const cartographyForGranularity = ref();    // { granularity: "granularityName", features: [] }. `features` contains all rows of the `Cartography` table with the same "granularityName"
-const currentFeatureCount       = ref();    // number of features currently displayed on the map
+const currentFeatureCount = ref();    // number of features currently displayed on the map
 
 // css
-const transDur    = 500;  // transition duration in JS
+const transDur = 500;  // transition duration in JS
 const transDurCss = ".5s";  // transition duration in CSS
 
 // [ [min,max], color ]
@@ -194,6 +193,14 @@ function closeCartographyController() {
 
 function closeCartographyModal() {
   displayModal.value = false;
+  // zoom on the map when closing the modal.
+  // if we have a map and geoJson bounds to zoom to, zoom to the geojson map
+  // else, zoom to the default map center.
+  if ( lflFallBackBounds.value ) {
+    lflMap.value?.flyToBounds(lflFallBackBounds.value, { duration: .5 });
+  } else {
+    lflMap.value?.flyTo(mapCenter, 15.5, { duration: .5 })
+  }
 }
 
 
@@ -201,42 +208,88 @@ function closeCartographyModal() {
 /** leaflet stuff */
 
 /**
- * add 4 controls:
- *    - infoHover  : a control that displays data when hovering over a geojson feature
- *    - colorCtrl  : a legend for the colors
- *    - ctrlOpener : to display the `CartographyController` component on click,
- *    - presOpener : to display the intro presentation on click.
+ * a function to disable drag on a control
+ *
+ * @param {L.Control} control: the leaflet control to modify
+ * @param {L.Map} _map: the leaflet map
  */
-function addControls() {
+const handleDragOnControl = (control, _map) => {
+  control.getContainer().addEventListener("mouseover", () =>
+    _map.dragging.disable() );
+  control.getContainer().addEventListener("mouseout", () =>
+    _map.dragging.enable() );
+}
 
-  const _map       = lflMap.value,
-        infoHover  = new L.control({ position: "topright" }),
-        colorCtrl  = new L.control({ position: "topright" }),
-        ctrlOpener = new L.Control({ position: "bottomleft" }),
-        presOpener = new L.Control({ position: "bottomleft" });
+/**
+ * all `add...Control(_map)` functions below add individual functions
+ * to the leaflet map `_map`. they are called through `addControls()`,
+ * which updates `_map` with new controls and then sets global variables
+ * created here. all `add...Control` functions return only the
+ * updated `_map`, except `addInfoHoverControl`, which also returns
+ * the created control (it needs to be updated globally)
+ * @param {L.Map} _map: the leaflet map to add controls to
+ * @returns {L.Map}
+ */
+
+ /**
+  * this button changes the opacity of the places geojson
+  *
+  * to change the opacity, the global lflPlaces is accessed,
+  * which i don't like because all other functions only use local values
+  * and global are passed as arguments by `addControls()`, and it's best
+  * to avoid mixing local and global scopes.
+  * however, the global lflPlaces needs to be accessed
+  * here to change the style of the current places geojson layer.
+  * since this layer is reactive and may be changed at any time, it's not
+  * possible to pass it as an argument (this function is called on map init,
+  * but opacity will have to change future versions of the map).
+  */
+function addOpacityControl(_map) {
+  const opacityCtrl = new L.Control({ position: "topright" });
+
+  // create the controls and necessary methods: info listeners, update...
+  opacityCtrl.onAdd = function () {
+    this._div = L.DomUtil.create("div", "infobox");
+    this._div.innerHTML = `
+      <h4>Modifier l'opacité (<span id="opacity-to-modif">50%</span>)</h4>
+      <div><input type="range"
+                  id="opacity-slider"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value="0.5"
+      ></input></div>`;
+    return this._div;
+  };
+
+  opacityCtrl.addTo(_map);
+  handleDragOnControl(opacityCtrl, _map);
+
+  // add event listening through jquery: change the opacity of the geoJsons
+  $("#opacity-slider").on("input", (e) => {
+    let v = e.target.value;
+    $("#opacity-to-modif").html(`${ Math.round(v * 100) }%`);
+    if ( lflPlaces.value ) {
+      lflPlaces.value.setStyle({ fillOpacity: v });
+    }
+  })
+
+  return _map;
+}
+
+function addColorControl(_map) {
+  const colorCtrl = new L.Control({ position: "topright" });
 
   // this function creates a single row of the html table contained by colorCtrl
   const colorCtrlRow = (colorClass) =>
-      "<tr>"
-      + `<td style="background-color: ${colorClass[1]}"></td>`
-      + (colorClass[0][1] === Infinity
-        ? `<td>Plus de ${colorClass[0][0]} ressources</td>`
-        : `<td>Entre ${colorClass[0][0]} et ${colorClass[0][1]} ressources</td>`)
-      + "</tr>";
+    "<tr>"
+    + `<td style="background-color: ${colorClass[1]}"></td>`
+    + (colorClass[0][1] === Infinity
+      ? `<td>Plus de ${colorClass[0][0]} ressources</td>`
+      : `<td>Entre ${colorClass[0][0]} et ${colorClass[0][1]} ressources</td>`)
+    + "</tr>";
 
-  // create the controls and necessary methods: info listeners, update...
-  infoHover.onAdd = function () {
-    this._div = L.DomUtil.create("div", "infobox");
-    this.update();
-    return this._div;
-  }
-  infoHover.update = function (props) {  // when the content of infoHover changes
-    this._div.innerHTML =
-      `<h4>Nombre de ressources iconographiques associées&nbsp:</h4>
-      ${props && props.iconography_count
-        ? props.iconography_count
-        : "Passer la souris au dessus d'une parcelle"}`;
-  }
+  // create the control and add it to the map
   colorCtrl.onAdd = function () {
     this._div = L.DomUtil.create("div", "infobox color-legend");
     this._div.innerHTML = `
@@ -251,44 +304,102 @@ function addControls() {
     // effects for this one are fancier and will be done in jQuery after `colorCtrl.addTo(map)`
     return this._div;
   }
-  ctrlOpener.onAdd = function () {
+
+  colorCtrl.addTo(_map);
+  handleDragOnControl(colorCtrl, _map);
+
+  // for `colorCtrl`, the event listening is a bit complex, so
+  // we do it in jQuery. this demands to wait for colorCtrl.addTo(_map).
+  let $button = $(".color-legend .btn-container > button"),
+    $table = $(".color-legend table");
+  $button.on("click", () => {
+    let open = $table.css("display");
+    $table.css({ display: open === "none" ? "block" : "none" });
+    $button.html(open === "none"
+      ? $button.find("svg").addClass("rotated")
+      : $button.find("svg").removeClass("rotated")
+    );
+  });
+
+  return _map;
+}
+
+function addFilterOpenerControl(_map) {
+  const filterOpener = new L.Control({ position: "bottomleft" });
+
+  filterOpener.onAdd = function () {
     this._div = L.DomUtil.create("div", "custom-controller");
     this._div.innerHTML = uiButtonFilter; // pure html, contains the equivalent of `@components/UiButtonFilter.vue`
     L.DomEvent.on(this._div, "click", () => { displayLeft.value = true }, this);
     return this._div;
   }
+  filterOpener.onRemove = function () {
+    L.DomEvent.off(this._div, "click", context = this);
+  }
+
+  filterOpener.addTo(_map);
+  handleDragOnControl(filterOpener, _map);
+  return _map;
+}
+
+function addPresOpenerControl(_map) {
+  const presOpener = new L.Control({ position: "bottomleft" });
   presOpener.onAdd = function () {
     this._div = L.DomUtil.create("div", "custom-controller");
     this._div.innerHTML = uiButtonQuestion;
     L.DomEvent.on(this._div, "click", () => { displayModal.value = true }, this);
     return this._div
   }
-
-  // when removing the elements, remove the event listeners
-  ctrlOpener.onRemove = function () {
-    L.DomEvent.off(this._div, "click", context = this);
-  }
   presOpener.onRemove = function () {
     L.DomEvent.off(this._div, "click", context = this);
   }
 
-  ctrlOpener.addTo(_map);
   presOpener.addTo(_map);
-  infoHover.addTo(_map);
-  colorCtrl.addTo(_map);
+  handleDragOnControl(presOpener, _map);
+  return _map;
+}
 
-  // for `colorCtrl`, the event listening is a bit more complex, so
-  // we do it in jQuery. this demands to wait for colorCtrl.addTo(_map).
-  let $button = $(".color-legend .btn-container > button"),
-      $table  = $(".color-legend table");
-  $button.on("click", () => {
-    let open = $table.css("display");
-    $table.css({ display: open === "none" ? "block" : "none" });
-    $button.html( open === "none"
-                ? $button.find("svg").addClass("rotated")
-                : $button.find("svg").removeClass("rotated")
-                );
-  });
+/**
+ * @returns {Array<L.Map, L.Control>}: the control is also returned by this function
+ */
+function addInfoHoverControl(_map) {
+  const infoHover = new L.control({ position: "topright" });
+
+  infoHover.onAdd = function () {
+    this._div = L.DomUtil.create("div", "infobox");
+    this.update();
+    return this._div;
+  }
+  infoHover.update = function (props) {  // when the content of infoHover changes
+    this._div.innerHTML =
+      `<h4>Nombre de ressources iconographiques associées&nbsp:</h4>
+      ${props && props.iconography_count
+        ? props.iconography_count
+        : "Passer la souris au dessus d'une parcelle"}`;
+  }
+
+  infoHover.addTo(_map);
+  handleDragOnControl(infoHover, _map);
+  return [_map, infoHover];
+}
+
+/**
+ * add 5 controls:
+ *    - addInfoHoverControl    : a control that displays data when hovering over a geojson feature
+ *    - acurrentLayerddColorControl        : a legend for the colors
+ *    - addFilterOpenerControl : to display the `CartographyController` component on click,
+ *    - addPresOpenerControl   : to display the intro presentation on click.
+ *    - addOpacityControl      : a controller that allows to change the opacity of the geoJson.
+ */
+function addControls() {
+  let _map = lflMap.value,
+      infoHover;
+
+  [_map, infoHover] = addInfoHoverControl(_map);
+  _map = addColorControl(_map);
+  _map = addFilterOpenerControl(_map);
+  _map = addOpacityControl(_map);
+  _map = addPresOpenerControl(_map);
 
   lflInfoHover.value = infoHover;
   return;
@@ -305,8 +416,8 @@ const styleFeature = (feature) => {
   return {
     fillColor: colorClasses.find((c) => comparator(c[0], iconographyCount))[1],  // if iconographyCount is in a range defined in `colorClasses`, select the color
     fillOpacity: feature.geometry.type === "Point"
-                 ? 1
-                 : 0.5,
+      ? 1
+      : 0.5,
     color: "black",
     weight: 1
   }
@@ -374,9 +485,14 @@ function addPlaces(init) {
   // add to map and set the global variables
   if (init) { lflFallBackBounds.value = leafletPlaces.getBounds() };  // save the bounds of the full original geojson layer, in case we later add a geoJson feature with 0 layers (in which case we won't be able to compute bounds)
   leafletPlaces.addTo(_map);
-  _map.fitBounds(_places.features.length
-    ? leafletPlaces.getBounds()
-    : lflFallBackBounds.value);
+
+  // zoom on the layers. if init, the zoom animation is triggered
+  // in `closeCartographyModal()`
+  if (!init) {
+    _map.fitBounds( _places.features.length
+                ? leafletPlaces.getBounds()
+                : lflFallBackBounds.value);
+  }
 
   lflPlaces.value = leafletPlaces;
   // lflMap.value    = _map;
@@ -467,10 +583,12 @@ const updateByAddress = (geoJsonObj, address) => {
  *    _cartographyForGranularity: the newly fetched cartography
  *      matching the user defined-source
  */
-const updateByCartographySource = async ( geoJsonObj
-                                        , changeCartographySource
-                                        , cartographySource
-                                        , _cartographyForSource) => {
+const updateByCartographySource = async (
+  geoJsonObj,
+  changeCartographySource,
+  cartographySource,
+  _cartographyForSource
+) => {
   // console.log(`for : °${newFilter.cartographySource}°`);
   if (cartographySource == null
     || cartographySource === ""
@@ -515,10 +633,12 @@ const updateByCartographySource = async ( geoJsonObj
  *    _cartographyForGranularity: the newly fetched cartography
  *      matching the user defined-source
  */
-const updateByCartographyGranularity = async ( geoJsonObj
-                                             , changeCartographyGranularity
-                                             , cartographyGranularity
-                                             , _cartographyForGranularity ) => {
+const updateByCartographyGranularity = async (
+  geoJsonObj,
+  changeCartographyGranularity,
+  cartographyGranularity,
+  _cartographyForGranularity
+) => {
   if (cartographyGranularity == null
     || cartographyGranularity === ""
     || cartographyGranularity.length === 0  // string of length 0
@@ -577,43 +697,45 @@ function onFilterUpdate(newFilter) {
     updateByCartographySource( placesGeoJson
                              , changeCartographySource
                              , newFilter.cartographySource
-                             , _cartographyForSource)
-    .then(r => {
-      [placesGeoJson, _cartographyForSource] = r;
-      updateByCartographyGranularity( placesGeoJson
-                                    , changeCartographyGranularity
-                                    , newFilter.cartographyGranularity
-                                    , _cartographyForGranularity)
+                             , _cartographyForSource )
       .then(r => {
-        [placesGeoJson, _cartographyForGranularity] = r;
-        // console.log("> 1 :", placesGeoJson.features.length);
-        placesGeoJson = updateByIconographyCount(placesGeoJson, newFilter.iconographyCount);
-        // console.log("> 2 :", placesGeoJson.features.length);
-        placesGeoJson = updateByAddress(placesGeoJson, newFilter.address);
-        // console.log("> 3 :", placesGeoJson.features.length);
+        [placesGeoJson, _cartographyForSource] = r;
+        updateByCartographyGranularity( placesGeoJson
+                                      , changeCartographyGranularity
+                                      , newFilter.cartographyGranularity
+                                      , _cartographyForGranularity )
+          .then(r => {
+            [placesGeoJson, _cartographyForGranularity] = r;
+            // console.log("> 1 :", placesGeoJson.features.length);
+            placesGeoJson = updateByIconographyCount(placesGeoJson, newFilter.iconographyCount);
+            // console.log("> 2 :", placesGeoJson.features.length);
+            placesGeoJson = updateByAddress(placesGeoJson, newFilter.address);
+            // console.log("> 3 :", placesGeoJson.features.length);
 
-        // if we're switching to "parcellaire1900" or "vasserot",
-        // programatically update the background tile layer.
-        if ( changeCartographySource
-           && ["parcellaire1900", "vasserot"].includes(newFilter.cartographySource)
-        ) {
-          // remove all the background layers
-          lflLayerControl.value._layers.forEach( l => lflMap.value.removeLayer(l.layer) );
-          // add the one corresponding to newFilter.cartographySource
-          let mapper = { vasserot: "Atlas Vasserot (1810-1836)",
-                         parcellaire1900: "Cadastre municipal (1900)" };
-          let l = getLayerByName(lflLayerControl.value, mapper[newFilter.cartographySource]);
-          lflMap.value.addLayer(l);
-        }
+            // if we're switching to "parcellaire1900" or "vasserot",
+            // programatically update the background tile layer.
+            if (changeCartographySource
+              && ["parcellaire1900", "vasserot"].includes(newFilter.cartographySource)
+            ) {
+              // remove all the background layers
+              lflLayerControl.value._layers.forEach(l => lflMap.value.removeLayer(l.layer));
+              // add the one corresponding to newFilter.cartographySource
+              let mapper = {
+                vasserot: "Atlas Vasserot (1810-1836)",
+                parcellaire1900: "Cadastre municipal (1900)"
+              };
+              let l = getLayerByName(lflLayerControl.value, mapper[newFilter.cartographySource]);
+              lflMap.value.addLayer(l);
+            }
 
-        placesFilter.value = placesGeoJson;
-        currentFeatureCount.value = placesGeoJson.features.length;
-        cartographyForGranularity.value = _cartographyForGranularity;
-        cartographyForSource.value = _cartographyForSource;
-        addPlaces(false);
-        currentlyFiltering.value = false;
-      })
-    });
+            placesFilter.value = placesGeoJson;
+            currentFeatureCount.value = placesGeoJson.features.length;
+            cartographyForGranularity.value = _cartographyForGranularity;
+            cartographyForSource.value = _cartographyForSource;
+            addPlaces(false);
+            currentlyFiltering.value = false;
+          })
+      });
   }
 }
 
@@ -631,16 +753,17 @@ function onFilterUpdate(newFilter) {
  */
 watch(placeIdUuid, (newId, oldId) =>
   oldId !== undefined && newId === undefined && lflMap.value !== undefined    // unmount
-  ? lflMap.value.invalidateSize()
-  : oldId === undefined && newId !== undefined && lflMap.value !== undefined  // mount
-  ? setTimeout(() => lflMap.value.invalidateSize(), transDur)  // the setTimeout is to wait for the transition to complete
-  : ''
+    ? lflMap.value.invalidateSize()
+    : oldId === undefined && newId !== undefined && lflMap.value !== undefined  // mount
+      ? setTimeout(() => lflMap.value.invalidateSize(), transDur)  // the setTimeout is to wait for the transition to complete
+      : ''
 )
 
 /************************************************************/
 
 onMounted(() => {
-  [ lflMap.value, lflLayerControl.value ] = globalDefineMap("map-main");  // synchronous
+  [lflMap.value, lflLayerControl.value] = globalDefineMap("map-main");  // synchronous
+  lflMap.value.setView(mapCenter, 14);
   addControls(lflMap.value);
   getInitPlaces().then(() => addPlaces(true))
 })
@@ -728,17 +851,21 @@ onMounted(() => {
   margin-left: 10ox;
   margin-right: 10px;
 }
+
 #map-main :deep(.leaflet-bottom.leaflet-left) {
   display: flex;
   flex-direction: row;
 }
+
 #map-main :deep(.leaflet-bottom.leaflet-left .leaflet-control) {
   border: none;
 }
+
 #map-main :deep(.leaflet-bottom.leaflet-left button) {
   height: max(4vh, 50px);
   width: max(4vh, 50px);
 }
+
 #map-main :deep(.infobox h4) {
   margin: 0;
   font-family: var(--cs-font-serif);
@@ -746,28 +873,35 @@ onMounted(() => {
   color: #777;
   font-size: 120%;
 }
+
 #map-main :deep(.color-legend) {
   width: 250px;
 }
+
 #map-main :deep(.color-legend .top-wrapper) {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
 }
-#map-main :deep(.color-legend .btn-container > button ) {
+
+#map-main :deep(.color-legend .btn-container > button) {
   width: max(40px, 4vh);
   height: max(40px, 4vh);
 }
+
 #map-main :deep(.color-legend svg) {
   transition: transform var(--animate-duration);
 }
+
 #map-main :deep(.color-legend svg.rotated) {
   transform: rotate(45deg);
 }
+
 #map-main :deep(.color-legend table) {
   max-width: fit-content;
 }
+
 #map-main :deep(.color-legend table tr) {
   display: grid;
   grid-template-columns: 15% auto;
@@ -775,13 +909,16 @@ onMounted(() => {
   border: none;
   margin: 5px;
 }
+
 #map-main :deep(.color-legend td) {
   border: none;
   padding: 5;
 }
+
 #map-main :deep(.color-legend td:first-child) {
   margin: 3px;
 }
+
 #map-main :deep(.color-legend td:last-child) {
   text-wrap: nowrap;
 }
@@ -801,5 +938,4 @@ onMounted(() => {
   height: 100%;
   width: 100%;
 }
-
 </style>
