@@ -1,11 +1,24 @@
 <!-- AssociationIndexView.vue
 
      an index combining two filters on the database:
-     themeA + themeB, namedEntityA + namedEntityB...
+     fromTable and toTable are two tables describing the iconography dataset
+     (like places, named entities...). we build an index of
+     all Iconography items that are tagged with fromTable.fromIdUuid
+     and toTable.toIdUuid.
+
+     currently only implemented for:
+     - theme <-> theme
+     - theme <-> named entity
+     - place <-> place
 
      this association index is accessed when clicking on
      the "Ressources associées" part
 
+     props:
+     - fromTable  (string) : the name of the `from` table
+     - fromIdUuid (string) : the `id_uuid` value of the `to` table
+     - toTable    (string) : the name of the "to" table
+    - toIdUuid    (string) : the `id_uuid` value of the `from` table
 
      WARNING: TABLE NAMES MUST BE WRITTED IN snake_case, LIKE IN THE DATABASE
 -->
@@ -32,11 +45,11 @@
       <p v-else>Aucun résultat ne correspond à cette combinaison.</p>
 
       <p>Voir tous les résultats pour
-        <RouterLink :to="`/${from.table === 'named_entity' ? 'entite-nommee' : from.table}/${from.idUuid}`"
+        <RouterLink :to="toFrontendSlug(from)"
                     v-html="from.entryName"
         ></RouterLink>
         et
-        <RouterLink :to="`/${to.table === 'named_entity' ? 'entite-nommee' : to.table}/${to.idUuid}`"
+        <RouterLink :to="toFrontendSlug(to)"
                     v-html="to.entryName"
         ></RouterLink>.
       </p>
@@ -76,11 +89,30 @@ const from       = ref({});     // { entryName: "...", idUuid: "qr1...", table: 
 const to         = ref({});     // { entryName: "...", idUuid: "qr1...", table: "table name" }
 const dataFull   = ref([]);     // array of iconography objects (without filtering). populated in `getData`
 const dataFilter = ref([]);     // array of iconography objects (with optional filtering)
-// const loaded     = ref(false);  // switched to true once the backend has returned results, with no error.
-// const error      = ref(false);  // switched to true if an error occurs
 const loadState  = ref("loading");  // "loading"/"loaded"/"error"
 
 /***************************************/
+
+/**
+ * get an object with the structure of `from` or `to` and build a
+ * slug to redirect to that resource's main page.
+ */
+const toFrontendSlug = (resource) => {
+  let slug = "/";
+  const implementedTables = [ "theme", "named_entity", "place" ];
+  if ( implementedTables.includes(resource.table) ) {
+    slug += resource.table === "named_entity"
+            ? "entite-nommee"
+            : resource.table === "place"
+            ? "lieu"
+            : "theme"
+    slug += `/${resource.idUuid}`
+    return slug
+  } else {
+    console.error(`AssociationIndexView.toFrontendSlug(): tableName must be one of ${implementedTables}, got ${tableName}.`)
+    return
+  }
+}
 
 /**
  * retrieve human redeable names for the ressources `toIdUuid` and `fromIdUuid`.
@@ -90,6 +122,9 @@ async function getNames() {
   // select the proper backend route based on `fromTable` and `toTable`
   let fromRoute, toRoute;
   switch ( props.fromTable ) {
+    case "place":
+      fromRoute = new URL(`/i/place-address/${props.fromIdUuid}`, __API_URL__);
+      break;
     case "theme":
       fromRoute = new URL(`/i/theme-name/${props.fromIdUuid}`, __API_URL__);
       break;
@@ -100,6 +135,9 @@ async function getNames() {
       throw new Error(`AssociationIndexView.getNames(): could not build URL for "fromTable": "${props.fromTable}"`);
   }
   switch ( props.toTable ) {
+    case "place":
+      toRoute = new URL(`/i/place-address/${props.toIdUuid}`, __API_URL__);
+      break;
     case "theme":
       toRoute = new URL(`/i/theme-name/${props.toIdUuid}`, __API_URL__);
       break;
@@ -114,7 +152,16 @@ async function getNames() {
   // console.log("toRoute", toRoute);
   return Promise
          .all([ axios.get(fromRoute), axios.get(toRoute) ])
-         .then(([fromName, toName]) => [fromName?.data[0], toName?.data[0]])
+         .then(([fromName, toName]) => {
+            // while `named-entity-name` and `theme-name` return an <Array<String>>,
+            // `place-address` returns an <Array<Object>> and so we need to extract
+            // the address string from that object.
+            if (props.fromTable === "place" && props.toTable === "place") {
+              return [fromName?.data[0].address, toName?.data[0].address]
+            } else {
+              return [fromName?.data[0], toName?.data[0]]
+            }
+         })
          .then(([fromName, toName]) => {
            // validate and assign names to our `refs`
            if ( fromName === undefined ) {
@@ -162,6 +209,8 @@ async function getData() {
          .catch(e => { loadState.value = "error"; console.error(e); });
          // TODO ERROR HANDLING?????
 }
+
+/***************************************/
 
 onMounted(() => {
   getNames().catch((e) => { loadState.value = "error"; console.error(e) });

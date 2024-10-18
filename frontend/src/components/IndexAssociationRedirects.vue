@@ -42,8 +42,6 @@
 
      WARNING: TABLE NAMES MUST BE WRITTED IN snake_case, LIKE IN THE DATABASE
 -->
-
-
 <template>
   <p>
     <span v-html=introString></span>
@@ -82,13 +80,15 @@ const props = defineProps([ "from", "to", "fromTable", "toTable" ]);
  */
 const introString = computed(() => {
   // { <tablename>: [ <human readable singular>, <human readable plural>, <"m"|"f": gender of the word> ] }
-  const tableToNameMapper = { "theme"        : [ "thème", "thèmes", "m" ],
-                              "named_entity" : [ "entité nommée", "entités nommées", "f" ] };
+  const tableToNameMapper =
+    { "theme"        : [ "thème", "thèmes", "m" ],
+      "named_entity" : [ "entité nommée", "entités nommées", "f" ],
+      "place"        : [ "lieu", "lieux", "m" ] };
 
   // exit if props.toTable doesn't allow us to build a string
   if ( !Object.keys(tableToNameMapper).includes(props.toTable) ) {
     console.error(`IndexAssociatedRessources.nameFromTable(): could not set gender or name for "props.toTable": "${props.toTable}"`);
-    return "Ressource(s) associée(s)";
+    return "Ressource(s) associée(s)&nbsp;: ";
   }
   // else, build the intro string
   let s = props.to.length === 1

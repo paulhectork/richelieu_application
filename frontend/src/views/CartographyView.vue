@@ -67,7 +67,8 @@
 
     <!--<Transition name="slideInOut">-->
     <div class="cartography-place-wrapper" v-if="placeIdUuid !== undefined">
-      <CartographyPlaceInfo :placeIdUuid="placeIdUuid"
+      <CartographyPlaceInfo :place-id-uuid="placeIdUuid"
+                            :associated-places="currentAssociatedPlaces"
                             @close-place-info="closeCartographyPlaceInfo">
       </CartographyPlaceInfo>
     </div>
@@ -120,11 +121,12 @@ const lflLayerControl = ref();  // L.Control.Layers: used to programatically cha
 const lflFallBackBounds = ref();  // L.LatLngBounds
 
 // data from the backend
-const places = ref({});  // the default geoJson describing places, with no filters. not modified after being fetched from the backend
-const placesFilter = ref({});  // the geoJson describing places, with filters
-const cartographyForSource = ref();    // { source: "sourceName", features: [] }. `features` contains all rows of the `Cartography` table with the same "sourceName"
+const places                    = ref({});  // the default geoJson describing places, with no filters. not modified after being fetched from the backend
+const placesFilter              = ref({});  // the geoJson describing places, with filters
+const cartographyForSource      = ref();    // { source: "sourceName", features: [] }. `features` contains all rows of the `Cartography` table with the same "sourceName"
 const cartographyForGranularity = ref();    // { granularity: "granularityName", features: [] }. `features` contains all rows of the `Cartography` table with the same "granularityName"
-const currentFeatureCount = ref();    // number of features currently displayed on the map
+const currentFeatureCount       = ref();    // number of features currently displayed on the map
+const currentAssociatedPlaces   = ref();    // a list of the 5 places most frequently associated with the currently clicked on place (targeted by `placeIdUuid`)
 
 // css
 const transDur = 500;  // transition duration in JS
@@ -184,7 +186,10 @@ const getCartographyForGranularity = (cartographyGranularity) =>
 function closeCartographyPlaceInfo() {
   displayRight.value = false;  // trigger the animation slideout of the sidebar
   lflPlaces.value.resetStyle();  // switch the opacity back to its original state
-  setTimeout(() => { placeIdUuid.value = undefined }, transDur);  // remove the sidebar
+  setTimeout(() => {              // reset data + remove the sidebar
+    placeIdUuid.value = undefined;
+    currentAssociatedPlaces.value = [];
+  }, transDur);
 }
 
 function closeCartographyController() {
@@ -439,12 +444,33 @@ const onEachLayer = (layer, leafletGeoJson) => {
     placeIdUuid.value = undefined;
     displayRight.value = true;
     placeIdUuid.value = layer.feature.properties.id_uuid;
-    // set the style: opacity of 1 on the clicked layer
-    leafletGeoJson.resetStyle();  // revert the opacity for all layers
-    layer.setStyle({ fillOpacity: 1 });
-    // zoom to the clicked layer
-    //TODO fix yank here ?
-    setTimeout(() => _map.fitBounds(layerBounds(layer)), transDur);  // wait for the size animation to complete...
+
+    // revert the style of all layers
+    leafletGeoJson.resetStyle();
+    var associatedLayers = L.featureGroup();  // all associated layers will be stored here
+    // fetch the UUIDs of the 5 places most often associated with the clicked one
+    // (that is, places that are connected to iconography resources connected
+    // to the clicked place). style those layers
+    axios.get(new URL(`/i/association/place-from-place/${placeIdUuid.value}`, __API_URL__))
+    .then(r => r.data)
+    .then(data => {
+      currentAssociatedPlaces.value = data;
+
+      // set the style of the clicked layer
+      layer.setStyle({ fillOpacity: 1, fillColor: "var(--cs-duck)" });
+      associatedLayers.addLayer(layer);
+      // extract all associated layers and set their style
+      leafletGeoJson.eachLayer(otherLayer => {
+        if ( data.map( i => i.id_uuid ).includes( otherLayer.feature.properties.id_uuid ) ) {
+          otherLayer.setStyle({ fillOpacity: 1, fillColor: "var(--cs-seagreen)" })
+          associatedLayers.addLayer(otherLayer);
+        }
+      });
+      // zoom to the clicked layer
+      //TODO fix yank here ?
+      setTimeout(() => _map.fitBounds(associatedLayers.getBounds()),
+                 transDur);  // wait for the size animation to complete...
+    });
   });
 
   // on hover, change the color and weight of the border

@@ -58,10 +58,8 @@ export const lflDefaultStyle = (feature) => {
  * default mouseover and mouseout actions on a layer
  * @param {L.Layer} layer
  */
-export const lflDefaultMouseOver = (layer) => {
-  console.log(layer);
-  layer.setStyle({ color: layer.options.fillColor, weight: 3 })
-};
+export const lflDefaultMouseOver = (layer) =>
+  layer.setStyle({ color: layer.options.fillColor, weight: 3 });
 export const lflDefaultMouseOut = (layer) =>
   layer.setStyle({ color: "black", weight: 1 });
 
@@ -222,12 +220,12 @@ export function globalDefineMap(mapId) {
  * @param {Object} layer: the leaflet layer corresponding to a geojson feature
  */
 export const layerBounds = (layer) => {
-  let pointBounds = { lat: 0.0005434656870164645/2, lng: -0.0005838759503453694/2 }  // distances from which to get the points
+  let pointBounds = { lat: 0.0005434656870164645/2, lng: -0.0005838759503453694/2 }  // distances from which to get the points. determined experimentally
   return layer.feature.geometry.type !== "Point"
-  ? layer.getBounds()
-  : [ [ layer.getLatLng().lat - pointBounds.lat, layer.getLatLng().lng - pointBounds.lat ]
-    , [ layer.getLatLng().lat + pointBounds.lat, layer.getLatLng().lng + pointBounds.lat ]
-    ]
+         ? layer.getBounds()
+         : [ [ layer.getLatLng().lat - pointBounds.lat, layer.getLatLng().lng - pointBounds.lat ]
+           , [ layer.getLatLng().lat + pointBounds.lat, layer.getLatLng().lng + pointBounds.lat ]
+           ]
 }
 
 /**

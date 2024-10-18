@@ -5,23 +5,31 @@
 -->
 
 <template>
-  <div v-if="loadState==='error'">
+  <div v-if="loadStatePlace==='error' || loadStateAddress==='error'">
     <ErrNotFound></ErrNotFound>
   </div>
   <div v-else>
     <h1>{{ computedAddress }}</h1>
 
-    <UiLoader v-if="loadState==='loading'"></UiLoader>
-    <div v-else-if="loadState==='loaded'">
+    <UiLoader v-if="loadStatePlace==='loading'"></UiLoader>
+    <div v-else-if="loadStatePlace==='loaded'">
       <div class="map-block-wrapper">
         <MapPlaceMain :place="place"></MapPlaceMain>
       </div>
+
       <div class="icono-block-wrapper">
         <p><strong>{{ place.iconography.length }}</strong>
           <span v-if="place.iconography.length > 1"><strong> ressources iconographiques</strong> sont associées</span>
           <span v-else><strong> ressource iconographique</strong> est associée</span>
           à ce lieu.
         </p>
+
+        <IndexAssociationRedirects v-if="loadStateAssociated === 'loaded'"
+                                   from-table="place"
+                                   to-table="place"
+                                   :from="{ entry_name: computedAddress, id_uuid: idUuid }"
+                                   :to="associatedPlaces"
+        ></IndexAssociationRedirects>
 
         <IndexBase :data="dataFilter"
                    display="resource"
@@ -42,6 +50,8 @@ import UiLoader from "@components/UiLoader.vue";
 import MapPlaceMain from "@components/MapPlaceMain.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
+import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
+
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { cartographySourcePriority } from "@globals";
 import { sortAddressBySource } from "@utils/array.js";
@@ -55,10 +65,15 @@ const source = ref("");   // currently used `source` for `Place.vector_source`, 
 const place = ref({});    // fetched from backend
 const dataFull = ref([]);   // iconography data. fetched from backend
 const dataFilter = ref([]); // iconography data. fetched from backend
-const loadState = ref("loading");
+const associatedPlaces = ref([]);  // places most frequently tagged together with the current place
 
-const apiTargetPlace = new URL(`/i/place/${idUuid}`, __API_URL__);
-const apiTargetAddress = new URL(`/i/place-address/${idUuid}`, __API_URL__);
+// loading/loaded/error
+const loadStatePlace = ref("loading");
+const loadStateAddress = ref("loading");
+const loadStateAssociated = ref("loading");
+
+// const apiTargetPlace = new URL(`/i/place/${idUuid}`, __API_URL__);
+// const apiTargetAddress = new URL(`/i/place-address/${idUuid}`, __API_URL__);
 
 /**
  * `address` as returned by the backend is an array of objects;
@@ -77,21 +92,34 @@ const computedAddress = computed(() =>
 /******************************************************************/
 
 async function getData() {
-  Promise.all([
-    axios.get(apiTargetPlace.href)
-    .then(r => r.data)
-    .then(data => { place.value = data[0];
-                    dataFull.value = place.value.iconography;
-                    dataFilter.value = indexDataFormatterIconography(place.value.iconography);
-     })
-    ,
-    axios.get(apiTargetAddress.href)
-    .then(r => r.data)
-    .then(data => { address.value = sortAddressBySource(data); })
-  ])
-  .then(r => loadState.value = "loaded")
+  axios.get(new URL(`/i/place/${idUuid}`, __API_URL__))
+  .then(r => r.data)
+  .then(data => {
+    place.value = data[0];
+    dataFull.value = place.value.iconography;
+    dataFilter.value = indexDataFormatterIconography(place.value.iconography);
+    loadStatePlace.value = "loaded";
+  })
   .catch(e => { console.error(e);
-                loadState.value = "error" });
+                loadStatePlace.value = "error"
+  });
+
+  axios.get(new URL(`/i/place-address/${idUuid}`, __API_URL__))
+  .then(r => r.data)
+  .then(data => { address.value = sortAddressBySource(data);
+                  loadStateAddress.value = "loaded";
+  })
+  .catch(e => { console.error(e);
+                loadStateAddress.value = "error";
+  })
+
+  axios.get(new URL(`/i/association/place-from-place/${idUuid}`, __API_URL__))
+  .then(r => r.data)
+  .then(data => { associatedPlaces.value = data;
+                  loadStateAssociated.value = "loaded";
+  })
+  .catch(e => { console.error(e);
+                loadStateAssociated.value = "error" });
 }
 
 /******************************************************************/

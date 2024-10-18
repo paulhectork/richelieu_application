@@ -1,4 +1,9 @@
-from flask import render_template, jsonify, request
+"""
+routes for the internal API
+basepath: `<APP URL>/i/`
+"""
+
+from flask import jsonify, request
 from psycopg2.extras import NumericRange
 from sqlalchemy import text, func
 import random
@@ -8,13 +13,6 @@ from ..search.search_iconography import sanitize_params, make_params, make_query
 from ..utils.spatial import featurelist_to_featurecollection, geometry_to_feature
 from ..app import app, db
 from ..orm import *
-
-
-# ********************************************************************************
-# routes for the internal API
-# basepath: `<APP URL>/i/`
-# ********************************************************************************
-
 
 
 # *************************************************************************
@@ -57,7 +55,7 @@ def main_iconography(id_uuid):
 
 
 @app.route("/i/iconography-from-uuid")
-def iconography_from_uuid():#id_uuid_arr:t.List[str]):
+def iconography_from_uuid():
     """
     return Iconography objects matching the UUIDs in `id_uuid_arr`.
     the UUIDs desired have the parameter name `id_uuid`.
@@ -444,7 +442,7 @@ def advanced_search_iconography():
 # associations
 # *************************************************************************
 
-@app.route("/i/association/theme-from-theme/<id_uuid>")
+@app.route("/i/association/theme-from-theme/<string:id_uuid>")
 def association_theme_from_theme(id_uuid:str):
     """
     get the most frequently associated themes from a theme:
@@ -522,7 +520,7 @@ def association_theme_from_theme(id_uuid:str):
     return jsonify(r)
 
 
-@app.route("/i/association/named-entity-from-theme/<id_uuid>")
+@app.route("/i/association/named-entity-from-theme/<string:id_uuid>")
 def association_named_entity_from_theme(id_uuid:str):
     """
     get the most frequently associated named entites from a theme:
@@ -557,7 +555,7 @@ def association_named_entity_from_theme(id_uuid:str):
     return jsonify(r)
 
 
-@app.route("/i/association/named-entity-from-named-entity/<id_uuid>")
+@app.route("/i/association/named-entity-from-named-entity/<string:id_uuid>")
 def association_named_entity_from_named_entity(id_uuid:str):
     """
     get the most frequently associated named entites from a named entity:
@@ -593,7 +591,7 @@ def association_named_entity_from_named_entity(id_uuid:str):
     r = [ { "id_uuid": row[0], "entry_name": row[1], "count": row[2] } for row in r ]
     return jsonify(r)
 
-@app.route("/i/association/theme-from-named-entity/<id_uuid>")
+@app.route("/i/association/theme-from-named-entity/<string:id_uuid>")
 def association_theme_from_named_entity(id_uuid:str):
     """
     get the most frequently associated themes from a named entity:
@@ -628,11 +626,90 @@ def association_theme_from_named_entity(id_uuid:str):
     return jsonify(r)
 
 
+@app.route("/i/association/place-from-place/<string:id_uuid>")
+def association_place_from_place(id_uuid:str):
+    """
+    returns the UUIDs of the 5 places most often places tagged with
+    the place `id_uuid`, together with a count of the number of
+    associations with the place
+
+    :arguments:
+        id_uuid: a Place.id_uuid
+    :returns:
+        a list of dicts with 2 keys, `id_uuid` and `count`
+        [ { id_uuid   : <string:place.id_uuid>,
+            entry_name: <string: address of the associated place>
+            count     : <int:number of relations between input place and related places>
+          }
+        ]
+
+    equivalent to (slightly optimized equivalent of
+    the above association queries):
+
+    >>> -- 3) get the place.id related to
+    ... --    all r_iconography_place.id_iconography
+    ... --    retrieved in the subquery 2)
+    ... SELECT place.id_uuid,
+    ...        COUNT(place.id_uuid) AS cnt
+    ... FROM place
+    ... JOIN r_iconography_place
+    ... ON r_iconography_place.id_place = place.id
+    ... JOIN r_address_place
+    ... ON r_address_place.id_place = place.id
+    ... JOIN address
+    ... ON r_address_place.id_address = address.id
+    ... AND address.source = place.vector_source
+    ... WHERE r_iconography_place.id_iconography IN (
+    ...   -- 2) get the r_iconography_place.id_iconography
+    ...   --    for r_iconography_place.id_place
+    ...   SELECT r_iconography_place.id_iconography
+    ...   FROM r_iconography_place
+    ...   WHERE r_iconography_place.id_place = (
+    ...     -- 1) get the place.id for place.id_uuid
+    ...     SELECT place.id
+    ...     FROM place
+    ...     WHERE place.id_uuid = 'qr14c0bf395f74f460a845c4cab8d2c83a2'
+    ...     LIMIT 1
+    ...   )
+    ... )
+    ... GROUP BY place.id_uuid, address.address;
+    ... ORDER BY cnt DESC
+    ... LIMIT 5
+    """
+    # returns Place.id for `id_uuid`
+    id_place = select( Place.id ).filter( Place.id_uuid == id_uuid ).scalar_subquery()
+    # returns all `Iconography.id` related to the `Place.id`
+    id_icono = (select( func.distinct(R_IconographyPlace.id_iconography) )
+               .filter( R_IconographyPlace.id_place == id_place ))
+    # returns all `Place.id` related to all `Iconography.id` related to the `Place.id`,
+    # with a count of number of relations
+    query    = (select( Place.id_uuid, Address.address, func.count(Place.id_uuid) )
+               .join( Place.r_address_place )
+               .join( R_AddressPlace.address.and_(Address.source == Place.vector_source) )
+               .join( Place.r_iconography_place )
+               .filter( R_IconographyPlace.id_iconography.in_(id_icono)
+                      , R_IconographyPlace.id_place != id_place )
+               .group_by( Place.id_uuid, Address.address )
+               .order_by( func.count(Place.id_uuid).desc() )
+               .limit(5) )
+    print( db.session.execute(query).all() )
+
+    r = [ { "id_uuid": row[0], "entry_name": row[1], "count": row[2] }
+          for row in db.session.execute(query).all() ]
+    return jsonify(r)
+
+
 @app.route("/i/association/index")
 def association_index():
     """
     build an index of `iconography` resources where
-    from_table.id_uuid == from_id_uuid and to_table.id_uuid == to_id_uuid
+    from_table.id_uuid == from_id_uuid and to_table.id_uuid == to_id_uuid.
+
+    this function is as generic as possible, BUT
+    * behaviour is defined table-by-table
+    * only behaviour that will actually appear in the site is implemented
+      (for example, only associations from place to place is implemented,
+      so associations between a place and another table doesn't exist)
 
     query params:
     * from_table   str : tableA's name in the database
@@ -670,14 +747,19 @@ def association_index():
     #                   between 2 rows of the same table
     by_theme = lambda q, id_uuid: (
         q.join(Iconography.r_iconography_theme)
-              .join(R_IconographyTheme
-                    .theme
-                    .and_( Theme.id_uuid == id_uuid )))
+         .join(R_IconographyTheme
+              .theme
+              .and_( Theme.id_uuid == id_uuid )))
     by_named_entity = lambda q, id_uuid: (
-        (q.join(Iconography.r_iconography_named_entity)
-          .join(R_IconographyNamedEntity
-                .named_entity
-                .and_( NamedEntity.id_uuid == id_uuid ))))
+        q.join(Iconography.r_iconography_named_entity)
+         .join(R_IconographyNamedEntity
+              .named_entity
+              .and_( NamedEntity.id_uuid == id_uuid )))
+    by_place = lambda q, id_uuid: (
+        q.join(Iconography.r_iconography_place)
+         .join(R_IconographyPlace
+              .place
+              .and_( Place.id_uuid == id_uuid )))
 
     # 3) build query
     base_query = select(func.distinct(Iconography.id))  # base query
@@ -687,16 +769,20 @@ def association_index():
     if ( params["from_table"] == params["to_table"]
          and params["from_table"] == "theme" ):
         base_query = by_theme( base_query, params["from_id_uuid"] )
-        to_query   = by_theme( select(Iconography.id)
-                             , params["to_id_uuid"] )
-        base_query = base_query.filter(Iconography.id.in_(to_query))
+        to_query   = by_theme( select(Iconography.id), params["to_id_uuid"] )
+        base_query = base_query.filter( Iconography.id.in_(to_query) )
     # named_entityA and named_entityB
     elif ( params["from_table"] == params["to_table"]
            and params["from_table"] == "named_entity" ):
         base_query = by_named_entity( base_query, params["from_id_uuid"] )
-        to_query   = by_named_entity( select(Iconography.id)
-                                    , params["to_id_uuid"] )
-        base_query = base_query.filter(Iconography.id.in_(to_query))
+        to_query   = by_named_entity( select(Iconography.id), params["to_id_uuid"] )
+        base_query = base_query.filter( Iconography.id.in_(to_query) )
+    # placeA and placeB
+    elif ( params["from_table"] == params["to_table"]
+           and params["from_table"] == "place" ):
+        base_query = by_place( base_query, params["from_id_uuid"] )
+        to_query   = by_place( select(Iconography.id), params["to_id_uuid"] )
+        base_query = base_query.filter( Iconography.id.in_(to_query) )
 
     # associating 2 different tables. no subqueries, just chain joins.
     else:
@@ -714,13 +800,16 @@ def association_index():
             base_query = by_named_entity(base_query, params["to_id_uuid"])
 
     query = select( Iconography ).filter( Iconography.id.in_(base_query) )
-    r = db.session.execute(query)
+    r = db.session.execute( query )
 
     # import sqlparse
     # print(sqlparse.format(str(query), keyword_case="upper", reindent=True))
 
     return [ i[0].serialize_lite() for i in r.all() ]
 
+
+
+# *************************************************************************
 
 @app.route("/i/raise")
 def do_raise():

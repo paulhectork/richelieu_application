@@ -23,9 +23,22 @@
             d'explorer les représentations du quartier de la fin du XVIII<sup>e</sup>
             au début du XX<sup>e</sup> siècle. Voici comment l'utiliser&nbsp:</p>
           <ul>
-            <li>Dans la carte, cliquer sur une parcelle ouvrira une une interface
-              pour explorer toutes les ressources iconographiques qui y sont
-              associées.</li>
+            <li>Dans la carte, cliquer sur une parcelle permettra d'obtenir plus
+              d'information sur celle-ci:
+              <ul>
+                <li>Une interface s'ouvrira pour explorer toutes
+                  les ressources iconographiques associées à la parcelle cliquée.</li>
+                <li>Sur la carte, la parcelle cliquée s'affichera en
+                  <span class="ui-button-demo bg-color"
+                        style="background-color: var(--cs-duck)"
+                        aria-label="couleur de fond d'une parcelle: vert sombre"></span>.
+                  Les parcelles associées s'afficheront en
+                  <span class="ui-button-demo bg-color"
+                        style="background-color: var(--cs-seagreen)"
+                        aria-label="couleur de fond d'une parcelle: vert clair"></span>.
+                </li>
+              </ul>
+            </li>
             <li>Le bouton <span class="ui-button-demo"><UiButtonFilter>
               </UiButtonFilter></span> permet d'afficher une barre contenant
               des filtres pour sélectionner les parcelles à afficher.
@@ -131,11 +144,22 @@ onMounted(() =>
   overflow: scroll;
   max-height: 100%;
 }
-.ui-button-demo button {
+.ui-button-demo {
   display: inline-block;
   height: 25px;
   width: 25px;
-  transform: translateY(15%);
+  transform: translateY(15%) translateX(-15%);
+  margin: 0 3px;
+}
+
+.ui-button-demo button {
+  height: 100%;
+  width: 100%;
+}
+
+.ui-button-demo.bg-color {
+  border: var(--cs-negative-border);
+  height: 20px;
 }
 
 li > ul > li {

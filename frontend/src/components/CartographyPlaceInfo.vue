@@ -1,12 +1,30 @@
-w<!-- CartographyPlaceInfo.vue
+<!-- CartographyPlaceInfo.vue
 
      information on a place, displayed in `CartographyView.vue`,
      when clicking on a place feature on the map, in a sidebar.
 
      it contains:
-     an index of iconography resources related to a place,
-     to be displayed on the cartographic interface when
-     clicking on a geojson feature
+     - the address
+     - a list of the 5 places that are the most frequently
+       associated to this place.
+     - an index of iconography resources related to a place,
+       to be displayed on the cartographic interface when
+       clicking on a geojson feature
+
+     props:
+     - placeIdUuid (string)
+        the place.id_uuid of the place we want to display data on
+     - associatedPlaces (object)
+        an array of the places most often associated with the current place.
+        structure:
+        [ { id_uuid : <string:place.id_uuid>,
+            count   : <int:number of relations between input place and related places>
+          }
+        ]
+
+     emits:
+     - closePlaceInfo:
+        emitting this event will trigger the unmounting of this component
 -->
 
 <template>
@@ -40,6 +58,12 @@ w<!-- CartographyPlaceInfo.vue
           <strong>Aucune ressource iconographique</strong>
           n'est associée à ce lieu.</p>
 
+        <IndexAssociationRedirects fromTable="place"
+                                   toTable="place"
+                                   :from="{ entry_name: address, id_uuid: placeIdUuid }"
+                                   :to="associatedPlaces"
+        ></IndexAssociationRedirects>
+
         <div class="iconography-index-wrapper">
           <IndexBase :data="iconographyDataFilter"
                      :itemsPerRow="1"
@@ -58,9 +82,10 @@ import { onMounted, ref, onUnmounted, watch } from "vue";
 import axios from "axios";
 import $ from "jquery";
 
-import IndexBase from "@components/IndexBase.vue";
-import UiButtonCross from "@components/UiButtonCross.vue";
 import UiLoader from "@components/UiLoader.vue";
+import UiButtonCross from "@components/UiButtonCross.vue";
+import IndexBase from "@components/IndexBase.vue";
+import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
 
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { sortAddressBySource } from "@utils/array.js";
@@ -68,10 +93,11 @@ import { capitalizeFirstChar } from "@utils/strings";
 
 /***************************************/
 
-const props                 = defineProps(["placeIdUuid"]);
+const props                 = defineProps(["placeIdUuid", "associatedPlaces"]);
 const emit                  = defineEmits(["closePlaceInfo"]);
 
 const placeIdUuid           = ref("");
+const associatedPlaces      = ref([]);
 const place                 = ref();
 const address               = ref()
 const iconographyDataFilter = ref([]);
@@ -98,7 +124,8 @@ const escHandler = (e) => e.key === "Escape" ? emit("closePlaceInfo") : "";
 function resetData() {
   placeIdUuid.value           = "";
   place.value                 = undefined;
-  address.value               = undefined
+  associatedPlaces.value      = undefined;
+  address.value               = undefined;
   iconographyDataFilter.value = [];
   loadStateAddress.value      = "loading";
   loadStatePlace.value        = "loading";
@@ -132,6 +159,8 @@ function getData() {
 watch(props, (newProps, oldProps) => {
   resetData();
   placeIdUuid.value = newProps.placeIdUuid;
+  associatedPlaces.value = newProps.associatedPlaces;
+  console.log(associatedPlaces.value);
   getData();
 })
 
