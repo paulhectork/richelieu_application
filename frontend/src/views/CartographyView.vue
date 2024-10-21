@@ -19,7 +19,11 @@
      * modal :
         an explanatory modal displayed when opening the map,
         or when clicking on UiButtonQuestion
-        - is display is controlled by `displayModal`
+        - is display is controlled by domStore.cartogrphyModalVisible
+          (the advantage of using a store instead of a `ref` is that state
+          handling will be done at app level instead of at view level: once
+          the modal is closed it won't be displayed until doing a hard reload
+          on the whole app)
 
      lifecycle for updating the map's data:
      * onMounted:
@@ -74,9 +78,11 @@
     </div>
 
     <div class="c-modal-container">
-      <CartographyModal v-if="displayModal === true"
-                        @close-cartography-modal="closeCartographyModal"
-      ></CartographyModal>
+      <Transition name="slideInOut">
+        <CartographyModal v-if="domStore.cartographyModalVisible/*displayModal === true*/"
+                          @close-cartography-modal="onCloseCartographyModal"
+        ></CartographyModal>
+      </Transition>
     </div>
 
   </div>
@@ -87,14 +93,15 @@
 import { onMounted, ref, watch, h } from "vue";
 
 import axios from "axios";
-import L, { control } from "leaflet";
-import $, { map } from "jquery";
+import L from "leaflet";
+import $ from "jquery";
 import _ from "lodash";
 
 import CartographyModal from "@components/CartographyModal.vue";
 import CartographyPlaceInfo from "@components/CartographyPlaceInfo.vue";
 import CartographyController from "@components/CartographyController.vue";
 
+import { domStore } from "@stores/dom.js";
 import { uiButtonPlus, uiButtonFilter, uiButtonQuestion } from "@utils/ui";
 import { colorScaleBlue, colorScaleRed } from "@utils/colors";
 import { globalDefineMap
@@ -109,9 +116,12 @@ import { globalDefineMap
 const placeIdUuid = ref();  // when this is set, an indx of iconography resources of the place with place.id_uuid == placeIdUuid will be displayed
 const displayLeft = ref(false);  // when true, the left block (controller) will be displayed
 const displayRight = ref(false);  // when true, the right block will be displayed
-const displayModal = ref(true);  // when true, display an explanatory modal
+
 const currentlyFiltering = ref(false);      // flag to ensure that one `onFilterUpdate` is finished before a new one is started
 const loadState = ref("loading");  // loading/loaded/error
+
+// finally handled by `domStore.cartographyModalVisible`
+// const displayModal = ref(true);  // when true, display an explanatory modal
 
 // leaflet objects
 const lflMap = ref();  // L.Map, defined in onMounted
@@ -196,8 +206,9 @@ function closeCartographyController() {
   displayLeft.value = false;
 }
 
-function closeCartographyModal() {
-  displayModal.value = false;
+function onCloseCartographyModal() {
+  // displayModal.value = false;
+  domStore.cartographyModalVisible = false;
   // zoom on the map when closing the modal.
   // if we have a map and geoJson bounds to zoom to, zoom to the geojson map
   // else, zoom to the default map center.
@@ -352,7 +363,10 @@ function addPresOpenerControl(_map) {
   presOpener.onAdd = function () {
     this._div = L.DomUtil.create("div", "custom-controller");
     this._div.innerHTML = uiButtonQuestion;
-    L.DomEvent.on(this._div, "click", () => { displayModal.value = true }, this);
+    L.DomEvent.on(this._div, "click", () => {
+      /*displayModal.value = true*/
+      domStore.cartographyModalVisible = true;
+    }, this);
     return this._div
   }
   presOpener.onRemove = function () {
@@ -513,7 +527,7 @@ function addPlaces(init) {
   leafletPlaces.addTo(_map);
 
   // zoom on the layers. if init, the zoom animation is triggered
-  // in `closeCartographyModal()`
+  // in `onCloseCartographyModal()`
   if (!init) {
     _map.fitBounds( _places.features.length
                 ? leafletPlaces.getBounds()

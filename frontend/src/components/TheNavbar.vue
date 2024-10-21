@@ -31,6 +31,7 @@
              id="logo-richelieu"
              alt="logo du projet Richelieu"
         >
+        <span style="visibility: hidden">Quartier Richelieu</span>
       </RouterLink>
     </h1>
 

@@ -2,6 +2,30 @@
  * UI helpers
  */
 
+import $ from "jquery";
+
+/***************************************************/
+
+/**
+ * returns true if a click happens outside of element $(selector).
+ *
+ * @example:
+ * $(document).on("click", (e) => {
+ *   if ( clickOutside(e, ".hm-inner-wrapper") ) {
+ *     $(document).off("click");
+ *     emit('closeHomeModal');
+ *   }
+ * });
+ *
+ * @param {JQuery.Event} event : the jquery click event
+ * @param {String} selector: the html selector
+ * @returns {bool}
+ */
+export const clickOutside = (event, selector) =>
+  ( !$(event.target).closest(selector).length && $(selector).is(":visible") );
+
+/***************************************************/
+
 /**
  * @components/Ui*.vue components as strings.
  * in some libraries (Leaflet), using vue components is tedious.

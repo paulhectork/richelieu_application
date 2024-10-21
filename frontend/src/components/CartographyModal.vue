@@ -78,14 +78,15 @@ import UiButtonCross from "@components/UiButtonCross.vue";
 import UiButtonFilter from "@components/UiButtonFilter.vue";
 import UiButtonQuestion from "@components/UiButtonQuestion.vue";
 
+import { clickOutside } from "@utils/ui.js";
+
 /************************************/
 
 const emit = defineEmits(["closeCartographyModal"]);
 
 const displayModal = ref(true);  // when true, display an explanatory modal
 
-onMounted(() =>
-
+onMounted(() => {
   // emit an order to close the modal when pressing escape
   $(document).on("keyup", (e) => {
     if (e.originalEvent.code==="Escape") {
@@ -93,7 +94,14 @@ onMounted(() =>
       $(document).off("keyup");
     }
   })
-)
+  // close when clicking outside of the modal
+  $(document).on("click", (e) => {
+    if ( clickOutside(e, ".c-modal-inner-wrapper") ) {
+      emit("closeCartographyModal");
+      $(document).off("click");
+    }
+  })
+})
 
 </script>
 
@@ -111,7 +119,7 @@ onMounted(() =>
   align-items: center;
   justify-content: center;
 
-  background-color: RGBA(113, 5, 81, .5); /* var(--cs-plum) in rgba with .3 opacity */
+  /*background-color: RGBA(113, 5, 81, .5);*/ /* var(--cs-plum) in rgba with .3 opacity */
 }
 
 .c-modal-inner-wrapper {
@@ -122,6 +130,8 @@ onMounted(() =>
   display: grid;
   grid-template-columns: 100%;
   grid-template-rows: auto 2fr;
+
+  box-shadow: 8px 8px var(--cs-plum);
 }
 .c-modal-title-wrapper {
   display: flex;
@@ -174,6 +184,8 @@ code {
 
 @media ( orientation:landscape ) {
   .c-modal-outer-wrapper {
+    height: 100%;
+    width: calc(100vw - var(--cs-landscape-sidebar-width));
     transform: translateX(30%);
   }
   .c-modal-inner-wrapper {

@@ -47,16 +47,51 @@
     <div class="index-inner-wrapper animate__animated animate__slideInLeft"
          :style="computedStyle"
     >
+      <!-- without paging
       <IndexItem v-for="d in dataFilter"
                  :item="d"
                  :display="display"
       ></IndexItem>
+      -->
+      <!-- with vue-virtual-scroll:
+           https://github.com/Akryum/vue-virtual-scroller/blob/master/packages/vue-virtual-scroller/README.md#recyclescroller
+      <RecycleScroller class="scroller"
+                      :items="dataFilter"
+                      :direction="horizontal"
+                      :item-size="`${100/3}px`"
+                      key-field="href"
+                      v-slot="{ item }"
+      ><IndexItem class="the-item"
+                  :item="item"
+                  :display="display"
+      ></IndexItem></RecycleScroller>
+      -->
+
+      <!-- as a vue-virtual-scroll-grid
+           https://github.com/rocwang/vue-virtual-scroll-grid?tab=readme-ov-file
+      -->
+      <!--<Grid :length="dataFilter.length"
+            :pageSize="20"
+            :pageProvider="(pageNumber, pageSize) =>
+                dataFilter.slice(pageNumber * pageSize, pageNumber+1 * pageSize)"
+      > <template v-slot:default="{ item, style, index }"></template>
+      </Grid>
+      -->
+
+      <IndexItem v-for="d in pageRenderer(pageNumber, pageSize)"
+                 :item="d"
+                 :display="display"
+      ></IndexItem>
+
     </div>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref, computed } from "vue";
+
+// import Grid from "vue-virtual-scroll-grid";
+import $ from "jquery";
 
 import IndexItem from "@components/IndexItem.vue";
 
@@ -68,6 +103,12 @@ const props = defineProps([ "display"      // which component to use for renderi
                           ])  // the data to display.
 const dataFull   = ref([]);  // all items of the index
 const dataFilter = ref([]);  // index items filtered in `.index-filter-wrapper`
+
+const pageNumber = ref(0);
+const pageSize = 20;
+
+const pageRenderer = (pNumber, pSize) =>
+  dataFilter.value.slice(pNumber * pSize, pNumber+1 * pSize);
 
 /**
  * if there is a props.itemsPerRow, set the grid-template-columns.
@@ -103,7 +144,6 @@ function textFilter(filterBy) {
   dataFilter.value = dataFull.value.filter(x =>
     simplifyString( stripHtml(x.text) ).includes(filterBy)
   );
-  console.log(dataFilter.value)
 
 }
 

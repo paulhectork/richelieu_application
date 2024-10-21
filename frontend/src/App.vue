@@ -1,31 +1,42 @@
 <!-- App.vue
-     this component is the starting point for the app.
-     it manages basic app-wide processes.
+    this component is the starting point for the app.
+    it manages basic app-wide processes.
 
-     3 importants actions happen here:
-     - log the window orientation in `domStore` (landscape or portrait)
-     - handling the showing/hiding of the menu (see below).
-     - switching color theme between light/dark, based on the route's path
-       (see `toThemeNegative` and `maybeChangeTheme`)
+    4 importants actions happen here:
+    - log the window orientation in `domStore` (landscape or portrait)
+    - handling the showing/hiding of the menu (see below).
+    - switching color theme between light/dark, based on the route's path
+      (see `toThemeNegative` and `maybeChangeTheme`)
+    - hiding/showing `@components/TheHomeModal.vue`
 
-     interaction between App.vue, TheMenu.vue and TheNavbar.vue:
-     how is the menu displayed ?
-     - hiding/showing the menu is defined in `App.vue` and `TheNavbar.vue`.
-     - App.vue contains a `menuActive` ref. if `true`, the menu is shown and
-        the burger button in TheNavbar takes the shape of a cross. else,
-        the menu is hidden and the burger is in its normal state.
-     - App.vue listens to route changes. when the route changes, `menuActive`
-        is set to close and TheMenu is hidden.
-     - App.vue passes menuActive as a prop to TheNavbar.
-     - TheNavbar determines the style of `#burger` (cross or burger) and
-        the display of the menu when interacting with `#burger` based
-        on menuActive. when `#burger` is clicked, TheNavbar emits an event
-        (menu-active-update) to App.vue, and App.vue will switch the flag
-        menuActive: if true-> false, if false -> true. this will toggle the
-        visibility of the menu.
+    interaction between App.vue, TheMenu.vue and TheNavbar.vue:
+    how is the menu displayed ?
+    - hiding/showing the menu is defined in `App.vue` and `TheNavbar.vue`.
+    - App.vue contains a `menuActive` ref. if `true`, the menu is shown and
+       the burger button in TheNavbar takes the shape of a cross. else,
+       the menu is hidden and the burger is in its normal state.
+    - App.vue listens to route changes. when the route changes, `menuActive`
+       is set to close and TheMenu is hidden.
+    - App.vue passes menuActive as a prop to TheNavbar.
+    - TheNavbar determines the style of `#burger` (cross or burger) and
+       the display of the menu when interacting with `#burger` based
+       on menuActive. when `#burger` is clicked, TheNavbar emits an event
+       (menu-active-update) to App.vue, and App.vue will switch the flag
+       menuActive: if true-> false, if false -> true. this will toggle the
+       visibility of the menu.
 -->
 
 <template>
+  <!-- without `v-if` on `Transition`, TheHomeModal would slide-out on each page,
+       since it would be removed. -->
+  <Transition name="slideInOut" transition-duration="35s"
+              v-if="route.path === '/'">
+    <TheHomeModal @close-home-modal="onCloseHomeModal"
+                  v-if="domStore.homeModalVisible"
+    ></TheHomeModal>
+  </Transition>
+
+
   <div class="app-wrapper main-default">
     <!-- navbar -->
     <TheNavbar :menu-active="menuActive"
@@ -54,10 +65,12 @@ import { RouterView, useRoute, useRouter } from 'vue-router';
 
 import $ from "jquery";
 
-import { domStore } from "@stores/dom.js";
 import TheNavbar from '@components/TheNavbar.vue';
 import TheMenu from "@components/TheMenu.vue";
 import TheSidebar from "@components/TheSidebar.vue";
+import TheHomeModal from "@components/TheHomeModal.vue";
+
+import { domStore } from "@stores/dom.js";
 
 /**********************************************************/
 
@@ -100,6 +113,16 @@ const updateMenuActive = (newState) =>
 const maybeChangeTheme = () =>
   themeNegative.value =
     toThemeNegative.find(rgx => route.path.match(rgx) ) !== undefined;
+
+
+/**
+ * switching domStore.homeModalVisible will close `TheHomeModal` for the entire
+ * session: the modal will only be shown again after exiting the site or after
+ * a full-page reload (ex: cliking on an internal link made with `<a>`).
+ */
+function onCloseHomeModal(e) {
+  domStore.homeModalVisible = false;
+}
 
 /**********************************************************/
 
@@ -169,7 +192,7 @@ main {
 
 @media ( orientation: landscape ) {
   .main-wrapper {
-    grid-template-columns: 90% 10%;
+    grid-template-columns: calc(100% - var(--cs-landscape-sidebar-width)) var(--cs-landscape-sidebar-width);
     grid-template-rows: 100%;
   }
 }

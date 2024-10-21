@@ -192,9 +192,11 @@
   --cs-navbar-height: max(7vh, 50px);
 
   /*
-  in portrait mode, the sidebar is a horizontal banner on
-  the bottom of the page. this is its size.
+  - in landscape mode the sidebar has a width of 10%;
+  -  in portrait mode, the sidebar is turned into a horizontal
+     banner on the bottom of the page, with a height of 10vw.
   */
+  --cs-landscape-sidebar-width: 10%;
   --cs-portrait-footer-height: 10vh;
 
   /*
@@ -237,6 +239,9 @@ body {
   font-weight: 500;
   font-family: var(--cs-font-sans-serif);
   font-size: var(--cs-fontsize-main-desktop);
+}
+p {
+  margin: 10px;
 }
 
 h1,h2,h3,h4,h5,h6 {

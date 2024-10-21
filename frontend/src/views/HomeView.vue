@@ -117,6 +117,7 @@ import _ from "lodash";
 
 import UiButtonLink from "@components/UiButtonLink.vue";
 import HomeItemPreview from "@components/HomeItemPreview.vue";
+
 import { articles } from "@globals";
 import { urlToFrontendNamedEntityCategory
        , urlToFrontendThemeCategory

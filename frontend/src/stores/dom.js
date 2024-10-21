@@ -1,5 +1,4 @@
 import { reactive } from 'vue';
-import $ from "jquery";
 
 /**
  * store relative to DOM manipulation
@@ -28,7 +27,17 @@ export const domStore = reactive({
    * flag to show that the sidebar is visible on mobile displays
    */
   menuActive: false,
-  toggleMobileSidebar() {
-    this.menuActive = !this.menuActive
-  }
+  /**
+   * flag to display the modal @components/TheHomeModal.vue.
+   * this modal is only visible on the home page and when visiting
+   * the site for the first time and is hidden afterwards
+   */
+  homeModalVisible: true,
+  /**
+   * the same, but for the modal @components/CartographyModal.vue,
+   * displayed on @views/CartographyView.vue: once it's been removed,
+   * don't show it
+   */
+  cartographyModalVisible: true
+
 })
