@@ -32,7 +32,8 @@
           <div class="hm-left-redirect-wrapper">
             <div class="hm-left-redirect">
               <span>En savoir plus</span>
-              <UiButtonLink></UiButtonLink>
+              <RouterLink to="/a-propos/projet"><UiButtonLink></UiButtonLink></RouterLink>
+
             </div>
           </div>
         </div>

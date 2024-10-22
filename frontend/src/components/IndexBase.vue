@@ -47,12 +47,11 @@
     <div class="index-inner-wrapper animate__animated animate__slideInLeft"
          :style="computedStyle"
     >
-      <!-- without paging
+      <!-- without paging -->
       <IndexItem v-for="d in dataFilter"
                  :item="d"
                  :display="display"
       ></IndexItem>
-      -->
       <!-- with vue-virtual-scroll:
            https://github.com/Akryum/vue-virtual-scroller/blob/master/packages/vue-virtual-scroller/README.md#recyclescroller
       <RecycleScroller class="scroller"
@@ -77,11 +76,12 @@
       > <template v-slot:default="{ item, style, index }"></template>
       </Grid>
       -->
-
+      <!--
       <IndexItem v-for="d in pageRenderer(pageNumber, pageSize)"
                  :item="d"
                  :display="display"
       ></IndexItem>
+      -->
 
     </div>
   </div>
@@ -89,9 +89,6 @@
 
 <script setup>
 import { onMounted, ref, computed } from "vue";
-
-// import Grid from "vue-virtual-scroll-grid";
-import $ from "jquery";
 
 import IndexItem from "@components/IndexItem.vue";
 
