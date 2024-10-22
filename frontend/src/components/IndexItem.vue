@@ -45,21 +45,21 @@ const props = defineProps(["item", "display"]);
 .index-item {
   font-family: var(--cs-font-sans-serif-accentuate);
   border: var(--cs-main-border);
-  margin: 7px;
 
   display: grid;
   grid-template-columns: 100%;
   grid-template-rows: 2fr auto;
   text-align: center;
 }
+a {
+  text-decoration-line: none;
+  color: var(--cs-main-default);
+  height: 100%
+}
 img {
   object-fit: cover;
   overflow: hidden;
   object-position: center;
-}
-a {
-  text-decoration-line: none;
-  color: var(--cs-main-default);
 }
 p {
   margin: 0;

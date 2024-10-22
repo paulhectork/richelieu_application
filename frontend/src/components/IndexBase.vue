@@ -35,7 +35,7 @@
 -->
 
 <template>
-  <div class="index-wrapper">
+  <div class="index-outer-wrapper">
     <div class="index-filter-wrapper">
       <FormKit type="search"
                placeholder="..."
@@ -54,43 +54,24 @@
                  :display="display"
       ></IndexItem>
       -->
-      <!-- with vue-virtual-scroll:
-           https://github.com/Akryum/vue-virtual-scroller/blob/master/packages/vue-virtual-scroller/README.md#recyclescroller
-      <RecycleScroller class="scroller"
-                      :items="dataFilter"
-                      :direction="horizontal"
-                      :item-size="`${100/3}px`"
-                      key-field="href"
-                      v-slot="{ item }"
-      ><IndexItem class="the-item"
-                  :item="item"
-                  :display="display"
-      ></IndexItem></RecycleScroller>
-      -->
 
-      <!-- as a vue-virtual-scroll-grid
-           https://github.com/rocwang/vue-virtual-scroll-grid?tab=readme-ov-file
-      -->
-      <!--<Grid :length="dataFilter.length"
-            :pageSize="20"
-            :pageProvider="(pageNumber, pageSize) =>
-                dataFilter.slice(pageNumber * pageSize, pageNumber+1 * pageSize)"
-      > <template v-slot:default="{ item, style, index }"></template>
-      </Grid>
-      -->
-      <IndexItem v-for="d in pageRenderer(pageNumber, pageSize)"
-                 :item="d"
-                 :display="display"
-      ></IndexItem>
-
-      <button @click="pageNumber ++"></button>
+      <!-- with infinite scrolling -->
+      <div v-for="d in pageRenderer(pageNumber, pageSize)"
+           class="index-item-wrapper"
+      >
+        <IndexItem :item="d"
+                   :display="display"
+        ></IndexItem>
+      </div>
 
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, onUnmounted, ref, computed } from "vue";
+
+import $ from "jquery";
 
 import IndexItem from "@components/IndexItem.vue";
 
@@ -100,14 +81,11 @@ const props = defineProps([ "display"      // which component to use for renderi
                           , "data"         // data to display
                           , "itemsPerRow"  // (optional) number of items to display for each row
                           ])  // the data to display.
-const dataFull   = ref([]);  // all items of the index
-const dataFilter = ref([]);  // index items filtered in `.index-filter-wrapper`
+const dataFull   = ref([]);   // all items of the index
+const dataFilter = ref([]);   // index items filtered in `.index-filter-wrapper`
 
-const pageNumber = ref(0);
-const pageSize = 20;
-
-const pageRenderer = (pNumber, pSize) =>
-  dataFilter.value.slice(pNumber * pSize, pNumber+1 * pSize);
+const pageNumber = ref(0);    // which page we're on: offset
+const pageSize   = 20;        // number of new items to add to the "page"
 
 /**
  * if there is a props.itemsPerRow, set the grid-template-columns.
@@ -121,6 +99,15 @@ const computedStyle = computed(() =>
 /*******************************************************/
 
 /**
+ * this function defines the items to display in an infinite scroll.
+ * @param {Number} pNumber: the page number
+ * @param {Number} pSize  : the number of items per page (aka, the number
+ *    of items to display next)
+ */
+const pageRenderer = (pNumber, pSize) =>
+   dataFilter.value.slice(0, (pNumber+1) * pSize);
+
+/**
  * simplify the string `s`
  */
 const simplifyString = s =>
@@ -128,21 +115,18 @@ const simplifyString = s =>
   ? s.toLowerCase().trim().replaceAll(/\s+/g, " ")
   : s;
 
-
 /**
  * remove html tags from the string `_string`
  */
 const stripHtml = _string => _string.replace(/<[^>]*>?/gm, '');
 
 /**
- *
  * @param {string} filterBy
  */
 function textFilter(filterBy) {
   filterBy = simplifyString( stripHtml(filterBy) );
   dataFilter.value = dataFull.value.filter(x =>
-    simplifyString( stripHtml(x.text) ).includes(filterBy)
-  );
+    simplifyString( stripHtml(x.text) ).includes(filterBy) );
 
 }
 
@@ -152,7 +136,19 @@ function textFilter(filterBy) {
 onMounted(() => {
   dataFull.value = props.data;
   dataFilter.value = dataFull.value;
+
+  // infinite scroll:
+  // if you've scrolled to the end of page, increment pageNumber.
+  $("main").on("scroll", (e) => {
+    const t = e.target;
+    if ( t.scrollTop === t.scrollHeight - t.offsetHeight ) {
+      pageNumber.value++
+    }
+  })
 })
+onUnmounted(() =>
+  $("main").off("scroll")
+)
 </script>
 
 <style>
@@ -164,8 +160,12 @@ onMounted(() => {
  *    (else, the image quality is too low)
  * - landscape: 3 items per row
  */
-.index-inner-wrapper {
+.index-outer-wrapper {
   width: 100%;
+}
+.index-inner-wrapper {
+  margin: 0 15px;
+  width: auto;
   display: grid;
   grid-auto-rows: 40vh;
   grid-template-columns: 50% 50%;
@@ -180,5 +180,8 @@ onMounted(() => {
   .index-inner-wrapper {
     grid-template-columns: repeat(3, calc(100%/3));
   }
+}
+.index-item-wrapper {
+  padding: 7px;
 }
 </style>

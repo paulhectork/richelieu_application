@@ -128,6 +128,9 @@ const router = createRouter({
       path: '/a-propos/projet',
       component: () => import("@views/AboutProjetView.vue")
     }, {
+      path: '/a-propos/mentions',
+      component: () => import("@views/AboutCreditsMentionsView.vue")
+    }, {
       path: "/:pathMatch(.*)*",
       component: () => import("@views/ErrNotFoundView.vue")
     }

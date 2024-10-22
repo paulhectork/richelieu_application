@@ -94,6 +94,11 @@
                           class="menu-text"
               >L'équipe</RouterLink>
             </li>
+            <li class="main-default">
+              <RouterLink to="/a-propos/mentions"
+                          class="menu-text"
+              >Crédits et mentions légales</RouterLink>
+            </li>
           </ul>
         </div>
       </li>
