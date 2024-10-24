@@ -112,24 +112,11 @@ const router = createRouter({
       path: '/article/:articleName',
       component: () => import("@views/ArticleMainView.vue")
     }, {
-    //}, {
-    //  path: '/table-viewer',
-    //  component: () => import("@views/TableViewerView.vue")
-    //}, {
-      path: '/documentation/methodologie',
-      component: () => import("@views/DocumentationMethodologieView.vue")
+      path: '/documentation/:pageName',
+      component: () => import("@views/AboutDocumentationView.vue")
     }, {
-      path: '/documentation/api',
-      component: () => import("@views/DocumentationApiView.vue")
-    }, {
-      path: '/a-propos/equipe',
-      component: () => import("@views/AboutEquipeView.vue")
-    }, {
-      path: '/a-propos/projet',
-      component: () => import("@views/AboutProjetView.vue")
-    }, {
-      path: '/a-propos/mentions',
-      component: () => import("@views/AboutCreditsMentionsView.vue")
+      path: '/a-propos/:pageName',
+      component: () => import("@views/AboutDocumentationView.vue")
     }, {
       path: "/:pathMatch(.*)*",
       component: () => import("@views/ErrNotFoundView.vue")

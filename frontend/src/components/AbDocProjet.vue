@@ -1,6 +1,4 @@
 <template>
-      <h1>À propos</h1>
-    <h2>Le projet de recherche <i>Richelieu. Histoire du quartier</i></h2>
 
   <div class="textpage-text-wrapper">
     <p>Le projet de recherche <i>Richelieu. Histoire du quartier</i>
@@ -93,7 +91,16 @@
 
 
 <script setup>
+import { onMounted } from "vue";
 
+/****************************************/
+
+const emit = defineEmits(["h2"]);
+const subtitle = "Le projet de recherche <i>Richelieu. Histoire du quartier</i>";
+
+/****************************************/
+
+onMounted(() => emit("h2", subtitle))
 </script>
 
 

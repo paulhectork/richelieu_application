@@ -174,9 +174,9 @@ const urlMapper = { "bourse"             : "ArticleContentBourse"
 function loadCurrentArticleComponent(articleName) {
   let componentName = Object.keys(urlMapper).includes(articleName)
                       ? urlMapper[articleName]
-                      : "ErrNotFound.vue";
+                      : "ErrNotFound";
   return [ defineAsyncComponent(() => import(`../components/${componentName}.vue`))
-         , componentName === "ErrNotFound.vue"
+         , componentName === "ErrNotFound"
          ];
 }
 

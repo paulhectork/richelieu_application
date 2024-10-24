@@ -1,7 +1,4 @@
 <template>
-      <h1>À propos</h1>
-    <h2>L'équipe (2021-2024)</h2>
-
   <div class="textpage-text-wrapper">
     <h3>Direction de projet</h3>
     <dl>
@@ -129,7 +126,7 @@
   </div>
 
   <div class="textpage-text-wrapper">
-    <h2>Comité de pilotage</h2>
+    <!--<h2>Comité de pilotage</h2>-->
 
     <dl>
       <dt><strong>Philippe Chevallier</strong></dt>
@@ -168,7 +165,16 @@
 
 
 <script setup>
+import { onMounted } from "vue";
 
+/****************************************/
+
+const emit = defineEmits(["h2"]);
+const subtitle = "L'équipe (2021-2024)";
+
+/****************************************/
+
+onMounted(() => emit("h2", subtitle))
 </script>
 
 

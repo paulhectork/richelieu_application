@@ -1,10 +1,7 @@
 <template>
-  <h1>Documentation technique</h1>
-  <h2><i>Rich.Data</i>, un écosystème numérique pour l'histoire urbaine</h2>
-
   <div class="textpage-text-wrapper">
-    <h3>Des corpus de la recherche à la donnée ouverte&nbsp;:
-        la chaîne de traîtement <i>Rich.Data</i></h3>
+    <h3><i>Rich.Data</i>, un écosystème numérique pour l'histoire urbaine</h3>
+
     <p><i>RICH.DATA</i>, le volet numérique du projet, permet de
       répondre à aux questionnements scientifiques grâce
       à une approche protéiforme des données.
@@ -288,12 +285,25 @@
 
 
 <script setup>
+import { onMounted } from "vue";
+
+import StaticImageDisplay from "@components/StaticImageDisplay.vue";
+
+/****************************************/
+
 const dbUrl   = new URL("/other/richelieu_db_model_bg.png", __STATICS_URL__);
 const pipUrl  = new URL("/other/pipeline_main.png", __STATICS_URL__);
 const archUrl = new URL("/other/application_architecture_fr.png", __STATICS_URL__);
 const col1Url = new URL("/other/colin_article3d_image1.jpeg", __STATICS_URL__)
 const col2Url = new URL("/other/colin_article3d_image2.jpeg", __STATICS_URL__)
 const col3Url = new URL("/other/colin_article3d_image3.jpeg", __STATICS_URL__)
+
+const emit     = defineEmits(["h2"]);
+const subtitle = "Méthodologie numérique";
+
+/****************************************/
+
+onMounted(() => emit("h2", subtitle))
 </script>
 
 

@@ -33,7 +33,16 @@
 
 
 <script setup>
+import { onMounted } from "vue";
 
+/****************************************/
+
+const emit     = defineEmits(["h2"]);
+const subtitle = "Crédits et mentions légales";
+
+/****************************************/
+
+onMounted(() => emit("h2", subtitle))
 </script>
 
 

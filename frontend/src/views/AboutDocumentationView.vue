@@ -1,0 +1,163 @@
+<!-- AboutDocumentationView.vue
+    a small component that handles the display of all About / Documentation pages.
+
+    for scalability, to be sure that every one of these pages has the same HTML
+    markup and offers the same behaviour, `AboutDocumentationView` will serve
+    as a parent component that will dynamically import child component containing
+    page-specific HTML and emits based on the current route. if the route points
+    to nothing, an ErrNotFound.vue will be displayed.
+
+    basically this is just a simplified version of `@components/ArticleMainView.vue`
+-->
+
+<template>
+  <component v-if="notFoundFlag === true"
+             :is="currentComponent"
+  ></component>
+
+  <div v-else
+       class="textpage-outer-wrapper">
+    <div class="textpage-title-wrapper">
+      <h1 v-if="pageType === 'about'">À propos</h1>
+      <h1 v-else>Documentation technique</h1>
+      <h2 v-html="h2Html"></h2>
+    </div>
+
+    <div class="textpage-inner-wrapper"
+         :class="{ 'toc-visible': domStore.windowOrientation === 'landscape' || expandToc }"
+    >
+
+      <div class="textpage-toc-outer-wrapper">
+        <AbDocToc @display-toc="toggleDisplayToc"
+                  :text-mounted="textMounted"
+        ></AbDocToc>
+      </div>
+
+      <div class="textpage-text-outer-wrapper">
+        <component :is="currentComponent"
+                   @h2="(txt) => h2Html = txt"
+                   @vue:mounted="(e) => textMounted = e"
+        ></component>
+      </div>
+    </div>
+  </div>
+
+</template>
+
+
+<script setup>
+import { onMounted
+       // , onUnmounted
+       , shallowRef
+       , ref
+       , defineAsyncComponent
+       , watch
+       } from "vue";
+import { useRoute } from "vue-router";
+
+import AbDocToc from "@components/AbDocToc.vue";
+import { domStore } from "@stores/dom.js";
+
+/************************************************/
+
+const route            = useRoute();
+const currentComponent = shallowRef();
+const notFoundFlag     = ref(false);  // true if currentComponent === ErrNotFound.vue
+const pageType         = ref(null);  // null|"about"|"documentation" (null if notFoundFlag is true)
+const h2Html           = ref("");
+
+const expandToc        = ref(false);
+
+const textMounted = ref();
+
+// { <props received from router>: [ <page type>, <component name for dynamic import> ] }
+const mapper = { projet       : [ "about"         , "AbDocProjet" ]
+               , equipe       : [ "about"         , "AbDocEquipe" ]
+               , mentions     : [ "about"         , "AbDocCreditsMentions" ]
+               , methodologie : [ "documentation" , "AbDocMethodologie" ]
+               , api          : [ "documentation" , "AbDocApi" ]
+               }
+
+/************************************************/
+
+function toggleDisplayToc(e) {
+  console.log(",,,,", e);
+  expandToc.value = e;
+}
+
+/**
+ * based on `route.params.pageName`, mount a component defined in `mapper`.
+ * if `route.params.pageName` is undefined, then `ErrNotFound` will be displayed.
+ */
+function componentMounter(pageName) {
+  let componentName;
+  [ pageType.value, componentName ] = mapper[pageName] || [ null, "ErrNotFound" ];  // if "pageName" is not in mapper, an ErrNotFound will be displayed.
+  notFoundFlag.value = componentName === "ErrNotFound";
+  console.log(notFoundFlag.value);
+  currentComponent.value = defineAsyncComponent(() =>
+    import(`../components/${componentName}.vue`));
+}
+
+/************************************************/
+
+watch(route, (newRoute, oldRoute) => {
+  componentMounter( newRoute.params.pageName );
+})
+
+onMounted(() => {
+  componentMounter(route.params.pageName);
+})
+</script>
+
+
+<style scoped>
+.textpage-outer-wrapper {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 2fr auto;
+  height: 100%;
+}
+.textpage-title-wrapper {
+  border-bottom: var(--cs-main-border);
+}
+.textpage-inner-wrapper {
+  display: grid;
+  grid-template-rows: 100%;
+}
+@media ( orientation: portrait ) {
+  .textpage-inner-wrapper {
+    /* mobile grid is kinda fancy: the AbDocToc sidebar
+       can be hidden/displayed on click. below is the default
+       state, adding .toc-visible to .textpage-inner-walker
+       adds a `transform:translateX()` that makes the sidebar visible.
+    */
+    grid-template-columns: 70vw calc(100vw - 6vh);  /* 5vh to accomodate for button height */
+    transform: translateX(-70vw) translateX(6vh);  /* chaining translateX(trans1) translateX(trans2) is equivalent to translateX(trans1+trans2) */
+    transition: transform var(--animate-duration);
+    overflow-x: hidden;
+    width: calc(70vw + 100vw - 6vh);  /* width also needs to be set and updated to avoid x-overflow scrolling */
+  }
+}
+@media (orientation:portrait) {
+  .textpage-inner-wrapper.toc-visible {
+    transform: translateX(0);
+    width: 100vw;
+  }
+}
+@media ( orientation:landscape ) {
+  .textpage-inner-wrapper {
+    grid-template-columns: 30% 70%;
+    transform: translateX(0);
+    width: 100%;
+  }
+}
+.toc-outer-wrapper {
+  height: 100%;
+  width: 100%;
+}
+.textpage-text-outer-wrapper {
+  height: 100%;
+  overflow: scroll;
+  padding: 5%;
+}
+</style>
