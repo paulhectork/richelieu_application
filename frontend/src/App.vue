@@ -2,12 +2,11 @@
     this component is the starting point for the app.
     it manages basic app-wide processes.
 
-    4 importants actions happen here:
+    3 importants actions happen here:
     - log the window orientation in `domStore` (landscape or portrait)
     - handling the showing/hiding of the menu (see below).
     - switching color theme between light/dark, based on the route's path
       (see `toThemeNegative` and `maybeChangeTheme`)
-    - hiding/showing `@components/TheHomeModal.vue`
 
     interaction between App.vue, TheMenu.vue and TheNavbar.vue:
     how is the menu displayed ?
@@ -27,14 +26,6 @@
 -->
 
 <template>
-  <!-- without `v-if` on `Transition`, TheHomeModal would slide-out on each page,
-       since it would be removed. -->
-  <Transition name="slideInOut" transition-duration="35s"
-              v-if="route.path === '/'">
-    <TheHomeModal @close-home-modal="onCloseHomeModal"
-                  v-if="domStore.homeModalVisible"
-    ></TheHomeModal>
-  </Transition>
 
 
   <div class="app-wrapper main-default">
@@ -61,14 +52,13 @@
 
 <script setup>
 import { onMounted, onUnmounted, watch, ref } from "vue";
-import { RouterView, useRoute, useRouter } from 'vue-router';
+import { RouterView, useRoute } from 'vue-router';
 
 import $ from "jquery";
 
 import TheNavbar from '@components/TheNavbar.vue';
 import TheMenu from "@components/TheMenu.vue";
 import TheSidebar from "@components/TheSidebar.vue";
-import TheHomeModal from "@components/TheHomeModal.vue";
 
 import { domStore } from "@stores/dom.js";
 
@@ -114,15 +104,6 @@ const maybeChangeTheme = () =>
   themeNegative.value =
     toThemeNegative.find(rgx => route.path.match(rgx) ) !== undefined;
 
-
-/**
- * switching domStore.homeModalVisible will close `TheHomeModal` for the entire
- * session: the modal will only be shown again after exiting the site or after
- * a full-page reload (ex: cliking on an internal link made with `<a>`).
- */
-function onCloseHomeModal(e) {
-  domStore.homeModalVisible = false;
-}
 
 /**********************************************************/
 

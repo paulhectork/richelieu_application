@@ -102,6 +102,7 @@ function componentMounter(pageName) {
 
 watch(route, (newRoute, oldRoute) => {
   componentMounter( newRoute.params.pageName );
+  toggleDisplayToc(false);  // hide the table of contents when switching views
 })
 
 onMounted(() => {
@@ -114,7 +115,7 @@ onMounted(() => {
 .textpage-outer-wrapper {
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: 2fr auto;
+  grid-template-rows: auto 2fr;
   height: 100%;
 }
 .textpage-title-wrapper {
@@ -126,16 +127,17 @@ onMounted(() => {
 }
 @media ( orientation: portrait ) {
   .textpage-inner-wrapper {
-    /* mobile grid is kinda fancy: the AbDocToc sidebar
-       can be hidden/displayed on click. below is the default
-       state, adding .toc-visible to .textpage-inner-walker
-       adds a `transform:translateX()` that makes the sidebar visible.
+    /*
+    mobile grid is kinda fancy: the AbDocToc sidebar
+    can be hidden/displayed on click. below is the default
+    state, adding .toc-visible to .textpage-inner-walker
+    adds a `transform:translateX()` that makes the sidebar visible.
     */
-    grid-template-columns: 70vw calc(100vw - 6vh);  /* 5vh to accomodate for button height */
-    transform: translateX(-70vw) translateX(6vh);  /* chaining translateX(trans1) translateX(trans2) is equivalent to translateX(trans1+trans2) */
+    grid-template-columns: 70vw calc(100vw - 5vh);  /* 5vh to accomodate for button size */
+    transform: translateX(-70vw) translateX(5vh);  /* chaining translateX(trans1) translateX(trans2) is equivalent to translateX(trans1+trans2) */
     transition: transform var(--animate-duration);
     overflow-x: hidden;
-    width: calc(70vw + 100vw - 6vh);  /* width also needs to be set and updated to avoid x-overflow scrolling */
+    width: calc(70vw + 100vw - 5vh);  /* width also needs to be set and updated to avoid x-overflow scrolling */
   }
 }
 @media (orientation:portrait) {

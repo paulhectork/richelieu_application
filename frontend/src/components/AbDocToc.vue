@@ -11,7 +11,6 @@
 
 <template>
   <div class="toc-outer-wrapper"
-       :class="{ 'hidden-toc': ''/*!displayToc*/ }"
   >
     <div class="toc-inner-wrapper negative-default">
       <div class="toc-showhide">
@@ -21,10 +20,13 @@
         ></UiButtonPlus>
       </div>
 
+      <!--
+      we use style:display instead of v-if because v-if removes the element
+      from the DOM, which messes up the insertion or `.toc-lvl3-root` with jquery
+      -->
       <ul class="list-invisible toc-lvl1-root"
-          v-if="expandToc"
+          :style="{ display: expandToc ? 'block' : 'none' }"
       >
-
         <li class="toc-lvl1">
           <div class="toc-lvl1-title">
             <span>À propos</span>
@@ -34,21 +36,30 @@
             ></UiButtonPlus>
             -->
           </div>
-          <ol class="toc-lvl2-root"
+          <ol class="toc-lvl2-root list-invisible"
               :class="{ 'hidden-list': false/*!expandAbout*/ }"
           >
             <li id="toc-item-projet"
                 class="toc-lvl2"
-            ><RouterLink to="/a-propos/projet">
-              Le projet</RouterLink></li>
+            >
+              <RouterLink to="/a-propos/projet">Le projet</RouterLink>
+              <AbDocTocSub :tocElements="tocSubElements['toc-item-projet']"
+              ></AbDocTocSub>
+            </li>
             <li id="toc-item-equipe"
                 class="toc-lvl2"
-            ><RouterLink to="/a-propos/equipe">
-              L'équipe</RouterLink></li>
+            >
+              <RouterLink to="/a-propos/equipe">L'équipe</RouterLink>
+              <AbDocTocSub :tocElements="tocSubElements['toc-item-equipe']"
+              ></AbDocTocSub>
+            </li>
             <li id="toc-item-mentions"
                 class="toc-lvl2"
-            ><RouterLink to="/a-propos/mentions">
-              Crédits et mentions légales</RouterLink></li>
+            >
+              <RouterLink to="/a-propos/mentions">Crédits et mentions légales</RouterLink>
+              <AbDocTocSub :tocElements="tocSubElements['toc-item-mentions']">
+              </AbDocTocSub>
+            </li>
           </ol>
         </li>
 
@@ -61,17 +72,24 @@
             ></UiButtonPlus>
             -->
           </div>
-          <ol class="toc-lvl2-root"
+          <ol class="toc-lvl2-root list-invisible"
               :class="{ 'hidden-list': false/*!expandDocumentation*/ }"
           >
             <li id="toc-item-methodologie"
                 class="toc-lvl2"
-            ><RouterLink to="/documentation/methodologie">
-              Méthodologie du projet</RouterLink></li>
+            >
+              <RouterLink to="/documentation/methodologie">
+                Méthodologie du projet</RouterLink>
+              <AbDocTocSub :tocElements="tocSubElements['toc-item-methodologie']"
+              ></AbDocTocSub>
+            </li>
             <li id="toc-item-api"
                 class="toc-lvl2"
-            ><RouterLink to="/documentation/api">
-              Documentation de l'API</RouterLink></li>
+            >
+              <RouterLink to="/documentation/api">Documentation de l'API</RouterLink>
+              <AbDocTocSub :tocElements="tocSubElements['toc-item-api']"
+              ></AbDocTocSub>
+            </li>
           </ol>
         </li>
 
@@ -87,7 +105,9 @@ import { useRoute } from "vue-router";
 
 import $ from "jquery";
 
+import AbDocTocSub from "@components/AbDocTocSub.vue";
 import UiButtonPlus from "@components/UiButtonPlus.vue";
+
 import { domStore } from "@stores/dom.js";
 
 /*********************************************/
@@ -97,16 +117,22 @@ const emit = defineEmits(["displayToc"]);
 const props = defineProps(["textMounted"]);
 
 const currentId = ref("");
-// const expandDocumentation = ref(false);
-// const expandAbout         = ref(false);
 const expandToc = ref(false);
 
-// { route.params.pageName: html:Id }
-const idMapper = { projet         : "toc-item-projet"
-                 , equipe         : "toc-item-equipe"
-                 , mentions       : "toc-item-mentions"
-                 , methodologie   : "toc-item-methodologie"
-                 , api            : "toc-item-api"
+// { <htmlId of a toc-lvl2 item> : [<array of elements to pass to AbDocTocSub]  }
+const tocSubElements = ref({ "toc-item-projet"       : []
+                           , "toc-item-equipe"       : []
+                           , "toc-item-mentions"     : []
+                           , "toc-item-methodologie" : []
+                           , "toc-item-api"          : []
+                           })
+
+// { route.params.pageName: <htmlid> }
+const idMapper = { projet       : "toc-item-projet"
+                 , equipe       : "toc-item-equipe"
+                 , mentions     : "toc-item-mentions"
+                 , methodologie : "toc-item-methodologie"
+                 , api          : "toc-item-api"
                  }
 
 /*********************************************/
@@ -115,7 +141,11 @@ const resetStateAndHtml = () => {
   currentId.value = "";
   expandToc.value = false;
   $("li.toc-lvl2").removeClass("current-toc-lvl2");
-  $(".toc-lvl3-root").remove();
+  // $(".toc-lvl3-root").remove();
+
+  Object.keys(tocSubElements.value).map((k) => {
+    tocSubElements.value[k] = []
+  })
 }
 
 const setExpandTocBase = (windowOrientation) => {
@@ -140,23 +170,27 @@ const setCurrentItem = (htmlId) => {
 }
 
 function setSubtitles() {
-  let newList = $("<ol class='toc-lvl3-root'></ol>");
+  let newList = $("<ol class='toc-lvl3-root animate__animated animate__slideInLeft animate__faster'></ol>");
+  let h3Titles = [];
   $(".textpage-text-wrapper h3").each((i, obj) => {
-    let newEl = $("<li class='toc-lvl3'></li>").append($(obj).html());
-    newList.append(newEl);
+    h3Titles.push({ html: $(obj).html(),
+                    href: $(obj).attr("id") || "" })
+    // subTocItem[currentId.value] =
+    // let newEl = $("<li class='toc-lvl3'></li>").append($(obj).html());
+    // newList.append(newEl);
   });
+  tocSubElements.value[currentId.value] = h3Titles;
+  console.log(h3Titles);
 
-  if ( newList.children("li").length ) {
-    console.log(">", currentId.value);
-
-    // TODO: find out why there's a 750/1000ms waiting time before
-    // $(`#${currentId.value}`) is added to the dom
-    // TODO: fix .toc-inner-wrapper flickering when changing views without unmounting
-    // TODO: fix bug with uppercase `.toc-lvl3`
-    setTimeout(() => {
-      $(`#${currentId.value}`).append(newList);
-    }, 1000);
-  }
+  // if ( newList.children("li").length ) {
+  //   console.log(">", currentId.value);
+//
+  //   // TODO: find out why there's a 750/1000ms waiting time before
+  //   // $(`#${currentId.value}`) is added to the dom
+  //   // TODO: fix .toc-inner-wrapper flickering when changing views without unmounting
+  //   // TODO: fix bug with uppercase `.toc-lvl3`
+  //   $(`#${currentId.value}`).append(newList);
+  // }
 }
 
 function setRefs() {
@@ -164,7 +198,7 @@ function setRefs() {
 
   // expandDocumentation.value = true;// urlSlug === "documentation";
   // expandAbout.value         = true;// urlSlug === "a-propos";
-  currentId.value           = idMapper[route.params.pageName];
+  currentId.value = idMapper[route.params.pageName];
   setCurrentItem(currentId.value);
   setExpandTocBase(domStore.windowOrientation);
 }
@@ -181,7 +215,6 @@ watch(domStore, (newDs, oldDs) => {
 watch(route, (newRoute, oldRoute) => {
   resetStateAndHtml();
   setRefs();
-  $(".toc-lvl3-root").remove();
 })
 
 onMounted(() => {
@@ -194,10 +227,6 @@ onUnmounted(() => {
 
 
 <style scoped>
-* {
-  font-family: var(--cs-font-serif);
-  font-size: 102%;
-}
 a {
   color: var(--cs-negative-default) !important;
   text-decoration: none;
@@ -217,11 +246,6 @@ a.router-link-active {
   justify-content: center;
   /*padding: 5px;*/
 }
-/*
-.toc-outer-wrapper.hidden-toc {
-  padding: 0;
-}
-*/
 .toc-inner-wrapper {
   /*
   height: calc(100% - 20px);
@@ -231,37 +255,19 @@ a.router-link-active {
   width: 100%;
   overflow: scroll;
 }
+
+/***********************/
+
 .toc-showhide {
   width: 100%;
   display: flex;
   justify-content: flex-end;
 }
-.current-toc-lvl2 {
-  font-variant-caps: small-caps;
-}
-.toc-lvl1 {
-  margin: 5% 0;
-  padding: 3%;
-  border-top: var(--cs-negative-border);
-  border-bottom: var(--cs-negative-border);
-}
-.toc-lvl1-title {
-  height: 10%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: var(--cs-negative-border);
-  margin: 0 0% 5% 0;
-  padding-bottom: 2%;
-
-  font-variant-caps: small-caps;
-  font-size: 130%;
-}
 .button-cross {
-  min-height: max(4vh, 50px);
-  min-width: max(4vh, 50px);
-  height: max(4vh, 50px);
-  width: max(4vh, 50px);
+  min-height: 4vh;
+  min-width:  4vh;
+  height:     4vh;
+  width:      4vh;
 }
 .button-cross :deep(svg) {
   transition: transform var(--animate-duration);
@@ -269,6 +275,37 @@ a.router-link-active {
 .button-cross.as-cross :deep(svg) {
   transform: rotate(45deg);
 }
+
+/***********************/
+
+.toc-lvl1 {
+  margin: 5% 0;
+  padding: 3% 3% 3% 5%;
+  border-top: var(--cs-negative-border);
+  border-bottom: var(--cs-negative-border);
+  height: 50%;
+}
+.toc-lvl1-title {
+  height: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: var(--cs-negative-border);
+  margin: 0 0% 3% 0;
+  padding-bottom: 2%;
+
+  font-variant-caps: small-caps;
+  font-size: 130%;
+  font-family: var(--cs-font-serif);
+}
+.toc-lvl2 {
+  padding: 1% 0 1% 10%;
+}
+.current-toc-lvl2 {
+  font-variant-caps: small-caps;
+  font-family: var(--cs-font-sans-serif-accentuate);
+}
+
 .hidden-list {
   display: none;
 }

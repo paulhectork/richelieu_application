@@ -1,33 +1,43 @@
 <!-- HomeView.vue
      the homepage of our app.
 
-     the themes and namedEntities received from the backend
-     have the following structure:
-     both are arrays of:
-     ```
-     {
-        "category_name" : "<category name>",
-        "count"         : <number of associated themes or named entities>,
-        "preview"       : [ <Array<string> of a few themes or named entities of that resource> ],
-        "thumbnail"     : [ <filename> ]
-     }
-     ```
+    this component displays theses, named entites,
+    redirections to a map and a modal presenting the project.
 
-     themes, named entities and articles are reformatted to be
-     passed to `HomeItemPreview.vue`, with the following structure
-     (see HomeItemPreview for more info):
-     ```
-     {
-        title_main   : <string>,
-        title_second : <string>,
-        title_sub    : <str>,
-        href         : <str>,
-        thumbnail    : <str>
-     }
-     ```
+    the themes and namedEntities received from the backend
+    have the following structure:
+    both are arrays of:
+    ```
+    {
+       "category_name" : "<category name>",
+       "count"         : <number of associated themes or named entities>,
+       "preview"       : [ <Array<string> of a few themes or named entities of that resource> ],
+       "thumbnail"     : [ <filename> ]
+    }
+    ```
+    themes, named entities and articles are reformatted to be
+    passed to `HomeItemPreview.vue`, with the following structure
+    (see HomeItemPreview for more info):
+    ```
+    {
+       title_main   : <string>,
+       title_second : <string>,
+       title_sub    : <str>,
+       href         : <str>,
+       thumbnail    : <str>
+    }
+    ```
 -->
 
 <template>
+    <!-- without `v-if` on `Transition`, TheHomeModal would slide-out on each page,
+       since it would be removed. -->
+  <Transition name="slideInOut">
+    <TheHomeModal @close-home-modal="onCloseHomeModal"
+                  v-if="domStore.homeModalVisible"
+    ></TheHomeModal>
+  </Transition>
+
   <div class="home-wrapper">
     <div id="theme-wrapper"
          class="home-block home-block-even home-block-row1">
@@ -58,7 +68,7 @@
             <UiButtonLink></UiButtonLink>
           </RouterLink>
         </div>
-        <h1>Entités nommées</h1>
+        <h1>Noms</h1>
       </div>
       <ul class="list-preview list-invisible">
         <li v-for="ne in namedEntitiesFormatted">
@@ -110,6 +120,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
+import { useRoute } from "vue-router";
 
 import axios from "axios";
 import $ from "jquery";
@@ -117,7 +128,9 @@ import _ from "lodash";
 
 import UiButtonLink from "@components/UiButtonLink.vue";
 import HomeItemPreview from "@components/HomeItemPreview.vue";
+import TheHomeModal from "@components/TheHomeModal.vue";
 
+import { domStore } from "@stores/dom.js";
 import { articles } from "@globals";
 import { urlToFrontendNamedEntityCategory
        , urlToFrontendThemeCategory
@@ -126,12 +139,23 @@ import { urlToFrontendNamedEntityCategory
 
 /**************************************************/
 
+const route = useRoute();
+
 // `*Formatted`: arrays restructured to fit the HomeItemPreview data model
 const namedEntitiesFormatted = ref([]);
 const themesFormatted        = ref([]);
 const articlesFormatted      = ref([]);
 
 /**************************************************/
+
+/**
+ * switching domStore.homeModalVisible will close `TheHomeModal` for the entire
+ * session: the modal will only be shown again after exiting the site or after
+ * a full-page reload (ex: cliking on an internal link made with `<a>`).
+ */
+ function onCloseHomeModal(e) {
+  domStore.homeModalVisible = false;
+}
 
 /**
  * for themes and named entities, stringify the `preview` array:
@@ -242,6 +266,7 @@ onUnmounted(() =>
   grid-template-columns: 100%;
   height: 100%;
   width: 100%;
+  padding: 0 3%;
 }
 .home-block {
   display: grid;

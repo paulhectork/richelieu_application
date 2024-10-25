@@ -35,7 +35,7 @@
 -->
 
 <template>
-  <div class="sidebar-wrapper">
+  <aside class="sidebar-wrapper">
     <!-- <img :src="menuCropPath"> -->
     <div class="sidebar-iiif-wrapper">
       <IiifViewer :osdId="htmlId"
@@ -45,7 +45,7 @@
                   @osd-viewer="defineViewer"
       ></IiifViewer>
     </div>
-  </div>
+  </aside>
 </template>
 
 
