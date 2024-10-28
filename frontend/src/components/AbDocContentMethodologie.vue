@@ -294,12 +294,12 @@ import StaticImageDisplay from "@components/StaticImageDisplay.vue";
 
 /****************************************/
 
-const dbUrl   = new URL("/other/richelieu_db_model_bg.png", __STATICS_URL__);
-const pipUrl  = new URL("/other/pipeline_main.png", __STATICS_URL__);
-const archUrl = new URL("/other/application_architecture_fr.png", __STATICS_URL__);
-const col1Url = new URL("/other/colin_article3d_image1.jpeg", __STATICS_URL__)
-const col2Url = new URL("/other/colin_article3d_image2.jpeg", __STATICS_URL__)
-const col3Url = new URL("/other/colin_article3d_image3.jpeg", __STATICS_URL__)
+const dbUrl   = new URL("other/richelieu_db_model_bg.png", __STATICS_URL__);
+const pipUrl  = new URL("other/pipeline_main.png", __STATICS_URL__);
+const archUrl = new URL("other/application_architecture_fr.png", __STATICS_URL__);
+const col1Url = new URL("other/colin_article3d_image1.jpeg", __STATICS_URL__)
+const col2Url = new URL("other/colin_article3d_image2.jpeg", __STATICS_URL__)
+const col3Url = new URL("other/colin_article3d_image3.jpeg", __STATICS_URL__)
 
 const emit     = defineEmits(["h2"]);
 const subtitle = "Méthodologie numérique";

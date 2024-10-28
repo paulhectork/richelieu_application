@@ -40,7 +40,7 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
       configVariables = {
         __MODE__       : JSON.stringify("DEV"),
         __API_URL__    : JSON.stringify("http://localhost:5001/i"),
-        __STATICS_URL__: JSON.stringify("http://localhost:9999")//"http://richdata01.inha.fr")
+        __STATICS_URL__: JSON.stringify("http://localhost:9999/")//"http://richdata01.inha.fr")
       };
       break;
   };
