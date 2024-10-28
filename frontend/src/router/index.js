@@ -17,9 +17,19 @@ const router = createRouter({
   // history: createWebHashHistory(import.meta.env.BASE_URL),
   history: createWebHistory(import.meta.env.BASE_URL),
 
-  scrollBehavior(to,from,savedPosition) {  // https://router.vuejs.org/guide/advanced/scroll-behavior.html#Scroll-Behavior
+  scrollBehavior(to, from, savedPosition) {  // https://router.vuejs.org/guide/advanced/scroll-behavior.html#Scroll-Behavior
     if ( to.hash ) {
-      return { el: to.hash }
+      // very hacky scrollIntoView within a promise:
+      // otherwise, there's an error message that anchor `to.hash`
+      // could not be found, so we manually do the whole
+      // scrollIntoView thing
+      return new Promise((res,rej) => {
+        setTimeout(() => {
+          document.querySelector(to.hash)?.scrollIntoView({ behavior:"smooth" });
+          return { el: to.hash,
+                    behavior:"smooth" }
+        }, 250)
+      })
     } else {
       return { top: 0 }
     }

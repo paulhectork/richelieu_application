@@ -9,30 +9,38 @@
 
 <template>
   <h1>{{ namedEntityName }}</h1>
+  <IndexCount :indexCount="dataFull.length"
+              dataType="iconography"
+              v-if="loadState === 'loaded'"
+  ></IndexCount>
 
   <UiLoader v-if="loadState === 'loading'"></UiLoader>
 
   <div v-else-if="loadState === 'loaded'">
+    <!--
     <p><strong>{{ namedEntity.iconography_count }}
       <span v-if="namedEntity.iconography_count > 1"> ressources iconographiques</span>
       <span v-else>ressource iconographique</span>
     </strong> sont associées à cette entité nommée.</p>
+  -->
 
-    <IndexAssociationRedirects v-if="associatedThemes.length"
-                               fromTable="named_entity"
-                               toTable="theme"
-                               :to="associatedThemes"
-                               :from="{ entry_name: namedEntity.entry_name
-                                      , id_uuid: namedEntity.id_uuid }"
-    ></IndexAssociationRedirects>
+    <div class="index-headtext-wrapper">
+      <IndexAssociationRedirects v-if="associatedThemes.length"
+                                 fromTable="named_entity"
+                                 toTable="theme"
+                                 :to="associatedThemes"
+                                 :from="{ entry_name: namedEntity.entry_name
+                                        , id_uuid: namedEntity.id_uuid }"
+      ></IndexAssociationRedirects>
 
-    <IndexAssociationRedirects v-if="associatedNamedEntities.length"
-                               fromTable="named_entity"
-                               toTable="named_entity"
-                               :to="associatedNamedEntities"
-                               :from="{ entry_name: namedEntity.entry_name
-                                      , id_uuid: namedEntity.id_uuid }"
-    ></IndexAssociationRedirects>
+      <IndexAssociationRedirects v-if="associatedNamedEntities.length"
+                                 fromTable="named_entity"
+                                 toTable="named_entity"
+                                 :to="associatedNamedEntities"
+                                 :from="{ entry_name: namedEntity.entry_name
+                                        , id_uuid: namedEntity.id_uuid }"
+      ></IndexAssociationRedirects>
+    </div>
 
     <IndexBase :data="dataFilter"
                display="resource"
@@ -52,6 +60,8 @@ import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
 import UiLoader from "@components/UiLoader.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
+import IndexCount from "@components/IndexCount.vue";
+
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 
 /**************************************************/

@@ -34,25 +34,32 @@
       &amp;
       {{ capitalizeFirstChar(to.entryName) }} <!--({{ to.table }})-->
     </h1>
+    <IndexCount :indexCount="dataFull.length"
+                dataType="iconography"
+    ></IndexCount>
+
+
 
     <div class="index-wrapper">
 
-      <p v-if="dataFull.length === 1">
-        {{ dataFull.length }} ressource est associée à cette combinaison.</p>
-      <p v-else-if="dataFull.length > 1">
-        {{ dataFull.length }} ressources sont associées à cette combinaison.
-      </p>
-      <p v-else>Aucun résultat ne correspond à cette combinaison.</p>
+      <div class="index-headtext-wrapper">
+        <p v-if="dataFull.length === 1">
+          {{ dataFull.length }} ressource est associée à cette combinaison.</p>
+        <p v-else-if="dataFull.length > 1">
+          {{ dataFull.length }} ressources sont associées à cette combinaison.
+        </p>
+        <p v-else>Aucun résultat ne correspond à cette combinaison.</p>
 
-      <p>Voir tous les résultats pour
-        <RouterLink :to="toFrontendSlug(from)"
-                    v-html="from.entryName"
-        ></RouterLink>
-        et
-        <RouterLink :to="toFrontendSlug(to)"
-                    v-html="to.entryName"
-        ></RouterLink>.
-      </p>
+        <p>Voir tous les résultats pour
+          <RouterLink :to="toFrontendSlug(from)"
+                      v-html="from.entryName"
+          ></RouterLink>
+          et
+          <RouterLink :to="toFrontendSlug(to)"
+                      v-html="to.entryName"
+          ></RouterLink>.
+        </p>
+      </div>
 
       <IndexBase :data="dataFilter"
                  display="resource"
@@ -77,6 +84,7 @@ import axios from "axios";
 import IndexBase from "@components/IndexBase.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import UiLoader from "@components/UiLoader.vue";
+import IndexCount from "@components/IndexCount.vue";
 
 import { capitalizeFirstChar  } from "@utils/strings";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter.js";

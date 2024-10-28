@@ -5,9 +5,9 @@
       for a more global outlook on the logic.
 
       props and refs:
-        tableName (prop):
-        categoryName (props):
-        apiTarget (computed property):
+      - tableName (prop):
+      - categoryName (props):
+      - apiTarget (computed property):
 -->
 
 <template>
@@ -19,9 +19,15 @@
     <h1>Index des
       {{ tableName === "theme" ? "thèmes" : "entités nommées" }}&nbsp;:
       {{ capitalizeFirstChar(categoryName) }}</h1>
+    <IndexCount :indexCount="dataFilter.length"
+                :dataType="tableName"
+                v-if="loadState === 'loaded'"
+    ></IndexCount>
 
     <!-- presentation text for each category -->
-    <div v-if="tableName === 'theme'">
+    <div v-if="tableName === 'theme'"
+         class="index-headtext-wrapper"
+    >
       <p v-if="categoryName==='s\'habiller'">
         La question de l'habillement revêt des significations
         plurielles dans le quartier Richelieu. Elle peut d'abord
@@ -148,7 +154,9 @@
         de la fabrique de la ville, telle qu'elle a été conçue et vécue
         par ses contemporains.</p>
     </div>
-    <div v-else>
+    <div v-else
+         class="index-headtext-wrapper"
+    >
       <!--
       <p v-if="categoryName === 'acteurs et actrices'"></p>
       <p v-if="categoryName === 'banques'"></p>
@@ -185,6 +193,7 @@ import { indexDataFormatterTheme
        , indexDataFormatterNamedEntity } from "@utils/indexDataFormatter";
 import { capitalizeFirstChar } from "@utils/strings";
 
+import IndexCount from "@components/IndexCount.vue";
 import UiLoader from "@components/UiLoader.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";

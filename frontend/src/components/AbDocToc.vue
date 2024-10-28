@@ -1,4 +1,18 @@
-<!--
+<!-- AbDocToc.vue
+
+  a table of contents for About/Documentation pages.
+
+  2 displays are defined:
+  - landscape mode
+      the table of contents is always visible
+  - portrait mode
+      the table of contents is hidden by default
+      and can be displayed by clicking .toc-showhide > UiButtonPlus,
+      which will cause:
+      - the parent `AboutDocumentationView` to change
+        its display to make the TOC visible
+      - `.toc-lvl1-root` to switch its display from `none`
+        to `block`, making its content visible.
 
   architecture:
   - toc-lvl1-root : the root of the toc
@@ -6,7 +20,31 @@
   - toc-lvl2-root : list containing all lvl2 items
   - toc-lvl2      : actual view (Le projet, L'équipe...)
   - toc-lvl3-root : list containing all lvl3 items
-  - toc-lvl3      : all H3 within the current view, if there are any
+  - toc-lvl3      : all H3 titles within the current
+                    AbDocContent* component, if there are any
+
+  how it works:
+  - AbDocToc contains a static table of contents on levels
+    `toc-lvl1` and `toc-lvl2` (that is, the main title of all
+    AbDocContent component).
+  - `toc-lvl3` (H3 subtitles within a AbDocContent*) are
+    handled by `AbDocTocSub.vue`, using `tocSubElements`, an
+    object built here that contains info on the subtitles.
+  - `tocSubElements` is populated using `jQuery`: when the parent
+    `AboutDocumentationView` informs us that the current AbDocContent*
+    view has been loaded, a query is run to extract all H3 level titles
+    and to build `tocSubElements`. the subelements are shown / hidden
+    depending on the page we're currently on.
+
+  props:
+  - textMounted (undefined)
+      a message sent from AboutDocumentationView when the AbDocContent content
+      has been loaded.
+
+  emits:
+  - displayToc (bool)
+      in portrait mode, displayToc is sent to AboutDocumentationView
+      to hide/show the table of contents.
 -->
 
 <template>
@@ -137,67 +175,71 @@ const idMapper = { projet       : "toc-item-projet"
 
 /*********************************************/
 
+/**
+ * reset all important refs and reset the html
+ * back to their starting state
+ */
 const resetStateAndHtml = () => {
   currentId.value = "";
   expandToc.value = false;
   $("li.toc-lvl2").removeClass("current-toc-lvl2");
-  // $(".toc-lvl3-root").remove();
 
   Object.keys(tocSubElements.value).map((k) => {
     tocSubElements.value[k] = []
   })
 }
 
+/**
+ * in landscape mode, `expandToc` is true: the TOC is visible by default
+ * @param {String} windowOrientation : "landscape" | "portrait".
+ *    equivalent of domStore.windowOrientation
+ */
 const setExpandTocBase = (windowOrientation) => {
   expandToc.value = windowOrientation === "landscape";
 }
 
+/**
+ * toggle the visibility of the table of contents (only used
+ * in portrait mode):
+ * 1) switch `expandToc.value`, which will change the `display`
+ *    property on `.toc-lvl1-root`
+ * 2) emit the info to the parent AboutDocumentationView, which
+ *    will change its display to make the table of contents block invisible
+ */
 const showOrHideToc = () => {
   expandToc.value = !expandToc.value;
   emit("displayToc", expandToc.value);
 };
 
 
-// const switchExpandAbout = () => {
-//   expandAbout.value = !expandAbout.value };
-
-// const switchExpandDocumentation = () => {
-//   expandDocumentation.value = !expandDocumentation.value };
-
+/**
+ * when switching between AbDocContent*, update the HTML
+ * to give a specific style to the page we're currently on
+ * @param {String} htmlId: the Html ID of the current AbDocContent
+ */
 const setCurrentItem = (htmlId) => {
   $("li.toc-lvl2").removeClass("current-toc-lvl2");
   $(`#${htmlId}`).addClass("current-toc-lvl2");
 }
 
+/**
+ * set the `.toc-lvl3` items using JQuery, based on
+ * the `h3` titles in an AbDocContent* page.
+ */
 function setSubtitles() {
-  let newList = $("<ol class='toc-lvl3-root animate__animated animate__slideInLeft animate__faster'></ol>");
   let h3Titles = [];
   $(".textpage-text-wrapper h3").each((i, obj) => {
     h3Titles.push({ html: $(obj).html(),
-                    href: $(obj).attr("id") || "" })
-    // subTocItem[currentId.value] =
-    // let newEl = $("<li class='toc-lvl3'></li>").append($(obj).html());
-    // newList.append(newEl);
+                    href: `#${ $(obj).attr("id") }` || "" })
   });
   tocSubElements.value[currentId.value] = h3Titles;
-  console.log(h3Titles);
-
-  // if ( newList.children("li").length ) {
-  //   console.log(">", currentId.value);
-//
-  //   // TODO: find out why there's a 750/1000ms waiting time before
-  //   // $(`#${currentId.value}`) is added to the dom
-  //   // TODO: fix .toc-inner-wrapper flickering when changing views without unmounting
-  //   // TODO: fix bug with uppercase `.toc-lvl3`
-  //   $(`#${currentId.value}`).append(newList);
-  // }
 }
 
+/**
+ * hook to set all the necessary refs and global
+ * variables, used when mounting the coponent.
+ */
 function setRefs() {
-  let urlSlug = route.path.match(/(?<=^\/)[^\/]+/g)[0];
-
-  // expandDocumentation.value = true;// urlSlug === "documentation";
-  // expandAbout.value         = true;// urlSlug === "a-propos";
   currentId.value = idMapper[route.params.pageName];
   setCurrentItem(currentId.value);
   setExpandTocBase(domStore.windowOrientation);
@@ -205,13 +247,26 @@ function setRefs() {
 
 /*********************************************/
 
+/**
+ * AboutDocumentationView sends as a prop an event to tell that
+ * the current AbDocContent* has been loaded. once it's done, set
+ * the `.toc-lvl3`
+ */
 watch(props, (newP, oldP) => {
   setSubtitles()
 })
+
+/**
+ * when switching between landscape/portrait viewer,
+ * update the layout
+ */
 watch(domStore, (newDs, oldDs) => {
   setExpandTocBase(newDs.windowOrientation);
 });
 
+/**
+ * when switching between two AbDocContent pages, reset the state
+ */
 watch(route, (newRoute, oldRoute) => {
   resetStateAndHtml();
   setRefs();

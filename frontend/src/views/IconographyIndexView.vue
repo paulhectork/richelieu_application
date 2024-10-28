@@ -4,6 +4,10 @@
 
 <template>
   <h1>Iconographie</h1>
+  <IndexCount :indexCount="dataFull.length"
+              dataType="iconography"
+              v-if="isLoaded"
+  ></IndexCount>
 
   <UiLoader v-if="!isLoaded"></UiLoader>
   <IndexBase v-else
@@ -19,6 +23,8 @@ import axios from "axios";
 
 import IndexBase from "@components/IndexBase.vue";
 import UiLoader from "@components/UiLoader.vue";
+import IndexCount from "@components/IndexCount.vue";
+
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 
 /******************************************/

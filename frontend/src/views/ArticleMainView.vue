@@ -79,7 +79,7 @@
     </div>
 
     <div class="article-index-wrapper">
-      <h2>Resources liées {{ iconographyIndex.length
+      <h2>Ressources liées {{ iconographyIndex.length
                               ? `(${iconographyIndex.length})`
                               : "" }}
       </h2>
@@ -109,7 +109,7 @@ import { onMounted
        , shallowRef
        , defineAsyncComponent
        , watch } from 'vue';
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
 import axios from "axios";
 import _ from "lodash";
@@ -119,6 +119,7 @@ import IndexBase from "@components/IndexBase.vue";
 import IiifViewer from "@components/IiifViewer.vue";
 import ArticleFootnote from "@components/ArticleFootnote.vue";
 import UiLoader from "@components/UiLoader.vue";
+
 import { stringifyIconographyResource } from "@utils/stringifiers.js";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams.js";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter.js";

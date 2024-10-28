@@ -1,6 +1,6 @@
 <template>
   <div class="textpage-text-wrapper">
-    <h3>Crédits</h3>
+    <h3 id="abdoc-credits">Crédits</h3>
     <dl>
       <dt>Direction scientifique</dt>
       <dd>Charlotte Duvette</dd>
@@ -26,7 +26,7 @@
   </div>
 
   <div class="textpage-text-wrapper">
-    <h3>Mentions légales</h3>
+    <h3 id="abdoc-mentions">Mentions légales</h3>
   </div>
 
 </template>

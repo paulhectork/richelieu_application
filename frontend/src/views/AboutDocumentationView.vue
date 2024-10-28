@@ -3,11 +3,27 @@
 
     for scalability, to be sure that every one of these pages has the same HTML
     markup and offers the same behaviour, `AboutDocumentationView` will serve
-    as a parent component that will dynamically import child component containing
-    page-specific HTML and emits based on the current route. if the route points
-    to nothing, an ErrNotFound.vue will be displayed.
+    as a parent component that will dynamically import `AbDocContent*`, child
+    components containing page-specific HTML and emits based on the current route.
+    if the route points to nothing, an `ErrNotFound.vue` will be displayed.
 
-    basically this is just a simplified version of `@components/ArticleMainView.vue`
+    this is loosely based on @views/ArticleMainView.vue.
+
+    this parent component handles 2 components:
+    - AbDocConent* :
+        the "main" part, containing a static HTML page in the ABout/Documentation
+        sections, based on the router's path
+        (AbDocContentEquipe, AbDocContentMethodologie, AbDocContentProjet, AbDocContentCredits, AbDocContentApi)
+    - AbDocToc: a table of contents
+
+    2 interactions between those components happen:
+    - in portrait mode, AbDocToc can emit a message to hide/show the table
+      of contents, when clicking on a button.
+    - when the AbDocContent* page is loaded, AboutDocumentationView emits
+      a flag to AbDocToc so that AbDocToc, using JQuery, can complete the
+      table of contents with H3 headers that are within a single
+      AbDocContent component.
+
 -->
 
 <template>
@@ -47,7 +63,6 @@
 
 <script setup>
 import { onMounted
-       // , onUnmounted
        , shallowRef
        , ref
        , defineAsyncComponent
@@ -67,21 +82,19 @@ const pageType         = ref(null);  // null|"about"|"documentation" (null if no
 const h2Html           = ref("");
 
 const expandToc        = ref(false);
-
-const textMounted = ref();
+const textMounted      = ref();
 
 // { <props received from router>: [ <page type>, <component name for dynamic import> ] }
-const mapper = { projet       : [ "about"         , "AbDocProjet" ]
-               , equipe       : [ "about"         , "AbDocEquipe" ]
-               , mentions     : [ "about"         , "AbDocCreditsMentions" ]
-               , methodologie : [ "documentation" , "AbDocMethodologie" ]
-               , api          : [ "documentation" , "AbDocApi" ]
+const mapper = { projet       : [ "about"         , "AbDocContentProjet" ]
+               , equipe       : [ "about"         , "AbDocContentEquipe" ]
+               , mentions     : [ "about"         , "AbDocContentCreditsMentions" ]
+               , methodologie : [ "documentation" , "AbDocContentMethodologie" ]
+               , api          : [ "documentation" , "AbDocContentApi" ]
                }
 
 /************************************************/
 
 function toggleDisplayToc(e) {
-  console.log(",,,,", e);
   expandToc.value = e;
 }
 
@@ -93,20 +106,22 @@ function componentMounter(pageName) {
   let componentName;
   [ pageType.value, componentName ] = mapper[pageName] || [ null, "ErrNotFound" ];  // if "pageName" is not in mapper, an ErrNotFound will be displayed.
   notFoundFlag.value = componentName === "ErrNotFound";
-  console.log(notFoundFlag.value);
   currentComponent.value = defineAsyncComponent(() =>
     import(`../components/${componentName}.vue`));
 }
 
 /************************************************/
 
+/**
+ * when switching routes, load the new AbDocContent.
+ */
 watch(route, (newRoute, oldRoute) => {
   componentMounter( newRoute.params.pageName );
   toggleDisplayToc(false);  // hide the table of contents when switching views
 })
 
 onMounted(() => {
-  componentMounter(route.params.pageName);
+  componentMounter(route.params.pageName);  // mount the component.
 })
 </script>
 
@@ -133,7 +148,7 @@ onMounted(() => {
     state, adding .toc-visible to .textpage-inner-walker
     adds a `transform:translateX()` that makes the sidebar visible.
     */
-    grid-template-columns: 70vw calc(100vw - 5vh);  /* 5vh to accomodate for button size */
+    grid-template-columns:expandToc 70vw calc(100vw - 5vh);  /* 5vh to accomodate for button size */
     transform: translateX(-70vw) translateX(5vh);  /* chaining translateX(trans1) translateX(trans2) is equivalent to translateX(trans1+trans2) */
     transition: transform var(--animate-duration);
     overflow-x: hidden;
@@ -161,5 +176,10 @@ onMounted(() => {
   height: 100%;
   overflow: scroll;
   padding: 5%;
+  font-size: var(----cs-fontsize-article);
+}
+
+:deep(.textpage-text-wrapper) {
+  border-bottom: var(--cs-main-border);
 }
 </style>

@@ -13,16 +13,16 @@
 
 <template>
   <div class="id-outer-wrapper">
-    <div class="id-wrapper">
+    <figure class="id-wrapper">
       <div class="id-img-wrapper">
         <img :src="props.imgUrl"
              :alt="props.imgAlt || props.imgLegend"
         />
       </div>
-      <div class="id-legend-wrapper">
+      <figcaption class="id-legend-wrapper">
         <span v-html="imgLegend"></span>
-      </div>
-    </div>
+      </figcaption>
+    </figure>
   </div>
 
 </template>

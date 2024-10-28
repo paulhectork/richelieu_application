@@ -1,45 +1,46 @@
 <!-- AbDocTocSub.vue
     a small component to display a table of contents
     for the subtitles within a view (all H3s)
+
+    props:
+    - tocElements (Array)
+        an array of table of content items, that are h3
+        titles within a single AbDocContent component.
+        structure of each item:
+        `{ html: <html to display>, href: <Url to redirect to> }`
 -->
 
 
 <template>
 
-  <Transition name="slideInOut">
-    <ol class='toc-lvl3-root'
-        v-if="tocElements.length"
-    >
-      <li v-for="el in tocElements"
-          class="toc-lvl3"
-      >
-        <RouterLink :to="'el.href'"
-                    v-html="el.html"
-        ></RouterLink>
-      </li>
-    </ol>
-  </Transition>
+  <ol :id="htmlId"
+      class='toc-lvl3-root animate__animated animate__fadeInLeft'
+      style="animation-duration: .75s"
+      v-if="tocElements.length"
+  >
+    <li v-for="el in tocElements"
+        class="toc-lvl3">
+      <RouterLink :to="el.href"
+                  v-html="el.html"
+      ></RouterLink>
+    </li>
+  </ol>
+
 </template>
 
 
 <script setup>
-import { onMounted, onUnmounted, watch, ref } from "vue";
-
-// TODO ELEMENTS toc-lvl3 DISAPPEAR AFTER APPEARING ONCE
+import { onMounted, watch, ref } from "vue";
 
 /*********************************************/
 
-
-// TODO CLEANUP CODE HERE AND IN ABDOCTOC + FIX TRANSITION
-// TODO PUSH TO MAIN
-
-const props = defineProps(["tocElements"])
+const props = defineProps(["tocElements"]);
 const tocElements = ref([]);
+const htmlId = `ab-doc-toc-sub-${window.crypto.randomUUID()}`;
 
 /*********************************************/
 
 function setTocElements(theTocElements) {
-  console.log("***", theTocElements);
   tocElements.value = theTocElements;
 }
 
@@ -49,9 +50,6 @@ watch(props, (newP, oldP) => {
 onMounted(() => {
   console.log("hii");
   setTocElements(props.tocElements);
-})
-onUnmounted(() => {
-  console.log("bye");
 })
 </script>
 
@@ -63,5 +61,8 @@ a {
 }
 .toc-lvl3 {
   font-variant-caps: normal;
+}
+.toc-lvl3-root {
+  height: 100%;
 }
 </style>

@@ -203,17 +203,18 @@ a {
 .menu {
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: repeat(6, max( 80px, calc(100%/6) ));  /* max/calc allows a min-height of 80px for all li elements */
+  grid-template-rows: repeat(6, max( 90px, calc(100%/6) ));  /* max/calc allows a min-height of 80px for all li elements */
   overflow: scroll;
 
   height: 100%;
   margin: 0;
   padding: 3vh 3vw;
+  max-width: none;
 }
 @media ( orientation:landscape ) {
   .menu {
     grid-template-columns: 50% 50%;
-    grid-template-rows: repeat(3, max( 180px, calc(100%/3) ));    /* max/calc allows a min-height of 150px for all li elements */
+    grid-template-rows: repeat(3, max( 200px, calc(100%/3) ));    /* max/calc allows a min-height of 150px for all li elements */
   }
 }
 
@@ -282,27 +283,5 @@ a {
     display: block;
   }
 }
-
-
-
-/*
-li > a.selected {
-  color: var(--cs-main-second);
-}
-*/
-/*
-.menu-wrapper-visual {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.menu-wrapper-visual > img {
-  min-width: 120%;
-  object-fit: center;
-}
-*/
 
 </style>

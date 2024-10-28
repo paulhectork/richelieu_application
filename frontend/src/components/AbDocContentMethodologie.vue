@@ -1,6 +1,8 @@
 <template>
   <div class="textpage-text-wrapper">
-    <h3><i>Rich.Data</i>, un écosystème numérique pour l'histoire urbaine</h3>
+    <h3 id="abdoc-richdata">
+      <i>Rich.Data</i>, un écosystème numérique pour
+      l'histoire urbaine</h3>
 
     <p><i>RICH.DATA</i>, le volet numérique du projet, permet de
       répondre à aux questionnements scientifiques grâce
@@ -134,7 +136,8 @@
   </div>
 
   <div class="textpage-text-wrapper">
-    <h3>Du corpus d'images à la modélisation 3D</h3>
+    <h3 id="abdoc-3D">
+      Du corpus d'images à la modélisation 3D</h3>
     <h4>Par Colin Prudhomme</h4>
     <p>Le rapport au lieu qu'entretient le vaste corpus
       de sources recueillies dans le cadre du projet Richelieu

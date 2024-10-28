@@ -10,28 +10,29 @@
 
 <template>
   <h1>{{ formattedThemeName }}</h1>
+  <IndexCount :indexCount="dataFull.length"
+              dataType="iconography"
+              v-if="backendLoaded"
+  ></IndexCount>
 
   <UiLoader v-if="!backendLoaded"></UiLoader>
   <div v-else>
-    <p><strong>{{ theme.iconography_count }}
-      <span v-if="theme.iconography_count > 1"> ressources iconographiques</span>
-      <span v-else> ressource iconographique</span>
-    </strong> sont associées à ce thème.</p>
-
-    <IndexAssociationRedirects v-if="associatedThemes.length"
-                            fromTable="theme"
-                            toTable="theme"
-                            :to="associatedThemes"
-                            :from="{ entry_name: theme.entry_name
-                                   , id_uuid: theme.id_uuid }"
-    ></IndexAssociationRedirects>
-    <IndexAssociationRedirects v-if="associatedNamedEntities.length"
-                            fromTable="theme"
-                            toTable="named_entity"
-                            :to="associatedNamedEntities"
-                            :from="{ entry_name: theme.entry_name
-                                   , id_uuid: theme.id_uuid }"
-    ></IndexAssociationRedirects>
+    <div class="index-headtext-wrapper">
+      <IndexAssociationRedirects v-if="associatedThemes.length"
+                              fromTable="theme"
+                              toTable="theme"
+                              :to="associatedThemes"
+                              :from="{ entry_name: theme.entry_name
+                                     , id_uuid: theme.id_uuid }"
+      ></IndexAssociationRedirects>
+      <IndexAssociationRedirects v-if="associatedNamedEntities.length"
+                              fromTable="theme"
+                              toTable="named_entity"
+                              :to="associatedNamedEntities"
+                              :from="{ entry_name: theme.entry_name
+                                     , id_uuid: theme.id_uuid }"
+      ></IndexAssociationRedirects>
+    </div>
 
     <IndexBase :data="dataFilter"
                display="resource"
@@ -48,8 +49,9 @@ import axios from "axios";
 import IndexBase from "@components/IndexBase.vue";
 import UiLoader from "@components/UiLoader.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
+import IndexCount from "@components/IndexCount.vue";
+
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
-// import { stringifyAssociated } from "@utils/stringifiers";
 import { capitalizeWords } from "@utils/strings";
 
 /**************************************************/

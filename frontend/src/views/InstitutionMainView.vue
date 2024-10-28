@@ -2,15 +2,15 @@
      displays all iconography related to an institution.
      that institution is targeted using its `id_uuid`.
 
-     the small fun complexity of this component is that there
-     are 2 kinds of institutions: "normal" ones and "consortiums"
-     that regroup several institutions.
-     for example, "Musée Carnavalet" is a member of the "Paris Musées" consortium.
-     we do a 2-way binding between institutions that are member of a consortium
-     and consortium.
-     * on the consortium's page we list all institutions that belong to the consortium.
-     * on the pages of institutions that are members of a consortium,
-       we include a hyperlink to the consortium's page.
+    the small fun complexity of this component is that there
+    are 2 kinds of institutions: "normal" ones and "consortiums"
+    that regroup several institutions.
+    for example, "Musée Carnavalet" is a member of the "Paris Musées" consortium.
+    we do a 2-way binding between institutions that are member of a consortium
+    and consortium.
+    - on the consortium's page we list all institutions that belong to the consortium.
+    - on the pages of institutions that are members of a consortium,
+      we include a hyperlink to the consortium's page.
 -->
 <template>
   <div v-if="loadState === 'error'">
@@ -19,11 +19,15 @@
 
   <div v-else>
     <h1>{{ institutionName }}</h1>
+    <IndexCount :indexCount="dataFull.length"
+                dataType="iconography"
+                v-if="loadState === 'loaded'"
+    ></IndexCount>
 
     <UiLoader v-if="loadState==='loading'"></UiLoader>
-    <div v-if="loadState==='loaded'">
-      <p><strong>{{ institution.iconography?.length }} ressources iconographiques</strong>
-        sont conservées par cette institution.</p>
+    <div v-if="loadState==='loaded'"
+         class="index-headtext-wrapper"
+    >
 
       <p v-if="parisMusees.includes(institutionName)">Ce musée est membre du réseau
         <RouterLink to="/institution/qr1ea925dc913804199ac1c0576480da5aa">
@@ -62,6 +66,7 @@ import axios from "axios";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
 import UiLoader from "@components/UiLoader.vue";
+import IndexCount from "@components/IndexCount.vue";
 
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { stringifyInstitutionArray } from "@utils/stringifiers";

@@ -10,6 +10,10 @@
   </div>
   <div v-else>
     <h1>{{ computedAddress }}</h1>
+    <IndexCount :indexCount="dataFull.length"
+                dataType="iconography"
+                v-if="loadStatePlace === 'loaded'"
+    ></IndexCount>
 
     <UiLoader v-if="loadStatePlace==='loading'"></UiLoader>
     <div v-else-if="loadStatePlace==='loaded'">
@@ -18,18 +22,22 @@
       </div>
 
       <div class="icono-block-wrapper">
+        <!--
         <p><strong>{{ place.iconography.length }}</strong>
           <span v-if="place.iconography.length > 1"><strong> ressources iconographiques</strong> sont associées</span>
           <span v-else><strong> ressource iconographique</strong> est associée</span>
           à ce lieu.
         </p>
+        -->
 
+        <div class="index-headtext-wrapper">
         <IndexAssociationRedirects v-if="loadStateAssociated === 'loaded'"
                                    from-table="place"
                                    to-table="place"
                                    :from="{ entry_name: computedAddress, id_uuid: idUuid }"
                                    :to="associatedPlaces"
         ></IndexAssociationRedirects>
+        </div>
 
         <IndexBase :data="dataFilter"
                    display="resource"
@@ -51,6 +59,7 @@ import MapPlaceMain from "@components/MapPlaceMain.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
+import IndexCount from "@components/IndexCount.vue";
 
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { cartographySourcePriority } from "@globals";

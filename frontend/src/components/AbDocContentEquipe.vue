@@ -1,6 +1,6 @@
 <template>
   <div class="textpage-text-wrapper">
-    <h3>Direction de projet</h3>
+    <h3 id="abdoc-direction">Direction de projet</h3>
     <dl>
       <dt><strong>Charlotte Duvette</strong> (2021-2024)</dt>
       <dd>Charlotte Duvette est historienne de
@@ -15,7 +15,7 @@
       d'Architecture 2023.</dd>
     </dl>
 
-    <h3>Ingénieurs d'études et de recherche</h3>
+    <h3 id="abdoc-inge">Ingénieurs d'études et de recherche</h3>
     <dl>
       <dt><strong>Paul Kervegan</strong> (2022-2024)</dt>
       <dd>Paul Kervegan s'occupe de la gestion
@@ -38,7 +38,7 @@
       </dd>
     </dl>
 
-    <h3>Doctorantes contractuelles</h3>
+    <h3 id="abdoc-doct">Doctorantes contractuelles</h3>
     <dt><strong>Louise Thiroux</strong> (2024)</dt>
     <dd>Louise Thiroux est chargée d'études et de
       recherche à l'INHA (depuis 2024). Elle participe à
@@ -61,7 +61,7 @@
       (sous la dir. de J.-M Leniaud et Lionel Arsac).
     </dd>
 
-    <h3>Stagiaires</h3>
+    <h3 id="abdoc-stag">Stagiaires</h3>
 
     <h4>Recherches historiques</h4>
     <dt><strong>Teoman Akgönül</strong> (février-mai 2024)</dt>
