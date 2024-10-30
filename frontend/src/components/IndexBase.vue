@@ -127,7 +127,6 @@ function textFilter(filterBy) {
   filterBy = simplifyString( stripHtml(filterBy) );
   dataFilter.value = dataFull.value.filter(x =>
     simplifyString( stripHtml(x.text) ).includes(filterBy) );
-
 }
 
 /*******************************************************/
@@ -139,7 +138,8 @@ onMounted(() => {
 
   // infinite scroll:
   // if you've scrolled to the end of page, increment pageNumber.
-  $("main").on("scroll", (e) => {
+  $(".content-wrapper").on("scroll", (e) => {
+    console.log("scrolling")
     const t = e.target;
     if ( t.scrollTop === t.scrollHeight - t.offsetHeight ) {
       pageNumber.value++

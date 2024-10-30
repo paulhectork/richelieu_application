@@ -89,7 +89,7 @@
     </p>
     <p>Un regard sur les projets non réalisés imaginés par
       les contemporains offre un degré supplémentaire de
-      compréhension de la perception de cette espace par
+      compréhension de la perception de cet espace par
       les hommes de l'art. Dans les années 1810-1820, les
       architectes Achille Leclère ou Jean-Baptiste Dédéban,
       réceptifs aux préoccupations contemporaines sur l'équipement

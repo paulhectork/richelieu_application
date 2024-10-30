@@ -64,7 +64,7 @@
     </p>
     <p>Le magasin du <RouterLink to="/entite-nommee/qr11aa90d203bbe4b52bea31a00d838f51e">
         Grand Colbert</RouterLink>
-      attribué à <RouterLink to="/entite-nommee/qr1105ec8ce6a0847e4b6141dba098593c5">
+      attribué à <RouterLink to="/entite-nommee/qr14a2d72ce90cd43158603f21ad9b194c3">
         l'architecte Hervas</RouterLink>,
       s'installe en 1841 dans la parcelle d'angle
       de la galerie Colbert, au croisement de deux rues très

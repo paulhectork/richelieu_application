@@ -35,7 +35,7 @@
 -->
 
 <template>
-  <aside class="sidebar-wrapper">
+  <aside class="sidebar-wrapper main-default">
     <!-- <img :src="menuCropPath"> -->
     <div class="sidebar-iiif-wrapper">
       <IiifViewer :osdId="htmlId"

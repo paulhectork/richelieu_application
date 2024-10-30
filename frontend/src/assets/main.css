@@ -197,7 +197,13 @@
      banner on the bottom of the page, with a height of 10vw.
   */
   --cs-landscape-sidebar-width: 10%;
-  --cs-portrait-footer-height: 10vh;
+  --cs-portrait-sidebar-height: 10vh;
+
+  /*
+  expected heights of `main` in portrait and landscape mode
+  */
+  --cs-portrait-main-height: calc(100vh - var(--cs-portrait-sidebar-width) - var(--cs-navbar-height));
+  --cs-landscape-main-height: calc(100vh - var(--cs-navbar-height));
 
   /*
   --cs-sidebar-width-desktop: 25vw;

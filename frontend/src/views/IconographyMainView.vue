@@ -1,31 +1,31 @@
 <!-- main page for a single iconography item.
      this page contains:
-     * .viewer-container: a viewer. there are 2 types of viewers and
+     * .viewer-wrapper: a viewer. there are 2 types of viewers and
        we can toggle:
        > IiifViewer: a IIIF viewer for the image
        > .leaflet-<id_uuid>: a leaflet viewer showing the
          places the image is connected to.
-     * .cartel-container: a table with all of the metadata
+     * .cartel-wrapper: a table with all of the metadata
 -->
 
 <template>
-  <div class="global-container"
+  <div class="iconography-outer-wrapper"
        v-if="iconography">
        <!--
         v-if="iconographyLoaded.value===true">
        -->
 
-    <div class="title-container">
+    <div class="title-wrapper">
       <h1>{{ iconography.title ? iconography.title[0] : "" }}</h1>
     </div>
 
-    <div class="viewer-cartel-container">
+    <div class="viewer-cartel-wrapper">
 
-      <div class="viewer-container">
+      <div class="viewer-wrapper">
         <div class="viewer">
 
           <div v-if="viewerType === 'osd'"
-               class="iiif-container"
+               class="iiif-wrapper"
           >
             <!--
             <IiifViewer v-if="iconography.iiif_url"
@@ -41,7 +41,7 @@
             ></IiifViewer>
           </div>
           <div v-else
-               class="leaflet-container"
+               class="leaflet-wrapper"
           >
             <MapIconographyMain :lflId="`lfl-${idUuid}`"
                                 :placeGeoJson="iconography.place"
@@ -63,7 +63,7 @@
         </div>
       </div>
 
-      <div class="cartel-container">
+      <div class="cartel-wrapper">
         <table>
           <tr v-if="iconography.theme != null && iconography.theme.length">
             <td>{{ iconography.theme.length > 1 ? "Thèmes" : "Theme" }}</td>
@@ -199,27 +199,33 @@ onUpdated(() => {
 
 
 <style scoped>
-.global-container {
-  display: grid;
-  grid-template-rows: 1fr 85%;
+.iconography-outer-wrapper {
   width: 100%;
-  height: 100%;
+  height: var(--cs-portrait-main-height);
+  display: grid;
+  grid-template-rows: 15% 85%/*1fr 85%*/;
+  background-color: pink;
 }
-.title-container {
+@media ( orientation:landscape ) {
+  .iconography-outer-wrapper {
+    height: var(--cs-landscape-main-height);
+  }
+}
+.title-wrapper {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.viewer-cartel-container {
+.viewer-cartel-wrapper {
   display: grid;
   grid-template-columns: 50% 50%;
   border-top: var(--cs-main-border);
 }
-.negative-default .viewer-cartel-container {
+.negative-default .viewer-cartel-wrapper {
   border-top: var(--cs-negative-border);
 }
 @media ( orientation:portrait ) {
-  .viewer-cartel-container {
+  .viewer-cartel-wrapper {
     grid-template-rows: 70vh 2fr;
     grid-template-columns: 100%;
   }
@@ -227,13 +233,17 @@ onUpdated(() => {
 
 /*************************************/
 
-.viewer-container {
+.viewer-wrapper {
   display: grid;
   grid-template-columns: 100%;
   grid-template-rows: 90% 10%;
+  max-height: 100%;
 }
-.iiif-container, .leaflet-container {
+.iiif-wrapper, .leaflet-wrapper {
   height: 100%;
+}
+:deep(.static-viewer) {
+  flex-grow: 1;
 }
 .viewer-selector {
   display: flex;
@@ -250,20 +260,25 @@ onUpdated(() => {
 
 /*************************************/
 
-.cartel-container {
+.cartel-wrapper {
   border-left: var(--cs-main-border);
+  height: 100%;
 }
-.negative-default .cartel-container {
+.negative-default .cartel-wrapper {
   border-left: var(--cs-negative-border);
 }
 table {
+  display: table;  /* use display:block instead ??? */
   height: 100%;
+  overflow: scroll;
 }
 td {
   padding: 10px;
 }
 td:first-child {
   font-weight: 700;
+  width: 30%;
+  min-width: 120px;
 }
 .external-links {
   display: flex;

@@ -94,7 +94,8 @@ async function buildOsdViewer(tileSequence, osdId) {
     navigatorAutoFade: true,
     showRotationControl: true,
     prefixUrl: urlToOsdIcons().href,
-    navImages: osdNavImages
+    navImages: osdNavImages,
+    scrollToZoom: false
   });
   return viewer.value.addOnceHandler("open", () => {
     $(`#${osdId} .openseadragon-canvas`).css("backgroundColor", "var(--cs-darkplum)");

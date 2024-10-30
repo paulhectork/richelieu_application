@@ -458,6 +458,15 @@ onUnmounted(() => {
 
 
 <style scoped>
+.article-main-wrapper {
+  overflow: scroll;
+  height: var(--cs-portrait-main-height);
+}
+@media ( orientation:landscape ) {
+  .article-main-wrapper {
+    height: var(--cs-landscape-main-height);
+  }
+}
 .article-viewer-wrapper {
   display: flex;
   flex-direction: column-reverse;

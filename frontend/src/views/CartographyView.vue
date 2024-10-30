@@ -829,7 +829,7 @@ onMounted(() => {
  * - block 2 (CartographyPlaceInfo): width is augmented to make it visible.
  */
 .cartography-outer-wrapper {
-  height: calc(100vh - var(--cs-navbar-height) - var(--cs-portrait-footer-height));
+  height: calc(100vh - var(--cs-navbar-height) - var(--cs-portrait-sidebar-height));
   width: 100%;
   display: grid;
   grid-template-rows: 100%;
@@ -864,7 +864,7 @@ onMounted(() => {
 /**************************************/
 
 #map-main {
-  height: calc(100vh - var(--cs-navbar-height) - var(--cs-portrait-footer-height));
+  height: calc(100vh - var(--cs-navbar-height) - var(--cs-portrait-sidebar-height));
   width: 100%;
   overflow-y: hidden;
 }

@@ -44,7 +44,7 @@
       <div class="home-block-title-wrapper">
         <h1>Thèmes</h1>
         <div class="home-block-plus-wrapper">
-          <span>Voir plus</span>
+          <span>Voir tous les thèmes</span>
           <RouterLink to="/theme">
             <UiButtonLink></UiButtonLink>
           </RouterLink>
@@ -63,7 +63,7 @@
          class="home-block home-block-odd home-block-row1">
       <div class="home-block-title-wrapper">
         <div class="home-block-plus-wrapper">
-          <span>Voir plus</span>
+          <span>Voir toutes les entités nommées</span>
           <RouterLink to="/entite-nommee">
             <UiButtonLink></UiButtonLink>
           </RouterLink>
@@ -84,7 +84,7 @@
       <div class="home-block-title-wrapper">
         <h1>Articles</h1>
         <div class="home-block-plus-wrapper">
-          <span>Voir plus</span>
+          <span>Voir la table des matières</span>
           <RouterLink to="/article">
             <UiButtonLink></UiButtonLink>
           </RouterLink>
@@ -264,7 +264,7 @@ onUnmounted(() =>
   display: grid;
   grid-template-rows: 70% 70% 70% 70%;
   grid-template-columns: 100%;
-  height: 100%;
+  height: calc(100vh - var(--cs-navbar-height) - var(--cs-portrait-sidebar-height));
   width: 100%;
   padding: 0 3%;
 }
@@ -282,6 +282,7 @@ onUnmounted(() =>
 
 @media ( orientation: landscape ) {
   .home-wrapper {
+    height: calc(100vh - var(--cs-navbar-height));
     grid-template-rows: 50% 50%;
     grid-template-columns: 50% 50%;
   }

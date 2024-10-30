@@ -98,7 +98,7 @@ onMounted(() => {
   position: absolute;
   top: var(--cs-navbar-height);
   left: 0;
-  height: calc(100% - var(--cs-portrait-footer-height) - var(--cs-navbar-height));
+  height: calc(100% - var(--cs-portrait-sidebar-height) - var(--cs-navbar-height));
   width: 100%;
 
   display: flex;
