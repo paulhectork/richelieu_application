@@ -23,7 +23,6 @@
 
       <div class="viewer-wrapper">
         <div class="viewer">
-
           <div v-if="viewerType === 'osd'"
                class="iiif-wrapper"
           >
@@ -64,6 +63,10 @@
       </div>
 
       <div class="cartel-wrapper">
+        <dl v-html="structuredCartel"
+            class="iconography-cartel"
+        ></dl>
+        <!--
         <table>
           <tr v-if="iconography.theme != null && iconography.theme.length">
             <td>{{ iconography.theme.length > 1 ? "Thèmes" : "Theme" }}</td>
@@ -122,6 +125,7 @@
             <td>{{ iconography.licence.entry_name }}</td>
           </tr>
         </table>
+        -->
       </div>
     </div>
 
@@ -170,6 +174,53 @@ const imageUrl = computed(() => {
     .filter( f => !f.url.match(/compress|thumbnail/) )[0].url
   : "not yet defined" });
 
+const structuredCartel = computed(() => {
+  const cartel = [],  // Array of [ title, data ]
+        icn = iconography.value;
+
+  if ( icn.theme != null && icn.theme.length )
+    cartel.push([ icn.theme.length > 1 ? "Thèmes" : "Theme"
+                , `<span>${stringifyThemeArray(icn.theme, true)}</span>` ]);
+  if ( icn.named_entity != null && icn.named_entity.length )
+    cartel.push([ icn.named_entity.length > 1 ? "Entités nommées" : "Entité nommée"
+                , stringifyNamedEntityArray(icn.named_entity, true) ]);
+  if ( icn.title != null && icn.title.length > 1 )
+    cartel.push([ "Autre(s) titre(s)"
+                , stringifyGenericArray(icn.title) ]);
+  if ( icn.author != null && icn.author.length )
+    cartel.push([ icn.author.length > 1 ? "Auteurs ou autrices" : "Auteur ou autrice"
+                ,  stringifyActorArray(icn.author, false) ])
+  if ( icn.corpus != null )
+    cartel.push([ "Corpus", icn.corpus ]);
+  if ( icn.date != null && icn.date.length )
+    cartel.push([ "Date", stringifyDate(icn.date) ]);
+  if ( icn.publisher != null && icn.publisher.length )
+    cartel.push([ "Édition", stringifyActorArray(icn.publisher, false) ]);
+  if ( icn.technique != null && icn.technique.length )
+    cartel.push([ icn.technique.length > 1 ? "Techniques" : "Technique"
+                , stringifyGenericArray(icn.technique) ]);
+  if ( icn.institution != null && icn.institution.length )
+    cartel.push([ "Institution"
+                , `<span>${stringifyInstitutionArray(icn.institution, true)}</span>` ]);
+  if ( icn.inventory_number != null )
+    cartel.push([ "Numéro d'inventaire", icn.inventory_number ]);
+  if ( icn.source_url || icn.iiif_url ) {
+    let urls = "<span class='external-links'>";
+    if ( icn.source_url ) {
+      urls += `<a href="${icn.source_url}">Lien vers la source</a>`; }
+    if ( icn.iiif_url ) {
+      urls += `<a href="${icn.iiif_url}">Manifeste IIIF</a>`; }
+    urls += "</span>"
+    cartel.push([ "Liens externes", urls ]);
+  }
+  cartel.push([ "Licence", icn.licence.entry_name ]);
+
+  // represent cartel as an HTML descriptive list
+  return cartel.map((titleData) =>
+    `<dt>${titleData[0]}</dt><dd>${titleData[1]}</dd>\n`)
+    .join("");
+})
+
 /***************************************************/
 
 function getIconographyResource() {
@@ -203,8 +254,7 @@ onUpdated(() => {
   width: 100%;
   height: var(--cs-portrait-main-height);
   display: grid;
-  grid-template-rows: 15% 85%/*1fr 85%*/;
-  background-color: pink;
+  grid-template-rows: 1fr 85%;
 }
 @media ( orientation:landscape ) {
   .iconography-outer-wrapper {
@@ -233,6 +283,12 @@ onUpdated(() => {
 
 /*************************************/
 
+.title-wrapper > h1 {
+  margin: 10px 0;
+}
+
+/*************************************/
+
 .viewer-wrapper {
   display: grid;
   grid-template-columns: 100%;
@@ -242,8 +298,9 @@ onUpdated(() => {
 .iiif-wrapper, .leaflet-wrapper {
   height: 100%;
 }
-:deep(.static-viewer) {
-  flex-grow: 1;
+.iiif-wrapper :deep(.static-viewer) {
+  max-height: 100%;
+  max-width: 100%;
 }
 .viewer-selector {
   display: flex;
@@ -267,9 +324,10 @@ onUpdated(() => {
 .negative-default .cartel-wrapper {
   border-left: var(--cs-negative-border);
 }
+/*
 table {
-  display: table;  /* use display:block instead ??? */
-  height: 100%;
+  display: table;
+  height: 10%;
   overflow: scroll;
 }
 td {
@@ -277,22 +335,47 @@ td {
 }
 td:first-child {
   font-weight: 700;
-  width: 30%;
-  min-width: 120px;
 }
-.external-links {
+*/
+
+dl.iconography-cartel {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: max(120px, 30%) calc(100% - max(120px, 30%));  /** 30% / 70% with a minimum of 120px for the <dt/> */
+  height: 100%;
+  margin: 0;
+}
+.iconography-cartel :deep(dt),
+.iconography-cartel :deep(dd) {
+  border-bottom: var(--cs-negative-border);
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 15px;
+}
+.iconography-cartel :deep(dt) {
+  padding-left: 15px;
+}
+.iconography-cartel :deep(dt:last-of-type),
+.iconography-cartel :deep(dd:last-of-type) {
+  border-bottom: none;
+}
+
+.iconography-cartel :deep(.external-links) {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   text-align: center;
 }
-.external-links > a {
+.iconography-cartel :deep(.external-links > a) {
   width: 100%;
 }
-.external-links > a:last-child {
+:deep(.external-links > a:last-child) {
   border-left: var(--cs-main-border);
 }
-.negative-default .external-links > a:last-child {
+.negative-default :deep(.external-links > a:last-child) {
   border-left: var(--cs-negative-border);
 }
 </style>

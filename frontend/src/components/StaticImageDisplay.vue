@@ -54,12 +54,15 @@ const props = defineProps(["imgUrl", "imgAlt", "imgLegend"]);
 }
 .id-wrapper {
   width: fit-content;
-  max-height: 50vh;
+  max-height: 60vh;
   max-width: 70%;
   border: var(--cs-main-border);
+  /* apparently, display:grid seems useless when working with figcaption */
+  /*
   display: grid;
   grid-template-rows: 85% 15%;
   grid-template-columns: 100%;
+  */
 }
 .id-img-wrapper, .id-legend-wrapper {
   display: flex;
