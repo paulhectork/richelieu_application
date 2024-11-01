@@ -45,7 +45,7 @@
         </main>
         <!-- footer -->
         <div class="footer-outer-wrapper">
-          <TheFooter></TheFooter>
+          <TheFooter :gradient="themeNegative ? 'negative' : 'main'"></TheFooter>
         </div>
       </div>
 
@@ -238,7 +238,7 @@ main {
 }
 
 .footer-outer-wrapper {
-  height: max(30vh, 150px);  /* min 150px: the logo banner has a min height of 100px */
+  height: max(40vh, 150px);  /* min 150px: the logo banner has a min height of 100px */
 }
 @media ( orientation:portrait ) {
   .footer-outer-wrapper {

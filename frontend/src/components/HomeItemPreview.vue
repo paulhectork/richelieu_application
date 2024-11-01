@@ -33,6 +33,8 @@
        :style="{ backgroundImage: resource.thumbnail
                                   ? `url(${resource.thumbnail})`
                                   : 'inherit' }"
+       @mouseover="onMouseOver"
+       @mouseout="onMouseOut"
   >
     <RouterLink :to="resource.href.pathname">
       <div class="preview-inner-wrapper"
@@ -63,6 +65,10 @@
 <script setup>
 import { ref, onMounted } from "vue";
 
+import $ from "jquery";
+
+import { randomColorLight, randomColorDark } from "@utils/colors.js";
+
 /*************************************************/
 
 const props = defineProps(["resource", "display"]);
@@ -71,6 +77,16 @@ const htmlId = `home-item-preview-${window.crypto.randomUUID()}`;
 
 /*************************************************/
 
+/**
+ * switch and reset the background color of `.resource-main` when hovering
+ */
+const onMouseOver = () =>
+  $(`#${htmlId} .resource-main`).css({ backgroundColor: randomColorLight() });
+
+const onMouseOut = () =>
+  $(`#${htmlId} .resource-main`).css({ backgroundColor: "var(--cs-main-default-bg)" });
+
+/*************************************************/
 
 onMounted(() => {
   resource.value = props.resource;
@@ -125,9 +141,11 @@ onMounted(() => {
 
 /*****************************************/
 
+/*
 .preview-wrapper:hover .resource-main {
   background-color: var(--cs-main-second-bg);
 }
+*/
 .preview-wrapper:hover .resource-main,
 .preview-wrapper:hover .title-second,
 .preview-wrapper:active .resource-main,

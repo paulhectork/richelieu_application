@@ -55,7 +55,7 @@
       M. Acker soit, avant tout, le papetier de la Banque
       de France
       <UiButtonEllipsis data-key="labourieu1853"></UiButtonEllipsis>.&nbsp;
-            </q>
+      </q>
     </p>
     <p>Les étiquettes lithographiées, placées
       en tête de chaque registre vendu, permettent de suivre

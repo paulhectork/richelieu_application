@@ -100,7 +100,10 @@
     </div>
 
     <div id="map-wrapper"
-         class="home-block home-block-odd home-block-row2">
+         class="home-block home-block-odd home-block-row2"
+         @mouseover="onMapMouseOver"
+         @mouseout="onMapMouseOut"
+    >
       <div class="home-block-title-wrapper map-title-wrapper">
         <h1>Carte</h1>
       </div>
@@ -135,6 +138,7 @@ import { articles } from "@globals";
 import { urlToFrontendNamedEntityCategory
        , urlToFrontendThemeCategory
        , urlToArticleMain } from "@utils/url";
+import { randomColorLight } from "@utils/colors";
 
 
 /**************************************************/
@@ -147,6 +151,15 @@ const themesFormatted        = ref([]);
 const articlesFormatted      = ref([]);
 
 /**************************************************/
+
+/**
+ * chnge the background color of the title of the map block when
+ *  hovering in/out of the entire map block.
+ */
+const onMapMouseOver = () =>
+  $(".map-title-wrapper > h1").css({ backgroundColor: randomColorLight() });
+const onMapMouseOut = () =>
+  $(".map-title-wrapper > h1").css({ backgroundColor: "var(--cs-main-default-bg)" });
 
 /**
  * switching domStore.homeModalVisible will close `TheHomeModal` for the entire
@@ -252,6 +265,7 @@ onMounted(() => {
   articlesFormatted.value = formatArticleArray( articles );
   getData().then( hideOverflow );
   $( window ).on( "resize", _.debounce(hideOverflow, 300) );
+
 })
 onUnmounted(() =>
   $(window).off("resize")
@@ -266,7 +280,7 @@ onUnmounted(() =>
   grid-template-columns: 100%;
   height: calc(100vh - var(--cs-navbar-height) - var(--cs-portrait-sidebar-height));
   width: 100%;
-  padding: 0 3%;
+  padding: 1% 3% 0 3%;
 }
 .home-block {
   display: grid;
@@ -416,13 +430,16 @@ h1 {
   object-fit: contain;
 }
 
+/* this fancy selector targets `h1` when .map-outer-wrapper is hovered/clicked on */
+/* done in jQuery instead */
+/*
 .map-title-wrapper:has(+ .map-outer-wrapper:hover) > h1 {
-  /* this fancy selector targets `h1` when .map-outer-wrapper is hovered */
   background-color: var(--cs-main-second-bg);
   color: var(--cs-main-second);
 }
+*/
 .map-title-wrapper:has(+ .map-outer-wrapper:active) > h1 {
-  background-color: var(--cs-main-second-bg);
+  background-color: var(--cs-main-active-bg) !important;
 }
 
 /*****************************************/

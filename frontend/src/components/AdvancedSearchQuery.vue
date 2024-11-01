@@ -259,21 +259,24 @@ watch(props, (newProps, oldProps) => {
 onMounted(() => {
   // fetch data
   Promise.all([
-    axios.get(new URL("/i/theme", __API_URL__).href, { params:{category:"all"} })
-         .then(r => themeArray.value = r.data
+    axios
+    .get(new URL("/i/theme", __API_URL__).href, { params:{category:"all"} })
+    .then(r => themeArray.value = r.data
+                                  .map(itemToFormEntry)
+                                  .sort((a,b) => sortByValue(a,b)) )
+    ,
+    axios
+    .get(new URL("/i/named-entity", __API_URL__).href, { params:{category:"all"} })
+    .then(r => namedEntityArray.value = r.data
                                         .map(itemToFormEntry)
                                         .sort((a,b) => sortByValue(a,b)) )
-    ,
-    axios.get(new URL("/i/named-entity", __API_URL__).href, { params:{category:"all"} })
-         .then(r => namedEntityArray.value = r.data
-                                              .map(itemToFormEntry)
-                                              .sort((a,b) => sortByValue(a,b)) )
 
     ,
-    axios.get(new URL("/i/institution", __API_URL__))
-         .then(r => institutionArray.value = r.data
-                                              .map(itemToFormEntry)
-                                              .sort((a,b) => sortByValue(a,b)) )
+    axios
+    .get(new URL("/i/institution", __API_URL__))
+    .then(r => institutionArray.value = r.data
+                                        .map(itemToFormEntry)
+                                        .sort((a,b) => sortByValue(a,b)) )
 
   ])
   .then(() => loadState.value = "loaded")

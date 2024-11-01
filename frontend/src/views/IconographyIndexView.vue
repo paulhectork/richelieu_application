@@ -10,10 +10,14 @@
   ></IndexCount>
 
   <UiLoader v-if="!isLoaded"></UiLoader>
-  <IndexBase v-else
-             display="resource"
-             :data="dataFilter"
-  ></IndexBase>
+  <div v-else>
+    <IndexIconographyFilter :data="dataFull"
+    ></IndexIconographyFilter>
+    <IndexBase display="resource"
+               :data="dataFilter"
+    ></IndexBase>
+
+  </div>
 
 </template>
 
@@ -24,6 +28,8 @@ import axios from "axios";
 import IndexBase from "@components/IndexBase.vue";
 import UiLoader from "@components/UiLoader.vue";
 import IndexCount from "@components/IndexCount.vue";
+
+import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
 
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 

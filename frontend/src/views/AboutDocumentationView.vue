@@ -89,6 +89,7 @@ const mapper = { projet       : [ "about"         , "AbDocContentProjet" ]
                , equipe       : [ "about"         , "AbDocContentEquipe" ]
                , mentions     : [ "about"         , "AbDocContentCreditsMentions" ]
                , methodologie : [ "documentation" , "AbDocContentMethodologie" ]
+               , donnees      : [ "documentation" , "AbDocContentDonnees" ]
                , api          : [ "documentation" , "AbDocContentApi" ]
                }
 

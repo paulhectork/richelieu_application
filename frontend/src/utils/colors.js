@@ -12,7 +12,7 @@ import chroma from 'chroma-js';
  *     a discrete scale made of 10 steps (0..0.9).
  */
 export const randomColorLight = () =>
-  Math.random() > 0.5
+  Math.random() > 0.7  // 0.7 to have more pink
   ? chroma.mix("#8dc6af", "#67e5cc", Math.random().toFixed(1))
   : chroma.mix("#67e57e", "#e667ce", Math.random().toFixed(1));
 export const randomColorDark = () =>

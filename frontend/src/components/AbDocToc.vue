@@ -121,6 +121,14 @@
               <AbDocTocSub :tocElements="tocSubElements['toc-item-methodologie']"
               ></AbDocTocSub>
             </li>
+            <li id="toc-item-donnees"
+                class="toc-lvl2"
+            >
+              <RouterLink to="/documentation/donnees">
+                Données ouvertes</RouterLink>
+              <AbDocTocSub :tocElements="tocSubElements['toc-item-donnees']"
+              ></AbDocTocSub>
+            </li>
             <li id="toc-item-api"
                 class="toc-lvl2"
             >
@@ -162,6 +170,7 @@ const tocSubElements = ref({ "toc-item-projet"       : []
                            , "toc-item-equipe"       : []
                            , "toc-item-mentions"     : []
                            , "toc-item-methodologie" : []
+                           , "toc-item-donnees"      : []
                            , "toc-item-api"          : []
                            })
 
@@ -170,6 +179,7 @@ const idMapper = { projet       : "toc-item-projet"
                  , equipe       : "toc-item-equipe"
                  , mentions     : "toc-item-mentions"
                  , methodologie : "toc-item-methodologie"
+                 , donnees      : "toc-item-donnees"
                  , api          : "toc-item-api"
                  }
 
