@@ -3,7 +3,16 @@
       a basic index to display an array of data: Iconography, Named Entity, Themes.
       the parent sends an array of objects from which to build an item.
 
-      workflow:
+      lifecycle:
+      - onMounted, `data` is set: an Iconography index can be displayed.
+      - when  `props.data` changes, the data sent by the parent has changed.
+          this mostly happens when `IndexIconographyFilter` filters the
+          iconography data and the parent transmits the newly translated
+          data to the current component. in that case,
+          - update the `data` ref with the new index
+          - reset `pageNumber`: we start viewing data from page 0.
+
+      component communication:
       - IndexBase
           handles the array-level
       - IndexItem
@@ -139,10 +148,13 @@ function textFilter(filterBy) {
 
 /*******************************************************/
 
+/**
+ * when receiving new data from the parent, set the `data` ref
+ * and reset the page number to start viewing items from the start.
+ */
 watch(props, (newP, oldP) => {
   pageNumber.value = 0;
   data.value = props.data;
-  console.log("$$$", data.value.length);
 })
 
 onMounted(() => {

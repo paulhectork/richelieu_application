@@ -2,6 +2,9 @@
   a custom formkit slider that supports 2-input slider (min,max)
   instead of just 1 input, done using jQuery plugin noUiSlider.
 
+  this component DOES NOT handle updates to its values.
+  if it's what you want you should look for a vue plugin or something.
+
   props: as with all formkit inputs, the props are all contained
   within `context` object.
   - number (string)
@@ -30,17 +33,6 @@
 
 <template>
   <div class="form-field-slider-wrapper">
-    <!--
-    <input :id="htmlId"
-           type="range"
-           :min="context.minVal"
-           :max="context.maxVal"
-           :step="context.step"
-           :number="['integer', 'float'].includes(context.number)
-                    ? context.number
-                    : 'float'"
-    ></input>
-    -->
     <div class="form-field-slider">
       <div :id="htmlId"></div>
     </div>
@@ -70,35 +62,42 @@ import '@plugins/nouislider.min.css';
 
 const htmlId      = `formkit-slider-${window.crypto.randomUUID()}`;
 const props       = defineProps(["context"]);  // "minVal", "maxVal", "step", "number" ("integer"|"float")
-const context     = props.context;
+const context     = ref(props.context);
 const slider      = ref();
-const selectedMin = ref(context.minVal);
-const selectedMax = ref(context.maxVal);
+const allowedMin  = ref(context.value.minVal);  // allowed minimum/maximum values
+const allowedMax  = ref(context.value.maxVal);
+const selectedMin = ref(context.value.minVal);  // currently selected mimumums / maximums
+const selectedMax = ref(context.value.maxVal);
 // const showPopup   = ref(false);
 
 /**********************************************/
 
-/**********************************************/
-
-onMounted(() => {
+/**
+ * define the slider.
+ */
+function createSlider() {
   slider.value = noUiSlider.create(document.getElementById(htmlId), {
-    start: [ context.minVal, context.maxVal ],
-    step: context.step,
+    start: [ allowedMin.value, allowedMax.value ],
+    step: context.value.step,
     connect: true,
-    range: { min: context.minVal, max: context.maxVal }
+    range: { min: allowedMin.value, max: allowedMax.value }
   });
   // add the events
   slider.value.on("update", () => {
     [ selectedMin.value, selectedMax.value ] = slider.value.get().map(parseFloat);
   });
-  // $(`#${htmlId}`).on("mouseover", () => {/*showPopup.value = true*/})
-  //                .on("mouseout", () => {/*showPopup.value = false */})
-  slider.value.on("set", () => { context.node.input([selectedMin.value, selectedMax.value]) });
+  slider.value.on("set", () => {
+    console.log("output");
+    context.value.node.input([ selectedMin.value, selectedMax.value ]) });
+}
+
+/**********************************************/
+
+onMounted(() => {
+  createSlider();
 })
 
 onUnmounted(() => {
-  $(`#${htmlId}`).off("mouseover")
-                 .off("mouseout");
   slider.value.off("update");
   slider.value.off("set");
 

@@ -611,6 +611,9 @@ button:active > svg > path {
   color: var(--cs-plum);
   font-family: var(--cs-font-sans-serif);
 }
+.negative-default .formkit-messages {
+  color: var(--cs-lightplum);
+}
 .formkit-inner {
   border: none;
 }

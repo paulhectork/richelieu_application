@@ -90,6 +90,11 @@ onMounted(() => {
 footer {
   height: 100%;
 }
+@media ( orientation:portrait ) {
+  footer {
+    margin-bottom: calc(2 * var(--cs-portrait-sidebar-height));
+  }
+}
 .footer-inner-wrapper {
   height: 100%;
   width: 100%;

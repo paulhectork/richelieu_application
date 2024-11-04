@@ -42,6 +42,10 @@
       ></IndexAssociationRedirects>
     </div>
 
+    <IndexIconographyFilter :data="dataFull"
+                            @iconography-filter="handleIconographyFilter"
+    ></IndexIconographyFilter>
+
     <IndexBase :data="dataFilter"
                display="resource"
     ></IndexBase>
@@ -61,6 +65,7 @@ import IndexBase from "@components/IndexBase.vue";
 import UiLoader from "@components/UiLoader.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
 import IndexCount from "@components/IndexCount.vue";
+import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
 
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 
@@ -85,6 +90,17 @@ const apiTargetIconography  = computed(() =>
 
 /***************************************************/
 
+
+/**
+ * when IndexIconographyFilter returns the filtered array
+ * of Iconography objects, update `dataFilter`, which will
+ * trigger the updating of `IndexBase`.
+ * @param {Array<Object>} iconographyData: the fitlered array of iconography objects
+ */
+ function handleIconographyFilter(iconographyData) {
+  dataFilter.value = indexDataFormatterIconography(iconographyData);
+}
+
 /**
  * get all backend data from an UUID. we divide the fetching
  * of data in 2 queries because the second query, `apiTargetIconography`,
@@ -98,7 +114,12 @@ function getData() {
 
   axios.get(apiTargetIconography.getter().href)
   .then(r => {
-    if ( r.data.length ) { namedEntity.value = r.data[0]; loadState.value = 'loaded'; }
+    if ( r.data.length ) {
+      namedEntity.value = r.data[0];
+      dataFull.value   = namedEntity.value.iconography;
+      dataFilter.value = indexDataFormatterIconography(dataFull.value);
+      loadState.value  = 'loaded';
+    }
   })
   .catch(e => { loadState.value = 'error'; console.error(e) });
 }
@@ -115,17 +136,32 @@ function getAssociated() {
        .then(r => { associatedNamedEntities.value = r.data });
 }
 
+/***************************************************/
+
+// could i do without those watchers ? just setting all the variables
+// in `getData` or `onMounted` seems enough but idk...
+// it was useful before `AssociationIndexView`, when clicking on the
+// related named entites redirected you to a new NamedEntityMain with
+// another idUuid, but it's no longer the case so i guess we're fine...
+// also `IndexIconographyFilter` doesn't handle data updates,
+// so if this watcher here is useful, then we have a problem in `IndexIconographyFilter`
+watch(route, (newRoute, oldRoute) => {
+  console.log("NamedEntityMainView.watch( route.params.idUuid ) : watcher triggered !")
+  idUuid.value = route.params.idUuid;
+  getData();
+  getAssociated();
+})
+
+// this one was simply integreated to getData() and seems to work fine.
+/*
 watch(namedEntity, (newNamedEntity, oldNamedEntity) => {
+  console.log("NamedEntityMainView.watch(namedEntity) : watcher triggered !")
   dataFull.value   = newNamedEntity.iconography;
   dataFilter.value = indexDataFormatterIconography(dataFull.value);
   console.log(dataFilter.value);
 })
+*/
 
-watch(() => route.params.idUuid, (newIdUuid, oldIdUuid) => {
-  idUuid.value = newIdUuid;
-  getData();
-  getAssociated();
-})
 
 /***************************************************/
 

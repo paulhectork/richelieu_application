@@ -12,6 +12,12 @@
   queries, but makes it way easier to implement `IndexIconographyFilter`
   in different parts of the app.
 
+  during filtering, a loader is displayed on top of the filter.
+  this is to make sure that the user sees that something is happening
+  and understand that the data displayed in the index is updated.
+
+  css wise, it supports `main-default` and `negative-default` themes.
+
   props:
     - data (Array<Object>):
         an array of Iconography objects.
@@ -26,9 +32,9 @@
   <div class="filter-outer-wrapper">
     <h3>Filtrer les données
       <span v-if="currentIconographyCount > 1"
-            v-html="`(${currentIconographyCount} entrées affichées)`"></span>
+            v-html="`(${currentIconographyCount} résultats)`"></span>
       <span v-else-if="currentIconographyCount === 1"
-            v-html="`(${currentIconographyCount} entrées affichées)`"></span>
+            v-html="`(${currentIconographyCount} résultat)`"></span>
       <span v-else
             v-html="`(Aucun résultat)`"></span>
     </h3>
@@ -77,7 +83,8 @@
                                , { label: 'Titre de l\'œuvre', value: 'title' }
                                , { label: 'Date', value: 'date' } ]"
             ></FormKit>
-            <FormKit type="fkSlider"
+            <FormKit v-if="minDate && maxDate"
+                     type="fkSlider"
                      id="date-filter"
                      outer-class="date-filter-wrapper"
                      name="dateFilter"
@@ -120,23 +127,14 @@ import { stripHtml, simplifyAndUnaccentString } from "@utils/strings";
 
 const props                   = defineProps(["data"]);
 const emit                    = defineEmits(["iconographyFilter"]);  // after filtering, send filtered data back to the parent
+
 const data                    = ref();  // the data sent from the parent. this is never modified (so why is it in a ref ???)
 const theForm                 = ref();  // the FormKitNode form.
 const currentFilter           = ref();  // the filter applied by the user, defined in onSubmit. this ref allows to compare a new filter with the previous filter, to avoid running the same filter twice.
 const currentIconographyCount = ref();  // number of iconography items currently displayed
+const minDate                 = ref();  // min/max allowed dates for the slider `#date-slider`.
+const maxDate                 = ref();  // min/max allowed dates for the slider `#date-slider`.
 const isLoading               = ref(false);  // when true, a loader will be displayed on top of the form.
-
-// minimum / maximum allowed dates for the date filter
-const minDate = computed(() =>
-  data.value
-  ? Math.min(...data.value.filter(i => i.date != null && i.date.length)
-                          .map(i => i.date[0]))
-  : 1750);
-const maxDate = computed(() =>
-  data.value
-  ? Math.max(...data.value.filter(i => i.date != null && i.date.length)
-                          .map(i => i.date[1]))
-  : 1950);
 
 /*************************************/
 
@@ -303,11 +301,11 @@ function onSubmit(formData, formNode) {
     currentFilter.value = formData;
     dataFilter = data.value;
     dataFilter = filterIconography(formData, dataFilter);
-    currentIconographyCount.value = dataFilter.length;
     // adding fake latency ensures that UiLoader is seen by the user,
     // and that the user will see that the data displayed has changed.
     setTimeout(() => {
       emit("iconographyFilter", dataFilter);
+      currentIconographyCount.value = dataFilter.length;
       isLoading.value = false;
     }, 750);
   }
@@ -317,6 +315,10 @@ function onSubmit(formData, formNode) {
 
 onMounted(() => {
   data.value = props.data;
+  minDate.value = Math.min(...data.value.filter(i => i.date != null && i.date.length)
+                                        .map(i => i.date[0]));
+  maxDate.value = Math.max(...data.value.filter(i => i.date != null && i.date.length)
+                                        .map(i => i.date[1]));
   currentIconographyCount.value = data.value.length;
 })
 
@@ -329,11 +331,18 @@ onMounted(() => {
   margin: 7% 3% 7% 3%;
   border: var(--cs-main-border);
 }
+.negative-default .filter-outer-wrapper {
+  border: var(--cs-negative-border);
+}
 .filter-loader-wrapper {
   display: grid;
   padding: 2%;
   border-top: var(--cs-main-border);
 }
+.negative-default .filter-loader-wrapper {
+  border-top: var(--cs-negative-border);
+}
+
 .filter-loader-wrapper > :deep(*) {
   grid-column-start: 1;
   grid-row-start: 1;
@@ -406,12 +415,16 @@ form#iconography-index-filter {
  */
 #iconography-index-filter :deep(.formkit-outer .formkit-messages) {
   background-color: var(--cs-main-default-bg);
-  transform: translateY(-150%);
+  transform: translateY(-110%);
   position: absolute;
   top: 0;
   left: 0;
   padding: 5px;
   border: var(--cs-main-border);
+}
+.negative-default #iconography-index-filter :deep(.formkit-outer .formkit-messages) {
+  background-color: var(--cs-negative-default-bg);
+  border: var(--cs-negative-border);
 }
 #iconography-index-filter :deep(.formkit-outer .formkit-messages:after) {
   /** css tooltip. see: https://css-tricks.com/snippets/css/css-triangle/ */
@@ -421,10 +434,13 @@ form#iconography-index-filter {
   left: 50%;
   height: 0px;
   width: 0px;
-  transform: rotate(0deg) translateX(-10px);
-  border: solid transparent 10px;
-  border-top-color: black;
+  transform: translateX(-15px);
+  border: solid transparent 15px;
+  border-top-color: var(--cs-main-default);
   background: transparent;
+}
+.negative-default #iconography-index-filter :deep(.formkit-outer .formkit-messages:after) {
+  border-top-color: var(--cs-negative-default);
 }
 
 /** submit button styling  */

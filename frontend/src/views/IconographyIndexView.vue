@@ -12,7 +12,7 @@
   <UiLoader v-if="!isLoaded"></UiLoader>
   <div v-else>
     <IndexIconographyFilter :data="dataFull"
-                            @iconography-filter="(e) => handleIconographyFilter(e)"
+                            @iconography-filter="handleIconographyFilter"
     ></IndexIconographyFilter>
     <IndexBase display="resource"
                :data="dataFilter"
@@ -47,7 +47,7 @@ const isLoaded = ref(false);   // switched to true when the data is loaded, will
  * when IndexIconographyFilter returns the filtered array
  * of Iconography objects, update `dataFilter`, which will
  * trigger the updating of `IndexBase`.
- * @param {*} iconographyData
+ * @param {Array<Object>} iconographyData
  */
 function handleIconographyFilter(iconographyData) {
   dataFilter.value = indexDataFormatterIconography(iconographyData);

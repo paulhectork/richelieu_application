@@ -48,21 +48,28 @@
         institutions suivantes&nbsp;:
         <span v-html="stringifyInstitutionArray(bsvpIndex, true)"></span>.
       </p>
+    </div>
 
+    <div v-if="loadState === 'loaded'">
+      <IndexIconographyFilter :data="dataFull"
+                              @iconography-filter="handleIconographyFilter"
+      ></IndexIconographyFilter>
       <IndexBase :data="dataFilter"
                  display="resource"
       ></IndexBase>
     </div>
+
   </div>
 </template>
 
 
 <script setup>
-import { onMounted, ref, watch, computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { onMounted, ref, computed } from "vue";
+import { useRoute } from "vue-router";
 
 import axios from "axios";
 
+import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
 import UiLoader from "@components/UiLoader.vue";
@@ -122,6 +129,16 @@ const bsvpIndex = computed(() =>
 )
 
 /***************************************************/
+
+/**
+ * when IndexIconographyFilter returns the filtered array
+ * of Iconography objects, update `dataFilter`, which will
+ * trigger the updating of `IndexBase`.
+ * @param {*} iconographyData
+ */
+ function handleIconographyFilter(iconographyData) {
+  dataFilter.value = indexDataFormatterIconography(iconographyData);
+}
 
 /**
  * get all backend data from an UUID. we divide the fetching
