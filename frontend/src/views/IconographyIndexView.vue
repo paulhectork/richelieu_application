@@ -12,6 +12,7 @@
   <UiLoader v-if="!isLoaded"></UiLoader>
   <div v-else>
     <IndexIconographyFilter :data="dataFull"
+                            @iconography-filter="(e) => handleIconographyFilter(e)"
     ></IndexIconographyFilter>
     <IndexBase display="resource"
                :data="dataFilter"
@@ -42,6 +43,18 @@ const isLoaded = ref(false);   // switched to true when the data is loaded, will
 
 /******************************************/
 
+/**
+ * when IndexIconographyFilter returns the filtered array
+ * of Iconography objects, update `dataFilter`, which will
+ * trigger the updating of `IndexBase`.
+ * @param {*} iconographyData
+ */
+function handleIconographyFilter(iconographyData) {
+  dataFilter.value = indexDataFormatterIconography(iconographyData);
+}
+
+/******************************************/
+
 onMounted(() => {
   axios.get(apiTarget)
   .then((r) => r.data)
@@ -53,42 +66,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
+
 </style>
-
-<!-- UNUSED / OLD CODE
-
-/**
- * structure a response to fit the model of `DataTables`
- * @ param {Object} r: the response returned by the API
- */
-function processResponse(r) {
-  return JSON.parse(r.request.response)
-             .map((e) => { e.thumbnail = e.thumbnail.length
-                                         ? urlToIconographyFile(e.thumbnail[0])
-                                         : null;
-                           return e })
-}
-
-const columnsDefinition = [ { dataFilter: "thumbnail",
-                              title: "Image",
-                              render: (dataFilter, type, row, meta) => {
-                                // retrieve the image from a manifest if there is one
-                                return dataFilter != null
-                                // ? `<img src="${manifestToThumbnail(dataFilter)}">`
-                                ? `<img src="${urlToIconographyFile(dataFilter)}"
-                                        alt="Image de: ${row.title[0]}">`
-                                : "Image manquante"
-                              }
-                            },
-                            { dataFilter: "iiif_url",
-                              title: "URL IIIF",
-                              render: (dataFilter, type, row, meta) => {
-                                 return dataFilter != null && dataFilter.match(/^https?/g)
-                                ? `<a href="${dataFilter}">${dataFilter}</a>`
-                                : "Lien IIIF manquant"
-                              }
-                            },
-                            { dataFilter: "authors", title: "Auteur.ice.s" },
-                            { dataFilter: "date", title: "Date de création" },
-                            { dataFilter: "title", title: "Titre" } ];
--->

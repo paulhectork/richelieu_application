@@ -2,17 +2,22 @@
 
       a basic index to display an array of data: Iconography, Named Entity, Themes.
       the parent sends an array of objects from which to build an item.
-        IndexBase
+
+      workflow:
+      - IndexBase
           handles the array-level
-        IndexItem
+      - IndexItem
           handles the object-level, aka the display of each individual
           item in this array.
 
       props:
-        display:
+      - display:
           one of "resource"|"concept".
           passed to `IndexItem` to determine the style used.
-        data:
+      - itemsPerRow: int|undefined
+          the maximum number of items to display per row. so far it's only used
+          by `CartographyPlaceInfo`
+      - data:
           the array of data to display. the structure is the same
           no matter the parent which calls IndexBase, or the kind of object
           to display (Icono, Named Entity...):
@@ -29,13 +34,11 @@
           {...}
         ]
         ```
-        itemsPerRow: int|undefined
-          the maximum number of items to display per row. so far it's only used
-          by `CartographyPlaceInfo`
 -->
 
 <template>
   <div class="index-outer-wrapper">
+    <!--
     <div class="index-filter-wrapper">
       <FormKit type="search"
                placeholder="..."
@@ -44,6 +47,7 @@
                @input="textFilter"
       ></FormKit>
     </div>
+    -->
     <div class="index-inner-wrapper animate__animated animate__slideInLeft"
          :style="computedStyle"
     >
@@ -69,7 +73,7 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref, computed } from "vue";
+import { onMounted, onUnmounted, ref, computed, watch } from "vue";
 
 import $ from "jquery";
 
@@ -81,8 +85,10 @@ const props = defineProps([ "display"      // which component to use for renderi
                           , "data"         // data to display
                           , "itemsPerRow"  // (optional) number of items to display for each row
                           ])  // the data to display.
-const dataFull   = ref([]);   // all items of the index
-const dataFilter = ref([]);   // index items filtered in `.index-filter-wrapper`
+const data = ref([]);  // the items of the index.
+
+// const dataFull   = ref([]);   // all items of the index
+// const dataFilter = ref([]);   // index items filtered in `.index-filter-wrapper`
 
 const pageNumber = ref(0);    // which page we're on: offset
 const pageSize   = 20;        // number of new items to add to the "page"
@@ -105,11 +111,12 @@ const computedStyle = computed(() =>
  *    of items to display next)
  */
 const pageRenderer = (pNumber, pSize) =>
-   dataFilter.value.slice(0, (pNumber+1) * pSize);
+   data.value.slice(0, (pNumber+1) * pSize);
 
+/*
 /**
  * simplify the string `s`
- */
+ * /
 const simplifyString = s =>
   s !== undefined
   ? s.toLowerCase().trim().replaceAll(/\s+/g, " ")
@@ -117,29 +124,35 @@ const simplifyString = s =>
 
 /**
  * remove html tags from the string `_string`
- */
+ * /
 const stripHtml = _string => _string.replace(/<[^>]*>?/gm, '');
 
 /**
  * @param {string} filterBy
- */
+ * /
 function textFilter(filterBy) {
   filterBy = simplifyString( stripHtml(filterBy) );
   dataFilter.value = dataFull.value.filter(x =>
     simplifyString( stripHtml(x.text) ).includes(filterBy) );
 }
+*/
 
 /*******************************************************/
 
+watch(props, (newP, oldP) => {
+  pageNumber.value = 0;
+  data.value = props.data;
+  console.log("$$$", data.value.length);
+})
 
 onMounted(() => {
-  dataFull.value = props.data;
-  dataFilter.value = dataFull.value;
+  // dataFull.value = props.data;
+  // dataFilter.value = dataFull.value;
+  data.value = props.data;
 
   // infinite scroll:
   // if you've scrolled to the end of page, increment pageNumber.
   $(".content-wrapper").on("scroll", (e) => {
-    console.log("scrolling")
     const t = e.target;
     if ( t.scrollTop === t.scrollHeight - t.offsetHeight ) {
       pageNumber.value++

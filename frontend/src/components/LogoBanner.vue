@@ -110,7 +110,6 @@
 <script setup>
 const props = defineProps(["headers"]);
 const headers = props.headers || false;  // defaults to false
-console.log(headers);
 </script>
 
 

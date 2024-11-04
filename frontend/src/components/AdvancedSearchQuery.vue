@@ -216,7 +216,7 @@ const sortByValue = (val1, val2) =>
  * the query data to the parent.
  * the heavy work is handled by `IconographyQueryParams`
  * @param {Object} formData: the form data as a JSON
- * @param {Object} formNode: the FormKit core node
+ * @param {Object} formNode: the FormKit core node (https://formkit.com/api-reference/formkit-core#formkitnode)
  */
 function onSubmit(formData, formNode) {
   // console.log("formData", formData)
