@@ -2,9 +2,6 @@
   a custom formkit slider that supports 2-input slider (min,max)
   instead of just 1 input, done using jQuery plugin noUiSlider.
 
-  this component DOES NOT handle updates to its values.
-  if it's what you want you should look for a vue plugin or something.
-
   props: as with all formkit inputs, the props are all contained
   within `context` object.
   - number (string)
@@ -36,10 +33,12 @@
     <div class="form-field-slider">
       <div :id="htmlId"></div>
     </div>
-    <div class="form-field-info">
+    <div class="form-field-info"
+         v-if="context"
+    >
       <div class="form-field-minmax">
-        <span>{{ context.minVal }}</span>
-        <span>{{ context.maxVal }}</span>
+        <span>{{ allowedMin }}</span>
+        <span>{{ allowedMax }}</span>
       </div>
       <div class="form-field-selection">
         <span><i>Sélection&nbsp;: entre {{ selectedMin }}
@@ -52,7 +51,7 @@
 
 
 <script setup>
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 
 import $ from "jquery";
 import noUiSlider from '@plugins/nouislider.min.mjs';  // imported as plugin because else there are import bugs
@@ -62,12 +61,12 @@ import '@plugins/nouislider.min.css';
 
 const htmlId      = `formkit-slider-${window.crypto.randomUUID()}`;
 const props       = defineProps(["context"]);  // "minVal", "maxVal", "step", "number" ("integer"|"float")
-const context     = ref(props.context);
 const slider      = ref();
-const allowedMin  = ref(context.value.minVal);  // allowed minimum/maximum values
-const allowedMax  = ref(context.value.maxVal);
-const selectedMin = ref(context.value.minVal);  // currently selected mimumums / maximums
-const selectedMax = ref(context.value.maxVal);
+const context     = ref();
+const allowedMin  = ref();  // allowed minimum/maximum values
+const allowedMax  = ref();
+const selectedMin = ref();  // currently selected mimumums / maximums
+const selectedMax = ref();
 // const showPopup   = ref(false);
 
 /**********************************************/
@@ -91,16 +90,50 @@ function createSlider() {
     context.value.node.input([ selectedMin.value, selectedMax.value ]) });
 }
 
+function setRefs(theContext) {
+  context.value     = theContext;
+  allowedMin.value  = theContext.minVal;  // allowed minimum/maximum values
+  allowedMax.value  = theContext.maxVal;
+  selectedMin.value = theContext.minVal;  // currently selected mimumums / maximums
+  selectedMax.value = theContext.maxVal;
+  console.log( context.value
+             , allowedMin.value
+             , allowedMax.value
+             , selectedMin.value
+             , selectedMax.value )
+}
+
 /**********************************************/
 
+/**
+ * for when new data is sent without the slider being unmounted:
+ * destroy the slider, create a new one
+ */
+watch(props, (newP, oldP) => {
+  // the watcher is triggered several times,
+  // even without an actual update of the props
+  // => check if there's actually been a change in values
+  if ( newP.minVal !== oldP.minVal
+    || newP.maxVal !== oldP.maxVal
+    || newP.number !== oldP.number
+    || newP.step   !== oldP.step
+  ) {
+    setRefs(newP.context);
+    if ( slider.value ) {
+      slider.value.destroy();
+      createSlider();
+    }
+  }
+})
+
 onMounted(() => {
+  setRefs(props.context);
   createSlider();
 })
 
 onUnmounted(() => {
   slider.value.off("update");
   slider.value.off("set");
-
 })
 </script>
 

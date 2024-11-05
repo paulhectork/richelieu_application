@@ -161,7 +161,22 @@ const iiifIdUuidArray = [ "qr189666b405c8e4a0183d0f2edc4150a02"	// "BNF48-1| BNF
                         , "qr1391a7af14c6a42cd8a45378eeb6a3c04"	// "MC P4 suite"
                         , "qr17e8c5640fa5e4764ac2701bf0d08311a"	// "MC P5"
                         ];  // the UUIDs of iconography ressources from which to display a IIIF image
-const queryParams     = {};  // the parameters to run a backend advanced search query
+const queryParams     = { theme: [ "actualité"
+                                 , "évènement"
+                                 , "caricature"
+                                 , "mœurs"
+                                 , "architecture"
+                                 , "espace public" ],
+                          namedEntity: [ "Bnf Aile Vivienne"
+                                       , "Bnf Jardin Vivienne"
+                                       , "Galerie Vivienne"
+                                       , "Café Vivienne"
+                                       , "Grand Bazar Vivienne"
+                                       , "Grand Restaurant Vivienne"
+                                       , "Grand Restaurant Vivienne Maison Alix"
+                                       , "Théâtre De La Galerie Vivienne" ],
+                          themeBooleanOp: "and",
+                          namedEntityBooleanOp: "and" };  // the parameters to run a backend advanced search query
 const footnotes       = {
   mercier: `Louis Sébastien Mercier, <i>Tableau de Paris</i>, t. 9,
             Amsterdam, s.n., 1788, chapitre DCCLI, Rue Vivienne, p. 319-322.`,

@@ -43,12 +43,24 @@
   </div>
 
   <div v-else
-       class="article-main-wrapper">
+       class="article-main-wrapper"
+  >
 
     <div class="article-viewer-wrapper">
-      <div class="iiif-wrapper">
+      <div class="iiif-wrapper"
+           style="background-color: blue;
+                  height: calc(100vh - var(--cs-navbar-height));
+                  overflow: auto;
+                  display: block;
+                  position: relative;">
         <div v-if="iconographyMainCurrent"
-             class="iiif-inner-wrapper">
+             class="iiif-inner-wrapper"
+             style="position: absolute;
+                    top: 0;
+                    left: 0;
+                    background-color: pink;
+                    height: 100%;
+                    width: 100%;">
           <IiifViewer :osdId="iconographyMainCurrent.id_uuid"
                       :iiifUrl="iconographyMainCurrent.iiif_url"
                       :backupImgUrl="/* first non compress/thumbnail image in the `filename` array */
@@ -79,14 +91,21 @@
     </div>
 
     <div class="article-index-wrapper">
-      <h2>Ressources liées {{ iconographyIndex.length
-                              ? `(${iconographyIndex.length})`
+      <h2>Ressources liées {{ iconographyIndexFull.length
+                              ? `(${iconographyIndexFull.length})`
                               : "" }}
       </h2>
-      <IndexBase v-if="iconographyIndex.length"
-                 :data="iconographyIndex"
-                 display="resource"
-      ></IndexBase>
+
+      <div v-if="iconographyIndexFull.length">
+        <IndexIconographyFilter :data="iconographyIndexFull"
+                                @iconography-filter="handleIconographyFilter"
+        ></IndexIconographyFilter>
+
+        <IndexBase :data="iconographyIndexFilter"
+                   display="resource"
+        ></IndexBase>
+      </div>
+
       <UiLoader v-else></UiLoader>
     </div>
 
@@ -119,6 +138,7 @@ import IndexBase from "@components/IndexBase.vue";
 import IiifViewer from "@components/IiifViewer.vue";
 import ArticleFootnote from "@components/ArticleFootnote.vue";
 import UiLoader from "@components/UiLoader.vue";
+import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
 
 import { stringifyIconographyResource } from "@utils/stringifiers.js";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams.js";
@@ -131,7 +151,8 @@ const articleName            = ref();         // the name of the article, define
 const articleComponent       = shallowRef();  // the currentcomponent, or ErrNotFound.vue if articleName is not a key of `urlMapper` below. `shallowRef` is used to avoid vue performance warnings
 const notFoundFlag           = ref(false);    // true if the component `articleComponent` is `ErrNotFound.vue`
 
-const iconographyIndex       = ref([]);       // array of iconography objects to display in an index
+const iconographyIndexFull   = ref([]);       // array of iconography objects to display in an index
+const iconographyIndexFilter = ref([]);       // same as the above, but possibly filtered by IndexIconographyFilter. this is what gets sent to IndexBase.
 const iconographyMainArray   = ref([]);       // array of a few iconography resources (2-6) from which to display IIIFs
 const iconographyMainCurrent = ref();         // the iconography ressource currently viewed in the IIIF viewer. can be modified when clicking on `.button-eye`.
 const iiifViewer             = ref();         // openseadragon viewer returned by `IiifViewer.vue`
@@ -159,6 +180,16 @@ const urlMapper = { "bourse"             : "ArticleContentBourse"
 }
 
 /************************************************/
+
+/**
+ * when IndexIconographyFilter returns the filtered array
+ * of Iconography objects, update `iconographyIndexFilter`, which will
+ * trigger the updating of `IndexBase`.
+ * @param {Array<Object>} iconographyData
+ */
+ function handleIconographyFilter(iconographyData) {
+  iconographyIndexFilter.value = indexDataFormatterIconography(iconographyData);
+}
 
 /**
  * dynamically import the article component based
@@ -189,8 +220,8 @@ function loadCurrentArticleComponent(articleName) {
  *    article, given in `route.params.articleName`)
  * - define the `articleComponent` ref, which will trigger
  *    the loading of the new article
- * - empty `iconographyIndex`:`
- *    iconographyIndex` is fetched  asynchronously from
+ * - empty `iconographyIndexFull` and `iconographyIndexFilter`:
+ *    iconographyIndexFull` is fetched  asynchronously from
  *    fetchIndex()`. if we don't do this, when switching
  *    from componentA to componentB, until the `fetchIndex()`
  *    returns results relevant to `componentB, the index of
@@ -203,7 +234,9 @@ function loadCurrentArticleComponent(articleName) {
  *   the vue-router route.
  */
 function articleMounter(_route) {
-  iconographyIndex.value = [];  // empty the previous index
+  // empty the previous index
+  iconographyIndexFull.value   = [];
+  iconographyIndexFilter.value = [];
   // load the new ArticleContent...
   articleName.value = _route.params.articleName;
   [ articleComponent.value, notFoundFlag.value ] = loadCurrentArticleComponent(articleName.value);
@@ -252,7 +285,10 @@ function fetchIndex(newQueryParams) {
 
   axios
   .post( targetUrl.href, queryParams.toJson() )
-  .then(r => { iconographyIndex.value = indexDataFormatterIconography(r.data);  })
+  .then(r => {
+    iconographyIndexFull.value = r.data;
+    iconographyIndexFilter.value = indexDataFormatterIconography(r.data);
+  })
   .catch(e => { console.error( `ArticleMainIndex.fetchIndex(): backend error (${e.response?.data})`
                              , "on query:"
                              , queryParams.toJson()
@@ -446,6 +482,8 @@ watch(route, (newRoute, oldRoute) => {
 onMounted(() => {
   articleMounter(route);
   setTimeout(missingArticleData, 1000)
+
+  $(window).on("scroll", () => { console.log("hello") });
 })
 
 onUnmounted(() => {
@@ -458,6 +496,7 @@ onUnmounted(() => {
 
 
 <style scoped>
+/*
 .article-main-wrapper {
   overflow: scroll;
   height: var(--cs-portrait-main-height);
@@ -467,6 +506,7 @@ onUnmounted(() => {
     height: var(--cs-landscape-main-height);
   }
 }
+*/
 .article-viewer-wrapper {
   display: flex;
   flex-direction: column-reverse;

@@ -86,7 +86,7 @@
       fromage, demain ce sera sans doute le bifteck&nbsp;;
       ce dernier, de 0,80 franc, garni, est passé à 1.20
       francs, et il n'a plus de garniture
-      <UiButtonEllipsis data-key="labourieu1853"></UiButtonEllipsis>&nbsp;
+      <UiButtonEllipsis data-key="lef1923"></UiButtonEllipsis>&nbsp;
             </q>.
     </p>
     <p> Anna Safranova a fait remarquer que dans les restaurants

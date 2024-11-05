@@ -49,7 +49,7 @@
       Changé en cours il fut un temps aménagé
       pour abriter les activités boursières
       <RouterLink to="/article/bourse">
-        <UiButtonLink orient="right"></UiButtonLink>
+        <UiButtonLink></UiButtonLink>
       </RouterLink> qui s'y tenaient sous une série d'arcades,
       avant d'être redessiné par Henri Labrouste dans les
       années 1860 pour l'agrément des usagers de la bibliothèque

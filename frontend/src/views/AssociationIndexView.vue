@@ -25,7 +25,9 @@
 
 <template>
   <!-- display the combined index -->
-  <div v-if="loadState === 'loading'">
+  <div v-if="loadState === 'loading'"
+       class="loader-wrapper"
+  >
     <UiLoader></UiLoader>
   </div>
   <div v-else-if="loadState === 'loaded'">
@@ -61,6 +63,11 @@
         </p>
       </div>
 
+      <IndexIconographyFilter :data="dataFull"
+                              @iconography-filter="handleIconographyFilter"
+      ></IndexIconographyFilter>
+
+
       <IndexBase :data="dataFilter"
                  display="resource"
       ></IndexBase>
@@ -85,6 +92,7 @@ import IndexBase from "@components/IndexBase.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import UiLoader from "@components/UiLoader.vue";
 import IndexCount from "@components/IndexCount.vue";
+import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
 
 import { capitalizeFirstChar  } from "@utils/strings";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter.js";
@@ -100,6 +108,16 @@ const dataFilter = ref([]);     // array of iconography objects (with optional f
 const loadState  = ref("loading");  // "loading"/"loaded"/"error"
 
 /***************************************/
+
+/**
+ * when IndexIconographyFilter returns the filtered array
+ * of Iconography objects, update `dataFilter`, which will
+ * trigger the updating of `IndexBase`.
+ * @param {Array<Object>} iconographyData
+ */
+ function handleIconographyFilter(iconographyData) {
+  dataFilter.value = indexDataFormatterIconography(iconographyData);
+}
 
 /**
  * get an object with the structure of `from` or `to` and build a
@@ -213,7 +231,8 @@ async function getData() {
          .then(r => r.data)
          .then(data => { dataFull.value   = data;
                          dataFilter.value = indexDataFormatterIconography(dataFull.value);
-                         loadState.value  = "loaded"; })
+                         loadState.value  = "loaded";
+                        })
          .catch(e => { loadState.value = "error"; console.error(e); });
          // TODO ERROR HANDLING?????
 }
@@ -230,5 +249,14 @@ onMounted(() => {
 <style scoped>
 .index-wrapper {
   min-height: 100%;
+}
+.loader-wrapper {
+  height: calc(100vh - var(--cs-navbar-height) - var(--cs-portrait-sidebar-height));
+  width: 100%;
+}
+@media ( orientation:landscape ) {
+  .loader-wrapper {
+    height: calc(100vh - var(--cs-navbar-height));
+  }
 }
 </style>

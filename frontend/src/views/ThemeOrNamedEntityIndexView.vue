@@ -221,7 +221,7 @@ const apiTarget = computed(() =>  // defined as a computed property to avoid man
  * reset all global variables when changing page without reloading
  */
 function resetView() {
-  tableName          = props.tableName;
+  tableName.value    = props.tableName;
   dataFull.value     = [];
   dataFilter.value   = [];
   categoryName.value = route.params.categoryName;

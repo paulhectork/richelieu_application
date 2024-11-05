@@ -10,15 +10,12 @@
 <template>
   <h2 v-if="indexCount <= 0">
     Aucune {{ dataTypeAsString }}
-    associée
   </h2>
   <h2 v-else-if="indexCount === 1">
     Une {{ dataTypeAsString }}
-    associée
   </h2>
   <h2 v-else>
     {{ indexCount }} {{ dataTypeAsString }}
-    associées
   </h2>
 </template>
 
@@ -37,22 +34,22 @@ const dataType = ref();
  */
  const dataTypeAsString = computed(() =>
   dataType.value === "iconography" && indexCount.value > 1
-  ? "ressources iconographiques"
+  ? "ressources iconographiques associées"
   : dataType.value === "iconography" && indexCount.value <= 1
-  ? "ressource iconographique"
+  ? "ressource iconographique associée"
   : dataType.value === "theme" && indexCount.value > 1
-  ? "thèmes"
+  ? "thèmes associés"
   : dataType.value === "theme" && indexCount.value <= 1
-  ? "thème"
+  ? "thème associé"
   : dataType.value === "namedEntity" && indexCount.value > 1
-  ? "entités nommées"
+  ? "entités nommées associées"
   : dataType.value === "namedEntity" && indexCount.value <= 1
-  ? "entité nommée"
+  ? "entité nommée associée"
   : dataType.value === "place" && indexCount.value > 1
-  ? "lieux"
+  ? "lieux associés"
   : dataType.value === "place" && indexCount.value <= 1
-  ? "lieu"
-  : "ressource(s)"
+  ? "lieu associé"
+  : "ressource(s) associée(s)"
 )
 
 /***************************************/

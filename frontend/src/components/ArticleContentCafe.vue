@@ -100,7 +100,7 @@
       du monde souterrain, tandis que le Café lyrique propose
       des cabinets privés séparés par des treillages, dans
       une intimité favorable aux excès
-      <UiButtonEllipsis data-key="mayeur1798"></UiButtonEllipsis>.
+      <UiButtonEllipsis data-key="mercier1798"></UiButtonEllipsis>.
     </p>
     <p>En 1796, le Caveau devient café de la Rotonde, lorsque
       le propriétaire, outrepassant la réglementation, entreprend
@@ -128,7 +128,7 @@
       sont en revanche omniprésentes dans les entêtes des
       menus, carte et affiches de restaurants
       <RouterLink to="/article/menu">
-        <UiButtonLink orient="right"></UiButtonLink>
+        <UiButtonLink></UiButtonLink>
       </RouterLink>.
     </p>
 

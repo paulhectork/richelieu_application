@@ -103,7 +103,7 @@ export const articles = [
     image    : urlToIconographyFile("qr1359ddcecafb84650a459f1dcc8421e91.jpg"),
     urlSlug  : "theatre" },
   { title    : "La patrimonialisation d'un quartier",
-    subtitle : "patrimonialisation",
+    subtitle : "Les protections des institutions au titre des Monuments historiques",
     image    : "https://apicollections.parismusees.paris.fr/sites/default/files/styles/4k/collections/atoms/images/CAR/aze_carph015719_001.jpg?itok=JAeUjy5H",
     urlSlug  : "patrimonialisation" },
   { title    : "Les révolutions et le Palais-Royal",

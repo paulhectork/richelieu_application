@@ -172,7 +172,21 @@ const iiifIdUuidArray = [ "qr16d5a8f1ed8de46268375a80d7a140172"	// "PRBSVP122-9"
                         , "qr139c6cc29772a4f6e9c50792c62e3d306"	// "PRBNF608-1 | PRBNF608-2 | PRBNF608-3 | PRBNF608-4"
                         , "qr11574545f329f4c8dba68abf0dd7fc9ce"	// "PRPM334"
                         ];  // the UUIDs of iconography ressources from which to display a IIIF image
-const queryParams     = {};  // the parameters to run a backend advanced search query
+const queryParams     = { theme: [ "prostitution"
+                                 , "espace public"
+                                 , "mobilier urbain"
+                                 , "architecture"
+                                 , "jardin"
+                                 , "théâtre"
+                                 , "commerce"
+                                 , "intérieur" ],
+                          namedEntity: [ "Palais-Royal"
+                                       , "Théâtre Montansier Puis Du Palais-Royal"
+                                       , "Théâtre Séraphin"
+                                       ],
+                          themeBooleanOp: "and",
+                          namedEntityBooleanOp: "and"
+                        };  // the parameters to run a backend advanced search query
 const footnotes       = {
   messina: `Luisa Messina, <q>&nbsp;Les jardins dans la littérature
             libertine dix-huitième siècle&nbsp;</q>, <i>Le Monde français

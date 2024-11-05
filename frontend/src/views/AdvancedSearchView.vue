@@ -76,11 +76,11 @@ import { useRouter, useRoute } from 'vue-router';
 
 import _ from "lodash";
 
-import { IconographyQueryParams } from "@modules/iconographyQueryParams";
 import AdvancedSearchQuery from "@components/AdvancedSearchQuery.vue";
 import AdvancedSearchResults from "@components/AdvancedSearchResults.vue";
 import UiLoader from "@components/UiLoader.vue";
 
+import { IconographyQueryParams } from "@modules/iconographyQueryParams";
 
 /***************************************/
 

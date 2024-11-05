@@ -16,6 +16,7 @@
     ></IndexCount>
 
     <UiLoader v-if="loadStatePlace==='loading'"></UiLoader>
+
     <div v-else-if="loadStatePlace==='loaded'">
       <div class="map-block-wrapper">
         <MapPlaceMain :place="place"></MapPlaceMain>
@@ -31,13 +32,17 @@
         -->
 
         <div class="index-headtext-wrapper">
-        <IndexAssociationRedirects v-if="loadStateAssociated === 'loaded'"
-                                   from-table="place"
-                                   to-table="place"
-                                   :from="{ entry_name: computedAddress, id_uuid: idUuid }"
-                                   :to="associatedPlaces"
-        ></IndexAssociationRedirects>
+          <IndexAssociationRedirects v-if="loadStateAssociated === 'loaded'"
+                                     from-table="place"
+                                     to-table="place"
+                                     :from="{ entry_name: computedAddress, id_uuid: idUuid }"
+                                     :to="associatedPlaces"
+          ></IndexAssociationRedirects>
         </div>
+
+        <IndexIconographyFilter :data="dataFull"
+                                @iconography-filter="handleIconographyFilter"
+        ></IndexIconographyFilter>
 
         <IndexBase :data="dataFilter"
                    display="resource"
@@ -60,6 +65,7 @@ import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
 import IndexCount from "@components/IndexCount.vue";
+import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
 
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { cartographySourcePriority } from "@globals";
@@ -100,6 +106,21 @@ const computedAddress = computed(() =>
 
 /******************************************************************/
 
+
+/**
+ * when IndexIconographyFilter returns the filtered array
+ * of Iconography objects, update `dataFilter`, which will
+ * trigger the updating of `IndexBase`.
+ * @param {Array<Object>} iconographyData
+ */
+ function handleIconographyFilter(iconographyData) {
+  dataFilter.value = indexDataFormatterIconography(iconographyData);
+}
+
+
+/**
+ * all backend communication goes on here.
+ */
 async function getData() {
   axios.get(new URL(`/i/place/${idUuid}`, __API_URL__))
   .then(r => r.data)

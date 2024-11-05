@@ -34,6 +34,10 @@
       ></IndexAssociationRedirects>
     </div>
 
+    <IndexIconographyFilter :data="dataFull"
+                            @iconography-filter="handleIconographyFilter"
+    ></IndexIconographyFilter>
+
     <IndexBase :data="dataFilter"
                display="resource"
     ></IndexBase>
@@ -50,6 +54,7 @@ import IndexBase from "@components/IndexBase.vue";
 import UiLoader from "@components/UiLoader.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
 import IndexCount from "@components/IndexCount.vue";
+import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
 
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { capitalizeWords } from "@utils/strings";
@@ -78,6 +83,15 @@ const formattedThemeName = computed(() =>
 
 /***************************************************/
 
+/**
+ * when IndexIconographyFilter returns the filtered array
+ * of Iconography objects, update `dataFilter`, which will
+ * trigger the updating of `IndexBase`.
+ * @param {Array<Object>} iconographyData
+ */
+ function handleIconographyFilter(iconographyData) {
+  dataFilter.value = indexDataFormatterIconography(iconographyData);
+}
 
 /**
  * get all backend data from an UUID. we divide the fetching
@@ -91,7 +105,9 @@ function getData() {
   axios.get(apiTargetIconography.getter().href).then(r => {
     backendLoaded.value = true;
     if ( r.data.length ) {
-      theme.value = r.data[0];
+      theme.value      = r.data[0];
+      dataFull.value   = theme.value.iconography;
+      dataFilter.value = indexDataFormatterIconography(dataFull.value);
     }
   })
 }
@@ -108,17 +124,21 @@ function getAssociated() {
        .then(r => { associatedNamedEntities.value = r.data });
 }
 
-watch(theme, (newTheme, oldTheme) => {
-  dataFull.value   = newTheme.iconography;
-  dataFilter.value = indexDataFormatterIconography(dataFull.value);
-})
+/***************************************************/
 
-watch(() => route.params.idUuid, (newIdUuid, oldIdUuid) => {
-  idUuid.value = newIdUuid;
+// see @views/NamedEntityMainView.vue about my doubts on these watchers...
+watch(route, (newRoute, oldRoute) => {
+  console.log("ThemeMainView.watch( route ): route changed !")
+  idUuid.value = newRoute.params.idUuid;
   getData();
   getAssociated();
 })
 
+/* moved the setting of `dataFull` and `dataFilter` in `getData()`
+watch(theme, (newTheme, oldTheme) => {
+  console.log("ThemeMainView.watch( theme ): theme changed !")
+})
+*/
 
 /***************************************************/
 

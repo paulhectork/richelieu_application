@@ -16,7 +16,7 @@
   this is to make sure that the user sees that something is happening
   and understand that the data displayed in the index is updated.
 
-  css wise, it supports `main-default` and `negative-default` themes.
+  css-wise, it supports `main-default` and `negative-default` themes.
 
   props:
     - data (Array<Object>):
@@ -103,7 +103,7 @@
           <!-- error messages will be displayed here. see:
                https://formkit.com/essentials/validation#moving-validation-messages
           -->
-          <FormKitMessages :node="theForm?.node" />
+          <FormKitMessages :node="theForm?.node"/>
         </div>
       </div>
     </div>
@@ -114,7 +114,7 @@
 
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 import { FormKitMessages } from "@formkit/vue";
 import _ from "lodash";
@@ -177,7 +177,6 @@ function filterIconography(filterParams, dataObj) {
       return title.includes(theTitleFilter)
     })
   }
-  console.log("titleFilter :", dataObj.length);
 
   if ( filterParams.authorFilter && filterParams.authorFilter.length ) {
     let theAuthorFilter = localStringSimplify( filterParams.authorFilter );
@@ -187,7 +186,6 @@ function filterIconography(filterParams, dataObj) {
       return author.includes(theAuthorFilter);
     });
   }
-  console.log("authorFilter :", dataObj.length);
 
   if ( filterParams.dateFilter && filterParams.dateFilter.length ) {
     let theDateFilter = filterParams.dateFilter;
@@ -197,7 +195,6 @@ function filterIconography(filterParams, dataObj) {
       && d.date[0] >= theDateFilter[0]
       && d.date[1] <= theDateFilter[1])
   }
-  console.log("dateFilter :", dataObj.length);
 
   ////////////////////////////////
   // 2) REORDERING dataObj
@@ -224,12 +221,9 @@ function filterIconography(filterParams, dataObj) {
       // the `a.title` and `b.title` arrays before comparing them together
       a = localStringSimplify( a.title.sort((x,y) => x.localeCompare(y)).join(" ") );
       b = localStringSimplify( b.title.sort((x,y) => x.localeCompare(y)).join(" ") );
-      // console.log("++", a)
-      // console.log("--", b)
       return a.localeCompare(b);
     })
     dataObj = [ ...dataObjWithTitle, ...dataObjWithoutTitle ];
-    // console.log("orderByTitle :", dataObj.length);
   }
 
   // works pretty much the same as ordering by title, except that
@@ -247,13 +241,9 @@ function filterIconography(filterParams, dataObj) {
       // the `a.author` and `b.author` arrays before comparing `a` and `b`.
       a = localStringSimplify( a.authors.map(x => x.entry_name).sort((x,y) => x.localeCompare(y)).join(" ") );
       b = localStringSimplify( b.authors.map(x => x.entry_name).sort((x,y) => x.localeCompare(y)).join(" ") );
-      // console.log("++", a)
-      // console.log("--", b)
       return a.localeCompare(b);
     })
-    console.log(dataObjWithAuthor.length, dataObjWithoutAuthor.length);
     dataObj = [ ...dataObjWithAuthor, ...dataObjWithoutAuthor ];
-    console.log("orderByAuthor :", dataObj.length)
   }
   else if ( filterParams.orderBy && filterParams.orderBy === "date" ) {
     let dataObjWithDate = dataObj.filter(d =>
@@ -263,7 +253,6 @@ function filterIconography(filterParams, dataObj) {
     dataObjWithDate =
       dataObjWithDate.sort((a,b) => a.date[0] - b.date[0]);
     dataObj = [ ...dataObjWithDate, ...dataObjWithoutDate ];  // 1st, put the elements with a date, then the elements without a date.
-    // console.log("orderByDate :", dataObj.length)
   }
 
   end = performance.now();
@@ -311,15 +300,28 @@ function onSubmit(formData, formNode) {
   }
 }
 
+/**
+ * define all the refs from `props.data`. used in `onMounted` and `watch(props)`
+ * @param {Array<Object>} theData: array of Iconography objects to filter
+ */
+function setRefs(theData) {
+  data.value = theData;
+  minDate.value = Math.min(...theData.filter(i => i.date != null && i.date.length)
+                                        .map(i => i.date[0]));
+  maxDate.value = Math.max(...theData.filter(i => i.date != null && i.date.length)
+                                        .map(i => i.date[1]));
+  currentIconographyCount.value = theData.length;
+
+}
+
 /*************************************/
 
+watch(props, (newP, oldP) => {
+  setRefs(newP.data);
+})
+
 onMounted(() => {
-  data.value = props.data;
-  minDate.value = Math.min(...data.value.filter(i => i.date != null && i.date.length)
-                                        .map(i => i.date[0]));
-  maxDate.value = Math.max(...data.value.filter(i => i.date != null && i.date.length)
-                                        .map(i => i.date[1]));
-  currentIconographyCount.value = data.value.length;
+  setRefs(props.data);
 })
 
 
@@ -328,7 +330,7 @@ onMounted(() => {
 
 <style scoped>
 .filter-outer-wrapper {
-  margin: 7% 3% 7% 3%;
+  margin: 3%;
   border: var(--cs-main-border);
 }
 .negative-default .filter-outer-wrapper {
@@ -351,11 +353,11 @@ onMounted(() => {
   z-index: 2;
 }
 .form-outer-wrapper {
-  transition: opacity .5s ease-out;
+  transition: opacity .3s ease-out;
 }
 .form-outer-wrapper.is-loading {
   opacity: 0.2;
-  transition: opacity .5s ease-in;
+  transition: opacity .3s ease-in;
 }
 
 /***********************/

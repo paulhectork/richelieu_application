@@ -55,7 +55,7 @@
       en lien avec l'alimentation
       <UiButtonEye data-key="qr1a98e4dd3d2b7432da0971c604bf34cc1"></UiButtonEye>&nbsp;
       <RouterLink to="/article/menu">
-        <UiButtonLink orient="right"></UiButtonLink>
+        <UiButtonLink></UiButtonLink>
       </RouterLink>.
     </p>
     <p>Le jardin du Palais-Royal sert aussi de moteur en matière d'équipement
