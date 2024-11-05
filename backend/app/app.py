@@ -8,7 +8,6 @@ import logging
 from .config import CONFIGS
 from .utils.constants import STATICS
 
-
 # **********************************************************
 # create and configure the backend app object
 # **********************************************************
