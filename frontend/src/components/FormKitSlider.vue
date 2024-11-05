@@ -86,7 +86,6 @@ function createSlider() {
     [ selectedMin.value, selectedMax.value ] = slider.value.get().map(parseFloat);
   });
   slider.value.on("set", () => {
-    console.log("output");
     context.value.node.input([ selectedMin.value, selectedMax.value ]) });
 }
 
@@ -96,11 +95,6 @@ function setRefs(theContext) {
   allowedMax.value  = theContext.maxVal;
   selectedMin.value = theContext.minVal;  // currently selected mimumums / maximums
   selectedMax.value = theContext.maxVal;
-  console.log( context.value
-             , allowedMin.value
-             , allowedMax.value
-             , selectedMin.value
-             , selectedMax.value )
 }
 
 /**********************************************/

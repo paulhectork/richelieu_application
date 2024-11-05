@@ -47,20 +47,10 @@
   >
 
     <div class="article-viewer-wrapper">
-      <div class="iiif-wrapper"
-           style="background-color: blue;
-                  height: calc(100vh - var(--cs-navbar-height));
-                  overflow: auto;
-                  display: block;
-                  position: relative;">
+      <div class="iiif-wrapper">
         <div v-if="iconographyMainCurrent"
              class="iiif-inner-wrapper"
-             style="position: absolute;
-                    top: 0;
-                    left: 0;
-                    background-color: pink;
-                    height: 100%;
-                    width: 100%;">
+        >
           <IiifViewer :osdId="iconographyMainCurrent.id_uuid"
                       :iiifUrl="iconographyMainCurrent.iiif_url"
                       :backupImgUrl="/* first non compress/thumbnail image in the `filename` array */
@@ -143,6 +133,7 @@ import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
 import { stringifyIconographyResource } from "@utils/stringifiers.js";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams.js";
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter.js";
+import { domStore } from "@stores/dom.js";
 
 /************************************************/
 
@@ -448,6 +439,35 @@ function mountFootnoteOnClick(evt) {
 }
 
 /**
+ * on landscape displays, this function mimics a `sticky` display of
+ * `.iiif-inner-wrapper`, the IIIF viewer container, so that it always
+ * occupies the whole left block and has the proper size.
+ *
+ * how does it work ?
+ * - in CSS, we set:
+ *    - `.iiif-wrapper` -> position: relative
+ *    - `.iiif-inner-wrapper` -> position: absolute; top: 0; left: 0
+ *    => `.iiif-inner-wrapper` will always be at the top of `.iiif-wrapper`
+ * - in jQuery, we calculate the needed offset and add it as a
+ *   `transform: translateY()` => it's always positionned right below the navbar.
+ *
+ * in `portrait` mode, an `transform: translateY(0) !important`
+ * disables this behaviour.
+ *
+ * @param {jQuery.event} e
+ */
+function translateIiifInnerWrapper(e) {
+  // disable the update on portrait viewers.
+  if ( domStore.windowOrientation === "landscape" ) {
+    const $outer = $(".iiif-wrapper"),
+          $inner = $(".iiif-inner-wrapper"),
+          navbarHeight = $("nav.navbar").height(),
+          offsetTop = -$outer.offset().top + navbarHeight;
+    $inner.css({ transform: `translateY(${offsetTop}px)` })
+  }
+}
+
+/**
  * register events on child `ArticleContent...`.
  * event registering must be called within a function
  * because this allows us to wait for the ArticleContent...
@@ -482,8 +502,7 @@ watch(route, (newRoute, oldRoute) => {
 onMounted(() => {
   articleMounter(route);
   setTimeout(missingArticleData, 1000)
-
-  $(window).on("scroll", () => { console.log("hello") });
+  $(".content-wrapper").on("scroll", translateIiifInnerWrapper);
 })
 
 onUnmounted(() => {
@@ -491,11 +510,16 @@ onUnmounted(() => {
   $(".button-eye").off("touchend", switchIconographyMainOnClick);
   $(".button-ellipsis").off("click", mountFootnoteOnClick);
   $(".button-ellipsis").off("touchend", mountFootnoteOnClick);
+  $(".content-wrapper").off("scroll");
 })
 </script>
 
 
 <style scoped>
+.article-main-wrapper {
+  height: 100%;
+  overflow: auto;
+}
 /*
 .article-main-wrapper {
   overflow: scroll;
@@ -524,14 +548,30 @@ onUnmounted(() => {
 
 .iiif-wrapper {
   height: 100%;
+  overflow: hidden;
+  position: relative;
 }
 .iiif-inner-wrapper {
   height: 100%;
   max-height: calc(100vh - var(--cs-navbar-height));
-  position: sticky;
+  /* a sticky behaviour will be mimicked using
+    `translateIiifInnerWrapper()`,
+     which will add a `translateY()`
+     position on landscape viewers
+  */
+  position: absolute;
   top: 0;
+  left: 0;
   display: grid;
   grid-template-rows: 1fr min-content;  /* min content will resize the `.iiif-cartel` to contain the complete cartel, while keeping the `.iiif-viewer` size as big as possible */
+}
+@media ( orientation:portrait ) {
+  .iiif-inner-wrapper {
+    /* revert to a normal positionning on portrait displays */
+    position: relative;
+    transform: translateY(0) !important;
+    margin: 10% 0;
+  }
 }
 .article-viewer-wrapper :deep(.iiif-viewer) {
   height: 70vh;

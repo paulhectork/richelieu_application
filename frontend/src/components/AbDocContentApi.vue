@@ -1,5 +1,7 @@
 <template>
-
+  <div class="textpage-text-wrapper">
+    <h3 id="abdoc-data-pres">Page en cours de création</h3>
+  </div>
 </template>
 
 

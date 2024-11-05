@@ -1,0 +1,38 @@
+# HG changeset patch
+# User Alexandre Richardson <alexandre.richardson@logilab.fr>
+# Date 1730813207 -3600
+#      Tue Nov 05 14:26:47 2024 +0100
+# Node ID 2f8eb4a19b15cc4d2fc70a32369f74e8629668c3
+# Parent  066247b76edf008665bcb8c930362e828f646284
+improve performance of iconography serialization
+
+diff --git a/backend/app/orm/data_sources.py b/backend/app/orm/data_sources.py
+--- a/backend/app/orm/data_sources.py
++++ b/backend/app/orm/data_sources.py
+@@ -49,16 +49,16 @@
+     represents       : Mapped[bool]        = mapped_column(Boolean, nullable=True)
+     id_licence       : Mapped[int]         = mapped_column(psql.INTEGER, ForeignKey("licence.id"), nullable=False)
+ 
+-    title                      : Mapped[t.List["Title"]]                    = relationship("Title", back_populates="iconography")
+-    annotation                 : Mapped[t.List["Annotation"]]               = relationship("Annotation", back_populates="iconography")
+-    filename                   : Mapped[t.List["Filename"]]                 = relationship("Filename", back_populates="iconography")
+-    licence                    : Mapped["Licence"]                          = relationship("Licence", back_populates="iconography")
+-    r_iconography_theme        : Mapped[t.List["R_IconographyTheme"]]       = relationship("R_IconographyTheme", back_populates="iconography")
+-    r_iconography_actor        : Mapped[t.List["R_IconographyActor"]]       = relationship("R_IconographyActor", back_populates="iconography")
+-    r_iconography_place        : Mapped[t.List["R_IconographyPlace"]]       = relationship("R_IconographyPlace", back_populates="iconography")
+-    r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity", back_populates="iconography")
+-    r_admin_person             : Mapped[t.List["R_AdminPerson"]]            = relationship("R_AdminPerson", back_populates="iconography")
+-    r_institution              : Mapped[t.List["R_Institution"]]            = relationship("R_Institution", back_populates="iconography")
++    title                      : Mapped[t.List["Title"]]                    = relationship("Title", back_populates="iconography", lazy="selectin")
++    annotation                 : Mapped[t.List["Annotation"]]               = relationship("Annotation", back_populates="iconography", lazy="selectin")
++    filename                   : Mapped[t.List["Filename"]]                 = relationship("Filename", back_populates="iconography", lazy="selectin")
++    licence                    : Mapped["Licence"]                          = relationship("Licence", back_populates="iconography", lazy="selectin")
++    r_iconography_theme        : Mapped[t.List["R_IconographyTheme"]]       = relationship("R_IconographyTheme", back_populates="iconography", lazy="selectin")
++    r_iconography_actor        : Mapped[t.List["R_IconographyActor"]]       = relationship("R_IconographyActor", back_populates="iconography", lazy="selectin")
++    r_iconography_place        : Mapped[t.List["R_IconographyPlace"]]       = relationship("R_IconographyPlace", back_populates="iconography", lazy="selectin")
++    r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity", back_populates="iconography", lazy="selectin")
++    r_admin_person             : Mapped[t.List["R_AdminPerson"]]            = relationship("R_AdminPerson", back_populates="iconography", lazy="selectin")
++    r_institution              : Mapped[t.List["R_Institution"]]            = relationship("R_Institution", back_populates="iconography", lazy="selectin")
+ 
+     @validates("id_uuid", include_backrefs=False)
+     def validate_uuid(self, key, _uuid):

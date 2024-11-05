@@ -90,41 +90,33 @@ const panPoint = ref(); // Openseadragon.Point : the point on which the viewer i
 
 /****************************************/
 
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
 /** TODO
  * - error handling if the IIIF viewer doesn't load
  * - see if there are other events on the OSD viewer
  *   that should trigger viewportRevert
  */
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
 
 /**
- * get the scroll ratio of "main":
+ * get the scroll ratio of ".content-wrapper":
  * 0 = hasn't been scrolled at all,
  * 1 = has completely been scrolled
  * @returns {Number}: 0..1
  */
 function getScrollRatio() {
-  var s = $("main").scrollTop(),     // number of pixels to scroll back to top
-      f = $("main")[0].scrollHeight, // full height of overflow: scroll element.
-      m = $("main").height() / 2;    // half the height of "main" on the client (without the overflow: scroll stuff)
+  var s = $(".content-wrapper").scrollTop(),     // number of pixels to scroll back to top
+      f = $(".content-wrapper")[0].scrollHeight, // full height of overflow: scroll element.
+      m = $(".content-wrapper").height() / 2;    // half the height of ".content-wrapper" on the client (without the overflow: scroll stuff)
 
   return (s+m)/f;
 }
 
 /**
  * calculate the point to pan the viewer to, optionnally
- * depending on the scrolling % of "main":
+ * depending on the scrolling % of ".content-wrapper":
  *
  * the y-coordinate of the point returned is defined by `y`
  * the x-coordinate of that point is within a range of (`xStart`,`xEnd`),
- * and its precise poisition depends on the % of main that has been scrolled.
+ * and its precise poisition depends on the % of .content-wrapper that has been scrolled.
  * at the top of the page, `x` == `xStart`, at the end, it is closer to `xEnd`.
  *
  * @param {Number} xStart       : the X minimum to pan to
@@ -139,7 +131,7 @@ function makePanPoint(xStart, xEnd, y, xScrollRatio=0) {
 
 /**
  * pan the viewport horizontally depending on the vertical scroll
- * of the `main` html element. see `makePanPoint` for details.
+ * of the `.content-wrapper` html element. see `makePanPoint` for details.
  * if `init===false`, add an x-offset defined by the % of page
  * scrolled. else, there is no offset.
  */
@@ -215,7 +207,8 @@ function defineViewer(newViewer) {
     viewportPan();
 
     // on scroll, update the viewport's center.
-    $("main").on("scroll", () => {
+    // $(".content-wrapper").on("scroll", () => {
+    $(".content-wrapper").on("scroll", () => {
       setTimeout(() => {
         viewportPan();
       }, 50)
@@ -236,7 +229,7 @@ function defineViewer(newViewer) {
 watch(route, () => { if (viewer.value !== false) { viewportReset() } });
 
 onUnmounted(() => {
-  $("main").off("scroll");
+  $(".content-wrapper").off("scroll");
 })
 </script>
 
