@@ -303,6 +303,11 @@ q {
   quotes: "«" "»" "‹" "›";
 }
 
+strong {
+  text-decoration: underline;
+  font-weight: normal;
+}
+
 /**************************************************************************/
 /* classes defining color patterns */
 

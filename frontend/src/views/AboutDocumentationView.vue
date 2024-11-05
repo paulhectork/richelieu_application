@@ -133,6 +133,7 @@ onMounted(() => {
   grid-template-columns: 100%;
   grid-template-rows: auto 2fr;
   height: 100%;
+  border-bottom: var(--cs-main-border);
 }
 .textpage-title-wrapper {
   border-bottom: var(--cs-main-border);
@@ -149,9 +150,9 @@ onMounted(() => {
     state, adding .toc-visible to .textpage-inner-walker
     adds a `transform:translateX()` that makes the sidebar visible.
     */
-    grid-template-columns:expandToc 70vw calc(100vw - 5vh);  /* 5vh to accomodate for button size */
+    grid-template-columns: 70vw calc(100vw - 5vh);  /* 5vh to accomodate for button size */
     transform: translateX(-70vw) translateX(5vh);  /* chaining translateX(trans1) translateX(trans2) is equivalent to translateX(trans1+trans2) */
-    transition: transform var(--animate-duration);
+    transition: transform .5s;
     overflow-x: hidden;
     width: calc(70vw + 100vw - 5vh);  /* width also needs to be set and updated to avoid x-overflow scrolling */
   }
@@ -182,5 +183,15 @@ onMounted(() => {
 
 :deep(.textpage-text-wrapper) {
   border-bottom: var(--cs-main-border);
+}
+:deep(.textpage-text-wrapper:last-child) {
+  border-bottom: none;
+}
+
+:deep(.textpage-text-wrapper dt) {
+  font-family: var(--cs-font-serif);
+  font-size: 110%;
+  font-variant-caps: small-caps;
+  margin-top: 5px;
 }
 </style>

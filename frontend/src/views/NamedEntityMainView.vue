@@ -17,12 +17,6 @@
   <UiLoader v-if="loadState === 'loading'"></UiLoader>
 
   <div v-else-if="loadState === 'loaded'">
-    <!--
-    <p><strong>{{ namedEntity.iconography_count }}
-      <span v-if="namedEntity.iconography_count > 1"> ressources iconographiques</span>
-      <span v-else>ressource iconographique</span>
-    </strong> sont associées à cette entité nommée.</p>
-  -->
 
     <div class="index-headtext-wrapper">
       <IndexAssociationRedirects v-if="associatedThemes.length"
