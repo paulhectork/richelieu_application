@@ -42,6 +42,6 @@ export const domStore = reactive({
   /**
    *
    */
-  theHomeIiifIntroVisible: true
+  // theHomeIiifIntroVisible: true
 
 })

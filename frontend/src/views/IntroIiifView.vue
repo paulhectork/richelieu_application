@@ -31,7 +31,7 @@
             >
           </div>
           <div class="info-block">
-            <ul class="list-invisible"
+            <ul class="list-invisible count-block"
                 v-if="loadStateCounts === 'loaded'"
             >
               <li v-if="showIconography === true"
@@ -55,6 +55,7 @@
             <div class="button-wrapper">
               <button v-if="showEnter"
                       class="animate__animated animate__lightSpeedInRight"
+                      @click="redirectToHome"
               >Entrer dans le site</button>
             </div>
           </div>
@@ -75,7 +76,7 @@ import axios from "axios";
 
 import IiifViewer from "@components/IiifViewer.vue";
 
-import { randomColorLight } from "@utils/colors";
+import { randomColorLight, randomColorDark } from "@utils/colors";
 
 /****************************************************/
 
@@ -108,6 +109,11 @@ const tileSource = [ { type: "image",
 
 function defineViewer(theViewer) {
   viewer.value = theViewer;
+}
+
+function redirectToHome(e) {
+  console.log("omg hiiii");
+  console.error("INTROIIIFVIEW: check that redirections are not broken")
 }
 
 function getData() {
@@ -211,14 +217,25 @@ onMounted(() => {
   justify-content: center;
 }
 #intro-modal {
+  /*
   height: 70%;
-  width: 70%;
+  width: 80%;
+  max-width: 1000px;
+  min-height: 350px;
+  */
+  height: max(350px, 70%);
+  width: min(1000px, 80%);
   z-index: 199;
   position: absolute;
   border: var(--cs-negative-border);
   display: grid;
   grid-template-rows: 30% 70%;
   grid-template-columns: 100%;
+}
+@media ( orientation:landscape ) {
+  #intro-modal {
+    width: min(1000px, 80%);
+  }
 }
 #intro-modal > .title-block {
   display: grid;
@@ -247,18 +264,17 @@ h2 {
 }
 .content-block {
   display: grid;
-  grid-template-rows: 100%;
-  grid-template-columns: 50% 50%;
+  grid-template-rows: 40% 60%;
+  grid-template-columns: 100%;
+}
+@media ( orientation:landscape ) {
+  .content-block {
+    grid-template-rows: 100%;
+    grid-template-columns: 60% 40%;
+  }
 }
 .content-block > * {
   margin: max(3%, 10px);
-}
-.info-block {
-  font-family: var(--cs-font-serif);
-  font-size: 140%;
-  display: grid;
-  grid-template-rows: 2fr auto;
-  grid-template-columns: 100%;
 }
 .image-block {
   border: var(--cs-negative-border);
@@ -267,6 +283,37 @@ h2 {
   object-fit: cover;
   width: 100%;
   height: 100%;
+}
+.info-block {
+  font-family: var(--cs-font-serif);
+  font-size: 140%;
+  display: grid;
+  grid-template-rows: 2fr 1fr;
+  grid-template-columns: 100%;
+}
+.count-block {
+}
+.button-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+}
+.button-wrapper > button {
+  max-width: 200px;
+  max-height: 90px;
+  height: 90%;
+  width: 90%;
+  margin: 5px;
+  font-size: 80%;
+  background-color: var(--cs-darkplum);
+  transition: background-color var(--animate-duration);
+}
+.button-wrapper > button:hover {
+  background-color: var(--cs-plum);
+}
+.button-wrapper > button:active {
+  background-color: var(--cs-lightplum);
 }
 
 /************************/

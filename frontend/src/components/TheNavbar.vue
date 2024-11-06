@@ -22,7 +22,7 @@
   <nav class="navbar border-bottom fill-parent">
     <h1 id="app-title"
     >
-      <RouterLink to="/"
+      <RouterLink to="/accueil"
                   @click="emit('menuActiveUpdate', false) /* close menu on click (if it's open) */"
       >
         <!-- the @ allows the logo to show in production build:

@@ -31,7 +31,7 @@
   <div class="app-wrapper main-default">
     <!-- navbar -->
     <div class="navbar-outer-wrapper">
-      <TheNavbar v-if="!domStore.theHomeIiifIntroVisible"
+      <TheNavbar v-if="route.path !== '/'"
                  :menu-active="menuActive"
                  @menu-active-update="updateMenuActive"
       ></TheNavbar>
