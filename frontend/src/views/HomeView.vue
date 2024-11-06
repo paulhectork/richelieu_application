@@ -30,92 +30,98 @@
 -->
 
 <template>
+  <TheHomeIiifIntro v-if="domStore.theHomeIiifIntroVisible"
+  ></TheHomeIiifIntro>
+
+  <div v-else>
     <!-- without `v-if` on `Transition`, TheHomeModal would slide-out on each page,
        since it would be removed. -->
-  <Transition name="slideInOut">
-    <TheHomeModal @close-home-modal="onCloseHomeModal"
-                  v-if="domStore.homeModalVisible"
-    ></TheHomeModal>
-  </Transition>
+       <Transition name="slideInOut">
+      <TheHomeModal @close-home-modal="onCloseHomeModal"
+                    v-if="domStore.homeModalVisible"
+      ></TheHomeModal>
+    </Transition>
 
-  <div class="home-wrapper">
-    <div id="theme-wrapper"
-         class="home-block home-block-even home-block-row1">
-      <div class="home-block-title-wrapper">
-        <h1>Thèmes</h1>
-        <div class="home-block-plus-wrapper">
-          <span>Voir tous les thèmes</span>
-          <RouterLink to="/theme">
-            <UiButtonLink></UiButtonLink>
-          </RouterLink>
+    <div class="home-wrapper">
+      <div id="theme-wrapper"
+           class="home-block home-block-even home-block-row1">
+        <div class="home-block-title-wrapper">
+          <h1>Thèmes</h1>
+          <div class="home-block-plus-wrapper">
+            <span>Voir tous les thèmes</span>
+            <RouterLink to="/theme">
+              <UiButtonLink></UiButtonLink>
+            </RouterLink>
+          </div>
         </div>
+        <ul class="list-preview list-invisible">
+          <li v-for="te in themesFormatted">
+            <HomeItemPreview :resource="te"
+                             display="category"
+            ></HomeItemPreview>
+          </li>
+        </ul>
       </div>
-      <ul class="list-preview list-invisible">
-        <li v-for="te in themesFormatted">
-          <HomeItemPreview :resource="te"
-                           display="category"
-          ></HomeItemPreview>
-        </li>
-      </ul>
-    </div>
 
-    <div id="named-entity-wrapper"
-         class="home-block home-block-odd home-block-row1">
-      <div class="home-block-title-wrapper">
-        <div class="home-block-plus-wrapper">
-          <span>Voir toutes les entités nommées</span>
-          <RouterLink to="/entite-nommee">
-            <UiButtonLink></UiButtonLink>
-          </RouterLink>
+      <div id="named-entity-wrapper"
+           class="home-block home-block-odd home-block-row1">
+        <div class="home-block-title-wrapper">
+          <div class="home-block-plus-wrapper">
+            <span>Voir toutes les entités nommées</span>
+            <RouterLink to="/entite-nommee">
+              <UiButtonLink></UiButtonLink>
+            </RouterLink>
+          </div>
+          <h1>Noms</h1>
         </div>
-        <h1>Noms</h1>
+        <ul class="list-preview list-invisible">
+          <li v-for="ne in namedEntitiesFormatted">
+            <HomeItemPreview :resource="ne"
+                             display="category"
+            ></HomeItemPreview>
+          </li>
+        </ul>
       </div>
-      <ul class="list-preview list-invisible">
-        <li v-for="ne in namedEntitiesFormatted">
-          <HomeItemPreview :resource="ne"
-                           display="category"
-          ></HomeItemPreview>
-        </li>
-      </ul>
-    </div>
 
-    <div id="article-wrapper"
-         class="home-block home-block-even home-block-row2">
-      <div class="home-block-title-wrapper">
-        <h1>Articles</h1>
-        <div class="home-block-plus-wrapper">
-          <span>Voir la table des matières</span>
-          <RouterLink to="/article">
-            <UiButtonLink></UiButtonLink>
-          </RouterLink>
+      <div id="article-wrapper"
+           class="home-block home-block-even home-block-row2">
+        <div class="home-block-title-wrapper">
+          <h1>Articles</h1>
+          <div class="home-block-plus-wrapper">
+            <span>Voir la table des matières</span>
+            <RouterLink to="/article">
+              <UiButtonLink></UiButtonLink>
+            </RouterLink>
+          </div>
         </div>
+        <ul class="list-invisible list-preview">
+          <li v-for="ar in articlesFormatted">
+            <HomeItemPreview :resource="ar"
+                             display="article"
+            ></HomeItemPreview>
+          </li>
+        </ul>
       </div>
-      <ul class="list-invisible list-preview">
-        <li v-for="ar in articlesFormatted">
-          <HomeItemPreview :resource="ar"
-                           display="article"
-          ></HomeItemPreview>
-        </li>
-      </ul>
-    </div>
 
-    <div id="map-wrapper"
-         class="home-block home-block-odd home-block-row2"
-         @mouseover="onMapMouseOver"
-         @mouseout="onMapMouseOut"
-    >
-      <div class="home-block-title-wrapper map-title-wrapper">
-        <h1>Carte</h1>
-      </div>
-      <RouterLink to="/cartographie"
-                  class="map-outer-wrapper"
+      <div id="map-wrapper"
+           class="home-block home-block-odd home-block-row2"
+           @mouseover="onMapMouseOver"
+           @mouseout="onMapMouseOut"
       >
-        <div class="map-inner-wrapper">
-          <img src="@/assets/media/home_view_map.png"
-             alt="Visuel de carte"
-          >
+        <div class="home-block-title-wrapper map-title-wrapper">
+          <h1>Carte</h1>
         </div>
-      </RouterLink>
+        <RouterLink to="/cartographie"
+                    class="map-outer-wrapper"
+        >
+          <div class="map-inner-wrapper">
+            <img src="@/assets/media/home_view_map.png"
+               alt="Visuel de carte"
+            >
+          </div>
+        </RouterLink>
+      </div>
+
     </div>
 
   </div>
@@ -132,6 +138,7 @@ import _ from "lodash";
 import UiButtonLink from "@components/UiButtonLink.vue";
 import HomeItemPreview from "@components/HomeItemPreview.vue";
 import TheHomeModal from "@components/TheHomeModal.vue";
+import TheHomeIiifIntro from "@components/TheHomeIiifIntro.vue";
 
 import { domStore } from "@stores/dom.js";
 import { articles } from "@globals";

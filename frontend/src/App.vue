@@ -31,7 +31,8 @@
   <div class="app-wrapper main-default">
     <!-- navbar -->
     <div class="navbar-outer-wrapper">
-      <TheNavbar :menu-active="menuActive"
+      <TheNavbar v-if="!domStore.theHomeIiifIntroVisible"
+                 :menu-active="menuActive"
                  @menu-active-update="updateMenuActive"
       ></TheNavbar>
     </div>

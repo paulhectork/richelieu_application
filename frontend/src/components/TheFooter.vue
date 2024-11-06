@@ -82,10 +82,12 @@ onMounted(() => {
   height: 40vh;
 }
 .footer-gradient.negative {
-  background: linear-gradient(black 10%, 80%, white);
+  /*background: linear-gradient(black 10%, 80%, white);*/
+  background-color: var(--cs-negative-default-bg);
 }
 .footer-gradient.main {
-  background: linear-gradient(white 10%, 80%, black);
+  /*background: linear-gradient(white 10%, 80%, black);*/
+  background-color: var(--cs-main-default-bg);
 }
 footer {
   height: 100%;

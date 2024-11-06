@@ -38,6 +38,10 @@ export const domStore = reactive({
    * displayed on @views/CartographyView.vue: once it's been removed,
    * don't show it
    */
-  cartographyModalVisible: true
+  cartographyModalVisible: true,
+  /**
+   *
+   */
+  theHomeIiifIntroVisible: true
 
 })
