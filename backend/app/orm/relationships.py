@@ -141,8 +141,8 @@ class R_IconographyTheme(db.Model):
     id_iconography : Mapped[int] = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=False)
     id_theme       : Mapped[int] = mapped_column(psql.INTEGER, ForeignKey("theme.id"), nullable=False)
 
-    iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="r_iconography_theme")
-    theme       : Mapped["Theme"]       = relationship("Theme", back_populates="r_iconography_theme")
+    iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="r_iconography_theme", lazy="selectin")
+    theme       : Mapped["Theme"]       = relationship("Theme", back_populates="r_iconography_theme", lazy="selectin")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):

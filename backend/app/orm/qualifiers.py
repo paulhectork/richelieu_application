@@ -85,7 +85,7 @@ class Theme(db.Model):
     category    : Mapped[str] = mapped_column(Text, nullable=False)
     description : Mapped[str] = mapped_column(Text, nullable=True)
 
-    r_iconography_theme : Mapped[t.List["R_IconographyTheme"]] = relationship("R_IconographyTheme", back_populates="theme")
+    r_iconography_theme : Mapped[t.List["R_IconographyTheme"]] = relationship("R_IconographyTheme", back_populates="theme", lazy="selectin")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
