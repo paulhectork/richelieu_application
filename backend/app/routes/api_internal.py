@@ -6,6 +6,7 @@ basepath: `<APP URL>/i/`
 from flask import jsonify, request
 from psycopg2.extras import NumericRange
 from sqlalchemy import text, func
+from sqlalchemy.sql.expression import bindparam
 import random
 import json
 
@@ -807,88 +808,108 @@ def association_index():
 
     return [ i[0].serialize_lite() for i in r.all() ]
 
+# *************************************************************************
+# other
+# *************************************************************************
+
+@app.route("/i/database-counts")
+def dbcounts():
+    """
+    returns the number of rows for each table as json of
+    `{ <tablename> : <number of rows> }`.
+    the `bindparam` allows to select a text literal
+    see: https://stackoverflow.com/a/7546802/17915803
+    """
+    q = (db.session.query( bindparam("tablename_0", "iconography"), func.count(Iconography.id) )
+        .union( select( bindparam("tablename_1", "theme"), func.count(Theme.id))
+              , select( bindparam("tablename_2", "named_entity"), func.count(NamedEntity.id))
+              , select( bindparam("tablename_3", "place"), func.count(Place.id))
+              , select( bindparam("tablename_4", "institution"), func.count(Institution.id)))
+        )
+    r = db.session.execute(q).all()
+    return { row[0] : row[1] for row in r }
 
 
 # *************************************************************************
 
-@app.route("/i/raise")
-def do_raise():
-    """test error raising and printing in prod"""
-    print(r"%%%%% this should raise")
-    raise ValueError("\n%%%%% hello ! \n%%%%% this has raised. \n%%%%% goodbye !")
+# @app.route("/i/raise")
+# def do_raise():
+#     """test error raising and printing in prod"""
+#     print(r"%%%%% this should raise")
+#     raise ValueError("\n%%%%% hello ! \n%%%%% this has raised. \n%%%%% goodbye !")
 
 
 
 
 
-# *************************************************************************
-# table viewer
-# *************************************************************************
-
-
-@app.route("/i/list-tables")
-def list_tables():
-    """
-    list all public tables in the database
-    """
-    r = db.session.execute(text( "SELECT table_name "
-                               + "FROM information_schema.tables "
-                               + "WHERE table_schema = 'public';"))
-    return jsonify([ _[0] for _ in r.all() ])
-
-
-@app.route("/i/table-viewer/<tablename>")
-def table_viewer(tablename:str):
-    """
-    get and return an entire table as a json
-    """
-    # convert postgres-specific datatypes into json-compliant ones.
-    maybe_convert = lambda el: el if not isinstance(el, NumericRange) else int4range2list(el)
-    # transform a row of values into a dict of `{ <colname>: <value> }`
-    mapper = lambda row: { colnames[i]: maybe_convert(row[i]) for i, r in enumerate(row) }
-    # process the SQL response into a list of `{ <colname>: <value> }` elts
-    response_process = lambda x: [ mapper(row) for row in x ]
-
-    # run the query
-    r = db.session.execute(text(f"SELECT * FROM {tablename};"))
-    colnames = list(r.keys())  # column names for the query
-
-    # process the results. if there are no results, generate
-    # a 1 item list mapping all column names to `None`, to
-    # be able to display something in the frontend.
-    # `r.rowcount` returns the number of rows in the `CursorResult`;
-    # contrary to `all()`, it doesn't close the result after being run
-    r = response_process(r) if r.rowcount else [{ c:None for c in colnames }]
-    return  jsonify(r)
-
-
-
-
-
-# *************
-# DUMMY ROUTE *
-# *************
-@app.route("/i")
-def __():
-    # run the query
-    l = [ random.choice([ _ for _ in range(5, 100) ]) for i in range(20) ]
-    x = db.session.execute(R_IconographyActor.query
-                                             .filter(R_IconographyActor.id.in_(l)))
-
-    # create an html list
-    ul = "<ul>"               # html unordered list
-    for _ in x.all():         # access each row
-        print(_)              # `_` is a tuple, `_[0]` is row itself
-        print(_[0].__dict__)  # print the dict rpr of row
-        ul += f"""<li><dl>
-            <dt>{ _[0].actor.entry_name.upper() }</dt>
-            <dd><i>{ _[0].iconography.title[0].entry_name }</i></dd>
-        </dl></li>"""
-    ul += "</ul>"
-
-    return f"""
-        <html>
-            <head><title>RICH.DATA</title></head>
-            <body><h1>RICH.DATA</h1>{ ul }</body>
-        </html>
-    """
+# # *************************************************************************
+# # table viewer
+# # *************************************************************************
+#
+#
+# @app.route("/i/list-tables")
+# def list_tables():
+#     """
+#     list all public tables in the database
+#     """
+#     r = db.session.execute(text( "SELECT table_name "
+#                                + "FROM information_schema.tables "
+#                                + "WHERE table_schema = 'public';"))
+#     return jsonify([ _[0] for _ in r.all() ])
+#
+#
+# @app.route("/i/table-viewer/<tablename>")
+# def table_viewer(tablename:str):
+#     """
+#     get and return an entire table as a json
+#     """
+#     # convert postgres-specific datatypes into json-compliant ones.
+#     maybe_convert = lambda el: el if not isinstance(el, NumericRange) else int4range2list(el)
+#     # transform a row of values into a dict of `{ <colname>: <value> }`
+#     mapper = lambda row: { colnames[i]: maybe_convert(row[i]) for i, r in enumerate(row) }
+#     # process the SQL response into a list of `{ <colname>: <value> }` elts
+#     response_process = lambda x: [ mapper(row) for row in x ]
+#
+#     # run the query
+#     r = db.session.execute(text(f"SELECT * FROM {tablename};"))
+#     colnames = list(r.keys())  # column names for the query
+#
+#     # process the results. if there are no results, generate
+#     # a 1 item list mapping all column names to `None`, to
+#     # be able to display something in the frontend.
+#     # `r.rowcount` returns the number of rows in the `CursorResult`;
+#     # contrary to `all()`, it doesn't close the result after being run
+#     r = response_process(r) if r.rowcount else [{ c:None for c in colnames }]
+#     return  jsonify(r)
+#
+#
+#
+#
+#
+# # *************
+# # DUMMY ROUTE *
+# # *************
+# @app.route("/i")
+# def __():
+#     # run the query
+#     l = [ random.choice([ _ for _ in range(5, 100) ]) for i in range(20) ]
+#     x = db.session.execute(R_IconographyActor.query
+#                                              .filter(R_IconographyActor.id.in_(l)))
+#
+#     # create an html list
+#     ul = "<ul>"               # html unordered list
+#     for _ in x.all():         # access each row
+#         print(_)              # `_` is a tuple, `_[0]` is row itself
+#         print(_[0].__dict__)  # print the dict rpr of row
+#         ul += f"""<li><dl>
+#             <dt>{ _[0].actor.entry_name.upper() }</dt>
+#             <dd><i>{ _[0].iconography.title[0].entry_name }</i></dd>
+#         </dl></li>"""
+#     ul += "</ul>"
+#
+#     return f"""
+#         <html>
+#             <head><title>RICH.DATA</title></head>
+#             <body><h1>RICH.DATA</h1>{ ul }</body>
+#         </html>
+#     """

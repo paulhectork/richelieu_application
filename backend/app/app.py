@@ -39,7 +39,7 @@ def config_app(cfgname:str):
     # https://readthedocs.org/projects/flask-cors/downloads/pdf/latest/
     # CORS(app, resources={ r"/i/*": {"origins": "*"} })
     CORS(app, origins=[ "https://quartier-richelieu.inha.fr"   # server: apache frontend (no port specification !!!!)
-                      , "http://localhost:5173"                       # local frontend
+                      , "http://localhost:5173"                # local frontend
                       ])
 
     # Flask and SQlachemy logging configuration

@@ -39,5 +39,4 @@ export const domStore = reactive({
    * don't show it
    */
   cartographyModalVisible: true
-
 })

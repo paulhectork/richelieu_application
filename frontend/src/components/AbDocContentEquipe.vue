@@ -2,7 +2,7 @@
   <div class="textpage-text-wrapper">
     <h3 id="abdoc-direction">Direction de projet</h3>
     <dl>
-      <dt><strong>Charlotte Duvette</strong> (2021-2024)</dt>
+      <dt>Charlotte Duvette (2021-2024)</dt>
       <dd>Charlotte Duvette est historienne de
       la ville et de l'architecture. Docteure en histoire
       de l'art et de l'architecture (université Paris 1 Panthéon-Sorbonne),
@@ -17,7 +17,7 @@
 
     <h3 id="abdoc-inge">Ingénieurs d'études et de recherche</h3>
     <dl>
-      <dt><strong>Paul Kervegan</strong> (2022-2024)</dt>
+      <dt>Paul Kervegan (2022-2024)</dt>
       <dd>Paul Kervegan s'occupe de la gestion
         des donnés, de la conception de la base de données
         et des développements Web. Diplômé de l'École du Louvre
@@ -26,7 +26,7 @@
         au projet de recherche <i><a href="https://katabase.huma-num.fr/">Katabase</a></i>
         (2022) à l'Observatoire des humanités numériques (ENS-PSL).
       </dd>
-      <dt><strong>Loïc Jeanson</strong> (2021-2022)</dt>
+      <dt>Loïc Jeanson (2021-2022)</dt>
       <dd>Loïc Jeanson est actuellement
         premier assistant à l'UNIL. Au sein du projet <i>Richelieu</i>, il s'est
         chargé de spatialiser le premier corpus des sources
@@ -39,7 +39,7 @@
     </dl>
 
     <h3 id="abdoc-doct">Doctorantes contractuelles</h3>
-    <dt><strong>Louise Thiroux</strong> (2024)</dt>
+    <dt>Louise Thiroux (2024)</dt>
     <dd>Louise Thiroux est chargée d'études et de
       recherche à l'INHA (depuis 2024). Elle participe à
       l'enrichissement du corpus du Palais-Royal et est l'auteure
@@ -50,7 +50,7 @@
       XX<sup>e</sup> siècles)</i>, dirigée par E. d'Orgeix est
       en préparation à l'École Pratique des Hautes Études.
     </dd>
-    <dt><strong>Justine Gain</strong> (2023)</dt>
+    <dt>Justine Gain (2023)</dt>
     <dd>Justine Gain a été chargée d'études et de recherche
       à l'INHA (2019-2023). Elle a participé aux recherches
       historiques et à la valorisation du Palais-Royal et
@@ -64,7 +64,7 @@
     <h3 id="abdoc-stag">Stagiaires</h3>
 
     <h4>Recherches historiques</h4>
-    <dt><strong>Teoman Akgönül</strong> (février-mai 2024)</dt>
+    <dt>Teoman Akgönül (février-mai 2024)</dt>
     <dd>Teoman Akgönül est diplômé d'un
       master de recherche en histoire de l'art de l'École Pratique
       des Hautes Études. Il est l'auteur du corpus de la
@@ -74,7 +74,7 @@
       production, circulation, usages</i>, sous la direction d'Estelle
       Leutrat.
     </dd>
-    <dt><strong>Esther Da Silva</strong> (février-mai 2023)</dt>
+    <dt>Esther Da Silva (février-mai 2023)</dt>
     <dd>Esther Da Silva est diplômée d'un
       master recherche en histoire de l'architecture à l'université
       Panthéon-Sorbonne, et d'un master en <q>&nbsp;Direction des
@@ -84,7 +84,7 @@
     </dd>
 
     <h4>Développements numériques</h4>
-    <dt><strong>Marina Hervieu</strong> (février-septembre 2024)</dt>
+    <dt>Marina Hervieu (février-septembre 2024)</dt>
     <dd>Marina Hervieu est titulaire
       d'un master en histoire de l'art contemporain à l'université
       Paris 1 Panthéon-Sorbonne, du master <q>&nbsp;Technologies numériques
@@ -93,7 +93,7 @@
       de la plateforme Web du projet. Elle est actuellement chargée de projet
       à la Bibliothèque nationale de France.
     </dd>
-    <dt><strong>Colin Prudhomme</strong> (février-juin 2023)</dt>
+    <dt>Colin Prudhomme (février-juin 2023)</dt>
     <dd>Colin Prudhomme a réalisé un
       stage de recherche visant à produire un modèle 3D de la place de la Bourse
       au XIX<sup>e</sup> siècle
@@ -104,14 +104,14 @@
       Time Machine, et s'est spécialisé dans la restitution
       3D de l'espace public parisien.
     </dd>
-    <dt><strong>Ravinithesh Annapureddy</strong> (octobre 2021-février 2022)</dt>
+    <dt>Ravinithesh Annapureddy (octobre 2021-février 2022)</dt>
     <dd>Ravinithesh Annapureddy
       est doctorant en Humanités numériques à l'École polytechnique
       fédérale de Lausanne. Durant son master, il a effectué
       un stage à l'INHA afin de produire une chaîne de post-traitement de
       données océrisées au sein du projet Richelieu.
     </dd>
-    <dt><strong>Louise Baranger</strong> (2023)</dt>
+    <dt>Louise Baranger (2023)</dt>
     <dd>Avec l'aide de Louise Baranger, monitrice étudiante à la
       Direction des études et de la recherche à l'INHA. Elle
       a participé à l'enrichissement des sources du projet
@@ -126,36 +126,36 @@
   </div>
 
   <div class="textpage-text-wrapper">
-    <!--<h2>Comité de pilotage</h2>-->
+    <h3 id="abdoc-copil">Comité de pilotage</h3>
 
     <dl>
-      <dt><strong>Philippe Chevallier</strong></dt>
+      <dt>Philippe Chevallier</dt>
       <dd>Adjoint au responsable de la coordination de la recherche à la BnF.</dd>
-      <dt><strong>Peter Geimer</strong></dt>
+      <dt>Peter Geimer</dt>
       <dd>Directeur du Centre allemand d'histoire de l'art (DFK).</dd>
-      <dt><strong>Olivier Jacquot</strong></dt>
+      <dt>Olivier Jacquot</dt>
       <dd>Responsable de la coordination de la recherche à la BnF.</dd>
-      <dt><strong>Frédéric Kaplan</strong></dt>
+      <dt>Frédéric Kaplan</dt>
       <dd>Directeur du Collège des humanités à l'EPFL.</dd>
-      <dt><strong>Isabella di Leonardo</strong></dt>
+      <dt>Isabella di Leonardo</dt>
       <dd>Maîtresse de conférences à l'École Polytechnique de Lausanne (EPFL).</dd>
-      <dt><strong>Livio de Luca</strong></dt>
+      <dt>Livio de Luca</dt>
       <dd>Directeur de l'UMR Modèles et simulations pour l'Architecture
         et le Patrimoine (CNRS).</dd>
-      <dt><strong>Elsa Marguin-Hamon</strong></dt>
+      <dt>Elsa Marguin-Hamon</dt>
       <dd>Directrice de la recherche et des relations internationales à l'École
         des Chartes.</dd>
-      <dt><strong>Jean-Baptiste Minnaert</strong></dt>
+      <dt>Jean-Baptiste Minnaert</dt>
       <dd>Professeur d'histoire de l'architecture à l'université Paris-Sorbonne
         (Centre André Chastel).</dd>
-      <dt><strong>France Nerlich</strong></dt>
+      <dt>France Nerlich</dt>
       <dd>Directrice du Département des études et de la recherche à l'INHA.</dd>
-      <dt><strong>Federico Nurra</strong></dt>
+      <dt>Federico Nurra</dt>
       <dd>Chef du Service numérique de la recherche à l'INHA.</dd>
-      <dt><strong>Gennaro Toscano</strong></dt>
+      <dt>Gennaro Toscano</dt>
       <dd>Conseiller scientifique auprès de la directrice des collections pour
         le Musée, la recherche et la valorisation des collections à la BnF.</dd>
-      <dt><strong>Juliette Trey</strong></dt>
+      <dt>Juliette Trey</dt>
       <dd>Directrice adjointe du Département des études et de la recherche à l'INHA.</dd>
     </dl>
 

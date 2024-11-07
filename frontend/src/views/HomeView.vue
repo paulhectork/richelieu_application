@@ -30,8 +30,9 @@
 -->
 
 <template>
-    <!-- without `v-if` on `Transition`, TheHomeModal would slide-out on each page,
-       since it would be removed. -->
+
+  <!-- without `v-if` on `Transition`, TheHomeModal would slide-out on each page,
+     since it would be removed. -->
   <Transition name="slideInOut">
     <TheHomeModal @close-home-modal="onCloseHomeModal"
                   v-if="domStore.homeModalVisible"

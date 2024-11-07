@@ -52,6 +52,6 @@ class PROD:
     SERVER_NAME = "quartier-richelieu.inha.fr:5001"
 
 # dict to choose the config based on a key
-CONFIGS = { "dev": DEV,
-            "test": TEST,
-            "prod": PROD }
+CONFIGS = { "dev"  : DEV,
+            "test" : TEST,
+            "prod" : PROD }

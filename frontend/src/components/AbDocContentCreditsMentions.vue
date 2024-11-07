@@ -19,7 +19,6 @@
         <strong>Manuel Charpy</strong> (CNRS, InVisu),
         <strong>Éric Mermet</strong> (CNRS, Paris Time Machine),
         <strong>Laurent Costa</strong> (CNRS, Paris Time Machine),
-        <strong>Jean-Luc Pinol</strong> (ENS Lyon, Paris Time Machine),
         <strong>Jean-Philippe Moreux</strong> (Bibliothèque nationale de France)
       </dd>
     </dl>
