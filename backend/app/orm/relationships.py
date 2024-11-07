@@ -122,8 +122,8 @@ class R_IconographyNamedEntity(db.Model):
     id_iconography  : Mapped[int] = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=False)
     id_named_entity : Mapped[int] = mapped_column(psql.INTEGER, ForeignKey("named_entity.id"), nullable=False)
 
-    iconography  : Mapped["Iconography"] = relationship("Iconography", back_populates="r_iconography_named_entity")
-    named_entity : Mapped["NamedEntity"] = relationship("NamedEntity", back_populates="r_iconography_named_entity")
+    iconography  : Mapped["Iconography"] = relationship("Iconography", back_populates="r_iconography_named_entity", lazy="selectin")
+    named_entity : Mapped["NamedEntity"] = relationship("NamedEntity", back_populates="r_iconography_named_entity", lazy="selectin")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
