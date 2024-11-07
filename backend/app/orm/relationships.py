@@ -189,10 +189,10 @@ class R_Institution(db.Model):
     id_directory   : Mapped[int] = mapped_column(psql.INTEGER, ForeignKey("directory.id"), nullable=True)
     id_institution : Mapped[int] = mapped_column(psql.INTEGER, ForeignKey("institution.id"), nullable=False)
 
-    iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="r_institution")
-    cartography : Mapped["Cartography"] = relationship("Cartography", back_populates="r_institution")
-    directory   : Mapped["Directory"]   = relationship("Directory", back_populates="r_institution")
-    institution : Mapped["AdminPerson"] = relationship("Institution", back_populates="r_institution")
+    iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="r_institution", lazy="selectin")
+    cartography : Mapped["Cartography"] = relationship("Cartography", back_populates="r_institution", lazy="selectin")
+    directory   : Mapped["Directory"]   = relationship("Directory", back_populates="r_institution", lazy="selectin")
+    institution : Mapped["AdminPerson"] = relationship("Institution", back_populates="r_institution", lazy="selectin")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
