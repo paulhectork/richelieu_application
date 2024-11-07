@@ -31,7 +31,7 @@
 <template>
   <div class="form-field-slider-wrapper">
     <div class="form-field-slider">
-      <div :id="htmlId"></div>
+      <div ref="sliderRef"></div>
     </div>
     <div class="form-field-info"
          v-if="context"
@@ -59,7 +59,7 @@ import '@plugins/nouislider.min.css';
 
 /**********************************************/
 
-const htmlId      = `formkit-slider-${window.crypto.randomUUID()}`;
+const sliderRef = ref(null)
 const props       = defineProps(["context"]);  // "minVal", "maxVal", "step", "number" ("integer"|"float")
 const slider      = ref();
 const context     = ref();
@@ -75,7 +75,7 @@ const selectedMax = ref();
  * define the slider.
  */
 function createSlider() {
-  slider.value = noUiSlider.create(document.getElementById(htmlId), {
+  slider.value = noUiSlider.create(sliderRef.value, {
     start: [ allowedMin.value, allowedMax.value ],
     step: context.value.step,
     connect: true,
