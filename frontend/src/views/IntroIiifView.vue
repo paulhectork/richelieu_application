@@ -7,7 +7,7 @@
                     :iiifUrl="iiifUrl"
                     :backupImgUrl="imgUrl"
                     backupImgDisplay="cover"
-                    @osd-viewer="defineViewer"
+                    @osd-viewer="onViewerMounted"
         ></IiifViewer>
       </div>
     </div>
@@ -36,24 +36,25 @@
             >
               <li v-if="showIconography === true"
                   class="animate__animated animate__lightSpeedInRight"
-              ><span :style="{ color: randomColorLight() }">
+              ><span :style="{ color: customColors[0] }">
                 {{ dbCounts.iconography }}</span> documents</li>
               <li v-if="showInstitution === true"
                   class="animate__animated animate__lightSpeedInRight"
-              >Issus de <span :style="{ color: randomColorLight() }">
+              >Issus de <span :style="{ color: customColors[1] }">
                 {{ dbCounts.institution }}</span> institutions</li>
               <li v-if="showNamedEntity === true"
                   class="animate__animated animate__lightSpeedInRight"
-              >Représentant <span :style="{ color: randomColorLight() }">
-                {{ dbCounts.named_entity }}</span> sujets / activités</li>
+              >Représentant <span :style="{ color: customColors[2] }">
+                {{ dbCounts.named_entity }}</span> points d'intérêt</li>
               <li v-if="showPlace === true"
                   class="animate__animated animate__lightSpeedInRight"
-              >Dans <span :style="{ color: randomColorLight() }">
+              >Dans <span :style="{ color: customColors[3] }">
                 {{ dbCounts.place }}</span> lieux</li>
             </ul>
 
             <div class="button-wrapper">
               <button v-if="showEnter"
+                      id="enter-website"
                       class="animate__animated animate__lightSpeedInRight"
                       @click="redirectToHome"
               >Entrer dans le site</button>
@@ -70,15 +71,20 @@
 
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
+import OpenSeadragon from "openseadragon";
 import axios from "axios";
+import $ from "jquery";
 
 import IiifViewer from "@components/IiifViewer.vue";
 
-import { randomColorLight, randomColorDark } from "@utils/colors";
+import { randomColorLight } from "@utils/colors";
 
 /****************************************************/
+
+const router = useRouter();
 
 const viewer = ref();
 const iiifUrl           = "https://apicollections.parismusees.paris.fr/iiif/320057446/manifest";
@@ -94,12 +100,15 @@ const showTheme       = ref(false)
 const showPlace       = ref(false)
 const showEnter       = ref(false);
 
+const customColors = [ randomColorLight(), randomColorLight()
+                     , randomColorLight(), randomColorLight() ];
+
+console.log(customColors);
+
 const loadStateIiif   = ref("loading");  // "loading|loaded|error"
 const loadStateCounts = ref("loading");  // "loading|loaded|error"
 
 const vasserotImgSrc = new URL('/statics/other/adp_vasserot_crop.jpg', __STATICS_URL__);
-
-/****************************************************/
 
 const tileSource = [ { type: "image",
                        height: 1,
@@ -107,28 +116,84 @@ const tileSource = [ { type: "image",
 
 /****************************************************/
 
-function defineViewer(theViewer) {
-  viewer.value = theViewer;
+/**
+ * when the viewer is mounted, define the global `viewer` ref,
+ * hide the viewer's navigators and controls and zoom in.
+ * @param {OpenSeadragon.Viewer} theViewer
+ */
+function onViewerMounted(theViewer) {
+  viewer.value = theViewer.value;
+  console.log(viewer.value.options);
+  $(`#${htmlId} .navigator,
+     #${htmlId} .openseadragon-container > div:nth-child(2)`
+  ).css({ display: "none" });
+  setTimeout(() => viewer.value.viewport.zoomTo(2, undefined, false), 1000);
 }
 
+/**
+ * move the iiif viewer based on the mouse movements.
+ * @param {jQuery.event} e
+ */
+function panViewportOnMousemove(e) {
+  let modalBounds = document.querySelector("#intro-modal").getBoundingClientRect(),
+      pos = [ e.originalEvent.clientX, e.originalEvent.clientY ];   // mouse position
+  // there's a viewer and the mouse is outside the modal
+  if ( viewer.value && viewer.value.viewport
+       && !( pos[0] >= modalBounds.left
+          && pos[0] <= modalBounds.right
+          && pos[1] <= modalBounds.bottom
+          && pos[1] >= modalBounds.top )
+  ) {
+    let coef     = 10,  // >= 1. the higher the value, the slower the viewport will pan
+        vpCenter = [ 0.5, 0.5 ], // viewport center. openseadragon viewers have x,y coordinates between 0 and 1.
+        delta    = [ (pos[0] - window.innerWidth/2) / window.innerWidth    // how much to pan by, in comparison with the center. y and y are in the range -0.5..0.5.
+                   , (pos[1] - window.innerHeight/2) / window.innerHeight ],
+        toCenter = [ vpCenter[0] - (delta[0]/coef)                         // where to pan to, in coordinates 0..1.
+                   , vpCenter[1] - (delta[1]/coef) ]
+    viewer.value.viewport.panTo({ x: toCenter[0], y: toCenter[1] });
+  }
+}
+
+/**
+ * when clicking on `#enter-website`, redirect to TheHomeView.vue.
+ * @param {jQuery.event} e
+ */
 function redirectToHome(e) {
   console.log("omg hiiii");
-  console.error("INTROIIIFVIEW: check that redirections are not broken")
+  console.error("INTROIIIFVIEW: check that redirections are not broken");
+
+  if ( viewer.value && viewer.value.viewport ) {
+    let currentZoom = viewer.value.viewport.getZoom();
+    console.log(currentZoom);
+    viewer.value.viewport.zoomTo(currentZoom + 5, undefined, false);
+
+  }
+  setTimeout(() => router.push({ path: "/accueil" }), 600);
 }
 
+/**
+ * by setting all these refs to `true`, we'll progressively
+ * display all the children of `.info-block`.
+ */
+function animateInfos() {
+  setTimeout(() => showIconography.value=true, 0);
+  setTimeout(() => showInstitution.value=true, 500);
+  setTimeout(() => showNamedEntity.value=true, 1000);
+  setTimeout(() => showTheme.value=true, 1500);
+  setTimeout(() => showPlace.value=true, 2000);
+  setTimeout(() => showEnter.value=true, 2500);
+}
+
+/**
+ * fetch data from the backend, and when receiving it, trigger `animateInfos()`.
+ */
 function getData() {
   axios.get(new URL("/i/database-counts", __API_URL__))
   .then(r => r.data)
   .then(data => {
     dbCounts.value = data;
     loadStateCounts.value = "loaded";
-
-    setTimeout(() => showIconography.value=true, 0);
-    setTimeout(() => showInstitution.value=true, 500);
-    setTimeout(() => showNamedEntity.value=true, 1000);
-    setTimeout(() => showTheme.value=true, 1500);
-    setTimeout(() => showPlace.value=true, 2000);
-    setTimeout(() => showEnter.value=true, 2500);
+    animateInfos();
   })
   .catch(err => {
     console.error(err);
@@ -140,6 +205,11 @@ function getData() {
 
 onMounted(() => {
   getData();
+  $(document).on("mousemove", panViewportOnMousemove);
+})
+
+onUnmounted(() => {
+  $(document).off("mousemove");
 })
 
 /** without reusing IiifViewer.vue */
@@ -328,8 +398,8 @@ h2 {
   justify-content: center;
 }
 .intro-iiif-inner-wrapper {
-  height: 98%;
-  width: 98%;
+  height: calc(100% - 2vh);
+  width: calc(100% - 2vh);
   border: var(--cs-main-border);
   z-index: 0 !important;
 
