@@ -9,7 +9,7 @@ from sqlalchemy.sql.expression import bindparam
 
 from ..search.search_iconography import sanitize_params, make_params, make_query
 from ..utils.spatial import featurelist_to_featurecollection, geometry_to_feature
-from ..app import app, db
+from ..app import app, db, cache
 from ..orm import *
 
 
@@ -18,6 +18,7 @@ from ..orm import *
 # *************************************************************************
 
 @app.route("/i/iconography")
+@cache.cached()
 def index_iconography():
     """
     get all `iconography` ressources.
@@ -29,6 +30,7 @@ def index_iconography():
 
 
 @app.route("/i/iconography/<id_uuid>")
+@cache.cached()
 def main_iconography(id_uuid):
     """return an `Iconography` object based on its `id_uuid`"""
     r = db.session.execute(Iconography
@@ -53,6 +55,7 @@ def main_iconography(id_uuid):
 
 
 @app.route("/i/iconography/from-uuid")
+@cache.cached()
 def iconography_from_uuid():
     """
     return Iconography objects matching the UUIDs in `id_uuid_arr`.
@@ -98,6 +101,7 @@ def iconography_overall_date_range():
 # *************************************************************************
 
 @app.route("/i/theme")
+@cache.cached()
 def index_theme():
     """
     return an index of theme categories or an
@@ -126,6 +130,7 @@ def index_theme():
     return jsonify(out)
 
 @app.route("/i/theme/tree/<string:category_slug>")
+@cache.cached()
 def theme_category_tree(category_slug:str):
     """
     returns a tree view of themes.
@@ -155,6 +160,7 @@ def theme_category_tree(category_slug:str):
 
 
 @app.route("/i/theme/<string:id_uuid>")
+@cache.cached()
 def main_theme(id_uuid:str):
     """fetch all iconographic resources related to a theme"""
     r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
@@ -162,6 +168,7 @@ def main_theme(id_uuid:str):
 
 
 @app.route("/i/theme/name/<id_uuid>")
+@cache.cached()
 def main_theme_name(id_uuid:str):
     """
     get the name of a theme from its UUID. used in the main page for a theme.
@@ -170,6 +177,7 @@ def main_theme_name(id_uuid:str):
     return jsonify([ t[0].entry_name for t in r.all() ])
 
 @app.route("/i/theme/category/name/all")
+@cache.cached()
 def theme_category_name_all():
     """
     :returns: an array of all allowed categories
@@ -184,6 +192,7 @@ def theme_category_name_all():
 
 
 @app.route("/i/theme/category/name/<string:category_slug>")
+@cache.cached()
 def theme_category_name(category_slug:str):
     """
     returns as a string the category name corresponding to a category_slug
@@ -205,6 +214,7 @@ def theme_category_name(category_slug:str):
 
 
 @app.route("/i/named-entity")
+@cache.cached()
 def index_named_entity():
     """
     return an index of named entity categories or an index of named entities.
@@ -234,6 +244,7 @@ def index_named_entity():
 
 
 @app.route("/i/named-entity/tree/<string:category_slug>")
+@cache.cached()
 def named_entity_category_tree(category_slug:str):
     """
     returns a tree view of named entities.
@@ -262,6 +273,7 @@ def named_entity_category_tree(category_slug:str):
 
 
 @app.route("/i/named-entity/<id_uuid>")
+@cache.cached()
 def main_named_entity(id_uuid:str):
     """
     fetch all iconographic resources related to a named entity.
@@ -271,6 +283,7 @@ def main_named_entity(id_uuid:str):
 
 
 @app.route("/i/named-entity/name/<id_uuid>")
+@cache.cached()
 def main_named_entity_name(id_uuid:str):
     """
     get the name of a named entity from its UUID
@@ -281,6 +294,7 @@ def main_named_entity_name(id_uuid:str):
 
 
 @app.route("/i/named-entity/category/name/all")
+@cache.cached()
 def named_entity_category_name_all():
     """
     :returns: an array of all allowed categories
@@ -295,6 +309,7 @@ def named_entity_category_name_all():
 
 
 @app.route("/i/named-entity/category/name/<string:category_slug>")
+@cache.cached()
 def named_entity_category_name(category_slug:str):
     """
     returns as a string the category name corresponding to a category_slug
@@ -328,6 +343,7 @@ def named_entity_category_name(category_slug:str):
 # *************************************************************************
 
 @app.route("/i/institution")
+@cache.cached()
 def institution():
     """
     get all institution elements
@@ -376,6 +392,7 @@ def institution():
 
 
 @app.route("/i/institution/<string:id_uuid>")
+@cache.cached()
 def main_institution(id_uuid: str):
     """
     return data for a specific institution
@@ -384,6 +401,7 @@ def main_institution(id_uuid: str):
     return jsonify([ i[0].serialize_full() for i in r.all() ])
 
 @app.route("/i/institution/name/<string:id_uuid>")
+@cache.cached()
 def main_institution_name(id_uuid:str):
     """
     get the name of an institution from its UUID
@@ -399,6 +417,7 @@ def main_institution_name(id_uuid:str):
 # *************************************************************************
 
 @app.route("/i/place")
+@cache.cached()
 def index_place():
     """
     get all `place` ressources
@@ -407,6 +426,7 @@ def index_place():
     return jsonify([ _[0].serialize_lite() for _ in r.all() ])
 
 @app.route("/i/place/<string:id_uuid>")
+@cache.cached()
 def place_main(id_uuid:str):
     """
     fetch a place from its `id_uuid` and return all iconography.
@@ -416,6 +436,7 @@ def place_main(id_uuid:str):
 
 
 @app.route("/i/place/lite/<string:place_uuid>")
+@cache.cached()
 def place_lite(place_uuid:str):
     """
     get a single `place` item and return its `serialize_lite()` repr
@@ -424,6 +445,7 @@ def place_lite(place_uuid:str):
     return jsonify([ _[0].serialize_lite() for _ in r.all() ])
 
 @app.route("/i/place/address/<string:id_uuid>")
+@cache.cached()
 def place_address(id_uuid):
     """
     get an address for a place based on this place's `id_uuid`
@@ -454,6 +476,7 @@ def index_directory():
 # *************************************************************************
 
 @app.route("/i/cartography-main/places")
+@cache.cached()
 def cartography_places():
     """
     get all places and return them as a geojson FeatureCollection
