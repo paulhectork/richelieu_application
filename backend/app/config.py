@@ -49,7 +49,7 @@ class PROD:
     SQLALCHEMY_DATABASE_URI = db_uri(params)
     SQLALCHEMY_ECHO = False
     #SERVER_NAME = "172.17.1.142:5001"
-    SERVER_NAME = "quartier-richelieu-retour.inha.fr:5001"
+    SERVER_NAME = "quartier-richelieu.inha.fr:5001"
 
 # dict to choose the config based on a key
 CONFIGS = { "dev": DEV,
