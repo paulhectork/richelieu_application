@@ -5,9 +5,12 @@
 <template>
   <div class="menu-wrapper fill-parent negative-default">
 
-    <ul class="menu fill-parent border-bottom list-invisible">
+    <ul class="menu fill-parent border-bottom list-invisible"
+    >
       <li>
-        <div class="menu-category has-subcategories">
+        <div class="menu-category has-subcategories"
+             id="menu-block-parcourir"
+        >
           <h1>Parcourir</h1>
           <ul class="menu-subcategories list-invisible">
             <li class="main-default">
@@ -258,7 +261,6 @@ a {
 }
 .menu-subcategories > li {
   margin: 5px 3px;
-  padding: 1px;
   display: flex;
   align-items: stretch;
   width: 100%;
@@ -284,5 +286,20 @@ a {
     display: block;
   }
 }
+/** the first block contains a lot of info so it's a bitch to style */
+@media ( orientation:portrait ) {
+  #menu-block-parcourir > .menu-subcategories {
+    display: grid;
+    grid-template-columns: repeat(3,33.33%);
+    grid-template-rows: 50% 50%;
+    grid-gap: 5px;
+  }
+  #menu-block-parcourir > .menu-subcategories > li {
+    transform: translateY(-20%);
+    height: 100%;
+    width: 97%;
+  }
+}
+
 
 </style>
