@@ -30,6 +30,8 @@ const router = createRouter({
                     behavior:"smooth" }
         }, 250)
       })
+    // } else if ( savedPosition ) {
+    //   return savedPosition
     } else {
       return { top: 0 }
     }

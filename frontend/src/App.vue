@@ -154,8 +154,12 @@ onUnmounted(() => {
                       calc(100vh - var(--cs-navbar-height));
   margin: 0;
   padding: 0;
+  /*
   height: 100vh;
   width: 100vw;
+  overflow-x: hidden;
+  overflow-y: auto;
+  */
 }
 
 /****************************************/
@@ -164,9 +168,26 @@ onUnmounted(() => {
   /* the two lines below are important
      for the behaviour of the page when
      scrolling */
+  /* fwig,
+    - enabling `position: fixed` with overflow rules
+      messes up the `vue-router`'s scrollBehavior()
+      (exactly this problem :
+      https://medium.com/@andrewmasonmedia/how-to-fix-scroll-to-top-scrollbehaviour-not-working-in-vue-router-b443c0fecf91)
+    - diabling `position: fixed` and overflow rules
+      fixes `scrollBehavior()` but generates CSS bugs:
+      - loaders disappear on ArticleMainView's image part
+      - the mobile navbar is slightly laggy
+      - there's a wee-bit of unintened horizontal scrolling
+        in portrait displays.
+      - the stickyness of the image part fails
+      - the UiLoader on IconographyMain also goes byebye
+   */
   position: fixed;
   overflow-y: scroll;
   overflow-x: hidden;
+  margin-top: var(--cs-navbar-height);
+  height: calc(100vh - var(--cs-navbar-height));
+  max-width: 100vw;
 
   /*
   on mobile, TheSidebar is on the bottom of the page
@@ -178,8 +199,6 @@ onUnmounted(() => {
   grid-template-columns: 100%;
   grid-template-rows: calc(100% - var(--cs-portrait-sidebar-height)) var(--cs-portrait-sidebar-height);
 
-  margin-top: var(--cs-navbar-height);
-  height: calc(100vh - var(--cs-navbar-height));
 }
 
 @media ( orientation: landscape ) {

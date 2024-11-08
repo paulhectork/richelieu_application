@@ -1,3 +1,13 @@
+<!-- IntroIiifView.vue
+
+  a minimal introduction page. it contains 2 elements:
+  - a modal with some info on the website
+  - a iiif viewer in the background that moves based
+    on the user's mouse movements.
+
+  it's pretty neat :)
+-->
+
 <template>
 <div class="intro-outer-wrapper">
   <div class="intro-inner-wrapper">
@@ -168,9 +178,6 @@ function panViewportOnMousemove(e) {
  * @param {jQuery.event} e
  */
 function redirectToHome(e) {
-  console.log("omg hiiii");
-  console.error("INTROIIIFVIEW: check that redirections are not broken");
-
   if ( viewer.value && viewer.value.viewport ) {
     let currentZoom = viewer.value.viewport.getZoom();
     console.log(currentZoom);
