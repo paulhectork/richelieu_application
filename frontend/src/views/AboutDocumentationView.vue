@@ -184,14 +184,26 @@ onMounted(() => {
 :deep(.textpage-text-wrapper) {
   border-bottom: var(--cs-main-border);
 }
+:deep(.textpage-text-wrapper:not(:last-child)) {
+  padding-bottom: 4vh;
+}
 :deep(.textpage-text-wrapper:last-child) {
   border-bottom: none;
 }
-
+:deep(.textpage-text-wrapper h3) {
+  font-variant-caps: small-caps;
+  text-decoration: underline;
+}
+:deep(.textpage-text-wrapper h4) {
+  text-decoration: underline;
+}
 :deep(.textpage-text-wrapper dt) {
   font-family: var(--cs-font-serif);
   font-size: 110%;
   font-variant-caps: small-caps;
   margin-top: 5px;
+}
+:deep(.textpage-text-wrapper dd) {
+  margin-bottom: 20px;
 }
 </style>

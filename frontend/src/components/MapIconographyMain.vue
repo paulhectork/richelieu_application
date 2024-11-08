@@ -38,7 +38,7 @@ async function buildPlacePopup(placeUuid) {
     let address = r.data[0].address;
     address = address.length
               ? address[0].address
-              : "Addresse inconnue";
+              : "Adresse inconnue";
     return `<a href="${urlToFrontendPlace(placeUuid).href}"
             >${address}</a>`
   })

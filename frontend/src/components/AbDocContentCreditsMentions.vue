@@ -13,9 +13,8 @@
         Teoman Akgönül, Esther Da Silva et Louise Baranger</dd>
       <dt>Remerciements</dt>
       <dd>Pour leur aide à l'élaboration, au développement et au suivi du projet,
-        l'équipe addresse ses remerciements à&nbsp;:
+        l'équipe adresse ses remerciements à&nbsp;:
         <strong>Jean-Christophe Carius</strong> (INHA),
-        <strong>Federico Nurra</strong> (INHA),
         <strong>Manuel Charpy</strong> (CNRS, InVisu),
         <strong>Éric Mermet</strong> (CNRS, Paris Time Machine),
         <strong>Laurent Costa</strong> (CNRS, Paris Time Machine),

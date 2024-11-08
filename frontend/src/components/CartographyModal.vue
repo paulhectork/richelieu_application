@@ -19,15 +19,16 @@
       </div>
       <div class="c-modal-text-wrapper">
         <div class="c-modal-text">
-          <p>Cette carte présente l'évolution du parcellaire du quartier permet
-            d'explorer les représentations du quartier de la fin du XVIII<sup>e</sup>
-            au début du XX<sup>e</sup> siècle. Voici comment l'utiliser&nbsp:</p>
+          <p>Cette carte présente l'évolution du parcellaire du quartier
+            et permet d'explorer les représentations du quartier de la fin
+            du XVIII<sup>e</sup> au début du XX<sup>e</sup> siècle.
+            Voici comment l'utiliser&nbsp:</p>
           <ul>
             <li>Dans la carte, cliquer sur une parcelle permettra d'obtenir plus
               d'information sur celle-ci:
               <ul>
-                <li>Une interface s'ouvrira pour explorer toutes
-                  les ressources iconographiques associées à la parcelle cliquée.</li>
+                <li>Une interface s'ouvrira pour explorer toutes les ressources
+                  iconographiques associées à la parcelle sélectionnée.</li>
                 <li>Sur la carte, la parcelle cliquée s'affichera en
                   <span class="ui-button-demo bg-color"
                         style="background-color: var(--cs-duck)"
@@ -43,7 +44,7 @@
               </UiButtonFilter></span> permet d'afficher une barre contenant
               des filtres pour sélectionner les parcelles à afficher.
               <ul>
-                <li><code>Addresse</code> permet de sélectionner les addresses
+                <li><code>Adresse</code> permet de sélectionner les adresses
                   à afficher sur la carte.</li>
                 <li><code>Nombre de ressources iconographiques</code> permet
                   de n'afficher les parcelles qui ne contiennent qu'un certain nombre

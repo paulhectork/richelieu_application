@@ -48,7 +48,7 @@
       en bon état
       <UiButtonEllipsis data-key="circulaire"></UiButtonEllipsis>&nbsp;</q>
       le patrimoine, tel que le définit
-      Aloïs Riegl dans Le culte moderne des monuments en
+      Aloïs Riegl dans <i>Le Culte moderne des monuments</i> en
       1903
       <UiButtonEllipsis data-key="riegl"></UiButtonEllipsis>.
     </p>

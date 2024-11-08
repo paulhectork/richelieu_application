@@ -59,10 +59,10 @@
                  @input="emitFilterUpdate"
         >
           <FormKit type="fkSelect"
-                   placeholder="Sélectionner une addresse"
+                   placeholder="Sélectionner une adresse"
                    name="address"
-                   label="Addresse"
-                   help="Sélectionner une ou plusieurs addresses"
+                   label="Adresse"
+                   help="Sélectionner une ou plusieurs adresses"
                    :options="places.features.map(x => {
                     return { label : x.properties.address[0].address,
                              value : x.properties.address[0].id_uuid  }})"

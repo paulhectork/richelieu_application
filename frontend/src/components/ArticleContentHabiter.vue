@@ -49,7 +49,7 @@
       galeries concurrentes, dont la réalisation a été confiée
       aux architectes Delannoy pour la première, et Billaud
       pour la seconde, sont décorées à l'antique
-      <UiButtonEye data-key="qr18ca93ff1148c4bac90bc214ada75f203"></UiButtonEye>.
+      <UiButtonEye data-key="qr1d096cec185fa4e42b236f764056ad5a0"></UiButtonEye>.
       Leurs élévations intérieures sont gravées et figurées
       cotes à cotes sur une même planche dans le <i>Nouveau
       recueil de menuiseries</i> (1837) de François Thiollet
@@ -156,7 +156,7 @@ import { urlToFrontendTheme, urlToFrontendNamedEntity } from "@utils/url.js";
 
 const emit    = defineEmits(["queryParams", "iiifIdUuidArray", "footnotes"]);  // what to emit to `ArticleMainView.vue`
 
-const iiifIdUuidArray = [ "qr18ca93ff1148c4bac90bc214ada75f203"	// "MC352"
+const iiifIdUuidArray = [ "qr1d096cec185fa4e42b236f764056ad5a0"	// "MC352"
                         , "qr1e3bf9de9bc46475692d703a7c2a62985"	// "MC349"
                         , "qr12415af99153c42aa8b626f8c077909e9"	// "INHA 12-3-2"
                         , "qr1f4edbc33c65a4c049cfca42d2e1cab91"	// "INHA 12-3-1"

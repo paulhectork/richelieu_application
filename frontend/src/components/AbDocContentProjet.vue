@@ -4,7 +4,14 @@
     <p>Le projet de recherche <i>Richelieu. Histoire du quartier</i>
       (1750-1950) est né de la collaboration de plusieurs
       institutions publiques situées au cœur du II<sup>e</sup>
-      arrondissement de Paris. Ce projet étudie le quartier
+      arrondissement de Paris&nbsp;:
+      <a href="https://www.bnf.fr/fr">la Bibliothèque nationale de France</a>,
+      <a href="https://www.dfk-paris.org/">le Centre allemand d'histoire de l'art</a>,
+      <a href="https://www.centrechastel.sorbonne-universite.fr/">le centre Chastel</a>,
+      <a href="https://www.chartes.psl.eu/">l'École nationale des chartes&mdash;PSL</a>,
+      <a href="https://www.inha.fr/">l'Institut national d'histoire de l'art</a> et
+      <a href="https://www.epfl.ch/fr/">l'École polytechnique fédérale de Lausanne</a>.
+      Ce projet étudie le quartier
       communément désigné sous le nom de <q>&nbsp;Richelieu&nbsp;</q>,
       à travers ses dynamiques architecturales, humaines
       et économiques et en croisant des sources iconographiques
@@ -79,7 +86,8 @@
       l'espace public et les représentations visuelles, émergent
       pour signifier le dynamisme d'une capitale moderne.
     </p>
-    <p>Enfin, la base de données permet d'explorer ces modes
+    <p>Enfin, <RouterLink to="/recherche">la base de données</RouterLink>
+      permet d'explorer ces modes
       de fonctionnement sous un angle plus ciblé en offrant
       la possibilité d'analyser de manière locale et concrète
       la réalité de cette production, par parcelle, par nom,

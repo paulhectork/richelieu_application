@@ -61,7 +61,7 @@
     <p>L'intégralité des outils produits par le projet <i>Richelieu</i> sont
       accessibles sur le dépôt <a href="https://gitlab.inha.fr/snr/rich.data/">
         GitLab de l'INHA</a>. Plus spécifiquement, le code du site est disponible
-      à <a href="https://gitlab.inha.fr/snr/rich.data/application">cette addresse</a>.
+      à <a href="https://gitlab.inha.fr/snr/rich.data/application">cette adresse</a>.
     </p>
     <p>Le code produit par le projet <i>Richelieu</i> est rendu disponible sous la
       licence libre <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPL v. 3.0</a>.

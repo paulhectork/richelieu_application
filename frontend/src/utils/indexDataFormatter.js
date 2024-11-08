@@ -48,7 +48,7 @@ export const indexDataFormatterPlace = (dataArr) =>
              href   : urlToFrontendPlace(c.id_uuid).pathname,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
              img    : c.filename.length ? urlToCartographyFile(c.filename[0].url).href : null,
-             text   : c.address.length ? c.address[0].address : "Addresse inconnue" };
+             text   : c.address.length ? c.address[0].address : "Adresse inconnue" };
   })
 
 export const indexDataFormatterThemeCategory = (dataArr) =>

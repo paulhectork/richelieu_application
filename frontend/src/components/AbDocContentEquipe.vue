@@ -4,15 +4,21 @@
     <dl>
       <dt>Charlotte Duvette (2021-2024)</dt>
       <dd>Charlotte Duvette est historienne de
-      la ville et de l'architecture. Docteure en histoire
-      de l'art et de l'architecture (université Paris 1 Panthéon-Sorbonne),
-      elle est chercheuse associée au centre de recherche
+      la ville et de l'architecture et a dirigé le projet
+      <i>Richlieu. Histoire du quartier</i> de 2021 à 2024.
+      Docteure en histoire de l'art et de l'architecture
+      (université Paris 1 Panthéon-Sorbonne),
+      elle est également chercheuse associée au centre de recherche
       HiCSA. Ses  publications concernent les transformations
       urbaines de Paris, l'architecture privée, les jardins,
       l'histoire des constructions et des représentations
       entre le XVIII<sup>e</sup> et le XIX<sup>e</sup> siècle.
-      Elle a reçu pour sa thèse le Prix Lambert et le second prix de l'Académie
-      d'Architecture 2023.</dd>
+      Elle a reçu pour sa thèse le Prix Lambert et le
+      second prix de l'Académie d'Architecture 2023.
+      Depuis 2024, elle est maîtresse de conférence
+      associée en histoire et cultures architecturales
+      à l'ENSAB (École nationale supérieure d'architecture de Bretagne).
+    </dd>
     </dl>
 
     <h3 id="abdoc-inge">Ingénieurs d'études et de recherche</h3>
@@ -112,8 +118,8 @@
       données océrisées au sein du projet Richelieu.
     </dd>
     <dt>Louise Baranger (2023)</dt>
-    <dd>Avec l'aide de Louise Baranger, monitrice étudiante à la
-      Direction des études et de la recherche à l'INHA. Elle
+    <dd>Monitrice étudiante à la Direction des  études
+      et de la recherche à l'INHA en 2023-2024, elle
       a participé à l'enrichissement des sources du projet
       Richelieu. Elle est diplômée d'un master en histoire de
       l'architecture médiévale à l'université Panthéon-Sorbonne (sous la direction
@@ -137,7 +143,7 @@
       <dd>Responsable de la coordination de la recherche à la BnF.</dd>
       <dt>Frédéric Kaplan</dt>
       <dd>Directeur du Collège des humanités à l'EPFL.</dd>
-      <dt>Isabella di Leonardo</dt>
+      <dt>Isabella di Lenardo</dt>
       <dd>Maîtresse de conférences à l'École Polytechnique de Lausanne (EPFL).</dd>
       <dt>Livio de Luca</dt>
       <dd>Directeur de l'UMR Modèles et simulations pour l'Architecture
