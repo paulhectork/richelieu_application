@@ -185,12 +185,14 @@ onUnmounted(() => {
       - the stickyness of the image part fails
       - the UiLoader on IconographyMain also goes byebye
    */
+  /*
   position: fixed;
   overflow-y: scroll;
   overflow-x: hidden;
   margin-top: var(--cs-navbar-height);
   height: calc(100vh - var(--cs-navbar-height));
   max-width: 100vw;
+  */
 
   /*
   on mobile, TheSidebar is on the bottom of the page
