@@ -199,6 +199,7 @@ a {
   justify-content: center;
 
   border-left: var(--cs-main-border);
+  z-index: 2;
 }
 .menu {
   display: grid;
