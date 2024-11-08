@@ -175,7 +175,8 @@ onUnmounted(() => {
       https://medium.com/@andrewmasonmedia/how-to-fix-scroll-to-top-scrollbehaviour-not-working-in-vue-router-b443c0fecf91)
     - diabling `position: fixed` and overflow rules
       fixes `scrollBehavior()` but generates CSS bugs:
-      - the UiLoader on IconographyMain also goes byebye
+      x lazy loading in IndexBase gets broken
+      x the UiLoader on IconographyMain also goes byebye
       x loaders disappear on ArticleMainView's image part
       x ArticleMainView: the stickyness of the image part fails
       x the mobile navbar is slightly laggy
