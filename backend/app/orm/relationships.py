@@ -65,8 +65,8 @@ class R_IconographyPlace(db.Model):
     id_iconography : Mapped[int] = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=False)
     id_place       : Mapped[int] = mapped_column(psql.INTEGER, ForeignKey("place.id"), nullable=False)
 
-    iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="r_iconography_place")
-    place       : Mapped["Place"]       = relationship("Place", back_populates="r_iconography_place")
+    iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="r_iconography_place", lazy="selectin")
+    place       : Mapped["Place"]       = relationship("Place", back_populates="r_iconography_place", lazy="selectin")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
