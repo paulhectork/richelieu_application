@@ -26,8 +26,16 @@
         </div>
         <div class="content-block">
           <div class="image-block">
+            <!--
             <img :src="vasserotImgSrc"
                  alt="Relevé parcellaire du Palais-Royal sur l'atlas Vasserot (Archives de Paris)"
+            >
+            -->
+            <!--
+            <img src="@/assets/media/home_modal_map_noborder.jpg">
+            -->
+            <img :src="urlToIconographyFile('qr13f4af1da6eee4caabdc8e39f30ac92a6_compress.jpg')"
+                 alt="Gravure représentant la section LePelletier en 1792, durant la révolution française, sur la rue ViVienne"
             >
           </div>
           <div class="info-block">
@@ -80,6 +88,7 @@ import $ from "jquery";
 
 import IiifViewer from "@components/IiifViewer.vue";
 
+import { urlToIconographyFile } from "@utils/url";
 import { randomColorLight } from "@utils/colors";
 
 /****************************************************/
