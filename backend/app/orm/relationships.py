@@ -122,8 +122,8 @@ class R_IconographyNamedEntity(db.Model):
     id_iconography  : Mapped[int] = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=False)
     id_named_entity : Mapped[int] = mapped_column(psql.INTEGER, ForeignKey("named_entity.id"), nullable=False)
 
-    iconography  : Mapped["Iconography"] = relationship("Iconography", back_populates="r_iconography_named_entity")
-    named_entity : Mapped["NamedEntity"] = relationship("NamedEntity", back_populates="r_iconography_named_entity")
+    iconography  : Mapped["Iconography"] = relationship("Iconography", back_populates="r_iconography_named_entity", lazy="selectin")
+    named_entity : Mapped["NamedEntity"] = relationship("NamedEntity", back_populates="r_iconography_named_entity", lazy="selectin")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
@@ -141,8 +141,8 @@ class R_IconographyTheme(db.Model):
     id_iconography : Mapped[int] = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=False)
     id_theme       : Mapped[int] = mapped_column(psql.INTEGER, ForeignKey("theme.id"), nullable=False)
 
-    iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="r_iconography_theme")
-    theme       : Mapped["Theme"]       = relationship("Theme", back_populates="r_iconography_theme")
+    iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="r_iconography_theme", lazy="selectin")
+    theme       : Mapped["Theme"]       = relationship("Theme", back_populates="r_iconography_theme", lazy="selectin")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
@@ -189,10 +189,10 @@ class R_Institution(db.Model):
     id_directory   : Mapped[int] = mapped_column(psql.INTEGER, ForeignKey("directory.id"), nullable=True)
     id_institution : Mapped[int] = mapped_column(psql.INTEGER, ForeignKey("institution.id"), nullable=False)
 
-    iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="r_institution")
-    cartography : Mapped["Cartography"] = relationship("Cartography", back_populates="r_institution")
-    directory   : Mapped["Directory"]   = relationship("Directory", back_populates="r_institution")
-    institution : Mapped["AdminPerson"] = relationship("Institution", back_populates="r_institution")
+    iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="r_institution", lazy="selectin")
+    cartography : Mapped["Cartography"] = relationship("Cartography", back_populates="r_institution", lazy="selectin")
+    directory   : Mapped["Directory"]   = relationship("Directory", back_populates="r_institution", lazy="selectin")
+    institution : Mapped["AdminPerson"] = relationship("Institution", back_populates="r_institution", lazy="selectin")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
