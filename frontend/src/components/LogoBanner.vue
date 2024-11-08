@@ -20,7 +20,7 @@
       <div class="logobanner-partenaires-wrapper logobanner-block">
         <div v-if="headers===true"
              class="logobanner-title-wrapper"
-        ><h2>Avec l'aide de</h2></div>
+        ><h2>En partenariat avec</h2></div>
         <div class="logobanner-partenaires img-wrapper">
           <img src="@/assets/icons/logo_help_layout.png">
         </div>
