@@ -122,29 +122,18 @@ const computedStyle = computed(() =>
 const pageRenderer = (pNumber, pSize) =>
    data.value.slice(0, (pNumber+1) * pSize);
 
-/*
 /**
- * simplify the string `s`
- * /
-const simplifyString = s =>
-  s !== undefined
-  ? s.toLowerCase().trim().replaceAll(/\s+/g, " ")
-  : s;
-
-/**
- * remove html tags from the string `_string`
- * /
-const stripHtml = _string => _string.replace(/<[^>]*>?/gm, '');
-
-/**
- * @param {string} filterBy
- * /
-function textFilter(filterBy) {
-  filterBy = simplifyString( stripHtml(filterBy) );
-  dataFilter.value = dataFull.value.filter(x =>
-    simplifyString( stripHtml(x.text) ).includes(filterBy) );
+ * infinite scroller: if the user has scrolled
+ * to the bottom of `$t`, increment the pageNumber.
+ * see: https://www.geeksforgeeks.org/how-to-detect-when-user-scrolls-to-the-bottom-of-a-div/
+ */
+const infiniteScroller = () => {
+  const $t = $(".index-inner-wrapper");
+  if ( $(window).scrollTop() >= $t.offset().top + $t.outerHeight() - window.innerHeight ) {
+      pageNumber.value++
+  }
 }
-*/
+
 
 /*******************************************************/
 
@@ -158,22 +147,12 @@ watch(props, (newP, oldP) => {
 })
 
 onMounted(() => {
-  // dataFull.value = props.data;
-  // dataFilter.value = dataFull.value;
   data.value = props.data;
-
-  // infinite scroll:
-  // if you've scrolled to the end of page, increment pageNumber.
-  $(".content-wrapper").on("scroll", (e) => {
-    const t = e.target;
-    if ( t.scrollTop === t.scrollHeight - t.offsetHeight ) {
-      pageNumber.value++
-    }
-  })
+  $(window).on("scroll", infiniteScroller);
 })
-onUnmounted(() =>
-  $("main").off("scroll")
-)
+onUnmounted(() => {
+  $(window).off("scroll");
+})
 </script>
 
 <style>

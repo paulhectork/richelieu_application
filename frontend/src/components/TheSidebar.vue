@@ -97,26 +97,25 @@ const panPoint = ref(); // Openseadragon.Point : the point on which the viewer i
  */
 
 /**
- * get the scroll ratio of ".content-wrapper":
+ * get the scroll ratio of "body":
  * 0 = hasn't been scrolled at all,
  * 1 = has completely been scrolled
+ * see: https://stackoverflow.com/a/28994709/17915803
  * @returns {Number}: 0..1
  */
 function getScrollRatio() {
-  var s = $(".content-wrapper").scrollTop(),     // number of pixels to scroll back to top
-      f = $(".content-wrapper")[0].scrollHeight, // full height of overflow: scroll element.
-      m = $(".content-wrapper").height() / 2;    // half the height of ".content-wrapper" on the client (without the overflow: scroll stuff)
-
-  return (s+m)/f;
+  const elm = document.body,
+        p   = document.body.parentNode;
+  return (p.scrollTop || elm.scrollTop) / (p.scrollHeight - p.clientHeight);
 }
 
 /**
  * calculate the point to pan the viewer to, optionnally
- * depending on the scrolling % of ".content-wrapper":
+ * depending on the scrolling % of "body":
  *
  * the y-coordinate of the point returned is defined by `y`
  * the x-coordinate of that point is within a range of (`xStart`,`xEnd`),
- * and its precise poisition depends on the % of .content-wrapper that has been scrolled.
+ * and its precise poisition depends on the % of body that has been scrolled.
  * at the top of the page, `x` == `xStart`, at the end, it is closer to `xEnd`.
  *
  * @param {Number} xStart       : the X minimum to pan to
@@ -131,7 +130,7 @@ function makePanPoint(xStart, xEnd, y, xScrollRatio=0) {
 
 /**
  * pan the viewport horizontally depending on the vertical scroll
- * of the `.content-wrapper` html element. see `makePanPoint` for details.
+ * of the `body` html element. see `makePanPoint` for details.
  * if `init===false`, add an x-offset defined by the % of page
  * scrolled. else, there is no offset.
  */
@@ -207,8 +206,7 @@ function defineViewer(newViewer) {
     viewportPan();
 
     // on scroll, update the viewport's center.
-    // $(".content-wrapper").on("scroll", () => {
-    $(".content-wrapper").on("scroll", () => {
+    $(window).on("scroll", () => {
       setTimeout(() => {
         viewportPan();
       }, 50)
@@ -229,7 +227,7 @@ function defineViewer(newViewer) {
 watch(route, () => { if (viewer.value !== false) { viewportReset() } });
 
 onUnmounted(() => {
-  $(".content-wrapper").off("scroll");
+  $(window).off("scroll");
 })
 </script>
 

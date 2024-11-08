@@ -9,8 +9,11 @@
 -->
 
 <template>
+  <div class="iconography-loader-wrapper"
+       v-if="loadState === 'loading'"
+  ><UiLoader></UiLoader></div>
   <div class="iconography-outer-wrapper"
-       v-if="iconography">
+       v-else-if="iconography && loadState === 'loaded'">
        <!--
         v-if="iconographyLoaded.value===true">
        -->
@@ -71,6 +74,12 @@
 
   </div>
 
+  <div class="iconography-error-wrapper"
+       v-else
+  >
+    <ErrNotFound></ErrNotFound>
+  </div>
+
   <!----
   <div v-else>
     <p>Chargement en cours</p>
@@ -88,6 +97,9 @@ import axios from "axios";
 
 import MapIconographyMain from "@components/MapIconographyMain.vue";
 import IiifViewer from "@components/IiifViewer.vue";
+import UiLoader from "@components/UiLoader.vue";
+import ErrNotFound from "@components/ErrNotFound.vue";
+
 import { clickOrTouchEvent } from "@globals";
 import { stringifyActorArray
        , stringifyNamedEntityArray
@@ -98,10 +110,12 @@ import { stringifyActorArray
 
 /***************************************************/
 
-const route = useRoute();
-const idUuid = ref(route.params.idUuid);
+const route       = useRoute();
+const idUuid      = ref(route.params.idUuid);
 const iconography = ref();
-const viewerType = ref("osd");  // "osd" for a IIIF viewer, "leaflet" for a leaflet map of the place of this image
+const loadState   = ref("loading");  // "loading"/"loaded"/"error"
+const viewerType  = ref("osd");  // "osd" for a IIIF viewer, "leaflet" for a leaflet map of the place of this image
+
 
 const apiTarget = computed(() =>
   new URL(`/i/iconography/${idUuid.value}`, __API_URL__) );
@@ -166,8 +180,15 @@ const structuredCartel = computed(() => {
 function getIconographyResource() {
   axios
   .get(apiTarget.value)
-  .then((r) => {
-    iconography.value = r.data[0] })
+  .then(r => r.data)
+  .then(data => {
+    iconography.value = data[0];
+    loadState.value = "loaded";
+  })
+  .catch(e => {
+    console.error("IcoonographyMainView.getIconographyResource() : ", e);
+    loadState.value = "error";
+  })
 }
 
 function toggleViewer(e) {
@@ -190,16 +211,23 @@ onUpdated(() => {
 
 
 <style scoped>
+.iconography-loader-wrapper,
+.iconography-error-wrapper,
 .iconography-outer-wrapper {
   width: 100%;
   height: var(--cs-portrait-main-height);
-  display: grid;
-  grid-template-rows: 1fr 85%;
 }
 @media ( orientation:landscape ) {
+  .iconography-loader-wrapper,
+  .iconography-error-wrapper,
   .iconography-outer-wrapper {
     height: var(--cs-landscape-main-height);
   }
+}
+
+.iconography-outer-wrapper {
+  display: grid;
+  grid-template-rows: 1fr 85%;
 }
 .title-wrapper {
   display: flex;

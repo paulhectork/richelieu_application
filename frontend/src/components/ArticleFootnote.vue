@@ -1,6 +1,6 @@
 <template>
   <div :id="props.footnoteHtmlId"
-       class="footnote-outer-wrapper">
+       class="footnote-outer-wrapper animate__animated animate__slideInLeft">
     <div class="footnote-inner-wrapper">
       <p v-html="props.footnoteContent"
       ></p>

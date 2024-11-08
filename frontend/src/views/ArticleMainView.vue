@@ -68,6 +68,9 @@
             <p v-html="stringifyIconographyResource(iconographyMainCurrent, truncate=false)"></p>
           </div>
         </div>
+        <div v-else
+             class="iiif-loader-wrapper"
+        ><UiLoader></UiLoader></div>
       </div>
       <div class="article-wrapper">
         <component :is="articleComponent"
@@ -459,11 +462,14 @@ function mountFootnoteOnClick(evt) {
 function translateIiifInnerWrapper(e) {
   // disable the update on portrait viewers.
   if ( domStore.windowOrientation === "landscape" ) {
-    const $outer = $(".iiif-wrapper"),
-          $inner = $(".iiif-inner-wrapper"),
+    const $inner       = $(".iiif-inner-wrapper"),
+          outerRect    = document.querySelector(".iiif-wrapper").getBoundingClientRect(),
           navbarHeight = $("nav.navbar").height(),
-          offsetTop = -$outer.offset().top + navbarHeight;
-    $inner.css({ transform: `translateY(${offsetTop}px)` })
+          offsetTop   = navbarHeight-outerRect.top;
+
+    // stop scrolling once $inner is at the bottom of its container `.iiif-wrapper`
+    if ( offsetTop + $inner.height() <= outerRect.height )
+      $inner.css({ transform: `translateY(${offsetTop}px)` })
   }
 }
 
@@ -502,7 +508,7 @@ watch(route, (newRoute, oldRoute) => {
 onMounted(() => {
   articleMounter(route);
   setTimeout(missingArticleData, 1000)
-  $(".content-wrapper").on("scroll", translateIiifInnerWrapper);
+  $(window).on("scroll", translateIiifInnerWrapper);
 })
 
 onUnmounted(() => {
@@ -510,7 +516,7 @@ onUnmounted(() => {
   $(".button-eye").off("touchend", switchIconographyMainOnClick);
   $(".button-ellipsis").off("click", mountFootnoteOnClick);
   $(".button-ellipsis").off("touchend", mountFootnoteOnClick);
-  $(".content-wrapper").off("scroll");
+  $(window).off("scroll");
 })
 </script>
 
@@ -518,19 +524,7 @@ onUnmounted(() => {
 <style scoped>
 .article-main-wrapper {
   height: 100%;
-  overflow: auto;
 }
-/*
-.article-main-wrapper {
-  overflow: scroll;
-  height: var(--cs-portrait-main-height);
-}
-@media ( orientation:landscape ) {
-  .article-main-wrapper {
-    height: var(--cs-landscape-main-height);
-  }
-}
-*/
 .article-viewer-wrapper {
   display: flex;
   flex-direction: column-reverse;
@@ -548,14 +542,14 @@ onUnmounted(() => {
 
 .iiif-wrapper {
   height: 100%;
-  overflow: hidden;
   position: relative;
 }
 .iiif-inner-wrapper {
   height: 100%;
+  width: 100%;
   max-height: calc(100vh - var(--cs-navbar-height));
   /* a sticky behaviour will be mimicked using
-    `translateIiifInnerWrapper()`,
+    `()`,
      which will add a `translateY()`
      position on landscape viewers
   */
@@ -580,6 +574,13 @@ onUnmounted(() => {
   .article-viewer-wrapper :deep(.iiif-viewer) {
     height: auto;
   }
+}
+.iiif-loader-wrapper {
+  height: 100vh;  /** ok so that's a really dirty height >:) */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .iiif-cartel {
   width: 100%;
