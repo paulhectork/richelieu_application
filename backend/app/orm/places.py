@@ -47,8 +47,8 @@ class Place(db.Model):
 
     place_group         : Mapped["PlaceGroup"]                 = relationship("PlaceGroup", back_populates="place")
     r_address_place     : Mapped[t.List["R_AddressPlace"]]     = relationship("R_AddressPlace", back_populates="place")
-    r_iconography_place : Mapped[t.List["R_IconographyPlace"]] = relationship("R_IconographyPlace", back_populates="place")
-    r_cartography_place : Mapped[t.List["R_CartographyPlace"]] = relationship("R_CartographyPlace", back_populates="place")
+    r_iconography_place : Mapped[t.List["R_IconographyPlace"]] = relationship("R_IconographyPlace", back_populates="place", lazy="selectin")
+    r_cartography_place : Mapped[t.List["R_CartographyPlace"]] = relationship("R_CartographyPlace", back_populates="place", lazy="selectin")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
