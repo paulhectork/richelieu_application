@@ -12,7 +12,7 @@
              class="logobanner-title-wrapper"
         ><h2>Un projet porté par</h2></div>
         <div class="logobanner-porteurs img-wrapper">
-          <img src="@/assets/icons/logo_partners_thinborders.png"
+          <img src="@/assets/icons/logo_institutions_thinborders.png"
                alt="Logos des institutions porteuses du projet">
         </div>
       </div>
@@ -22,7 +22,7 @@
              class="logobanner-title-wrapper"
         ><h2>Avec l'aide de</h2></div>
         <div class="logobanner-partenaires img-wrapper">
-          <img src="@/assets/icons/logo_map_layout.png">
+          <img src="@/assets/icons/logo_help_layout.png">
         </div>
       </div>
 
