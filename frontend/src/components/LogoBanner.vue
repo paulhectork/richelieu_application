@@ -57,7 +57,7 @@ const headers = props.headers || false;  // defaults to false
   height: 100%;
   width: 100%;
   display: grid;
-  grid-template-columns: 50% 15% 1fr;
+  grid-template-columns: 2fr 1fr 1.5fr;
   grid-template-rows: 100%;
   justify-items: center;
   align-items: center;

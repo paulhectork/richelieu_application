@@ -48,21 +48,13 @@
 
 <template>
   <h1 hidden>Cartographie</h1>
-  <div class="cartography-outer-wrapper"
-       :class="{ 'right-visible': displayRight }"
-  >
-    <div class="cartography-controller-outer-wrapper"
-        :class="{ 'cartography-controller-visible': displayLeft }"
-    >
-      <CartographyController @close-cartography-controller="closeCartographyController"
-                             @filter-update="onFilterUpdate"
-                             :places="places"
-                             :currentFeatureCount="currentFeatureCount"
-                             v-if="placesFilter !== undefined
-                                   && Object.keys(placesFilter).length
-                                   && places !== undefined
-                                   && Object.keys(places).length"
-      ></CartographyController>
+  <div class="cartography-outer-wrapper" :class="{ 'right-visible': displayRight }">
+    <div class="cartography-controller-outer-wrapper" :class="{ 'cartography-controller-visible': displayLeft }">
+      <CartographyController @close-cartography-controller="closeCartographyController" @filter-update="onFilterUpdate"
+        :places="places" :currentFeatureCount="currentFeatureCount" v-if="placesFilter !== undefined
+    && Object.keys(placesFilter).length
+    && places !== undefined
+    && Object.keys(places).length"></CartographyController>
     </div>
 
     <div class="cartography-wrapper">
@@ -71,17 +63,15 @@
 
     <!--<Transition name="slideInOut">-->
     <div class="cartography-place-wrapper" v-if="placeIdUuid !== undefined">
-      <CartographyPlaceInfo :place-id-uuid="placeIdUuid"
-                            :associated-places="currentAssociatedPlaces"
-                            @close-place-info="closeCartographyPlaceInfo">
+      <CartographyPlaceInfo :place-id-uuid="placeIdUuid" :associated-places="currentAssociatedPlaces"
+        @close-place-info="closeCartographyPlaceInfo">
       </CartographyPlaceInfo>
     </div>
 
     <div class="c-modal-container">
       <Transition name="slideInOut">
         <CartographyModal v-if="domStore.cartographyModalVisible/*displayModal === true*/"
-                          @close-cartography-modal="onCloseCartographyModal"
-        ></CartographyModal>
+          @close-cartography-modal="onCloseCartographyModal"></CartographyModal>
       </Transition>
     </div>
 
@@ -90,7 +80,7 @@
 
 
 <script setup>
-import { onMounted, ref, watch, h } from "vue";
+import { onMounted, onUnmounted, ref, watch, } from "vue";
 
 import axios from "axios";
 import L from "leaflet";
@@ -104,11 +94,13 @@ import CartographyController from "@components/CartographyController.vue";
 import { domStore } from "@stores/dom.js";
 import { uiButtonPlus, uiButtonFilter, uiButtonQuestion } from "@utils/ui";
 import { colorScaleBlue, colorScaleRed } from "@utils/colors";
-import { globalDefineMap
-       , layerBounds
-       , lflDefaultMarker
-       , getLayerByName
-       , mapCenter } from "@utils/leaflet";
+import {
+  globalDefineMap
+  , layerBounds
+  , lflDefaultMarker
+  , getLayerByName
+  , mapCenter
+} from "@utils/leaflet";
 
 /************************************************************/
 
@@ -131,27 +123,27 @@ const lflLayerControl = ref();  // L.Control.Layers: used to programatically cha
 const lflFallBackBounds = ref();  // L.LatLngBounds
 
 // data from the backend
-const places                    = ref({});  // the default geoJson describing places, with no filters. not modified after being fetched from the backend
-const placesFilter              = ref({});  // the geoJson describing places, with filters
-const cartographyForSource      = ref();    // { source: "sourceName", features: [] }. `features` contains all rows of the `Cartography` table with the same "sourceName"
+const places = ref({});  // the default geoJson describing places, with no filters. not modified after being fetched from the backend
+const placesFilter = ref({});  // the geoJson describing places, with filters
+const cartographyForSource = ref();    // { source: "sourceName", features: [] }. `features` contains all rows of the `Cartography` table with the same "sourceName"
 const cartographyForGranularity = ref();    // { granularity: "granularityName", features: [] }. `features` contains all rows of the `Cartography` table with the same "granularityName"
-const currentFeatureCount       = ref();    // number of features currently displayed on the map
-const currentAssociatedPlaces   = ref();    // a list of the 5 places most frequently associated with the currently clicked on place (targeted by `placeIdUuid`)
+const currentFeatureCount = ref();    // number of features currently displayed on the map
+const currentAssociatedPlaces = ref();    // a list of the 5 places most frequently associated with the currently clicked on place (targeted by `placeIdUuid`)
 
 // css
 const transDur = 500;  // transition duration in JS
 const transDurCss = ".5s";  // transition duration in CSS
 
 // [ [min,max], color ]
-const colorClasses = [ [[321, Infinity], colorScaleRed(0 / 7)] // marina's color scale: '#000000'
-                     , [[161, 320], colorScaleRed(1 / 7)] // marina's color scale: '#4b0082'
-                     , [[81, 160], colorScaleRed(2 / 7)] // marina's color scale: '#800080'
-                     , [[41, 80], colorScaleRed(3 / 7)] // marina's color scale: '#ff0000'
-                     , [[21, 40], colorScaleRed(4 / 7)] // marina's color scale: '#ff4500'
-                     , [[11, 20], colorScaleRed(5 / 7)] // marina's color scale: '#ff7f50'
-                     , [[6, 10], colorScaleRed(6 / 7)] // marina's color scale: '#ffddc1'
-                     , [[0, 5], colorScaleRed(7 / 7)] // marina's color scale: '#ffffff'
-                     ];
+const colorClasses = [[[321, Infinity], colorScaleRed(0 / 7)] // marina's color scale: '#000000'
+  , [[161, 320], colorScaleRed(1 / 7)] // marina's color scale: '#4b0082'
+  , [[81, 160], colorScaleRed(2 / 7)] // marina's color scale: '#800080'
+  , [[41, 80], colorScaleRed(3 / 7)] // marina's color scale: '#ff0000'
+  , [[21, 40], colorScaleRed(4 / 7)] // marina's color scale: '#ff4500'
+  , [[11, 20], colorScaleRed(5 / 7)] // marina's color scale: '#ff7f50'
+  , [[6, 10], colorScaleRed(6 / 7)] // marina's color scale: '#ffddc1'
+  , [[0, 5], colorScaleRed(7 / 7)] // marina's color scale: '#ffffff'
+];
 
 /************************************************************/
 /** ajax stuff */
@@ -207,12 +199,11 @@ function closeCartographyController() {
 }
 
 function onCloseCartographyModal() {
-  // displayModal.value = false;
   domStore.cartographyModalVisible = false;
   // zoom on the map when closing the modal.
   // if we have a map and geoJson bounds to zoom to, zoom to the geojson map
   // else, zoom to the default map center.
-  if ( lflFallBackBounds.value ) {
+  if (lflFallBackBounds.value) {
     lflMap.value?.flyToBounds(lflFallBackBounds.value, { duration: .5 });
   } else {
     lflMap.value?.flyTo(mapCenter, 15.5, { duration: .5 })
@@ -231,9 +222,9 @@ function onCloseCartographyModal() {
  */
 const handleDragOnControl = (control, _map) => {
   control.getContainer().addEventListener("mouseover", () =>
-    _map.dragging.disable() );
+    _map.dragging.disable());
   control.getContainer().addEventListener("mouseout", () =>
-    _map.dragging.enable() );
+    _map.dragging.enable());
 }
 
 /**
@@ -247,19 +238,19 @@ const handleDragOnControl = (control, _map) => {
  * @returns {L.Map}
  */
 
- /**
-  * this button changes the opacity of the places geojson
-  *
-  * to change the opacity, the global lflPlaces is accessed,
-  * which i don't like because all other functions only use local values
-  * and global are passed as arguments by `addControls()`, and it's best
-  * to avoid mixing local and global scopes.
-  * however, the global lflPlaces needs to be accessed
-  * here to change the style of the current places geojson layer.
-  * since this layer is reactive and may be changed at any time, it's not
-  * possible to pass it as an argument (this function is called on map init,
-  * but opacity will have to change future versions of the map).
-  */
+/**
+ * this button changes the opacity of the places geojson
+ *
+ * to change the opacity, the global lflPlaces is accessed,
+ * which i don't like because all other functions only use local values
+ * and global are passed as arguments by `addControls()`, and it's best
+ * to avoid mixing local and global scopes.
+ * however, the global lflPlaces needs to be accessed
+ * here to change the style of the current places geojson layer.
+ * since this layer is reactive and may be changed at any time, it's not
+ * possible to pass it as an argument (this function is called on map init,
+ * but opacity will have to change future versions of the map).
+ */
 function addOpacityControl(_map) {
   const opacityCtrl = new L.Control({ position: "topright" });
 
@@ -284,8 +275,8 @@ function addOpacityControl(_map) {
   // add event listening through jquery: change the opacity of the geoJsons
   $("#opacity-slider").on("input", (e) => {
     let v = e.target.value;
-    $("#opacity-to-modif").html(`${ Math.round(v * 100) }%`);
-    if ( lflPlaces.value ) {
+    $("#opacity-to-modif").html(`${Math.round(v * 100)}%`);
+    if (lflPlaces.value) {
       lflPlaces.value.setStyle({ fillOpacity: v });
     }
   })
@@ -412,7 +403,7 @@ function addInfoHoverControl(_map) {
  */
 function addControls() {
   let _map = lflMap.value,
-      infoHover;
+    infoHover;
 
   [_map, infoHover] = addInfoHoverControl(_map);
   _map = addColorControl(_map);
@@ -466,25 +457,25 @@ const onEachLayer = (layer, leafletGeoJson) => {
     // (that is, places that are connected to iconography resources connected
     // to the clicked place). style those layers
     axios.get(new URL(`/i/association/place-from-place/${placeIdUuid.value}`, __API_URL__))
-    .then(r => r.data)
-    .then(data => {
-      currentAssociatedPlaces.value = data;
+      .then(r => r.data)
+      .then(data => {
+        currentAssociatedPlaces.value = data;
 
-      // set the style of the clicked layer
-      layer.setStyle({ fillOpacity: 1, fillColor: "var(--cs-duck)" });
-      associatedLayers.addLayer(layer);
-      // extract all associated layers and set their style
-      leafletGeoJson.eachLayer(otherLayer => {
-        if ( data.map( i => i.id_uuid ).includes( otherLayer.feature.properties.id_uuid ) ) {
-          otherLayer.setStyle({ fillOpacity: 1, fillColor: "var(--cs-seagreen)" })
-          associatedLayers.addLayer(otherLayer);
-        }
+        // set the style of the clicked layer
+        layer.setStyle({ fillOpacity: 1, fillColor: "var(--cs-duck)" });
+        associatedLayers.addLayer(layer);
+        // extract all associated layers and set their style
+        leafletGeoJson.eachLayer(otherLayer => {
+          if (data.map(i => i.id_uuid).includes(otherLayer.feature.properties.id_uuid)) {
+            otherLayer.setStyle({ fillOpacity: 1, fillColor: "var(--cs-seagreen)" })
+            associatedLayers.addLayer(otherLayer);
+          }
+        });
+        // zoom to the clicked layer
+        //TODO fix yank here ?
+        setTimeout(() => _map.fitBounds(associatedLayers.getBounds()),
+          transDur);  // wait for the size animation to complete...
       });
-      // zoom to the clicked layer
-      //TODO fix yank here ?
-      setTimeout(() => _map.fitBounds(associatedLayers.getBounds()),
-                 transDur);  // wait for the size animation to complete...
-    });
   });
 
   // on hover, change the color and weight of the border
@@ -529,9 +520,9 @@ function addPlaces(init) {
   // zoom on the layers. if init, the zoom animation is triggered
   // in `onCloseCartographyModal()`
   if (!init) {
-    _map.fitBounds( _places.features.length
-                ? leafletPlaces.getBounds()
-                : lflFallBackBounds.value);
+    _map.fitBounds(_places.features.length
+      ? leafletPlaces.getBounds()
+      : lflFallBackBounds.value);
   }
 
   lflPlaces.value = leafletPlaces;
@@ -734,16 +725,16 @@ function onFilterUpdate(newFilter) {
     // all 3 `updateBy` functions are run: verifications are done within each
     // of them to check if there's a need to re-filter the data.
     // console.log("> 0 :", placesGeoJson.features.length);
-    updateByCartographySource( placesGeoJson
-                             , changeCartographySource
-                             , newFilter.cartographySource
-                             , _cartographyForSource )
+    updateByCartographySource(placesGeoJson
+      , changeCartographySource
+      , newFilter.cartographySource
+      , _cartographyForSource)
       .then(r => {
         [placesGeoJson, _cartographyForSource] = r;
-        updateByCartographyGranularity( placesGeoJson
-                                      , changeCartographyGranularity
-                                      , newFilter.cartographyGranularity
-                                      , _cartographyForGranularity )
+        updateByCartographyGranularity(placesGeoJson
+          , changeCartographyGranularity
+          , newFilter.cartographyGranularity
+          , _cartographyForGranularity)
           .then(r => {
             [placesGeoJson, _cartographyForGranularity] = r;
             // console.log("> 1 :", placesGeoJson.features.length);
@@ -805,7 +796,11 @@ onMounted(() => {
   [lflMap.value, lflLayerControl.value] = globalDefineMap("map-main");  // synchronous
   lflMap.value.setView(mapCenter, 14);
   addControls(lflMap.value);
-  getInitPlaces().then(() => addPlaces(true))
+  getInitPlaces().then(() => addPlaces(true));
+  $("footer").css({ visibility: "hidden" });
+})
+onUnmounted(() => {
+  $("footer").css({ visibility: "visible" })
 })
 
 </script>
@@ -829,12 +824,15 @@ onMounted(() => {
  * - block 2 (CartographyPlaceInfo): width is augmented to make it visible.
  */
 .cartography-outer-wrapper {
-  height: calc(100vh - var(--cs-navbar-height) - var(--cs-portrait-sidebar-height));
-  width: 100%;
+  /** position: fixed + vw-defined width and height to avoid overflow */
+  position: fixed;
+  height: calc(100vh - var(--cs-navbar-height) - var(--cs-sidebar-portrait-height));
+  width: 100vw;
+
   display: grid;
   grid-template-rows: 100%;
   grid-template-columns: 100% 100% 100%;
-
+  /** define the basic position */
   transform: translateX(-100%);
   transition: grid-template-columns v-bind("transDurCss");
 }
@@ -851,9 +849,11 @@ onMounted(() => {
 
 @media (orientation:landscape) {
   .cartography-outer-wrapper {
+    width: calc(100vw - var(--cs-sidebar-landscape-width));
     height: calc(100vh - var(--cs-navbar-height));
     grid-template-columns: 30% 100% 30%;
     transform: translateX(-30%);
+
   }
 
   .cartography-outer-wrapper.right-visible {
@@ -864,7 +864,7 @@ onMounted(() => {
 /**************************************/
 
 #map-main {
-  height: calc(100vh - var(--cs-navbar-height) - var(--cs-portrait-sidebar-height));
+  height: calc(100vh - var(--cs-navbar-height) - var(--cs-sidebar-portrait-height));
   width: 100%;
   overflow-y: hidden;
 }

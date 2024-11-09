@@ -75,13 +75,14 @@ onMounted(() => {
 <style scoped>
 .navbar {
   top: 0;
-  z-index: 2;
+  left: 0;
   position: fixed;
+  z-index: 2;
   height: var(--cs-navbar-height);
+  width: 100vw;
   background-color: white;
 
   display: grid;
-  flex-direction: row;
   grid-template-columns: 1fr auto;
   grid-template-rows: 100%;
   justify-items: start;

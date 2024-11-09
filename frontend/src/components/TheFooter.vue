@@ -94,7 +94,7 @@ footer {
 }
 @media ( orientation:portrait ) {
   footer {
-    margin-bottom: calc(2 * var(--cs-portrait-sidebar-height));
+    margin-bottom: calc(2 * var(--cs-sidebar-portrait-height));
   }
 }
 .footer-inner-wrapper {
@@ -120,6 +120,11 @@ footer {
   justify-content:center;
   height: 100%;
   width: 80%
+}
+@media ( orientation:portrait ) {
+  .footer-info {
+    width: 100%;
+  }
 }
 .footer-info > * {
   flex: 1 1 0px;

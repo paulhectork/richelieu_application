@@ -251,7 +251,7 @@ onMounted(() => {
   min-height: 100%;
 }
 .loader-wrapper {
-  height: calc(100vh - var(--cs-navbar-height) - var(--cs-portrait-sidebar-height));
+  height: calc(100vh - var(--cs-navbar-height) - var(--cs-sidebar-portrait-height));
   width: 100%;
 }
 @media ( orientation:landscape ) {

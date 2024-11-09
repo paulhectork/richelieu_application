@@ -17,8 +17,22 @@
         <strong>Jean-Christophe Carius</strong> (INHA),
         <strong>Manuel Charpy</strong> (CNRS, InVisu),
         <strong>Éric Mermet</strong> (CNRS, Paris Time Machine),
-        <strong>Laurent Costa</strong> (CNRS, Paris Time Machine),
-        <strong>Jean-Philippe Moreux</strong> (Bibliothèque nationale de France)
+        <strong>Bertrand Dumenieu</strong> (EHESS),
+        <strong>Nathalie Abadie</strong> (IGN),
+        <strong>Jean-Philippe Moreux</strong> (Bibliothèque nationale de France).
+      </dd>
+      <dt>Typographie</dt>
+      <dd>Le site est composé en
+        <span class="font-desc"
+              style="font-family: var(--cs-font-serif);">
+          <a href="https://fonts.adobe.com/fonts/eb-garamond">EB Garamond</a></span>
+          (fonte serif de titres),
+        <span class="font-desc"><a href="https://github.com/el-schneider/urlaub-grotesk">
+            Urlaub Grotesk</a></span> (fonte sans-serif de corps de texte)
+        et
+        <span class="font-desc" style="font-family: var(--cs-font-sans-serif-accentuate)"><a href="https://www.fontget.com/font/mels/">
+          Mels</a></span> (fonte sans-serif d'accentuation). Les trois
+          fontes sont libres de droits.
       </dd>
     </dl>
   </div>
@@ -85,5 +99,11 @@ onMounted(() => emit("h2", subtitle))
 
 
 <style scoped>
-
+.font-desc {
+  background-color: var(--cs-plum);
+  color: var(--cs-negative-default);
+}
+.font-desc a {
+  color: var(--cs-negative-default);
+}
 </style>

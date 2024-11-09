@@ -196,69 +196,40 @@ onUnmounted(() => {
 
   /*
   on mobile, TheSidebar is on the bottom of the page
-  with a height of var(--cs-portrait-sidebar-height).
+  with a height of var(--cs-sidebar-portrait-height).
   on desktop, it is on the side of the page width a
   width of 10%.
   */
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: calc(100% - var(--cs-portrait-sidebar-height)) var(--cs-portrait-sidebar-height);
-
+  grid-template-rows: calc(100% - var(--cs-sidebar-portrait-height)) var(--cs-sidebar-portrait-height);
 }
 
 @media ( orientation: landscape ) {
   .content-wrapper {
-    grid-template-columns: calc(100% - var(--cs-landscape-sidebar-width)) var(--cs-landscape-sidebar-width);
+    grid-template-columns: calc(100% - var(--cs-sidebar-landscape-width)) var(--cs-sidebar-landscape-width);
     grid-template-rows: 100%;
   }
 }
-
-/** the sidebar is positionned as fixed to make sure it doesn't move
-    and to better work with the footer without setting `overflow: scroll`
-    on main.
-    the upside to using `position:fixed` is that you can scroll on
-    the website even when the cursor is on the sidebar.
-    its position are determined to fit the `grid-template-columns` and
-    `grid-template-rows` of `.content-wrapper`, in portrait and landscape
-    mode.
-
-    to roll back to position:relative (height and position are determined by
-    the display:grid), just do:
-    - on `.sidebar-outer-wrapper`, comment all `position|top|left|height|width`
-    - add
-      .main-footer-wrapper { overflow: scroll; }
-*/
-/* dimensions with overflow: scroll */
-/*
-.main-footer-wrapper {
-  overflow: scroll;
-}
-main {
-  height: calc(100vh - var(--cs-portrait-sidebar-width) - var(--cs-navbar-height));
-  overflow: scroll;
-}
-@media (orientation: landscape) {
-
-  main {
-    height: calc(100vh - var(--cs-navbar-height));
-  }
-}
-*/
-/* dimensions without (using `position: fixed` on the sidebar) */
 .sidebar-outer-wrapper {
   position: fixed;
-  top: calc( 100vh - var(--cs-portrait-sidebar-height) );
+
+  /** setting bottom and not top avoids empty space on top  */
+  /*top: calc( 100vh - var(--cs-sidebar-portrait-height) );*/
+  bottom: 0;
   left: 0;
-  height: var(--cs-portrait-sidebar-height);
+  height: var(--cs-sidebar-portrait-height);
   width: 100vw;
+  background-color: var(--cs-main-default-bg);
+  border-right: var(--cs-main-border);
 }
 
 @media ( orientation:landscape ) {
   .sidebar-outer-wrapper {
     top: var(--cs-navbar-height);
-    left: calc(100% - var(--cs-landscape-sidebar-width));
+    left: calc(100% - var(--cs-sidebar-landscape-width));
     height: calc(100vh - var(--cs-navbar-height));
-    width: var(--cs-landscape-sidebar-width);
+    width: var(--cs-sidebar-landscape-width);
   }
 }
 
@@ -268,7 +239,7 @@ main {
 @media ( orientation:portrait ) {
   .footer-outer-wrapper {
     /* to make sure that it's not hidden by the sidebar */
-    margin-bottom: var(--cs-portrait-sidebar-height);
+    margin-bottom: var(--cs-sidebar-portrait-height);
   }
 }
 
@@ -278,8 +249,7 @@ main {
 main {
   /* height: 100%; */
   width: 100%;
-  min-height: calc(100vh - var(--cs-navbar-height) - var(--cs-portrait-sidebar-height));
-  /*overflow: scroll;*/
+  min-height: calc(100vh - var(--cs-navbar-height) - var(--cs-sidebar-portrait-height));
 }
 @media ( orientation:landscape ) {
   main {
@@ -290,6 +260,7 @@ main {
 /**************************************/
 
 
+/** UNUSED ???????????????????????????????????? */
 /* sidebar slide in/out animation
  * works with `opacity` but not with translateX
  */

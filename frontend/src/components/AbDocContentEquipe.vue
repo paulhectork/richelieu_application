@@ -45,90 +45,101 @@
     </dl>
 
     <h3 id="abdoc-doct">Doctorantes contractuelles</h3>
-    <dt>Louise Thiroux (2024)</dt>
-    <dd>Louise Thiroux est chargée d'études et de
-      recherche à l'INHA (depuis 2024). Elle participe à
-      l'enrichissement du corpus du Palais-Royal et est l'auteure
-      de plusieurs articles et communications sur le mobilier
-      urbain, les mœurs, et les actrices. Sa thèse <i>Du raccommodage
-      au soin&nbsp;: penser Paris par son mobilier urbain
-      <q>&nbsp;de confort&nbsp;</q> (fin XVIII<sup>e</sup>-fin
-      XX<sup>e</sup> siècles)</i>, dirigée par E. d'Orgeix est
-      en préparation à l'École Pratique des Hautes Études.
-    </dd>
-    <dt>Justine Gain (2023)</dt>
-    <dd>Justine Gain a été chargée d'études et de recherche
-      à l'INHA (2019-2023). Elle a participé aux recherches
-      historiques et à la valorisation du Palais-Royal et
-      de ses rues adjacentes. Diplômée de l'École du Louvre,
-      elle est l'autrice d'une thèse en cotutelle avec l'École Pratique
-      des Hautes Études intitulée <i>Jean-Baptiste Plantar (1790-1879),
-      le sculpteur ornemaniste de la Monarchie de Juillet</i>
-      (sous la dir. de J.-M Leniaud et Lionel Arsac).
-    </dd>
+    <dl>
+      <dt>Louise Thiroux (2024)</dt>
+      <dd>Louise Thiroux est chargée d'études et de
+        recherche à l'INHA (depuis 2024). Elle participe à
+        l'enrichissement du corpus du Palais-Royal et est l'auteure
+        de plusieurs articles et communications sur le mobilier
+        urbain, les mœurs, et les actrices. Sa thèse <i>Du raccommodage
+        au soin&nbsp;: penser Paris par son mobilier urbain
+        <q>&nbsp;de confort&nbsp;</q> (fin XVIII<sup>e</sup>-fin
+        XX<sup>e</sup> siècles)</i>, dirigée par E. d'Orgeix est
+        en préparation à l'École Pratique des Hautes Études.
+      </dd>
+      <dt>Justine Gain (2023)</dt>
+      <dd>Justine Gain a été chargée d'études et de recherche
+        à l'INHA (2019-2023). Elle a participé aux recherches
+        historiques et à la valorisation du Palais-Royal et
+        de ses rues adjacentes. Diplômée de l'École du Louvre,
+        elle est l'autrice d'une thèse en cotutelle avec l'École Pratique
+        des Hautes Études intitulée <i>Jean-Baptiste Plantar (1790-1879),
+        le sculpteur ornemaniste de la Monarchie de Juillet</i>
+        (sous la dir. de J.-M Leniaud et Lionel Arsac).
+      </dd>
+    </dl>
 
     <h3 id="abdoc-stag">Stagiaires</h3>
 
     <h4>Recherches historiques</h4>
+    <dl>
     <dt>Teoman Akgönül (février-mai 2024)</dt>
-    <dd>Teoman Akgönül est diplômé d'un
-      master de recherche en histoire de l'art de l'École Pratique
-      des Hautes Études. Il est l'auteur du corpus de la
-      Banque de France. En 2024, il débute une thèse&nbsp;:
-      <i>Pèlerinages de papier. Sanctuaires et images de dévotion
-      dans l'estampe à Paris au lendemain du concile de Trente&nbsp;:
-      production, circulation, usages</i>, sous la direction d'Estelle
-      Leutrat.
-    </dd>
-    <dt>Esther Da Silva (février-mai 2023)</dt>
-    <dd>Esther Da Silva est diplômée d'un
-      master recherche en histoire de l'architecture à l'université
-      Panthéon-Sorbonne, et d'un master en <q>&nbsp;Direction des
-      projets et établissements culturels&nbsp;</q>. Elle a effectué
-      un stage de recherches historiques autour du cas d'étude
-      de la place de la Bourse.
-    </dd>
+      <dd>Teoman Akgönül est diplômé d'un
+        master de recherche en histoire de l'art de l'École Pratique
+        des Hautes Études. Il est l'auteur du corpus de la
+        Banque de France. En 2024, il débute une thèse&nbsp;:
+        <i>Pèlerinages de papier. Sanctuaires et images de dévotion
+        dans l'estampe à Paris au lendemain du concile de Trente&nbsp;:
+        production, circulation, usages</i>, sous la direction d'Estelle
+        Leutrat.
+      </dd>
+      <dt>Esther Da Silva (février-mai 2023)</dt>
+      <dd>Esther Da Silva est diplômée d'un
+        master recherche en histoire de l'architecture à l'université
+        Panthéon-Sorbonne, et d'un master en <q>&nbsp;Direction des
+        projets et établissements culturels&nbsp;</q>. Elle a effectué
+        un stage de recherches historiques autour du cas d'étude
+        de la place de la Bourse.
+      </dd>
+    </dl>
 
     <h4>Développements numériques</h4>
-    <dt>Marina Hervieu (février-septembre 2024)</dt>
-    <dd>Marina Hervieu est titulaire
-      d'un master en histoire de l'art contemporain à l'université
-      Paris 1 Panthéon-Sorbonne, du master <q>&nbsp;Technologies numériques
-      appliquées à l'histoire&nbsp;</q> de l'École nationale des chartes. À l'INHA,
-      elle a participé à la réalisation d'interface cartographique
-      de la plateforme Web du projet. Elle est actuellement chargée de projet
-      à la Bibliothèque nationale de France.
-    </dd>
-    <dt>Colin Prudhomme (février-juin 2023)</dt>
-    <dd>Colin Prudhomme a réalisé un
-      stage de recherche visant à produire un modèle 3D de la place de la Bourse
-      au XIX<sup>e</sup> siècle
-      à partir de la spatialisation de sources historiques.
-      Diplômé de l'École Centrale de
-      Lille, et du master <q>&nbsp;Humanités numériques&nbsp;</q> l'École des chartes
-      il a collaboré à plusieurs projets du Projet
-      Time Machine, et s'est spécialisé dans la restitution
-      3D de l'espace public parisien.
-    </dd>
-    <dt>Ravinithesh Annapureddy (octobre 2021-février 2022)</dt>
-    <dd>Ravinithesh Annapureddy
-      est doctorant en Humanités numériques à l'École polytechnique
-      fédérale de Lausanne. Durant son master, il a effectué
-      un stage à l'INHA afin de produire une chaîne de post-traitement de
-      données océrisées au sein du projet Richelieu.
-    </dd>
-    <dt>Louise Baranger (2023)</dt>
-    <dd>Monitrice étudiante à la Direction des  études
-      et de la recherche à l'INHA en 2023-2024, elle
-      a participé à l'enrichissement des sources du projet
-      Richelieu. Elle est diplômée d'un master en histoire de
-      l'architecture médiévale à l'université Panthéon-Sorbonne (sous la direction
-      de Philippe Plagnieux).
-    </dd>
+    <dl>
+      <dt>Marina Hervieu (février-septembre 2024)</dt>
+      <dd>Marina Hervieu est titulaire
+        d'un master en histoire de l'art contemporain à l'université
+        Paris 1 Panthéon-Sorbonne et du master <q>&nbsp;Technologies numériques
+        appliquées à l'histoire&nbsp;</q> de l'École nationale des chartes. À l'INHA,
+        elle a participé à la réalisation de l'interface cartographique
+        de la plateforme Web du projet. Elle est actuellement chargée de projet
+        à la Bibliothèque nationale de France.
+      </dd>
+      <dt>Colin Prudhomme (février-juin 2023)</dt>
+      <dd>Colin Prudhomme a réalisé un
+        stage de recherche visant à produire un modèle 3D de la place de la Bourse
+        au XIX<sup>e</sup> siècle
+        à partir de la spatialisation de sources historiques.
+        Diplômé de l'École Centrale de
+        Lille, et du master <q>&nbsp;Humanités numériques&nbsp;</q> l'École des chartes
+        il a collaboré à plusieurs projets du Projet
+        Time Machine, et s'est spécialisé dans la restitution
+        3D de l'espace public parisien.
+      </dd>
+      <dt>Ravinithesh Annapureddy (octobre 2021-février 2022)</dt>
+      <dd>Ravinithesh Annapureddy
+        est doctorant en Humanités numériques à l'École polytechnique
+        fédérale de Lausanne. Durant son master, il a effectué
+        un stage à l'INHA afin de produire une chaîne de post-traitement de
+        données océrisées au sein du projet Richelieu.
+      </dd>
+      <dt>Louise Baranger (2023)</dt>
+      <dd>Monitrice étudiante à la Direction des  études
+        et de la recherche à l'INHA en 2023-2024, elle
+        a participé à l'enrichissement des sources du projet
+        Richelieu. Elle est diplômée d'un master en histoire de
+        l'architecture médiévale à l'université Panthéon-Sorbonne (sous la direction
+        de Philippe Plagnieux).
+     </dd>
+    </dl>
 
     <h4>Graphisme</h4>
-    <dd>Avec l'aide de <strong>Lou Ong</strong>, stagiaire graphiste au sein de l'unité de recherche
-      In Visu (CNRS).</dd>
+    <dl>
+      <dt>Lou Ong</dt>
+      <dd>Graphiste et stagiaire au sein d'In Visu (CNRS),
+        a conçu la charte graphique de la plateforme&nbsp;:
+        logo, couleurs, design de la page d'accueil, choix
+        typographiques...</dd>
+    </dl>
   </div>
 
   <div class="textpage-text-wrapper">

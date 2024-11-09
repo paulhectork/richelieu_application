@@ -71,7 +71,7 @@
 
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 
 import $ from "jquery";
 
@@ -97,11 +97,18 @@ onMounted(() => {
   })
   // close when clicking outside of the modal
   $(document).on("click", (e) => {
-    if ( clickOutside(e, ".c-modal-inner-wrapper") ) {
+    if ( clickOutside(e, ".c-modal-inner-wrapper")
+       && clickOutside(e, ".leaflet-control .button-question")  // without that, clicking on the button to open the modal will emit "closeCartographyModal"
+    ) {
       emit("closeCartographyModal");
       $(document).off("click");
     }
   })
+})
+
+onUnmounted(() => {
+  $(document).off("click");
+  $(document).off("keyup");
 })
 
 </script>
@@ -133,6 +140,7 @@ onMounted(() => {
   grid-template-rows: auto 2fr;
 
   box-shadow: 8px 8px var(--cs-plum);
+  overflow: auto;
 }
 .c-modal-title-wrapper {
   display: flex;
@@ -186,7 +194,7 @@ code {
 @media ( orientation:landscape ) {
   .c-modal-outer-wrapper {
     height: 100%;
-    width: calc(100vw - var(--cs-landscape-sidebar-width));
+    width: calc(100vw - var(--cs-sidebar-landscape-width));
     transform: translateX(30%);
   }
   .c-modal-inner-wrapper {

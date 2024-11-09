@@ -196,8 +196,8 @@
   -  in portrait mode, the sidebar is turned into a horizontal
      banner on the bottom of the page, with a height of 10vw.
   */
-  --cs-landscape-sidebar-width: 10%;
-  --cs-portrait-sidebar-height: 10vh;
+  --cs-sidebar-landscape-width: 10%;
+  --cs-sidebar-portrait-height: 10vh;
 
   /*
   expected heights of `main` in portrait and landscape mode
@@ -256,6 +256,8 @@ p,ol,ul,dl {
 
 h1,h2,h3,h4,h5,h6 {
   font-family: var(--cs-font-serif);
+  margin-left: 10px;
+  margin-right: 10px;
 }
 h1 {
   font-family: "eb-garamond-sc";
@@ -488,7 +490,6 @@ main::-webkit-scrollbar-thumb,
   background-color: white;
   border: 1px solid white;
 }
-
 
 /**************************************************************************/
 /* generic button styling */

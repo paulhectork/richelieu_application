@@ -286,8 +286,11 @@ a {
     display: block;
   }
 }
-/** the first block contains a lot of info so it's a bitch to style */
+/** portrait is a pain to style, especially the first block */
 @media ( orientation:portrait ) {
+  .menu-subcategories > li {
+    font-size: 80%;
+  }
   #menu-block-parcourir > .menu-subcategories {
     display: grid;
     grid-template-columns: repeat(3,33.33%);

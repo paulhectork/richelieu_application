@@ -119,12 +119,17 @@ onMounted(() => {
 }
 .resource-main {
   font-size: 100%;
-  font-size: max(min(4vh, 4vw), 16px);
+  font-size: max(max(4vh, 4vw), 20px);
   display: flex;
   align-items: center;
   padding: 5px 5px 3px 5px;
   background-color: var(--cs-main-default-bg);
   transition: background-color .5s;
+}
+@media ( orientation: landscape ) {
+  .resource-main {
+    font-size: max(min(4vh, 4vw), 20px);
+  }
 }
 .resource-main-article {
   margin: 5px;

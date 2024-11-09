@@ -25,7 +25,7 @@
           <p>Le projet de recherche <i>Richelieu. Histoire du quartier</i> (1750-1950)
             est né de la collaboration de plusieurs institutions publiques situées au cœur
             du II<sup>e</sup> arrondissement de Paris. Ce projet étudie le quartier communément
-            désigné sous le nom de <q>&nbsp;Richelieu&nbsp;</q>,à travers ses dynamiques
+            désigné sous le nom de <q>&nbsp;Richelieu&nbsp;</q>, à travers ses dynamiques
             architecturales, humaines et économiques et en croisant des sources
             iconographiques et cartographiques, à l'échelle du long XIX<sup>e</sup> siècle.
           </p>

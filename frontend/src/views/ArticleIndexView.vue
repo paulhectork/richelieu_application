@@ -26,7 +26,7 @@
 
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 
 import $ from "jquery";
 
@@ -34,11 +34,16 @@ import { articles } from "@globals";
 
 /*******************************************/
 
-const showOverlayOnMouseEnter = (e) =>
-  $(e.target).css({ opacity: 0.5 });
+const onMouseEnter = (e) => {
+  $(e.currentTarget).addClass("selected") };
 
-const hideOverlayOnMouseLeave = (e)  =>
-  $(e.target).css({ opacity: 0 });
+const onMouseOut = (e)  =>
+  $(".article-item").removeClass("selected");
+
+onMounted(() =>
+  $(".article-item").on("mouseover", onMouseEnter)
+                    .on("mouseout", onMouseOut)
+)
 
 </script>
 
@@ -59,6 +64,12 @@ const hideOverlayOnMouseLeave = (e)  =>
   margin: 20px 5px;
   background-position: center;
   position: relative;  /* for the article overlays */
+  transform: translateX(0);
+  transition: transform .3s;
+}
+.article-item.selected {
+  border: solid var(--cs-plum) 4px;
+  transform: translateX(3%);
 }
 .article-item > a {
   text-decoration: none;

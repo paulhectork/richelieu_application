@@ -227,51 +227,6 @@ onMounted(() => {
 onUnmounted(() => {
   $(document).off("mousemove");
 })
-
-/** without reusing IiifViewer.vue */
-/*
-import OpenSeadragon from "openseadragon";
-import $ from "jquery";
-import { osdNavImages } from "@utils/iiif";
-import { urlToOsdIcons } from "@utils/url";
-
-async function buildOsdViewer(tileSequence, osdId) {
-  viewer.value = await OpenSeadragon({
-    id: osdId,
-    tileSources: tileSequence,
-    sequenceMode: true,
-    initialPage: 0,
-    showHomeControl: true,
-    autoHideControls: true,
-    crossOriginPolicy: true,
-    defaultZoomLevel: 1,
-    viewportMargins: {
-      top: 10,
-      left: 10,
-      right: 10,
-      bottom: 10
-    },
-    gestureSettingsMouse: { scrollToZoom: false },
-    showSequenceControl: ( typeof(tileSequence)===Array && tileSequence.length > 1 )  // show sequenceControl buttons only if tileSequence contains several tiles
-                         ? tileSequence.length > 1
-                         : false,
-    showNavigator: true,
-    navigatorAutoFade: true,
-    showRotationControl: true,
-    prefixUrl: urlToOsdIcons().href,
-    navImages: osdNavImages
-  });
-  return viewer.value.addOnceHandler("open", () => {
-    $(`#${osdId} .openseadragon-canvas`).css("backgroundColor", "var(--cs-darkplum)");
-    return
-  });  // await for loading to be ready to return
-}
-
-onMounted(() => {
-  buildOsdViewer(tileSource, "intro-iiif-viewer");
-})
-*/
-
 </script>
 
 
@@ -364,11 +319,17 @@ h2 {
 }
 .image-block {
   border: var(--cs-negative-border);
+  max-height: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 .image-block > img {
   object-fit: cover;
-  width: 100%;
-  height: 100%;
+  width:  200%;
+  height: 200%;
 }
 .info-block {
   font-family: var(--cs-font-serif);

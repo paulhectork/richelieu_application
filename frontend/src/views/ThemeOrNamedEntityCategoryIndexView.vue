@@ -51,6 +51,28 @@
 
     <h1>Index des {{ tableName === "theme" ? "thèmes" : "entités nommées" }}</h1>
 
+    <!-- paragraph decribing what themes/named entities are. -->
+    <p v-if="tableName==='theme' && databaseCounts && dataFull">
+      L'analyse des documents iconographiques
+      fait apparaître dans chaque image plusieurs thèmes saillants.
+      Au total, <strong>{{ databaseCounts.theme }} thèmes</strong> ont été identifiés.
+      Ces thèmes ont été regroupés en
+      <strong>{{ dataFull.length }} catégories</strong>,
+      visibles sur cette page. Cliquer sur une catégorie permet d'accéder
+      aux thèmes qu'elle contient.
+    </p>
+    <p v-else-if="tableName==='namedEntity' && databaseCounts && dataFull">
+      Chaque image décrit une ou plusieurs <q>&nbsp;entités nommées&nbsp;</q>,
+      c'est-à-dire des points d'intérêt du quartier&nbsp;: commerces,
+      acteurs et actrices, personnalités, monuments... Au total,
+      <strong>{{ databaseCounts.named_entity }} entités nommées</strong>
+      ont été identifiées
+      dans le corpus. Elles sont été classées en
+      <strong>{{ dataFull.length }} catégories</strong>, visibles
+      sur cette page. Cliquer sur une catégorie permet
+      d'accéder aux entités nommées liées.
+    </p>
+
     <UiLoader v-if="loadState === 'loading'"></UiLoader>
     <IndexBase v-else
                :display="display"
@@ -79,13 +101,14 @@ import IndexBase from "@components/IndexBase.vue";
 
 /*************************************************************/
 
-const props      = defineProps([ "tableName" ]);
+const props = defineProps([ "tableName" ]);
 
-const tableName  = ref(props.tableName);
-const loadState  = ref("loading");  // "loading"/"loaded"/"error"
-const dataFull   = ref([]);
-const dataFilter = ref([]);
-const display    = "concept";
+const tableName      = ref(props.tableName);
+const loadState      = ref("loading");  // "loading"/"loaded"/"error"
+const dataFull       = ref([]);
+const dataFilter     = ref([]);
+const display        = "concept";
+const databaseCounts = ref();  // super basic stats on the database for an introductory paragraph
 
 const apiTarget  = computed(() =>  // defined as computed to be able to dynamically switch URL when `tableName` changes.
   tableName.value === "theme"
@@ -124,7 +147,11 @@ function getData() {
                 })
   .catch(e => { console.error(e);
                 loadState.value = "error"
-              })
+              });
+  axios.get(new URL("/i/database-counts", __API_URL__))
+  .then(r => r.data)
+  .then(data => { databaseCounts.value = data; })
+  .catch(e => console.error(e));
   ;
 
 }

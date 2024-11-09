@@ -185,15 +185,13 @@ onMounted(() => {
  */
 .mpm-wrapper {
   height: 100%;
-  /*display: grid;
-  grid-template-rows: 100%;
-  grid-template-columns: 70% 30%;
-  border: var(--cs-main-border);
-  */
   display: flex;
   flex-direction: column-reverse;
   width: 100%;
   border: var(--cs-main-border);
+  /** avoid the map to overflow on the menu */
+  position: relative;
+  z-index: 1;
 }
 
 @media ( orientation:landscape ) {

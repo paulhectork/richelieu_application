@@ -106,7 +106,8 @@
          @mouseout="onMapMouseOut"
     >
       <div class="home-block-title-wrapper map-title-wrapper">
-        <h1>Carte</h1>
+        <h1><RouterLink to="/cartographie"
+            >Carte</RouterLink></h1>
       </div>
       <RouterLink to="/cartographie"
                   class="map-outer-wrapper"
@@ -277,10 +278,11 @@ onUnmounted(() =>
 <style scoped>
 .home-wrapper {
   display: grid;
-  grid-template-rows: 70% 70% 70% 70%;
+  grid-template-rows: 70% 70% 70% 40%;
   grid-template-columns: 100%;
-  height: calc(100vh - var(--cs-navbar-height) - var(--cs-portrait-sidebar-height));
-  width: 100%;
+  height: calc(100vh - var(--cs-navbar-height) - var(--cs-sidebar-portrait-height));
+  width: 100vw;
+  overflow-x: hidden;
   padding: 1% 3% 0 3%;
 }
 .home-block {
@@ -297,6 +299,8 @@ onUnmounted(() =>
 
 @media ( orientation: landscape ) {
   .home-wrapper {
+    width: 100%;
+    overflow-x: initial;
     height: calc(100vh - var(--cs-navbar-height));
     grid-template-rows: 50% 50%;
     grid-template-columns: 50% 50%;
@@ -401,6 +405,10 @@ h1 {
   grid-template-rows: 0% 100%;
   grid-template-columns: 100%;
 }
+#map-wrapper h1 > a {
+  color: var(--cs-main-default);
+  text-decoration: none;
+}
 .map-title-wrapper {
   display: flex;
   flex-direction: column;
@@ -415,6 +423,7 @@ h1 {
   border: var(--cs-main-border);
   margin-right: 5vw;
   transition: background-color .5s;
+  cursor: grab;
 }
 .map-outer-wrapper {
   overflow: hidden;
@@ -429,6 +438,7 @@ h1 {
 }
 .map-inner-wrapper > img {
   object-fit: contain;
+  overflow: hidden;
 }
 
 /* this fancy selector targets `h1` when .map-outer-wrapper is hovered/clicked on */
