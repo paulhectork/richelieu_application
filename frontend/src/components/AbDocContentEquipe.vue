@@ -91,6 +91,14 @@
         un stage de recherches historiques autour du cas d'étude
         de la place de la Bourse.
       </dd>
+      <dt>Louise Baranger (2023)</dt>
+      <dd>Monitrice étudiante à la Direction des  études
+        et de la recherche à l'INHA en 2023-2024, elle
+        a participé à l'enrichissement des sources du projet
+        Richelieu. Elle est diplômée d'un master en histoire de
+        l'architecture médiévale à l'université Panthéon-Sorbonne (sous la direction
+        de Philippe Plagnieux).
+     </dd>
     </dl>
 
     <h4>Développements numériques</h4>
@@ -122,20 +130,12 @@
         un stage à l'INHA afin de produire une chaîne de post-traitement de
         données océrisées au sein du projet Richelieu.
       </dd>
-      <dt>Louise Baranger (2023)</dt>
-      <dd>Monitrice étudiante à la Direction des  études
-        et de la recherche à l'INHA en 2023-2024, elle
-        a participé à l'enrichissement des sources du projet
-        Richelieu. Elle est diplômée d'un master en histoire de
-        l'architecture médiévale à l'université Panthéon-Sorbonne (sous la direction
-        de Philippe Plagnieux).
-     </dd>
     </dl>
 
     <h4>Graphisme</h4>
     <dl>
       <dt>Lou Ong</dt>
-      <dd>Graphiste et stagiaire au sein d'In Visu (CNRS),
+      <dd>Graphiste et stagiaire au sein d'In Visu (CNRS), elle
         a conçu la charte graphique de la plateforme&nbsp;:
         logo, couleurs, design de la page d'accueil, choix
         typographiques...</dd>

@@ -35,6 +35,7 @@
   >
 
     <!-- reset the form on click -->
+    <!--
     <div class="reset-button-wrapper">
       <FormKit type="button"
                name="resetButton"
@@ -42,6 +43,7 @@
                @click="resetForm"
       >Réinitialiser les paramètres</FormKit>
     </div>
+    -->
 
     <!-- select inputs -->
     <div v-if="loadState === 'loaded'"

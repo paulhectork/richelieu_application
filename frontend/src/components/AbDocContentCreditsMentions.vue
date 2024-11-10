@@ -102,8 +102,10 @@ onMounted(() => emit("h2", subtitle))
 .font-desc {
   background-color: var(--cs-plum);
   color: var(--cs-negative-default);
+  padding: 2px 2px 1px 2px;
 }
 .font-desc a {
   color: var(--cs-negative-default);
+  text-decoration: none;
 }
 </style>

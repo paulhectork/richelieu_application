@@ -35,7 +35,7 @@ const sendUnmount = () => emit("unmount-footnote", true);
 
 /**
  * when clicking outside of the footnote element, close it
- * @param {JQueryEventObject} e
+ * @param {@link jQuery.Event} e
  */
 const closeOnClick = (e) => {
   if ( $(e.target).closest(`#${props.footnoteHtmlId}`).length === 0 ) {

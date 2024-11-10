@@ -615,6 +615,7 @@ onUnmounted(() => {
   max-width: 20px;
   max-height: 20px;
   padding: 0;
+  box-shadow: 3px 3px 0 var(--cs-main-second-bg);
   /* a negative top margin to avoid differences
      in line heights in lines that contain a `button`.
      a transform centers the button on the line.

@@ -193,6 +193,7 @@ onMounted(() => {
 :deep(.textpage-text-wrapper h3) {
   font-variant-caps: small-caps;
   text-decoration: underline;
+  margin-left: 0;
 }
 :deep(.textpage-text-wrapper h4) {
   text-decoration: underline;
