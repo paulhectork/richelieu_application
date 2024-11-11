@@ -594,6 +594,7 @@ onUnmounted(() => {
 .iiif-cartel > p {
   margin: 10px;
 }
+
 /***************************************/
 
 .article-wrapper {
@@ -627,5 +628,11 @@ onUnmounted(() => {
   .article-wrapper :deep(.article-body) {
     margin: 0 20px;
   }
+}
+.article-wrapper :deep(.article-footer) {
+  display: flex;
+  justify-content: flex-end;
+  font-family: var(--cs-font-serif);
+  font-size: 150%;
 }
 </style>

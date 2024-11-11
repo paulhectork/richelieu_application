@@ -64,12 +64,13 @@ onMounted(() =>
   margin: 20px 5px;
   background-position: center;
   position: relative;  /* for the article overlays */
-  transform: translateX(0);
+  transform: translate3d(0,0,0);
   transition: transform .3s;
 }
 .article-item.selected {
-  border: solid var(--cs-plum) 4px;
-  transform: translateX(3%) translateY(-3%);
+  /*border: solid var(--cs-plum) 4px;*/
+  box-shadow: 5px 5px 0 var(--cs-plum); /** border forces a resize of the innerHTML so box shadow is safer */
+  transform: translate3d(1%, -3%, 0px);
 }
 .article-item > a {
   text-decoration: none;
