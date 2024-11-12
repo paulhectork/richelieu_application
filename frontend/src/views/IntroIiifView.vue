@@ -73,7 +73,7 @@
             <div class="button-wrapper">
               <button v-if="showEnter"
                       id="enter-website"
-                      class="animate__animated animate__lightSpeedInRight"
+                      class="animate__animated animate__fadeInRightBig"
                       @click="redirectToHome"
               >Entrer dans le site</button>
             </div>
