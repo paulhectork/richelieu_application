@@ -221,7 +221,6 @@ const sortByValue = (val1, val2) =>
  * @param {Object} formNode: the FormKit core node (https://formkit.com/api-reference/formkit-core#formkitnode)
  */
 function onSubmit(formData, formNode) {
-  // console.log("formData", formData)
 
   // remove possible errrors that are shown by a previous submission
   formNode.clearErrors();

@@ -83,7 +83,6 @@ const htmlId = `form-radio-tabs-${window.crypto.randomUUID()}`;
 const checkedInput = ref(defaultValue);  // `v-model` on the `input`, that helps us to track the currently checked item
 
 function propagateInputToFormKit(e) {
-  console.log(props.context);
   props.context.node.input(e.target.value);
 
 }

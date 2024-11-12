@@ -160,7 +160,6 @@ watch(props, (newProps, oldProps) => {
   resetData();
   placeIdUuid.value = newProps.placeIdUuid;
   associatedPlaces.value = newProps.associatedPlaces;
-  console.log(associatedPlaces.value);
   getData();
 })
 

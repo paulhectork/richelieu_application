@@ -23,8 +23,6 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
     process.exit(1)
   }
 
-  console.log("%%%%%%%", command, mode, isSsrBuild, isPreview);
-
   // choose the configuration based on `mode`
   let configVariables;
   switch (mode) {

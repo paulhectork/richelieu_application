@@ -71,7 +71,6 @@ def sanitize_date(date: t.List[t.Dict] | t.Any) -> t.Tuple[ t.List[t.Dict], bool
                                      if x["filter"]=="dateRange"
                                      else len(x["data"]) in [0,1] )
     if not all([ valid_date_numbers(d) for d in date ]):
-        print("oh, no")
         return date, False
     # 4) convert to NumericRange when necessary. a NumericRange will never be empty.
     #    if there is no data in an item of our date array, then that item is removed,

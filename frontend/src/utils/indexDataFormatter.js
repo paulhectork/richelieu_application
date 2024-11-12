@@ -43,7 +43,6 @@ export const indexDataFormatterIconography = (dataArr) =>
 
 export const indexDataFormatterPlace = (dataArr) =>
   dataArr.map((c) => {
-    if ( ! c.address.length ) console.log(c)
     return { idUuid : c.id_uuid,
              href   : urlToFrontendPlace(c.id_uuid).pathname,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,

@@ -128,17 +128,10 @@ function getAssociated() {
 
 // see @views/NamedEntityMainView.vue about my doubts on these watchers...
 watch(route, (newRoute, oldRoute) => {
-  console.log("ThemeMainView.watch( route ): route changed !")
   idUuid.value = newRoute.params.idUuid;
   getData();
   getAssociated();
 })
-
-/* moved the setting of `dataFull` and `dataFilter` in `getData()`
-watch(theme, (newTheme, oldTheme) => {
-  console.log("ThemeMainView.watch( theme ): theme changed !")
-})
-*/
 
 /***************************************************/
 

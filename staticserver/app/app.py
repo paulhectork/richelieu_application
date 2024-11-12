@@ -19,7 +19,6 @@ app = Flask("RICH.DATA.STATICS", static_folder=STATICS)
 @app.route("/iconography/<string:fn>")
 def iconography(fn:str):
     """send the iconography file named `fn`"""
-    print(os.path.join(STATICS_ICONOGRAPHY, fn))
     if os.path.isfile(os.path.join(STATICS_ICONOGRAPHY, fn)):
         return send_file(os.path.join(STATICS_ICONOGRAPHY, fn))
     else:

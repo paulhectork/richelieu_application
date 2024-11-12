@@ -585,7 +585,6 @@ const updateByIconographyCount = (geoJsonObj, iconographyCount) => {
  * @returns {Object} geoJsonObj
  */
 const updateByAddress = (geoJsonObj, address) => {
-  // console.log(newFilter.address);
   if (address != null && address.length) {
     geoJsonObj.features = geoJsonObj.features.filter(f =>
       address.includes(f.properties.address[0].id_uuid));
@@ -620,25 +619,21 @@ const updateByCartographySource = async (
   cartographySource,
   _cartographyForSource
 ) => {
-  // console.log(`for : °${newFilter.cartographySource}°`);
   if (cartographySource == null
     || cartographySource === ""
     || cartographySource.length === 0  // string of length 0
     || cartographySource === "default"
   ) {
     // use the default cartography source => no need to change it
-    // console.log("case 1")
     return [geoJsonObj, _cartographyForSource];
   } else if (!changeCartographySource) {
     // a non-default cartography source is used, but it's the same as
     // `_cartographyForSource` so no need to re-fetch it from the backend
-    // console.log("case 2");
     geoJsonObj = updatePlacesByCartography(geoJsonObj, _cartographyForSource);
     return [geoJsonObj, _cartographyForSource];
   } else {
     // a non-default cartography source is used and
     // we need to fetch it from the backend
-    // console.log("case 3");
     return getCartographyForSource(cartographySource)
       .then(r => {
         _cartographyForSource = r
@@ -710,8 +705,6 @@ function onFilterUpdate(newFilter) {
   if (!currentlyFiltering.value) {
     currentlyFiltering.value = true;
 
-    console.log("onFilterUpdate");
-
     // 1) variables
     let placesGeoJson = _.cloneDeep(places.value),  // without _.cloneDeep(), the modifications done to placesGeoJson below would be repercuted to `places.value`, which would break everything
       _cartographyForSource = cartographyForSource.value,
@@ -724,7 +717,6 @@ function onFilterUpdate(newFilter) {
     // 2) run the process, update the map and update globals.
     // all 3 `updateBy` functions are run: verifications are done within each
     // of them to check if there's a need to re-filter the data.
-    // console.log("> 0 :", placesGeoJson.features.length);
     updateByCartographySource(placesGeoJson
       , changeCartographySource
       , newFilter.cartographySource
@@ -737,11 +729,8 @@ function onFilterUpdate(newFilter) {
           , _cartographyForGranularity)
           .then(r => {
             [placesGeoJson, _cartographyForGranularity] = r;
-            // console.log("> 1 :", placesGeoJson.features.length);
             placesGeoJson = updateByIconographyCount(placesGeoJson, newFilter.iconographyCount);
-            // console.log("> 2 :", placesGeoJson.features.length);
             placesGeoJson = updateByAddress(placesGeoJson, newFilter.address);
-            // console.log("> 3 :", placesGeoJson.features.length);
 
             // if we're switching to "parcellaire1900" or "vasserot",
             // programatically update the background tile layer.

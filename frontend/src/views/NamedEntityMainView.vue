@@ -140,22 +140,10 @@ function getAssociated() {
 // also `IndexIconographyFilter` doesn't handle data updates,
 // so if this watcher here is useful, then we have a problem in `IndexIconographyFilter`
 watch(route, (newRoute, oldRoute) => {
-  console.log("NamedEntityMainView.watch( route.params.idUuid ) : watcher triggered !")
   idUuid.value = route.params.idUuid;
   getData();
   getAssociated();
 })
-
-// this one was simply integreated to getData() and seems to work fine.
-/*
-watch(namedEntity, (newNamedEntity, oldNamedEntity) => {
-  console.log("NamedEntityMainView.watch(namedEntity) : watcher triggered !")
-  dataFull.value   = newNamedEntity.iconography;
-  dataFilter.value = indexDataFormatterIconography(dataFull.value);
-  console.log(dataFilter.value);
-})
-*/
-
 
 /***************************************************/
 

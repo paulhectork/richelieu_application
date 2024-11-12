@@ -48,7 +48,6 @@ watch(props, (newP, oldP) => {
   setTocElements(newP.tocElements);
 })
 onMounted(() => {
-  console.log("hii");
   setTocElements(props.tocElements);
 })
 </script>

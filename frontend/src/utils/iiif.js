@@ -113,7 +113,6 @@ export async function manifestToThumbnail(manifestUrl, backupImgUrl) {
   return axios
          .get(manifestUrl)
          .then((r) => {
-          // console.log(r);
           const manifest = r.data;
           const imgUrl = manifest.sequences[0]
                                  .canvases[0]

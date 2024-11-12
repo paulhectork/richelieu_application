@@ -122,8 +122,6 @@ const showEnter       = ref(false);
 const customColors = [ randomColorLight(), randomColorLight()
                      , randomColorLight(), randomColorLight() ];
 
-console.log(customColors);
-
 const loadStateIiif   = ref("loading");  // "loading|loaded|error"
 const loadStateCounts = ref("loading");  // "loading|loaded|error"
 
@@ -142,7 +140,6 @@ const tileSource = [ { type: "image",
  */
 function onViewerMounted(theViewer) {
   viewer.value = theViewer.value;
-  console.log(viewer.value.options);
   $(`#${htmlId} .navigator,
      #${htmlId} .openseadragon-container > div:nth-child(2)`
   ).css({ display: "none" });
@@ -180,7 +177,6 @@ function panViewportOnMousemove(e) {
 function redirectToHome(e) {
   if ( viewer.value && viewer.value.viewport ) {
     let currentZoom = viewer.value.viewport.getZoom();
-    console.log(currentZoom);
     viewer.value.viewport.zoomTo(currentZoom + 5, undefined, false);
 
   }

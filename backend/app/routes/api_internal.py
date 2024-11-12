@@ -432,7 +432,6 @@ def advanced_search_iconography():
         params, valid = sanitize_params(params)
         if not valid:
             return "Internal server error at `sanitize_params`", 500
-        print(r"%%%%% let's rock")
         results = make_query(params).all()
         return jsonify([ r[0].serialize_lite() for r in results ])
     else:
@@ -693,8 +692,6 @@ def association_place_from_place(id_uuid:str):
                .group_by( Place.id_uuid, Address.address )
                .order_by( func.count(Place.id_uuid).desc() )
                .limit(5) )
-    print( db.session.execute(query).all() )
-
     r = [ { "id_uuid": row[0], "entry_name": row[1], "count": row[2] }
           for row in db.session.execute(query).all() ]
     return jsonify(r)

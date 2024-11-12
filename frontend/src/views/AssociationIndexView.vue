@@ -174,8 +174,6 @@ async function getNames() {
       throw new Error(`AssociationIndexView.getNames(): could not build URL for "toTable": "${props.toTable}"`)
   }
 
-  // console.log("fromRoute", fromRoute)
-  // console.log("toRoute", toRoute);
   return Promise
          .all([ axios.get(fromRoute), axios.get(toRoute) ])
          .then(([fromName, toName]) => {
