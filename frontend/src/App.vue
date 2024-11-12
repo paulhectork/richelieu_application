@@ -38,7 +38,9 @@
     </div>
 
     <!-- main + sidebar + footer -->
-    <div class="content-wrapper fill-parent">
+    <div class="content-wrapper fill-parent"
+         :style="{ visibility: menuActive ? 'hidden' : 'visible'  }  /** avoid stuff from overlapping with the menu */"
+    >
       <!-- main content: pages -->
       <div class="main-footer-wrapper">
         <main :class="themeNegative ? 'negative-default' : 'main-default'">

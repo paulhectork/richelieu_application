@@ -52,26 +52,28 @@
     <h1>Index des {{ tableName === "theme" ? "thèmes" : "entités nommées" }}</h1>
 
     <!-- paragraph decribing what themes/named entities are. -->
-    <p v-if="tableName==='theme' && databaseCounts && dataFull">
-      L'analyse des documents iconographiques
-      fait apparaître dans chaque image plusieurs thèmes saillants.
-      Au total, <strong>{{ databaseCounts.theme }} thèmes</strong> ont été identifiés.
-      Ces thèmes ont été regroupés en
-      <strong>{{ dataFull.length }} catégories</strong>,
-      visibles sur cette page. Cliquer sur une catégorie permet d'accéder
-      aux thèmes qu'elle contient.
-    </p>
-    <p v-else-if="tableName==='namedEntity' && databaseCounts && dataFull">
-      Chaque image décrit une ou plusieurs <q>&nbsp;entités nommées&nbsp;</q>,
-      c'est-à-dire des points d'intérêt du quartier&nbsp;: commerces,
-      acteurs et actrices, personnalités, monuments... Au total,
-      <strong>{{ databaseCounts.named_entity }} entités nommées</strong>
-      ont été identifiées
-      dans le corpus. Elles sont été classées en
-      <strong>{{ dataFull.length }} catégories</strong>, visibles
-      sur cette page. Cliquer sur une catégorie permet
-      d'accéder aux entités nommées liées.
-    </p>
+    <div class="index-headtext-wrapper">
+      <p v-if="tableName==='theme' && databaseCounts && dataFull">
+        L'analyse des documents iconographiques
+        fait apparaître dans chaque image plusieurs thèmes saillants.
+        Au total, <strong>{{ databaseCounts.theme }} thèmes</strong> ont été identifiés.
+        Ces thèmes ont été regroupés en
+        <strong>{{ dataFull.length }} catégories</strong>,
+        visibles sur cette page. Cliquer sur une catégorie permet d'accéder
+        aux thèmes qu'elle contient.
+      </p>
+      <p v-else-if="tableName==='namedEntity' && databaseCounts && dataFull">
+        Chaque image décrit une ou plusieurs <q>&nbsp;entités nommées&nbsp;</q>,
+        c'est-à-dire des points d'intérêt du quartier&nbsp;: commerces,
+        acteurs et actrices, personnalités, monuments... Au total,
+        <strong>{{ databaseCounts.named_entity }} entités nommées</strong>
+        ont été identifiées
+        dans le corpus. Elles sont été classées en
+        <strong>{{ dataFull.length }} catégories</strong>, visibles
+        sur cette page. Cliquer sur une catégorie permet
+        d'accéder aux entités nommées liées.
+      </p>
+    </div>
 
     <UiLoader v-if="loadState === 'loading'"></UiLoader>
     <IndexBase v-else
