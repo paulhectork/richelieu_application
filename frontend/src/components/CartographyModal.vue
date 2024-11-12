@@ -203,5 +203,9 @@ code {
   }
 }
 
-
+.c-modal-text-wrapper {
+  overflow: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cs-darkplum) white;
+}
 </style>

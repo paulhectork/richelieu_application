@@ -146,6 +146,9 @@ onMounted(() => {
 }
 .hm-left-content {
   overflow: scroll;
+  overflow: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cs-darkplum) white;
 }
 .hm-left-redirect-wrapper {
   display: flex;
