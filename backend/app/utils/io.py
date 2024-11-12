@@ -14,11 +14,7 @@ def maketmp() -> None:
     * delete the old TMP
     * create the new TMP and its child folders
     """
-    # print("~~~~~~~~~~~~~~", os.path.isdir(TMP))
     os.makedirs(TMP, exist_ok=True)
-    # os.makedirs(os.path.join(TMP, "imagefiles"))
-    # os.makedirs(os.path.join(TMP, "imagefiles", "iconography"))
-    # os.makedirs(os.path.join(TMP, "imagefiles", "cartography"))
     return
 
 

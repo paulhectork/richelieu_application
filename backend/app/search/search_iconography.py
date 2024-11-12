@@ -52,7 +52,6 @@ def sanitize_date(date: t.List[t.Dict] | t.Any) -> t.Tuple[ t.List[t.Dict], bool
         return date, False
 
     # 1) validate the structure of each date object: { "filter": <...>, "data": [...] }
-    # print(">>> input  :\n", date)
     valid_date_structure = lambda x: ( len(x.keys()) == 2
                                        and "filter" in x.keys()
                                        and "data" in x.keys()
@@ -81,7 +80,6 @@ def sanitize_date(date: t.List[t.Dict] | t.Any) -> t.Tuple[ t.List[t.Dict], bool
                                  else x["data"] )
     date = [ { "filter": d["filter"], "data": date2int4range(d) }
                for d in date if len(d["data"]) ]
-    # print(">>> output :\n", date)
     return date, True
 
 
