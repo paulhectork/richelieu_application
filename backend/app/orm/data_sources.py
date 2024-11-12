@@ -55,10 +55,10 @@ class Iconography(db.Model):
     licence                    : Mapped["Licence"]                          = relationship("Licence", back_populates="iconography", lazy="selectin")
     r_iconography_theme        : Mapped[t.List["R_IconographyTheme"]]       = relationship("R_IconographyTheme", back_populates="iconography", lazy="selectin")
     r_iconography_actor        : Mapped[t.List["R_IconographyActor"]]       = relationship("R_IconographyActor", back_populates="iconography", lazy="selectin")
-    r_iconography_place        : Mapped[t.List["R_IconographyPlace"]]       = relationship("R_IconographyPlace", back_populates="iconography", lazy="selectin")
-    r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity", back_populates="iconography", lazy="selectin")
+    r_iconography_place        : Mapped[t.List["R_IconographyPlace"]]       = relationship("R_IconographyPlace", back_populates="iconography")
+    r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity", back_populates="iconography")
     r_admin_person             : Mapped[t.List["R_AdminPerson"]]            = relationship("R_AdminPerson", back_populates="iconography", lazy="selectin")
-    r_institution              : Mapped[t.List["R_Institution"]]            = relationship("R_Institution", back_populates="iconography", lazy="selectin")
+    r_institution              : Mapped[t.List["R_Institution"]]            = relationship("R_Institution", back_populates="iconography")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
