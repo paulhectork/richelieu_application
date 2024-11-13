@@ -50,6 +50,7 @@ const isLoaded = ref(false);   // switched to true when the data is loaded, will
  * @type {Record<string, unknown>}
  */
 const flattenedResources = computed(() =>
+  // dataFull.value.map((resource) => {}) creates a dict of `{ id_uuid : data }`
   Object.fromEntries(dataFull.value.map((resource) =>
     [
       resource.id_uuid, {
