@@ -1,0 +1,64 @@
+<template>
+  <div class="index-iconography-outer-wrapper">
+    <div class="index-iconography-inner-wrapper">
+      <IndexIconographyFilter :data="dataFull"
+                              @iconography-filter="handleIconographyFilter"
+      ></IndexIconographyFilter>
+
+      <IndexBase display="resource"
+                 :data="dataFilter"
+      ></IndexBase>
+    </div>
+  </div>
+</template>
+
+
+<script setup>
+import { onMounted, ref, watch } from "vue";
+
+import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
+import IndexBase from "@components/IndexBase.vue";
+
+import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
+
+/*************************************************/
+
+const props      = defineProps([ "data" ]);
+const dataFull   = ref([]);  // array of iconography objects sent from the parent. this one is never modified.
+const dataFilter = ref([]);  // data, possibly modified by `IndexIconographyFilter`, and reshaped with indexDataFormatterIconography
+
+/*************************************************/
+
+function setRefs(theProps) {
+  dataFull.value = theProps.data;
+  dataFilter.value = indexDataFormatterIconography(theProps.data)
+}
+
+function handleIconographyFilter(iconographyData) {
+  dataFilter.value = indexDataFormatterIconography(iconographyData);
+}
+
+/*************************************************/
+
+watch(props, (newP, oldP) => {
+  console.log("IndexIconography.watch : new props !", newP)
+  setRefs(newP);
+})
+
+onMounted(() => {
+  setRefs(props);
+})
+
+</script>
+
+
+<style scoped>
+.index-iconography-outer-wrapper {
+  height: 100%;
+  width: 100%;
+  background-color: red;
+}
+.index-iconography-inner-wrapper {
+
+}
+</style>
