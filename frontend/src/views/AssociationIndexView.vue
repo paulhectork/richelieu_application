@@ -1,6 +1,6 @@
 <!-- AssociationIndexView.vue
 
-     an index combining two filters on the database:
+     a view displaying an iconography index combining two filters on the database:
      fromTable and toTable are two tables describing the iconography dataset
      (like places, named entities...). we build an index of
      all Iconography items that are tagged with fromTable.fromIdUuid
@@ -18,7 +18,7 @@
      - fromTable  (string) : the name of the `from` table
      - fromIdUuid (string) : the `id_uuid` value of the `to` table
      - toTable    (string) : the name of the "to" table
-    - toIdUuid    (string) : the `id_uuid` value of the `from` table
+     - toIdUuid   (string) : the `id_uuid` value of the `from` table
 
      WARNING: TABLE NAMES MUST BE WRITTED IN snake_case, LIKE IN THE DATABASE
 -->
@@ -52,7 +52,8 @@
         </p>
         <p v-else>Aucun résultat ne correspond à cette combinaison.</p>
 
-        <p>Voir tous les résultats pour
+        <p v-if="from.entryName && to.entryName">
+          Voir tous les résultats pour
           <RouterLink :to="toFrontendSlug(from)"
                       v-html="from.entryName"
           ></RouterLink>
@@ -63,14 +64,8 @@
         </p>
       </div>
 
-      <IndexIconographyFilter :data="dataFull"
-                              @iconography-filter="handleIconographyFilter"
-      ></IndexIconographyFilter>
-
-
-      <IndexBase :data="dataFilter"
-                 display="resource"
-      ></IndexBase>
+      <IndexIconography :data="dataFull"
+      ></IndexIconography>
 
     </div>
   </div>
@@ -88,42 +83,30 @@ import { onMounted, ref } from "vue";
 
 import axios from "axios";
 
-import IndexBase from "@components/IndexBase.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import UiLoader from "@components/UiLoader.vue";
 import IndexCount from "@components/IndexCount.vue";
-import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
+import IndexIconography from "@components/IndexIconography.vue";
 
 import { capitalizeFirstChar  } from "@utils/strings";
-import { indexDataFormatterIconography } from "@utils/indexDataFormatter.js";
 
 /***************************************/
 
 const props = defineProps([ "toIdUuid", "fromIdUuid", "fromTable", "toTable" ]);
 
-const from       = ref({});     // { entryName: "...", idUuid: "qr1...", table: "table name" }
-const to         = ref({});     // { entryName: "...", idUuid: "qr1...", table: "table name" }
-const dataFull   = ref([]);     // array of iconography objects (without filtering). populated in `getData`
-const dataFilter = ref([]);     // array of iconography objects (with optional filtering)
-const loadState  = ref("loading");  // "loading"/"loaded"/"error"
+const from      = ref({});     // { entryName: "...", idUuid: "qr1...", table: "table name" }
+const to        = ref({});     // { entryName: "...", idUuid: "qr1...", table: "table name" }
+const dataFull  = ref([]);     // array of iconography objects. populated in `getData`
+const loadState = ref("loading");  // "loading"/"loaded"/"error"
 
 /***************************************/
-
-/**
- * when IndexIconographyFilter returns the filtered array
- * of Iconography objects, update `dataFilter`, which will
- * trigger the updating of `IndexBase`.
- * @param {Array<Object>} iconographyData
- */
- function handleIconographyFilter(iconographyData) {
-  dataFilter.value = indexDataFormatterIconography(iconographyData);
-}
 
 /**
  * get an object with the structure of `from` or `to` and build a
  * slug to redirect to that resource's main page.
  */
 const toFrontendSlug = (resource) => {
+  console.log(">>>", resource)
   let slug = "/";
   const implementedTables = [ "theme", "named_entity", "place" ];
   if ( implementedTables.includes(resource.table) ) {
@@ -223,12 +206,11 @@ async function getData() {
                    to_id_uuid  : props.toIdUuid };
   const tgt = new URL("/i/association/index", __API_URL__);
 
-  // run the query and populate the `dataFull` and `dataFilter` refs
+  // run the query and populate the `dataFull` ref
   return axios
          .get(tgt.href, { params:params })
          .then(r => r.data)
          .then(data => { dataFull.value   = data;
-                         dataFilter.value = indexDataFormatterIconography(dataFull.value);
                          loadState.value  = "loaded";
                         })
          .catch(e => { loadState.value = "error"; console.error(e); });

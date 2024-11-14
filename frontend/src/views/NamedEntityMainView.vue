@@ -36,13 +36,8 @@
       ></IndexAssociationRedirects>
     </div>
 
-    <IndexIconographyFilter :data="dataFull"
-                            @iconography-filter="handleIconographyFilter"
-    ></IndexIconographyFilter>
+    <IndexIconography :data="dataFull"></IndexIconography>
 
-    <IndexBase :data="dataFilter"
-               display="resource"
-    ></IndexBase>
   </div>
 
   <ErrNotFound v-else-if="loadState === 'error'"></ErrNotFound>
@@ -51,17 +46,14 @@
 
 <script setup>
 import { onMounted, ref, watch, computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import axios from "axios";
 
 import ErrNotFound from "@components/ErrNotFound.vue";
-import IndexBase from "@components/IndexBase.vue";
 import UiLoader from "@components/UiLoader.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
 import IndexCount from "@components/IndexCount.vue";
-import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
-
-import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
+import IndexIconography from "@components/IndexIconography.vue";
 
 /**************************************************/
 
@@ -69,7 +61,6 @@ const route           = useRoute();
 const namedEntity     = ref({});    // the namedEntity object sent from the backend
 const namedEntityName = ref("");    // the name of the namedEntity.
 const dataFull        = ref([]);    // the complete iconography  data, set from a watcher
-const dataFilter      = ref([]);    // the user-filtered iconography data, set from a watcher
 const idUuid          = ref(route.params.idUuid);
 const loadState       = ref("loading");  // loading/loaded/error
 
@@ -83,17 +74,6 @@ const apiTargetIconography  = computed(() =>
   new URL(`/i/named-entity/${idUuid?.value}`, __API_URL__) );
 
 /***************************************************/
-
-
-/**
- * when IndexIconographyFilter returns the filtered array
- * of Iconography objects, update `dataFilter`, which will
- * trigger the updating of `IndexBase`.
- * @param {Array<Object>} iconographyData: the fitlered array of iconography objects
- */
- function handleIconographyFilter(iconographyData) {
-  dataFilter.value = indexDataFormatterIconography(iconographyData);
-}
 
 /**
  * get all backend data from an UUID. we divide the fetching
@@ -111,7 +91,6 @@ function getData() {
     if ( r.data.length ) {
       namedEntity.value = r.data[0];
       dataFull.value   = namedEntity.value.iconography;
-      dataFilter.value = indexDataFormatterIconography(dataFull.value);
       loadState.value  = 'loaded';
     }
   })

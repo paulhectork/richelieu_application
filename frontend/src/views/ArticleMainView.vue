@@ -25,8 +25,8 @@
           `ArticleMainView`. the data changes from an article to
           another, but the processes are always the same, so they
           are handled by the current component.
-      * `IiifViewer`, `IndexBase` and `ArticleFootnote` display data
-          fetched from `ArticleContent...` and passed to them
+      * `IiifViewer`, `IconographyIndex` and `ArticleFootnote` display data
+          retrieved from `ArticleContent...` and passed to them
           from `ArticleMainView`
 
       view @components/ArticleContentTemplate.vue for more info on
@@ -432,7 +432,7 @@ function mountFootnoteOnClick(evt) {
  *    - `.iiif-wrapper` -> position: relative
  *    - `.iiif-inner-wrapper` -> position: absolute; top: 0; left: 0
  *    => `.iiif-inner-wrapper` will always be at the top of `.iiif-wrapper`
- * - in jQuery, we calculate the needed offset and add it as a
+ * - in js, we calculate the needed offset and add it as a
  *   `transform: translateY()` => it's always positionned right below the navbar.
  *
  * in `portrait` mode, an `transform: translateY(0) !important`

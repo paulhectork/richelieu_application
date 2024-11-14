@@ -56,7 +56,7 @@ onMounted(() => {
 .index-iconography-outer-wrapper {
   height: 100%;
   width: 100%;
-  background-color: red;
+  background-color: tomato;
 }
 .index-iconography-inner-wrapper {
 

@@ -20,8 +20,7 @@
 
 
 <script setup>
-import { onMounted, ref, computed, watch } from "vue";
-import { useRoute } from "vue-router";
+import { onMounted, ref } from "vue";
 import axios from "axios";
 
 import { indexDataFormatterInstitution } from "@utils/indexDataFormatter";
