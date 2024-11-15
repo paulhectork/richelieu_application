@@ -1,3 +1,22 @@
+<!-- IndexIconography.vue
+  a component that centralizes all indexes/catalogs of Iconography objects.
+
+  so basically, it handles communication between:
+  - the parent component (which sends an array of Iconography objects)
+  - child `IndexBase` (which handles the UI display of the iconography index)
+  - child `IndexIconographyFilter` (which filters the data sent from the parent).
+
+  props:
+    - data (Array<Object>)
+        the array of iconography objects sent from the parent.
+        their structure is defined in the backend: Iconography.serialize_lite()
+    - oneItemRow (bool)
+        a flag indicating that the IndexBase build will display only 1 item per row
+        (useful for small viewports: `CartographyPlaceInfo`)
+    - hideFilter (bool)
+        a flag to hide to remove the IndexIconographyFilter block
+-->
+
 <template>
   <div class="index-iconography-outer-wrapper">
     <div class="index-iconography-inner-wrapper">
