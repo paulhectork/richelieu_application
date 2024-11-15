@@ -23,13 +23,6 @@
       </div>
 
       <div class="icono-block-wrapper">
-        <!--
-        <p><strong>{{ place.iconography.length }}</strong>
-          <span v-if="place.iconography.length > 1"><strong> ressources iconographiques</strong> sont associées</span>
-          <span v-else><strong> ressource iconographique</strong> est associée</span>
-          à ce lieu.
-        </p>
-        -->
 
         <div class="index-headtext-wrapper">
           <IndexAssociationRedirects v-if="loadStateAssociated === 'loaded'"
@@ -40,13 +33,7 @@
           ></IndexAssociationRedirects>
         </div>
 
-        <IndexIconographyFilter :data="dataFull"
-                                @iconography-filter="handleIconographyFilter"
-        ></IndexIconographyFilter>
-
-        <IndexBase :data="dataFilter"
-                   display="resource"
-        ></IndexBase>
+        <IndexIconography :data="dataFull"></IndexIconography>
       </div>
     </div>
   </div>
@@ -62,12 +49,10 @@ import axios from "axios";
 import UiLoader from "@components/UiLoader.vue";
 import MapPlaceMain from "@components/MapPlaceMain.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
-import IndexBase from "@components/IndexBase.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
 import IndexCount from "@components/IndexCount.vue";
-import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
+import IndexIconography from "@components/IndexIconography.vue";
 
-import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { cartographySourcePriority } from "@globals";
 import { sortAddressBySource } from "@utils/array.js";
 
@@ -79,16 +64,12 @@ const address = ref([]);  // array of addresses related to that place. fetched f
 const source = ref("");   // currently used `source` for `Place.vector_source`, `Address.source` and `Cartography.map_source`
 const place = ref({});    // fetched from backend
 const dataFull = ref([]);   // iconography data. fetched from backend
-const dataFilter = ref([]); // iconography data. fetched from backend
 const associatedPlaces = ref([]);  // places most frequently tagged together with the current place
 
 // loading/loaded/error
 const loadStatePlace = ref("loading");
 const loadStateAddress = ref("loading");
 const loadStateAssociated = ref("loading");
-
-// const apiTargetPlace = new URL(`/i/place/${idUuid}`, __API_URL__);
-// const apiTargetAddress = new URL(`/i/place-address/${idUuid}`, __API_URL__);
 
 /**
  * `address` as returned by the backend is an array of objects;
@@ -106,18 +87,6 @@ const computedAddress = computed(() =>
 
 /******************************************************************/
 
-
-/**
- * when IndexIconographyFilter returns the filtered array
- * of Iconography objects, update `dataFilter`, which will
- * trigger the updating of `IndexBase`.
- * @param {Array<Object>} iconographyData
- */
- function handleIconographyFilter(iconographyData) {
-  dataFilter.value = indexDataFormatterIconography(iconographyData);
-}
-
-
 /**
  * all backend communication goes on here.
  */
@@ -127,7 +96,6 @@ async function getData() {
   .then(data => {
     place.value = data[0];
     dataFull.value = place.value.iconography;
-    dataFilter.value = indexDataFormatterIconography(place.value.iconography);
     loadStatePlace.value = "loaded";
   })
   .catch(e => { console.error(e);

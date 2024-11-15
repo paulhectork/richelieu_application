@@ -1,12 +1,14 @@
 <template>
   <div class="index-iconography-outer-wrapper">
     <div class="index-iconography-inner-wrapper">
-      <IndexIconographyFilter :data="dataFull"
+      <IndexIconographyFilter v-if="!hideFilter"
+                              :data="dataFull"
                               @iconography-filter="handleIconographyFilter"
       ></IndexIconographyFilter>
 
       <IndexBase display="resource"
                  :data="dataFilter"
+                 :itemsPerRow="itemsPerRow"
       ></IndexBase>
     </div>
   </div>
@@ -23,15 +25,21 @@ import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 
 /*************************************************/
 
-const props      = defineProps([ "data" ]);
-const dataFull   = ref([]);  // array of iconography objects sent from the parent. this one is never modified.
-const dataFilter = ref([]);  // data, possibly modified by `IndexIconographyFilter`, and reshaped with indexDataFormatterIconography
+const props       = defineProps([ "data", "oneItemRow", "hideFilter" ]);
+const hideFilter  = ref(false);
+const itemsPerRow = ref();
+const dataFull    = ref([]);  // array of iconography objects sent from the parent. this one is never modified.
+const dataFilter  = ref([]);  // data, possibly modified by `IndexIconographyFilter`, and reshaped with indexDataFormatterIconography
 
 /*************************************************/
 
 function setRefs(theProps) {
-  dataFull.value = theProps.data;
-  dataFilter.value = indexDataFormatterIconography(theProps.data)
+  dataFull.value    = theProps.data;
+  hideFilter.value  = theProps.hideFilter || false;
+  itemsPerRow.value = theProps.oneItemRow === true ? 1 : undefined;
+  dataFilter.value  = indexDataFormatterIconography(theProps.data);
+
+  console.log("****", hideFilter.value, itemsPerRow.value);
 }
 
 function handleIconographyFilter(iconographyData) {
@@ -56,7 +64,6 @@ onMounted(() => {
 .index-iconography-outer-wrapper {
   height: 100%;
   width: 100%;
-  background-color: tomato;
 }
 .index-iconography-inner-wrapper {
 

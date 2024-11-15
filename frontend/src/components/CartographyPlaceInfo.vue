@@ -65,10 +65,17 @@
         ></IndexAssociationRedirects>
 
         <div class="iconography-index-wrapper">
+          <!--
           <IndexBase :data="iconographyDataFilter"
                      :itemsPerRow="1"
                      display="resource"
           ></IndexBase>
+          -->
+          <IndexIconography :data="place.iconography"
+                            :oneItemRow="true"
+                            :hideFilter="true"
+          ></IndexIconography>
+
         </div>
       </div>
     </div>
@@ -84,10 +91,12 @@ import $ from "jquery";
 
 import UiLoader from "@components/UiLoader.vue";
 import UiButtonCross from "@components/UiButtonCross.vue";
-import IndexBase from "@components/IndexBase.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
+import IndexIconography from "@components/IndexIconography.vue";
 
-import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
+//xxx import IndexBase from "@components/IndexBase.vue";
+//xxx import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
+
 import { sortAddressBySource } from "@utils/array.js";
 import { capitalizeFirstChar } from "@utils/strings";
 
@@ -100,7 +109,7 @@ const placeIdUuid           = ref("");
 const associatedPlaces      = ref([]);
 const place                 = ref();
 const address               = ref()
-const iconographyDataFilter = ref([]);
+//xxx const iconographyDataFilter = ref([]);
 const loadStateAddress      = ref("loading");  // loading/loaded/error
 const loadStatePlace        = ref("loading");  // loading/loaded/error
 
@@ -126,7 +135,7 @@ function resetData() {
   place.value                 = undefined;
   associatedPlaces.value      = undefined;
   address.value               = undefined;
-  iconographyDataFilter.value = [];
+  // iconographyDataFilter.value = [];
   loadStateAddress.value      = "loading";
   loadStatePlace.value        = "loading";
 }
@@ -136,7 +145,8 @@ function getData() {
   .then(r => r.data[0])
   .then(data => {
     place.value = data;
-    iconographyDataFilter.value = indexDataFormatterIconography(place.value.iconography);
+    //xxx iconographyDataFilter.value = indexDataFormatterIconography(place.value.iconography);
+    console.log(">", data.iconography);
     loadStatePlace.value = "loaded";
   })
   .catch(e => { console.error(e); loadStatePlace.value = "error" });
@@ -167,13 +177,11 @@ onMounted(() => {
   placeIdUuid.value = props.placeIdUuid;
   getData();
   $(document).on("keydown", escHandler);
-             // .on("click", clickHandler),
 
 })
 
 onUnmounted(() =>
   $(document).off("keydown", escHandler)
-             //.off("click", clickHandler)
 );
 </script>
 
