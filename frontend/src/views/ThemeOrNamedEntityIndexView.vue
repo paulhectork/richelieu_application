@@ -19,7 +19,7 @@
     <h1>Index des
       {{ tableName === "theme" ? "thèmes" : "entités nommées" }}&nbsp;:
       {{ capitalizeFirstChar(categoryName) }}</h1>
-    <IndexCount :indexCount="dataFilter.length"
+    <IndexCount :indexCount="dataFull.length"
                 :dataType="tableName"
                 v-if="loadState === 'loaded'"
     ></IndexCount>
@@ -175,10 +175,16 @@
     </div>
 
     <UiLoader v-if="loadState === 'loading'"></UiLoader>
-    <IndexBase v-else
-           :display="display"
-           :data="dataFilter"
-    ></IndexBase>
+    <div v-else>
+      <FilterIndexThemeOrNamedEntity v-if="dataFull.length"
+                                     :data="dataFull"
+                                     @theme-or-named-entity-filter="handleFilter"
+      ></FilterIndexThemeOrNamedEntity>
+
+      <IndexBase :display="display"
+                 :data="dataFilter"
+      ></IndexBase>
+    </div>
 
   </div>
 
@@ -187,16 +193,18 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
+
 import axios from "axios";
+
+import UiLoader from "@components/UiLoader.vue";
+import IndexBase from "@components/IndexBase.vue";
+import IndexCount from "@components/IndexCount.vue";
+import ErrNotFound from "@components/ErrNotFound.vue";
+import FilterIndexThemeOrNamedEntity from "@components/FilterIndexThemeOrNamedEntity.vue";
 
 import { indexDataFormatterTheme
        , indexDataFormatterNamedEntity } from "@utils/indexDataFormatter";
 import { capitalizeFirstChar } from "@utils/strings";
-
-import IndexCount from "@components/IndexCount.vue";
-import UiLoader from "@components/UiLoader.vue";
-import ErrNotFound from "@components/ErrNotFound.vue";
-import IndexBase from "@components/IndexBase.vue";
 
 /*************************************************************/
 
@@ -243,6 +251,20 @@ function getData() {
   .catch(e => { console.error(e);
                 loadState.value = "error"
               });
+}
+
+
+/**
+ * when `FilterIndexThemeOrNamedEntity` emits a new array of
+ * filtered Theme or NamedEntity objects, update `dataFilter`.
+ *
+ * @param {Array<Object>} filteredData: the new filtered array of
+ *    Iconography or NamedEntity objects
+ */
+function handleFilter(filteredData) {
+  dataFilter.value = tableName.value === "theme"
+                     ? indexDataFormatterTheme(filteredData)
+                     : indexDataFormatterNamedEntity(filteredData);
 }
 
 /*************************************************************/

@@ -4,7 +4,7 @@
   so basically, it handles communication between:
   - the parent component (which sends an array of Iconography objects)
   - child `IndexBase` (which handles the UI display of the iconography index)
-  - child `IndexIconographyFilter` (which filters the data sent from the parent).
+  - child `FilterIndexIconography` (which filters the data sent from the parent).
 
   props:
     - data (Array<Object>)
@@ -14,16 +14,16 @@
         a flag indicating that the IndexBase build will display only 1 item per row
         (useful for small viewports: `CartographyPlaceInfo`)
     - hideFilter (bool)
-        a flag to hide to remove the IndexIconographyFilter block
+        a flag to hide to remove the FilterIndexIconography block
 -->
 
 <template>
   <div class="index-iconography-outer-wrapper">
     <div class="index-iconography-inner-wrapper">
-      <IndexIconographyFilter v-if="!hideFilter"
+      <FilterIndexIconography v-if="!hideFilter"
                               :data="dataFull"
                               @iconography-filter="handleIconographyFilter"
-      ></IndexIconographyFilter>
+      ></FilterIndexIconography>
 
       <IndexBase display="resource"
                  :data="dataFilter"
@@ -37,7 +37,7 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
 
-import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
+import FilterIndexIconography from "@components/FilterIndexIconography.vue";
 import IndexBase from "@components/IndexBase.vue";
 
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
@@ -48,7 +48,7 @@ const props       = defineProps([ "data", "oneItemRow", "hideFilter" ]);
 const hideFilter  = ref(false);
 const itemsPerRow = ref();
 const dataFull    = ref([]);  // array of iconography objects sent from the parent. this one is never modified.
-const dataFilter  = ref([]);  // data, possibly modified by `IndexIconographyFilter`, and reshaped with indexDataFormatterIconography
+const dataFilter  = ref([]);  // data, possibly modified by `FilterIndexIconography`, and reshaped with indexDataFormatterIconography
 
 /*************************************************/
 

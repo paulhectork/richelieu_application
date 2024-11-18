@@ -1,4 +1,4 @@
-<!-- IndexIconographyFilter.vue
+<!-- FilterIndexIconography.vue
 
   a block that performs filtering of an array of iconography objects.
   this component is completely standalone:
@@ -9,7 +9,7 @@
   - emits the filtered `data` to the parent.
   all filtering is done on the frontend, there's no communication
   with the backend. this may be less performant than custom backend
-  queries, but makes it way easier to implement `IndexIconographyFilter`
+  queries, but makes it way easier to implement `FilterIndexIconography`
   in different parts of the app.
 
   during filtering, a loader is displayed on top of the filter.
@@ -121,7 +121,7 @@ import _ from "lodash";
 
 import UiLoader from "@components/UiLoader.vue";
 
-import { stripHtml, simplifyAndUnaccentString } from "@utils/strings";
+import { simplifyHtml } from "@utils/strings";
 
 /*************************************/
 
@@ -139,16 +139,6 @@ const isLoading               = ref(false);  // when true, a loader will be disp
 /*************************************/
 
 /**
- * a combination of 2 string simplifiers.
- * @param {String} s
- */
-const localStringSimplify = s =>
-  s != null && typeof s === "string"
-  ? simplifyAndUnaccentString(stripHtml( s ))
-  : console.error(`IndexIconographyFilter.localStringSimplify: 's' must be string, got '${s}' instead`);
-
-
-/**
  * function performing the filtering heavywork.
  * using the params `filterParams`, it applies successive
  * filters to `filterObj`, before returning `filterObj`.
@@ -164,25 +154,22 @@ const localStringSimplify = s =>
  * @param {Array<Object>} dataObj: an array of Iconography objects
  */
 function filterIconography(filterParams, dataObj) {
-  let start, end;
-  start = performance.now();
-
-  ////////////////////////////////
+    ////////////////////////////////
   // 1) FILTERING dataObj
   if ( filterParams.titleFilter && filterParams.titleFilter.length ) {
-    let theTitleFilter = localStringSimplify( filterParams.titleFilter );
+    let theTitleFilter = simplifyHtml( filterParams.titleFilter );
     dataObj = dataObj.filter((d) => {
       // d.title is an array => stringify it.
-      let title = localStringSimplify( d.title.join(" ") );
+      let title = simplifyHtml( d.title.join(" ") );
       return title.includes(theTitleFilter)
     })
   }
 
   if ( filterParams.authorFilter && filterParams.authorFilter.length ) {
-    let theAuthorFilter = localStringSimplify( filterParams.authorFilter );
+    let theAuthorFilter = simplifyHtml( filterParams.authorFilter );
     dataObj = dataObj.filter((d) => {
       // d.authors is an array of objects => extract the author name, stringify the array and simplify it
-      let author = localStringSimplify(d.authors.map(d => d.entry_name).join(" "));
+      let author = simplifyHtml(d.authors.map(d => d.entry_name).join(" "));
       return author.includes(theAuthorFilter);
     });
   }
@@ -219,8 +206,8 @@ function filterIconography(filterParams, dataObj) {
       // transform `a` and `b`, arrays of authors objects into simplified strings
       // the inner `.sort((x,y) => x.localeCompare(y))` allows to sort
       // the `a.title` and `b.title` arrays before comparing them together
-      a = localStringSimplify( a.title.sort((x,y) => x.localeCompare(y)).join(" ") );
-      b = localStringSimplify( b.title.sort((x,y) => x.localeCompare(y)).join(" ") );
+      a = simplifyHtml( a.title.sort((x,y) => x.localeCompare(y)).join(" ") );
+      b = simplifyHtml( b.title.sort((x,y) => x.localeCompare(y)).join(" ") );
       return a.localeCompare(b);
     })
     dataObj = [ ...dataObjWithTitle, ...dataObjWithoutTitle ];
@@ -239,8 +226,8 @@ function filterIconography(filterParams, dataObj) {
       // transform `a` and `b`, arrays of authors objects into simplified strings
       // the inner `.sort((x,y) => x.localeCompare(y))` allows to sort
       // the `a.author` and `b.author` arrays before comparing `a` and `b`.
-      a = localStringSimplify( a.authors.map(x => x.entry_name).sort((x,y) => x.localeCompare(y)).join(" ") );
-      b = localStringSimplify( b.authors.map(x => x.entry_name).sort((x,y) => x.localeCompare(y)).join(" ") );
+      a = simplifyHtml( a.authors.map(x => x.entry_name).sort((x,y) => x.localeCompare(y)).join(" ") );
+      b = simplifyHtml( b.authors.map(x => x.entry_name).sort((x,y) => x.localeCompare(y)).join(" ") );
       return a.localeCompare(b);
     })
     dataObj = [ ...dataObjWithAuthor, ...dataObjWithoutAuthor ];
@@ -255,8 +242,6 @@ function filterIconography(filterParams, dataObj) {
     dataObj = [ ...dataObjWithDate, ...dataObjWithoutDate ];  // 1st, put the elements with a date, then the elements without a date.
   }
 
-  end = performance.now();
-  console.log(`IndexIconographyFilter.filterIconography() : ${end-start}ms. to complete.`)
   return dataObj;
 }
 
@@ -273,7 +258,7 @@ function filterIconography(filterParams, dataObj) {
  * - do the filtering
  * - emit the filtered data back to the parent
  *
- * @param {Object} formData :
+ * @param {Object} formData : the filter
 ​ * @param {FormKitNode} formNode : formKit formNode. https://formkit.com/api-reference/formkit-core#formkitnode
  */
 function onSubmit(formData, formNode) {
@@ -329,38 +314,6 @@ onMounted(() => {
 
 
 <style scoped>
-.filter-outer-wrapper {
-  margin: 3%;
-  border: var(--cs-main-border);
-}
-.negative-default .filter-outer-wrapper {
-  border: var(--cs-negative-border);
-}
-.filter-loader-wrapper {
-  display: grid;
-  padding: 2%;
-  border-top: var(--cs-main-border);
-}
-.negative-default .filter-loader-wrapper {
-  border-top: var(--cs-negative-border);
-}
-
-.filter-loader-wrapper > :deep(*) {
-  grid-column-start: 1;
-  grid-row-start: 1;
-}
-.loader-wrapper {
-  z-index: 2;
-}
-.form-outer-wrapper {
-  transition: opacity .3s ease-out;
-}
-.form-outer-wrapper.is-loading {
-  opacity: 0.2;
-  transition: opacity .3s ease-in;
-}
-
-/***********************/
 
 /** general styling of the form, for mobile and desktop */
 form#iconography-index-filter {
@@ -377,7 +330,6 @@ form#iconography-index-filter {
   }
 }
 #iconography-index-filter .formkit-outer {
-  position: relative;
   margin: 3px;
 }
 @media ( orientation:portrait ) {
@@ -394,10 +346,7 @@ form#iconography-index-filter {
 }
 
 /** input-level styling: hide the help, transform the messages to popups */
-#iconography-index-filter :deep(.formkit-help) {
-  visibility: hidden !important;
-  height: 0;
-}
+
 #iconography-index-filter :deep(.formkit-wrapper) {
   height: 100%;
   display: flex;
@@ -407,42 +356,6 @@ form#iconography-index-filter {
 }
 #iconography-index-filter :deep(.formkit-inner) {
   width: 100%;
-}
-/** error messages are displayed as popups: the `.formkit-outer`
-    has a position:relative, which allows .formkit-messages to
-    be positionned with a position:absolute relative to `.formkit-outer`.
-    then, we just position .formkit-messages above the `.formkit-outer`
-    and add a pure CSS arrow tooltip (see rule below).
-    otherwise the messages get hidden by other inputs with display:grid.
- */
-#iconography-index-filter :deep(.formkit-outer .formkit-messages) {
-  background-color: var(--cs-main-default-bg);
-  transform: translateY(-110%);
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 5px;
-  border: var(--cs-main-border);
-}
-.negative-default #iconography-index-filter :deep(.formkit-outer .formkit-messages) {
-  background-color: var(--cs-negative-default-bg);
-  border: var(--cs-negative-border);
-}
-#iconography-index-filter :deep(.formkit-outer .formkit-messages:after) {
-  /** css tooltip. see: https://css-tricks.com/snippets/css/css-triangle/ */
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  height: 0px;
-  width: 0px;
-  transform: translateX(-15px);
-  border: solid transparent 15px;
-  border-top-color: var(--cs-main-default);
-  background: transparent;
-}
-.negative-default #iconography-index-filter :deep(.formkit-outer .formkit-messages:after) {
-  border-top-color: var(--cs-negative-default);
 }
 
 /** submit button styling  */
@@ -455,11 +368,6 @@ form#iconography-index-filter {
   width: 70%;
   height: 40%;
 
-}
-#iconography-index-filter :deep(.formkit-actions button[type=submit]) {
-  width: 100%;
-  height: 100%;
-  box-shadow: 3px 3px var(--cs-main-second-bg);
 }
 
 /***********************/

@@ -6,7 +6,7 @@
       lifecycle:
       - onMounted, `data` is set: an Iconography index can be displayed.
       - when  `props.data` changes, the data sent by the parent has changed.
-          this mostly happens when `IndexIconographyFilter` filters the
+          this mostly happens when `FilterIndexIconography` filters the
           iconography data and the parent transmits the newly translated
           data to the current component. in that case,
           - update the `data` ref with the new index
