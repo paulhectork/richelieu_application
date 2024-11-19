@@ -29,12 +29,8 @@
       props and global variables:
         tableName (prop) : the name of the table we're querying, which
           determines relevant info to display and backend urls.
-        apiTarget (computed) : the URL where to get backend data,
-          defined as a computed property to avoid manually having
-          to update it
-        dataFull (ref) : all the data fetched from the backend
-        dataFilter (ref) : data fetched from the backend, reformatted
-          and possibly filtered to be passed to IndexBase.vue
+        dataFull (ref) : all the data fetched from the backend,
+          reformatted to fit the data model of `IndexBase`
 
       lifecycle:
         1) first page load: based on the URL (theme/entite-nommee),
@@ -75,10 +71,40 @@
       </p>
     </div>
 
+    <!--
+    <FormKit type="fkRadioTabs"
+             id="select-view"
+             name="selectView"
+             label="Changer de vue"
+             help="Choisir comment voir les thèmes"
+             value="category"
+             :options="[ { value: 'category', label: 'Par catégories' }
+                       , { value: 'all', label: `${tableName==='theme' ? 'Tous les thèmes' : 'Toutes les entités nommées' }` }
+                       , { value: 'tree', label: 'Arborescence' } ]"
+             @input="changeDisplay"
+    ></FormKit>
+    -->
+    <div class="select-view-wrapper">
+      <div class="select-view">
+        <span>Changer de vue&nbsp;:</span>
+        <RouterLink :to="{ path: `/${tableName==='theme' ? 'theme' : 'entite-nommee'}/all`
+                         , query: { viewType: 'tree' } }"
+        ><button>Arborescence</button></RouterLink>
+        <RouterLink :to="{ path: `/${tableName==='theme' ? 'theme' : 'entite-nommee'}/all`
+                         , query: { viewType: 'collection' } }"
+        >
+          <button v-html="`${tableName==='theme'
+                           ? 'Tous les thèmes'
+                           : 'Toutes les entités nommées'}`"
+          ></button>
+        </RouterLink>
+      </div>
+    </div>
+
     <UiLoader v-if="loadState === 'loading'"></UiLoader>
     <IndexBase v-else
                :display="display"
-               :data="dataFilter"
+               :data="dataFull"
     ></IndexBase>
 
   </div>
@@ -91,7 +117,8 @@
 
 
 <script setup>
-import { onMounted, ref, watch, computed } from "vue";
+import { onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 
 import axios from "axios";
 
@@ -103,19 +130,14 @@ import IndexBase from "@components/IndexBase.vue";
 
 /*************************************************************/
 
-const props = defineProps([ "tableName" ]);
+const props  = defineProps([ "tableName" ]);
+const router = useRouter();
 
 const tableName      = ref(props.tableName);
 const loadState      = ref("loading");  // "loading"/"loaded"/"error"
 const dataFull       = ref([]);
-const dataFilter     = ref([]);
 const display        = "concept";
 const databaseCounts = ref();  // super basic stats on the database for an introductory paragraph
-
-const apiTarget  = computed(() =>  // defined as computed to be able to dynamically switch URL when `tableName` changes.
-  tableName.value === "theme"
-  ? new URL("/i/theme", __API_URL__)
-  : new URL("/i/named-entity", __API_URL__));
 
 /*************************************************************/
 
@@ -125,13 +147,12 @@ const apiTarget  = computed(() =>  // defined as computed to be able to dynamica
  * the `ref`s won't be updated: the view will keep thinking that
  * we're on page "Theme", while we'll want to be on "Entités nommées".
  */
-function resetView() {
+function resetRefs() {
   if ( !["theme", "namedEntity"].includes(props.tableName) ) {
     throw new Error(`ThemeOrNamedEntityCategoryView: "tableName" props must be one of ["theme", "namedEntity"], got "${tableName.value}"`);
   }
   tableName.value  = props.tableName;
   dataFull.value   = [];
-  dataFilter.value = [];
   loadState.value  = "loading";
 }
 
@@ -139,12 +160,15 @@ function resetView() {
  * fetch data from the backend.
  */
 function getData() {
-  axios.get(apiTarget.getter().href)
+  const apiTarget  =  tableName.value === "theme"
+                      ? new URL("/i/theme", __API_URL__)
+                      : new URL("/i/named-entity", __API_URL__);
+
+  axios.get(apiTarget.href)
   .then(r => r.data)
-  .then(data => { dataFull.value   = data;
-                  dataFilter.value = tableName.value === "theme"
-                                     ? indexDataFormatterThemeCategory(data)
-                                     : indexDataFormatterNamedEntityCategory(data);
+  .then(data => { dataFull.value = tableName.value === "theme"
+                                   ? indexDataFormatterThemeCategory(data)
+                                   : indexDataFormatterNamedEntityCategory(data);
                   loadState.value = "loaded";
                 })
   .catch(e => { console.error(e);
@@ -163,7 +187,7 @@ function getData() {
 // trigger the whole reset/reload cycle when going from
 // "/theme" to "/entite-nommee" without reloading.
 watch(props, (newProps, oldProps) => {
-  resetView();
+  resetRefs();
   getData();
 })
 
@@ -179,5 +203,20 @@ onMounted(() => {
 
 
 <style scoped>
-
+.select-view-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+.select-view {
+  border: var(--cs-main-border);
+  margin: 1% 21px;  /** 21px = margin of .index-inner-wrapper + padding of .index-item-wrapper */
+  padding: 5px;
+}
+.select-view > span {
+  margin-right: 5px;
+}
+.select-view button {
+  margin: 0 5px;
+}
 </style>

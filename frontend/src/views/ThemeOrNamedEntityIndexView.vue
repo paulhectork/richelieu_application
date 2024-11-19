@@ -7,7 +7,6 @@
       props and refs:
       - tableName (prop):
       - categoryName (props):
-      - apiTarget (computed property):
 -->
 
 <template>
@@ -19,9 +18,9 @@
     <h1>Index des
       {{ tableName === "theme" ? "thèmes" : "entités nommées" }}&nbsp;:
       {{ capitalizeFirstChar(categoryName) }}</h1>
-    <IndexCount :indexCount="dataFull.length"
+    <IndexCount v-if="loadState === 'loaded'"
+                :indexCount="dataFull.length"
                 :dataType="tableName"
-                v-if="loadState === 'loaded'"
     ></IndexCount>
 
     <!-- presentation text for each category -->
@@ -210,29 +209,35 @@ import { capitalizeFirstChar } from "@utils/strings";
 
 const route        = useRoute();
 const props        = defineProps(["tableName"]);
-
-const tableName    = ref(props.tableName);
-const categoryName = ref(decodeURIComponent(route.params.categoryName));
-const dataFull     = ref([]);         // the full index, independent of user filters
-const dataFilter   = ref([]);         // the data to pass to `IndexBase.vue`. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> }
-const loadState    = ref("loading");  // toggled to true when data has loaded, hides the loader
 const display      = "concept";       // define the view to use in `IndexItem`
 
-const apiTarget = computed(() =>  // defined as a computed property to avoid manually updating the url on tableName.value's change.
-  tableName.value === "theme"
-  ? new URL("/i/theme", __API_URL__)
-  : new URL("/i/named-entity", __API_URL__));
+const tableName    = ref();           // (string) "theme"|"namedEntity"
+const viewType     = ref();           // (string) "collection"|"tree". the kind of display to use. defaults to "collection"
+const categoryName = ref();           // (string) theme.category or named_entity.category of "all" if we want to retrieve all themes/named entities
+const dataFull     = ref([]);         // (Array<Object>) the full index, independent of user filters
+const dataFilter   = ref([]);         // (Array<Object>) the data to pass to `IndexBase.vue`. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> }
+const loadState    = ref("loading");  // toggled to true when data has loaded, hides the loader
+
 
 /*************************************************************/
 
 /**
- * reset all global variables when changing page without reloading
+ * set all global variables to their start state.
  */
-function resetView() {
+function setRefs() {
+  // check that viewType is valid.
+  let newViewType = route.query.viewType || "collection";
+  if ( !["tree", "collection"].includes(newViewType) ) {
+    if ( __MODE__ === "DEV" ) console.error(`ThemeOrNamedEntityIndexView.setRefs() : expected one of ['collection', 'tree'] for 'route.query.viewType', got '${newViewType}'. defaulting to 'collection'`);
+    newViewType = "collection";
+  }
+
   tableName.value    = props.tableName;
+  viewType.value     = newViewType;
+  categoryName.value = decodeURIComponent(route.params.categoryName);
   dataFull.value     = [];
   dataFilter.value   = [];
-  categoryName.value = route.params.categoryName;
+  loadState.value    = "loading";
 }
 
 /**
@@ -240,17 +245,18 @@ function resetView() {
  * resources for a single category
  */
 function getData() {
-  axios.get(apiTarget.getter().href, { params: {category:categoryName.value} })
+  const apiTarget = tableName.value === "theme"
+                    ? new URL("/i/theme", __API_URL__)
+                    : new URL("/i/named-entity", __API_URL__);
+  axios.get(apiTarget.href, { params: {category:categoryName.value} })
   .then(r => r.data)
   .then(data => { dataFull.value = data;
                   dataFilter.value = tableName.value === "theme"
                                      ? indexDataFormatterTheme(data)
                                      : indexDataFormatterNamedEntity(data);
-                  loadState.value = "loaded";
-                })
+                  loadState.value = "loaded";  })
   .catch(e => { console.error(e);
-                loadState.value = "error"
-              });
+                loadState.value = "error" });
 }
 
 
@@ -270,11 +276,12 @@ function handleFilter(filteredData) {
 /*************************************************************/
 
 watch(props, (oldProps, newProps) => {
-  resetView();
+  setRefs();
   getData();
 })
 
 onMounted(() => {
+  setRefs();
   getData();
 })
 </script>
