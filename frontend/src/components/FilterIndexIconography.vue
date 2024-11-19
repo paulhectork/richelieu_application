@@ -73,16 +73,29 @@
                      help="Afficher les auteurs dont le nom contient le(s) mot(s)"
                      validation="textValidator"
             ></FormKit>
-            <FormKit type="fkSelect"
-                     id="order-by"
-                     name="orderBy"
-                     label="Réordonner (ordre ascendant)"
-                     :multiple="false"
-                     help="Définir un critère pour l'ordre des résultats"
-                     :options="[ { label: 'Auteur ou autrice', value: 'author' }
-                               , { label: 'Titre de l\'œuvre', value: 'title' }
-                               , { label: 'Date', value: 'date' } ]"
-            ></FormKit>
+            <div class="order-wrapper">
+              <FormKit type="fkSelect"
+                       id="order-by"
+                       name="orderBy"
+                       label="Réordonner"
+                       :multiple="false"
+                       help="Définir un critère pour l'ordre des résultats"
+                       :options="[ { label: 'Auteur ou autrice', value: 'author' }
+                                 , { label: 'Titre de l\'œuvre', value: 'title' }
+                                 , { label: 'Date', value: 'date' } ]"
+                       @input="onOrderByInput"
+              ></FormKit>
+              <FormKit type="fkSelect"
+                       id="order-direction"
+                       name="orderDirection"
+                       label="Ordre"
+                       :multiple="false"
+                       help="Définir l'ordre dans lesquels le tri est fait"
+                       :options="[ { label: 'Ascendant (par défaut)', value: 'asc' }
+                                 , { label: 'Descendant', value: 'desc' } ]"
+                       :disabled="disableOrderDirection"
+              ></FormKit>
+            </div>
             <FormKit v-if="minDate && maxDate"
                      type="fkSlider"
                      id="date-filter"
@@ -134,9 +147,72 @@ const currentFilter           = ref();  // the filter applied by the user, defin
 const currentIconographyCount = ref();  // number of iconography items currently displayed
 const minDate                 = ref();  // min/max allowed dates for the slider `#date-slider`.
 const maxDate                 = ref();  // min/max allowed dates for the slider `#date-slider`.
+
 const isLoading               = ref(false);  // when true, a loader will be displayed on top of the form.
+const disableOrderDirection   = ref(true);   // when true, `orderDirection` is disabled
 
 /*************************************/
+
+/**
+ * sorting functions to reorder the array `dataObj`.
+ *
+ * how does sorting work ? for each object in the array
+ * 1) create 2 arrays: one where the sorting key is not empty
+ * (which will be sorted), one where it is empty (won't be sorted).
+ * 2) sort the array with non-empty sorting key it in ascending order.
+ *    - for strings, we sort using localeCompare (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare)
+ *    - since we're sorting on objects, we often need to traverse the objects
+ *      to find the actual data to be sorted
+ * 3) return the 2 arrays
+ *
+ * @param {Array<Object>} dataObj : the array of Iconography objects to sort
+ * @returns {Array<Array>} : 2 arrays:
+ *  - 1 of items that have been sorted
+ *  - 1 of items that could not be sorted
+ */
+function orderByTitle(dataObj) {
+  let dataObjWithTitle = dataObj.filter((d) =>
+    d.title && d.title.length);
+  let dataObjWithoutTitle = dataObj.filter(d =>
+    !d.title || !d.title.length);
+
+  dataObjWithTitle = dataObjWithTitle.sort((a,b) => {
+    // transform `a` and `b`, arrays of authors objects into simplified strings
+    // the inner `.sort((x,y) => x.localeCompare(y))` allows to sort
+    // the `a.title` and `b.title` arrays before comparing them together
+    a = simplifyHtml( a.title.sort((x,y) => x.localeCompare(y)).join(" ") );
+    b = simplifyHtml( b.title.sort((x,y) => x.localeCompare(y)).join(" ") );
+    return a.localeCompare(b);
+  })
+  return [ dataObjWithTitle, dataObjWithoutTitle ];
+}
+
+function orderByAuthor(dataObj) {
+  let dataObjWithAuthor = dataObj.filter(d =>
+    d.authors && d.authors.length);
+  let dataObjWithoutAuthor = dataObj.filter(d =>
+    !d.authors || d.authors.length < 1);
+
+  dataObjWithAuthor = dataObjWithAuthor.sort((a,b) => {
+    // transform `a` and `b`, arrays of authors objects into simplified strings
+    // the inner `.sort((x,y) => x.localeCompare(y))` allows to sort
+    // the `a.author` and `b.author` arrays before comparing `a` and `b`.
+    a = simplifyHtml( a.authors.map(x => x.entry_name).sort((x,y) => x.localeCompare(y)).join(" ") );
+    b = simplifyHtml( b.authors.map(x => x.entry_name).sort((x,y) => x.localeCompare(y)).join(" ") );
+    return a.localeCompare(b);
+  })
+  return [ dataObjWithAuthor, dataObjWithoutAuthor ];
+}
+
+function orderByDate(dataObj) {
+  let dataObjWithDate = dataObj.filter(d =>
+    d.date && d.date.length);
+  let dataObjWithoutDate = dataObj.filter(d =>
+    !d.date || d.date.length < 1 );
+  dataObjWithDate =
+    dataObjWithDate.sort((a,b) => a.date[0] - b.date[0]);
+  return [ dataObjWithDate, dataObjWithoutDate ];
+}
 
 /**
  * function performing the filtering heavywork.
@@ -146,20 +222,20 @@ const isLoading               = ref(false);  // when true, a loader will be disp
  * TODO: optimize this function ?
  *
  * @param {Object} filterParams: the user-defined filter.structure:
- *  { titleFilter  : String|undefined,
- *    authorFilter : String|undefined,
- *    dateFilter   : undefined|Array<Number>,   // [YYYY,YYYY]
- *    orderBy      : "author"|"date"|"title"
+ *  { titleFilter    : String|undefined,
+ *    authorFilter   : String|undefined,
+ *    dateFilter     : undefined|Array<Number>,   // [YYYY,YYYY]
+ *    orderBy        : "author"|"date"|"title",
+ *    orderDirection : "asc"|"desc"?
  *  }
  * @param {Array<Object>} dataObj: an array of Iconography objects
  */
 function filterIconography(filterParams, dataObj) {
-    ////////////////////////////////
   // 1) FILTERING dataObj
   if ( filterParams.titleFilter && filterParams.titleFilter.length ) {
     let theTitleFilter = simplifyHtml( filterParams.titleFilter );
     dataObj = dataObj.filter((d) => {
-      // d.title is an array => stringify it.
+      // d.title is an array => stringify it and remove all html markup.
       let title = simplifyHtml( d.title.join(" ") );
       return title.includes(theTitleFilter)
     })
@@ -183,67 +259,27 @@ function filterIconography(filterParams, dataObj) {
       && d.date[1] <= theDateFilter[1])
   }
 
-  ////////////////////////////////
   // 2) REORDERING dataObj
+  if ( filterParams.orderBy !== undefined ) {
+    let dataObjWith,     // items in `dataObj` that could be sorted (contains data for the sorting key)
+        dataObjWithout,  // items in `dataObj` that could not be sorted
+        orderDirection = filterParams.orderDirection || "asc";  // desc|asc, defaults to asc.
 
-  // how does title sorting work ? for each object in `dataObj`, `title`
-  // is an array of strings. what we do is:
-  // - 1) create 2 arrays: `dataObjWithTitle`, containing
-  //    items of `dataObj` that have a title and can be filtered,
-  //    `dataObjWithoutTitle`, containing all of the items without
-  //    title (can't be filtered).
-  // - 2) sort `dataObjWithTitle` by title, using `localeCompare` (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare)
-  //    before sorting the full `dataObjWithTitle`, we sort, for
-  //    each item in `dataObj`, its `title` array alphabetically.
-  // - 3) concatenate `dataObjWithTitle` and `dataobjWithoutTitle`:
-  //    items without a title will be at the end of the reordered `dataObj` array.
-  if ( filterParams.orderBy && filterParams.orderBy === "title" ) {
-    let dataObjWithTitle = dataObj.filter((d) =>
-      d.title && d.title.length);
-    let dataObjWithoutTitle = dataObj.filter(d =>
-      !d.title || !d.title.length);
-    dataObjWithTitle = dataObjWithTitle.sort((a,b) => {
-      // transform `a` and `b`, arrays of authors objects into simplified strings
-      // the inner `.sort((x,y) => x.localeCompare(y))` allows to sort
-      // the `a.title` and `b.title` arrays before comparing them together
-      a = simplifyHtml( a.title.sort((x,y) => x.localeCompare(y)).join(" ") );
-      b = simplifyHtml( b.title.sort((x,y) => x.localeCompare(y)).join(" ") );
-      return a.localeCompare(b);
-    })
-    dataObj = [ ...dataObjWithTitle, ...dataObjWithoutTitle ];
+    [ dataObjWith, dataObjWithout ] = filterParams.orderBy === "title"
+                                      ? orderByTitle(dataObj)
+                                      : filterParams.orderBy === "author"
+                                      ? orderByAuthor(dataObj)
+                                      : filterParams.orderBy === "date"
+                                      ? orderByDate(dataObj)
+                                      : console.error(`FilterIndexIconography.filterIconography() : expected 'filterParams.orderBy' to be one of ['date', 'author', 'title'], got '${filterParams.orderBy}'`)
+    // reverse if descending sort is wanted
+    if ( orderDirection==="desc" ) { dataObjWith = dataObjWith.reverse() };
+    // concatenate the 2 objects. non-sorted items go to the end
+    dataObj = [ ...dataObjWith, ...dataObjWithout ];
   }
-
-  // works pretty much the same as ordering by title, except that
-  // each `dataObj` item contains an array of authors object
-  // with the structure { entry_name: <author name(string)>, id_uuid: <author id uuid (string)> }
-  else if ( filterParams.orderBy && filterParams.orderBy === "author" ) {
-    let dataObjWithAuthor = dataObj.filter(d =>
-      d.authors && d.authors.length);
-    let dataObjWithoutAuthor = dataObj.filter(d =>
-      !d.authors || d.authors.length < 1);
-
-  dataObjWithAuthor = dataObjWithAuthor.sort((a,b) => {
-      // transform `a` and `b`, arrays of authors objects into simplified strings
-      // the inner `.sort((x,y) => x.localeCompare(y))` allows to sort
-      // the `a.author` and `b.author` arrays before comparing `a` and `b`.
-      a = simplifyHtml( a.authors.map(x => x.entry_name).sort((x,y) => x.localeCompare(y)).join(" ") );
-      b = simplifyHtml( b.authors.map(x => x.entry_name).sort((x,y) => x.localeCompare(y)).join(" ") );
-      return a.localeCompare(b);
-    })
-    dataObj = [ ...dataObjWithAuthor, ...dataObjWithoutAuthor ];
-  }
-  else if ( filterParams.orderBy && filterParams.orderBy === "date" ) {
-    let dataObjWithDate = dataObj.filter(d =>
-      d.date && d.date.length);
-    let dataObjWithoutDate = dataObj.filter(d =>
-      !d.date || d.date.length < 1 );
-    dataObjWithDate =
-      dataObjWithDate.sort((a,b) => a.date[0] - b.date[0]);
-    dataObj = [ ...dataObjWithDate, ...dataObjWithoutDate ];  // 1st, put the elements with a date, then the elements without a date.
-  }
-
   return dataObj;
 }
+
 
 /**
  * filter the `data` object based on the filters defined
@@ -283,6 +319,14 @@ function onSubmit(formData, formNode) {
       isLoading.value = false;
     }, 750);
   }
+}
+
+/**
+ * enable/disable the `orderDirection` input based on the value of `orderBy`
+ */
+function onOrderByInput(newInput) {
+  disableOrderDirection.value = newInput === undefined || !newInput.length;
+  console.log( disableOrderDirection.value );
 }
 
 /**
@@ -351,7 +395,7 @@ form#iconography-index-filter {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
   align-items: start;
 }
 #iconography-index-filter :deep(.formkit-inner) {
@@ -368,6 +412,10 @@ form#iconography-index-filter {
   width: 70%;
   height: 40%;
 
+}
+
+#iconography-index-filter :deep(.formkit-actions .formkit-outer[data-type=submit] button) {
+  min-height: 40px;
 }
 
 /***********************/

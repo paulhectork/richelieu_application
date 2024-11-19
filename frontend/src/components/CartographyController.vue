@@ -238,14 +238,17 @@ h3 {
   overflow-x: scroll;
   padding: 2%;
 }
-
 :deep(.formkit-outer) {
   margin: 5% 0;
 }
-
 .fk-range :deep(.formkit-inner) {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+/** avoid overflow in the noUi slider */
+:deep(.noUi-target) {
+  width: 90%;
+  margin: 5px;
 }
 </style>

@@ -627,6 +627,9 @@ button:active > svg > path {
   width: 100%;
   border: var(--cs-main-border);
 }
+.formkit-inner > input[type=text] {
+  min-height: 28px; /** input height is the same for text and selects */
+}
 .form-submit-input {
   margin-top: min(3vh, 15%);
   width: 100%;
@@ -674,7 +677,7 @@ button:active > svg > path {
 }
 .filter-outer-wrapper .filter-loader-wrapper {
   display: grid;
-  padding: 2%;
+  padding: 1%;
   border-top: var(--cs-main-border);
 }
 .negative-default .filter-outer-wrapper .filter-loader-wrapper {
@@ -719,6 +722,7 @@ button:active > svg > path {
  */
 .filter-outer-wrapper .formkit-outer {
   position: relative;
+  padding: 0 10px;
 }
 .filter-outer-wrapper .formkit-outer .formkit-messages {
   background-color: var(--cs-main-default-bg);

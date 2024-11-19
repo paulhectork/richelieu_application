@@ -52,26 +52,29 @@
                    ref="theForm"
                    @submit="onSubmit"
           >
-            <FormKit type="text"
-                     id="entry-name-filter"
-                     name="entryNameFilter"
-                     label="Nom"
-                     placeholder="Filtrer par nom"
-                     help="Afficher les entrées contenant le(s) mot(s)"
-                     validation="textValidator"
-            ></FormKit>
-            <FormKit v-if="sliderMin && sliderMax"
-                     type="fkSlider"
-                     id="count-slider"
-                     name="countSlider"
-                     label="Nombre de ressources iconographiques"
-                     help="Filter par nombre de ressources iconographiques"
-                     number="integer"
-                     :step="1"
-                     :minVal="sliderMin"
-                     :maxVal="sliderMax"
-            ></FormKit>
-            <div class="order-by-wrapper">
+            <div class="form-row1-wrapper">
+              <FormKit type="text"
+                       id="entry-name-filter"
+                       outer-class="entry-name-outer"
+                       name="entryNameFilter"
+                       label="Nom"
+                       placeholder="Filtrer par nom"
+                       help="Afficher les entrées contenant le(s) mot(s)"
+                       validation="textValidator"
+              ></FormKit>
+              <FormKit v-if="sliderMin && sliderMax"
+                       type="fkSlider"
+                       id="count-slider"
+                       name="countSlider"
+                       label="Nombre de ressources liées"
+                       help="Filter par nombre de ressources iconographiques"
+                       number="integer"
+                       :step="1"
+                       :minVal="sliderMin"
+                       :maxVal="sliderMax"
+              ></FormKit>
+            </div>
+            <div class="form-row2-wrapper">
               <FormKit type="fkSelect"
                        id="order-by"
                        name="orderBy"
@@ -238,5 +241,38 @@ onMounted(() => {
 
 
 <style scoped>
+#tne-filter {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: repeat(3, calc(100%/3));
+}
+.form-row1-wrapper, .form-row2-wrapper {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: 100%;
+}
+.form-row1-wrapper > div, .form-row2-wrapper > div {
+  margin: 0 10px 0 10px;
+}
+#tne-filter :deep(.formkit-outer[data-type=submit]) {
+  margin-top: 2%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#tne-filter :deep(.formkit-outer[data-type=submit] > .formkit-wrapper) {
+  width: 70%;
+}
+#tne-filter :deep(.formkit-outer[data-type=submit] button) {
+  min-height: 40px;
+}
+
+/*
+#entry-name-filter {
+  grid-column: 1 / 2;
+  grid-row: 1;
+  background-color: pink;
+}
+*/
 
 </style>
