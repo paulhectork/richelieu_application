@@ -135,6 +135,10 @@ class Resource:
         )
         return jsonify(self.serialize(r.one()[0]))
 
+    def get_entity_lite(self, query: PaginationParameters):
+        page = db.paginate(self.orm_model.query, page=query.page, per_page=query.limit)
+        return jsonify([obj.serialize_lite() for obj in page])
+
 
 class IconographyResource(Resource):
     orm_model = Iconography
@@ -247,6 +251,14 @@ def make_get_entity(resource):
     return get_entity
 
 
+def make_get_entity_lite(resource):
+    def get_entity_lite(query: PaginationParameters):
+        return resource.get_entity_lite(query)
+
+    get_entity_lite.__name__ = f"get_{resource.name}_lite"
+    return get_entity_lite
+
+
 alls = globals()
 
 for resource in [
@@ -280,3 +292,8 @@ for resource in [
     alls[get_entity.__name__] = api.get(
         f"{route}/<string:id_uuid>", summary=resource.summary, tags=[resource.tag]
     )(get_entity)
+
+    get_entity_lite = make_get_entity_lite(resource)
+    alls[get_entity_lite.__name__] = api.get(
+        f"{route}/lite", summary=resource.summary, tags=[resource.tag]
+    )(get_entity_lite)
