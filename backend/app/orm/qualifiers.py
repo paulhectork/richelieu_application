@@ -79,11 +79,12 @@ class Theme(db.Model):
     """
     __tablename__: str = "theme"
 
-    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False)
-    entry_name  : Mapped[str] = mapped_column(Text, nullable=False)
-    category    : Mapped[str] = mapped_column(Text, nullable=False)
-    description : Mapped[str] = mapped_column(Text, nullable=True)
+    id            : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
+    id_uuid       : Mapped[str] = mapped_column(Text, nullable=False)
+    entry_name    : Mapped[str] = mapped_column(Text, nullable=False)
+    category      : Mapped[str] = mapped_column(Text, nullable=False)
+    category_slug : Mapped[str] = mapped_column(Text, nullable=False)
+    description   : Mapped[str] = mapped_column(Text, nullable=True)
 
     r_iconography_theme : Mapped[t.List["R_IconographyTheme"]] = relationship("R_IconographyTheme", back_populates="theme", lazy="selectin")
     # r_iconography_theme : Mapped[t.List["R_IconographyTheme"]] = relationship("R_IconographyTheme", back_populates="theme")
@@ -123,6 +124,7 @@ class Theme(db.Model):
         return { "id_uuid": self.id_uuid,                     # str
                  "entry_name": self.entry_name,               # str
                  "category": self.category,                   # str
+                 "category_slug": self.category_slug,         # str
                  "thumbnail": self.get_thumbnail(),           # t.List[str]
                  "iconography_count": self.iconography_count  # int
         }
@@ -132,6 +134,7 @@ class Theme(db.Model):
                  "entry_name": self.entry_name,               # str
                  "description": self.description,             # str
                  "category": self.category,                   # str
+                 "category_slug": self.category_slug,         # str
                  "iconography": self.get_iconography(),       # t.List[t.Dict]
                  "iconography_count": self.iconography_count  # int
         }
@@ -201,11 +204,12 @@ class NamedEntity(db.Model):
     """
     __tablename__: str = "named_entity"
 
-    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False)
-    entry_name  : Mapped[str] = mapped_column(Text, nullable=False)
-    category    : Mapped[str] = mapped_column(Text, nullable=False)
-    description : Mapped[str] = mapped_column(Text, nullable=True)
+    id            : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
+    id_uuid       : Mapped[str] = mapped_column(Text, nullable=False)
+    entry_name    : Mapped[str] = mapped_column(Text, nullable=False)
+    category      : Mapped[str] = mapped_column(Text, nullable=False)
+    category_slug : Mapped[str] = mapped_column(Text, nullable=False)
+    description   : Mapped[str] = mapped_column(Text, nullable=True)
 
     r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity", back_populates="named_entity", lazy="selectin")
     # r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity", back_populates="named_entity")
@@ -244,6 +248,7 @@ class NamedEntity(db.Model):
         return { "id_uuid": self.id_uuid,                     # str
                  "entry_name": self.entry_name,               # str
                  "category": self.category,                   # str
+                 "category_slug": self.category_slug,         # str
                  "thumbnail": self.get_thumbnail(),           # t.List[str]
                  "iconography_count": self.iconography_count  # int
         }
@@ -252,6 +257,7 @@ class NamedEntity(db.Model):
         return { "id_uuid": self.id_uuid,                     # str
                  "entry_name": self.entry_name,               # str
                  "category": self.category,                   # str
+                 "category_slug": self.category_slug,         # str
                  "description": self.description,             # str
                  "iconography": self.get_iconography(),       # t.List[t.Dict]
                  "iconography_count": self.iconography_count  # int

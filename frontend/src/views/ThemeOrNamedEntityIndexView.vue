@@ -19,7 +19,7 @@
       {{ tableName === "theme" ? "thèmes" : "entités nommées" }}&nbsp;:
       {{ capitalizeFirstChar(categoryName) }}</h1>
     <IndexCount v-if="loadState === 'loaded'"
-                :indexCount="dataFull.length"
+                :indexCount="dataCollectionFull.length"
                 :dataType="tableName"
     ></IndexCount>
 
@@ -175,13 +175,13 @@
 
     <UiLoader v-if="loadState === 'loading'"></UiLoader>
     <div v-else>
-      <FilterIndexThemeOrNamedEntity v-if="dataFull.length"
-                                     :data="dataFull"
+      <FilterIndexThemeOrNamedEntity v-if="dataCollectionFull.length"
+                                     :data="dataCollectionFull"
                                      @theme-or-named-entity-filter="handleFilter"
       ></FilterIndexThemeOrNamedEntity>
 
       <IndexBase :display="display"
-                 :data="dataFilter"
+                 :data="dataCollectionFilter"
       ></IndexBase>
     </div>
 
@@ -207,16 +207,18 @@ import { capitalizeFirstChar } from "@utils/strings";
 
 /*************************************************************/
 
-const route        = useRoute();
-const props        = defineProps(["tableName"]);
-const display      = "concept";       // define the view to use in `IndexItem`
+const route   = useRoute();
+const props   = defineProps(["tableName"]);
+const display = "concept";       // define the view to use in `IndexItem`
 
-const tableName    = ref();           // (string) "theme"|"namedEntity"
-const viewType     = ref();           // (string) "collection"|"tree". the kind of display to use. defaults to "collection"
-const categoryName = ref();           // (string) theme.category or named_entity.category of "all" if we want to retrieve all themes/named entities
-const dataFull     = ref([]);         // (Array<Object>) the full index, independent of user filters
-const dataFilter   = ref([]);         // (Array<Object>) the data to pass to `IndexBase.vue`. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> }
-const loadState    = ref("loading");  // toggled to true when data has loaded, hides the loader
+const tableName            = ref();           // (string) "theme"|"namedEntity"
+const viewType             = ref();           // (string) "collection"|"tree". the kind of display to use. defaults to "collection"
+const categoryName         = ref();           // (string) theme.category or named_entity.category of "all" if we want to retrieve all themes/named entities
+const dataCollectionFull   = ref([]);         // (Array<Object>) the full index when viewType==='collection', independent of user filters
+const dataCollectionFilter = ref([]);         // (Array<Object>) the data to pass to `IndexBase.vue` when viewType==='collection'. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> }
+const dataTree             = ref([]);         // (Array<Object>) the data when viewType==='tree'
+
+const loadState            = ref("loading");  // toggled to true when data has loaded, hides the loader
 
 
 /*************************************************************/
@@ -232,26 +234,36 @@ function setRefs() {
     newViewType = "collection";
   }
 
-  tableName.value    = props.tableName;
-  viewType.value     = newViewType;
-  categoryName.value = decodeURIComponent(route.params.categoryName);
-  dataFull.value     = [];
-  dataFilter.value   = [];
-  loadState.value    = "loading";
+  tableName.value            = props.tableName;
+  viewType.value             = newViewType;
+  categoryName.value         = decodeURIComponent(route.params.categoryName);
+  dataCollectionFull.value   = [];
+  dataCollectionFilter.value = [];
+  dataTree.value             = [];
+  loadState.value            = "loading";
+}
+
+function getCategoryNames() {
+
+}
+
+function getTreeData() {
+  
 }
 
 /**
- * get backend data: fetch all theme or iconography
- * resources for a single category
+ * get backend data when `viewType === 'collection'`:
+ * fetch all theme or iconography resources for a single category
+ * (or for all categories, if `categoryName === "all"`).
  */
-function getData() {
+function getCollectionData() {
   const apiTarget = tableName.value === "theme"
                     ? new URL("/i/theme", __API_URL__)
                     : new URL("/i/named-entity", __API_URL__);
   axios.get(apiTarget.href, { params: {category:categoryName.value} })
   .then(r => r.data)
-  .then(data => { dataFull.value = data;
-                  dataFilter.value = tableName.value === "theme"
+  .then(data => { dataCollectionFull.value = data;
+                  dataCollectionFilter.value = tableName.value === "theme"
                                      ? indexDataFormatterTheme(data)
                                      : indexDataFormatterNamedEntity(data);
                   loadState.value = "loaded";  })
@@ -262,13 +274,13 @@ function getData() {
 
 /**
  * when `FilterIndexThemeOrNamedEntity` emits a new array of
- * filtered Theme or NamedEntity objects, update `dataFilter`.
+ * filtered Theme or NamedEntity objects, update `dataCollectionFilter`.
  *
  * @param {Array<Object>} filteredData: the new filtered array of
  *    Iconography or NamedEntity objects
  */
 function handleFilter(filteredData) {
-  dataFilter.value = tableName.value === "theme"
+  dataCollectionFilter.value = tableName.value === "theme"
                      ? indexDataFormatterTheme(filteredData)
                      : indexDataFormatterNamedEntity(filteredData);
 }
@@ -277,12 +289,12 @@ function handleFilter(filteredData) {
 
 watch(props, (oldProps, newProps) => {
   setRefs();
-  getData();
+  getCollectionData();
 })
 
 onMounted(() => {
   setRefs();
-  getData();
+  getCollectionData();
 })
 </script>
 
