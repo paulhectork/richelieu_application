@@ -9,7 +9,8 @@
     both are arrays of:
     ```
     {
-       "category_name" : "<category name>",
+       "category_name" : "<category name, to display on the page>",
+       "category_slug" : "<category slug, to build urls>",
        "count"         : <number of associated themes or named entities>,
        "preview"       : [ <Array<string> of a few themes or named entities of that resource> ],
        "thumbnail"     : [ <filename> ]
@@ -205,8 +206,8 @@ const formatCategoryArray = (arr, tableName) =>
              title_second: el.count,
              title_sub: stringifyThemeOrNamedEntityPreview(el.preview, el.category_name),
              href: tableName === "namedEntity"
-                   ? urlToFrontendNamedEntityCategory(el.category_name)
-                   : urlToFrontendThemeCategory(el.category_name)
+                   ? urlToFrontendNamedEntityCategory(el.category_slug)
+                   : urlToFrontendThemeCategory(el.category_slug)
     }
   })
 

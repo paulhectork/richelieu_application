@@ -53,7 +53,7 @@ export const indexDataFormatterPlace = (dataArr) =>
 export const indexDataFormatterThemeCategory = (dataArr) =>
   dataArr.map((c) => {
     return { idUuid : undefined,
-             href   : urlToFrontendThemeCategory(c.category_name).pathname,
+             href   : urlToFrontendThemeCategory(c.category_slug).pathname,
              iiif   : null,   // todo
              img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0]).href : null,   // todo
              text   : stringifyThemeOrNamedEntityCategory(c)
@@ -63,7 +63,7 @@ export const indexDataFormatterThemeCategory = (dataArr) =>
 export const indexDataFormatterTheme = (dataArr) =>
   dataArr.map((c) => {
     return { idUuid : c.id_uuid,
-             href   : urlToFrontendTheme(c.category, c.id_uuid).pathname,
+             href   : urlToFrontendTheme(c.category_slug, c.id_uuid).pathname,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
              img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0]).href : null,
              text   : stringifyThemeOrNamedEntityResource(c)
@@ -74,7 +74,7 @@ export const indexDataFormatterTheme = (dataArr) =>
 export const indexDataFormatterNamedEntityCategory = (dataArr) =>
   dataArr.map((c) => {
     return { idUuid : undefined,
-             href   : urlToFrontendNamedEntityCategory(c.category_name).pathname,
+             href   : urlToFrontendNamedEntityCategory(c.category_slug).pathname,
              iiif   : null,   // todo
              img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0]).href : null,
              text   : stringifyThemeOrNamedEntityCategory(c)
@@ -84,7 +84,7 @@ export const indexDataFormatterNamedEntityCategory = (dataArr) =>
 export const indexDataFormatterNamedEntity = (dataArr) =>
   dataArr.map((c) => {
     return { idUuid : c.id_uuid,
-             href   : urlToFrontendNamedEntity(c.category, c.id_uuid).pathname,
+             href   : urlToFrontendNamedEntity(c.category_slug, c.id_uuid).pathname,
              iiif   : c.iiif_url != null ? new URL(c.iiif_url) : c.iiif_url,
              img    : c.thumbnail.length ? urlToIconographyFile(c.thumbnail[0]).href : null,
              text   : stringifyThemeOrNamedEntityResource(c)

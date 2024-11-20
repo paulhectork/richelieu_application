@@ -1,12 +1,15 @@
 <!--  ThemeViewOrNamedEntityIndexView.vue
-      an index page for all themes or named entities in a category
+    an index page for all themes or named entities in a category
 
-      see the documentation of ThemeOrNamedEntityCategoryIndexView.vue
-      for a more global outlook on the logic.
+    see the documentation of ThemeOrNamedEntityCategoryIndexView.vue
+    for a more global outlook on the logic.
 
-      props and refs:
-      - tableName (prop):
-      - categoryName (props):
+    props :
+    - tableName (String)
+        "theme"|"named_entity"
+    - categorySlug (String)
+        a value of theme.category_slug, or named_entity.category_slug.
+        used to target a themes/named entities from a specific category
 -->
 
 <template>
@@ -27,7 +30,7 @@
     <div v-if="tableName === 'theme'"
          class="index-headtext-wrapper"
     >
-      <p v-if="categoryName==='s\'habiller'">
+      <p v-if="categorySlug==='s-habiller'">
         La question de l'habillement revêt des significations
         plurielles dans le quartier Richelieu. Elle peut d'abord
         être comprise comme un acte de confection pour autrui,
@@ -47,7 +50,7 @@
         de boutiques, contribuant alors à lier cette notion
         à sa spatialité, son architecture et sa propension
         à faire espace public.</p>
-     <p v-if="categoryName==='se divertir'">
+     <p v-if="categorySlug==='se-divertir'">
         La densité et la variété des activités de divertissement
         qui ont eu lieu dans le quartier Richelieu se perçoivent
         à travers l'abondante production graphique qu'elles
@@ -68,7 +71,7 @@
         Enfin, l'activité des théâtres, à travers les tickets
         d'entrée et la production de décors ou de costumes,
         éclaire le parcours de certains acteurs et actrices.</p>
-      <p v-if="categoryName==='représenter'">
+      <p v-if="categorySlug==='representer'">
         Ce thème est articulé autour des différents supports
         rendant présent à la vue, mais aussi à l'esprit le
         quartier Richelieu dans toute sa volubilité et sa volatilité.
@@ -93,7 +96,7 @@
         postales dont les angles de vue orientent les perceptions
         du quartier, contribuant à le figer dans son image
         d'Épinal.</p>
-      <p v-if="categoryName==='s\'informer'">
+      <p v-if="categorySlug==='s-informer'">
         L'information est, dans ce cadre thématique, intimement
         liée à la dimension politique et historique des différents
         évènements survenus dans le quartier Richelieu. Si
@@ -116,7 +119,7 @@
         mai 1871. Ce thème accompagne alors les relectures
         historiographiques du récit national par l'entremise
         d'une approche située de la ville.</p>
-      <p v-if="categoryName==='consommer'">La notion de consommation fait
+      <p v-if="categorySlug==='consommer'">La notion de consommation fait
         écho à la forte densité des activités économiques recensées dans
         les rues du quartier au XIX<sup>e</sup> siècle. La bourse installée au palais
         Brongniart est l'emblème du dynamisme commercial qui s'empare des
@@ -134,7 +137,7 @@
         de la réclame publicitaire et sur l'évolution du niveau de vie.
         Les brevets d'invention quant à eux soulignent les innovations à
         l'œuvre et la dimension créatrice du développement économique.</p>
-      <p v-if="categoryName==='habiter'">Habiter est envisagé au sens
+      <p v-if="categorySlug==='habiter'">Habiter est envisagé au sens
         large, englobant à la fois les espaces privés et publics qui
         composent le cadre de la vie quotidienne des citadins et des
         citadines qui habitent ou fréquentent le quartier. Le dialogue
@@ -157,19 +160,19 @@
          class="index-headtext-wrapper"
     >
       <!--
-      <p v-if="categoryName === 'acteurs et actrices'"></p>
-      <p v-if="categoryName === 'banques'"></p>
-      <p v-if="categoryName === 'cafés et restaurants'"></p>
-      <p v-if="categoryName === 'commerces'"></p>
-      <p v-if="categoryName === 'épiceries et alimentation'"></p>
-      <p v-if="categoryName === 'évènements'"></p>
-      <p v-if="categoryName === 'institutions et organisations'"></p>
-      <p v-if="categoryName === 'mode et objets'"></p>
-      <p v-if="categoryName === 'personnalités et fiction'"></p>
-      <p v-if="categoryName === 'publications et photographies'"></p>
-      <p v-if="categoryName === 'santé'"></p>
-      <p v-if="categoryName === 'théâtres et spectacles'"></p>
-      <p v-if="categoryName === 'ville et architecture'"></p>
+      <p v-if="categorySlug === 'acteurs-et-actrices'"></p>
+      <p v-if="categorySlug === 'banques'"></p>
+      <p v-if="categorySlug === 'cafes-et-restaurants'"></p>
+      <p v-if="categorySlug === 'commerces'"></p>
+      <p v-if="categorySlug === 'epiceries-et-alimentation'"></p>
+      <p v-if="categorySlug === 'evenements'"></p>
+      <p v-if="categorySlug === 'institutions-et-organisations'"></p>
+      <p v-if="categorySlug === 'mode-et-objets'"></p>
+      <p v-if="categorySlug === 'personnalites-et-fiction'"></p>
+      <p v-if="categorySlug === 'publications-et-photographies'"></p>
+      <p v-if="categorySlug === 'sante'"></p>
+      <p v-if="categorySlug === 'theatres-et-spectacles'"></p>
+      <p v-if="categorySlug === 'ville-et-architecture'"></p>
       -->
     </div>
 
@@ -211,14 +214,15 @@ const route   = useRoute();
 const props   = defineProps(["tableName"]);
 const display = "concept";       // define the view to use in `IndexItem`
 
-const tableName            = ref();           // (string) "theme"|"namedEntity"
-const viewType             = ref();           // (string) "collection"|"tree". the kind of display to use. defaults to "collection"
-const categoryName         = ref();           // (string) theme.category or named_entity.category of "all" if we want to retrieve all themes/named entities
-const dataCollectionFull   = ref([]);         // (Array<Object>) the full index when viewType==='collection', independent of user filters
-const dataCollectionFilter = ref([]);         // (Array<Object>) the data to pass to `IndexBase.vue` when viewType==='collection'. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> }
-const dataTree             = ref([]);         // (Array<Object>) the data when viewType==='tree'
+const tableName            = ref();    // (string) "theme"|"namedEntity"
+const viewType             = ref();    // (string) "collection"|"tree". the kind of display to use. defaults to "collection"
+const categorySlug         = ref();    // (string) theme.category_slug or named_entity.category_slug of "all" if we want to retrieve all themes/named entities
+const categoryName         = ref()     // (string) theme.category or named_entity.category or "tout" if categorySlug === 'all'
+const dataCollectionFull   = ref([]);  // (Array<Object>) the full index when viewType==='collection', independent of user filters
+const dataCollectionFilter = ref([]);  // (Array<Object>) the data to pass to `IndexBase.vue` when viewType==='collection'. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> }
+const dataTree             = ref([]);  // (Array<Object>) the data when viewType==='tree'
 
-const loadState            = ref("loading");  // toggled to true when data has loaded, hides the loader
+const loadState = ref("loading");  // toggled to true when data has loaded, hides the loader
 
 
 /*************************************************************/
@@ -226,41 +230,68 @@ const loadState            = ref("loading");  // toggled to true when data has l
 /**
  * set all global variables to their start state.
  */
-function setRefs() {
+function resetRefs() {
   // check that viewType is valid.
   let newViewType = route.query.viewType || "collection";
   if ( !["tree", "collection"].includes(newViewType) ) {
-    if ( __MODE__ === "DEV" ) console.error(`ThemeOrNamedEntityIndexView.setRefs() : expected one of ['collection', 'tree'] for 'route.query.viewType', got '${newViewType}'. defaulting to 'collection'`);
+    if ( __MODE__ === "DEV" ) console.error(`ThemeOrNamedEntityIndexView.resetRefs() : expected one of ['collection', 'tree'] for 'route.query.viewType', got '${newViewType}'. defaulting to 'collection'`);
     newViewType = "collection";
   }
 
   tableName.value            = props.tableName;
   viewType.value             = newViewType;
-  categoryName.value         = decodeURIComponent(route.params.categoryName);
+  categorySlug.value         = decodeURIComponent(route.params.categorySlug);
+  categoryName.value         = "";
   dataCollectionFull.value   = [];
   dataCollectionFilter.value = [];
   dataTree.value             = [];
   loadState.value            = "loading";
 }
 
+/**
+ * get the category name for the current category,
+ * based on the value of `categorySlug`.
+ * 2 fallbacks:
+ *  - if `categorySlug==='all'`, then use a default category name
+ *  - if `apiTarget` returns an empty string, then categorySlug is
+ *    not found on the database. then, `categoryName` falls back
+ *    to the value of `categorySlug`
+ */
+function getCurrentCategoryName() {
+  if ( categorySlug.value === "all" ) {
+    categoryName.value = "tout"
+  } else {
+    const apiTarget = tableName.value === "theme"
+                    ? new URL(`/i/theme-category-name/${categorySlug.value}`, __API_URL__)
+                    : new URL(`/i/named-entity-category-name/${categorySlug.value}`, __API_URL__);
+    axios.get(apiTarget)
+    .then(r => r.data)
+    .then(data => categoryName.value = data.length
+                                       ? data
+                                       : categorySlug.value)
+    .catch(e => { console.error(e);
+                  categoryName.value = categorySlug.value });
+  }
+}
+
 function getCategoryNames() {
 
 }
 
-function getTreeData() {
-  
+function getDataTree() {
+
 }
 
 /**
  * get backend data when `viewType === 'collection'`:
  * fetch all theme or iconography resources for a single category
- * (or for all categories, if `categoryName === "all"`).
+ * (or for all categories, if `categorySlug === "all"`).
  */
-function getCollectionData() {
+function getDataCollection() {
   const apiTarget = tableName.value === "theme"
                     ? new URL("/i/theme", __API_URL__)
                     : new URL("/i/named-entity", __API_URL__);
-  axios.get(apiTarget.href, { params: {category:categoryName.value} })
+  axios.get(apiTarget.href, { params: {category:categorySlug.value} })
   .then(r => r.data)
   .then(data => { dataCollectionFull.value = data;
                   dataCollectionFilter.value = tableName.value === "theme"
@@ -288,13 +319,15 @@ function handleFilter(filteredData) {
 /*************************************************************/
 
 watch(props, (oldProps, newProps) => {
-  setRefs();
-  getCollectionData();
+  resetRefs();
+  getCurrentCategoryName();
+  getDataCollection();
 })
 
 onMounted(() => {
-  setRefs();
-  getCollectionData();
+  resetRefs();
+  getCurrentCategoryName();
+  getDataCollection();
 })
 </script>
 
