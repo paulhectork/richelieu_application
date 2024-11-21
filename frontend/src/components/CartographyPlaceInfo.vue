@@ -151,7 +151,7 @@ function getData() {
   })
   .catch(e => { console.error(e); loadStatePlace.value = "error" });
 
-  axios.get(new URL(`/i/place-address/${placeIdUuid.value}`, __API_URL__))
+  axios.get(new URL(`/i/place/address/${placeIdUuid.value}`, __API_URL__))
   .then(r => r.data)
   .then(sortAddressBySource)
   .then(r => { address.value = r[0];

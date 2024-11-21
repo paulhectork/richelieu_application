@@ -102,7 +102,7 @@ async function getData() {
                 loadStatePlace.value = "error"
   });
 
-  axios.get(new URL(`/i/place-address/${idUuid}`, __API_URL__))
+  axios.get(new URL(`/i/place/address/${idUuid}`, __API_URL__))
   .then(r => r.data)
   .then(data => { address.value = sortAddressBySource(data);
                   loadStateAddress.value = "loaded";

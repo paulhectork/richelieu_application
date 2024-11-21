@@ -254,7 +254,7 @@ function updateDateData(input, htmlId, inputPosition=0) {
 
 onMounted(() => {
   // fetch necessary data
-  axios.get(new URL("/i/iconography-overall-date-range", __API_URL__))
+  axios.get(new URL("/i/iconography/date-range", __API_URL__))
        .then(r => {
          allowedDateRange.value = r.data; })
        .catch(e => {

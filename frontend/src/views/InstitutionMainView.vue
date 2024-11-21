@@ -81,7 +81,7 @@ const institutionName      = ref("");    // the name of the institution. fetched
 const dataFull             = ref([]);    // the complete iconography  data, set from a watcher
 
 const apiTargetIndex       = new URL("/i/institution", __API_URL__);
-const apiTargetInstitution = new URL(`/i/institution-name/${idUuid.value}`, __API_URL__);
+const apiTargetInstitution = new URL(`/i/institution/name/${idUuid.value}`, __API_URL__);
 const apiTargetIconography = new URL(`/i/institution/${idUuid.value}`, __API_URL__);
 const loadState            = ref("loading");  // loaded/loading/error
 

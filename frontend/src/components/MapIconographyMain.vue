@@ -33,7 +33,7 @@ const map = ref();
 /******************************************************/
 
 async function buildPlacePopup(placeUuid) {
-  const apiTarget = new URL(`/i/place-lite/${placeUuid}`, __API_URL__);
+  const apiTarget = new URL(`/i/place/lite/${placeUuid}`, __API_URL__);
   return axios.get(apiTarget).then(r => {
     let address = r.data[0].address;
     address = address.length

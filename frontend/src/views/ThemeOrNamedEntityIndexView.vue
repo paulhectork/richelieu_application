@@ -262,8 +262,8 @@ function getCurrentCategoryName() {
     categoryName.value = "tout"
   } else {
     const apiTarget = tableName.value === "theme"
-                    ? new URL(`/i/theme-category-name/${categorySlug.value}`, __API_URL__)
-                    : new URL(`/i/named-entity-category-name/${categorySlug.value}`, __API_URL__);
+                    ? new URL(`/i/theme/category/name/${categorySlug.value}`, __API_URL__)
+                    : new URL(`/i/named-entity/category/name/${categorySlug.value}`, __API_URL__);
     axios.get(apiTarget)
     .then(r => r.data)
     .then(data => categoryName.value = data.length
@@ -291,7 +291,7 @@ function getDataCollection() {
   const apiTarget = tableName.value === "theme"
                     ? new URL("/i/theme", __API_URL__)
                     : new URL("/i/named-entity", __API_URL__);
-  axios.get(apiTarget.href, { params: {category:categorySlug.value} })
+  axios.get(apiTarget.href, { params: { category_slug:categorySlug.value } })
   .then(r => r.data)
   .then(data => { dataCollectionFull.value = data;
                   dataCollectionFilter.value = tableName.value === "theme"

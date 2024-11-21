@@ -69,7 +69,7 @@ const associatedNamedEntities = ref([]); // named entites most frequently associ
 
 // the backend URLs, defined as `computed` to handle reactivity
 const apiTargetNamedEntity = computed(() =>
-  new URL(`/i/named-entity-name/${idUuid?.value}`, __API_URL__))
+  new URL(`/i/named-entity/name/${idUuid?.value}`, __API_URL__))
 const apiTargetIconography  = computed(() =>
   new URL(`/i/named-entity/${idUuid?.value}`, __API_URL__) );
 

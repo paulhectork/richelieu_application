@@ -300,7 +300,7 @@ function fetchIndex(newQueryParams) {
 
   }
   // fetch data
-  let targetUrl = new URL(`/i/iconography-from-uuid`, __API_URL__);
+  let targetUrl = new URL(`/i/iconography/from-uuid`, __API_URL__);
   axios.get( targetUrl.href, { params: { id_uuid: iconographyIdUuidArray },
                                paramsSerializer: { indexes:null } } )
        .then(r => {

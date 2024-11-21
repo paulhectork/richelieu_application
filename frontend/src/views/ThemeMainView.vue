@@ -65,7 +65,7 @@ const associatedNamedEntities = ref([]); // named entites most frequently associ
 
 // the backend URLs, defined as `computed` to handle reactivity
 const apiTargetTheme = computed(() =>
-  new URL(`/i/theme-name/${idUuid?.value}`, __API_URL__));
+  new URL(`/i/theme/name/${idUuid?.value}`, __API_URL__));
 const apiTargetIconography  = computed(() =>
   new URL(`/i/theme/${idUuid?.value}`, __API_URL__) );
 // the theme name
