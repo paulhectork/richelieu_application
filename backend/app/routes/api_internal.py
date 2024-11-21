@@ -4,6 +4,7 @@ basepath: `<APP URL>/i/`
 """
 
 from flask import jsonify, request
+from flask_cors import cross_origin
 from psycopg2.extras import NumericRange
 from sqlalchemy import text, func
 from sqlalchemy.sql.expression import bindparam
@@ -70,6 +71,18 @@ def iconography_from_uuid():
         out = [ icono[0].serialize_full() for icono in r ]
 
     return jsonify(out)
+
+
+@app.route("/i/iconography/from-uuid/full", methods=["POST"])
+@cross_origin()
+def iconography_from_uuid_full():
+    """
+    receives an array of iconography.id_uuid from the request body and
+    returns an array of Iconography.serialize_full() objects
+    """
+    id_uuid_list = request.get_json()
+    r = db.session.execute(select(Iconography).filter(Iconography.id_uuid.in_(id_uuid_list)))
+    return jsonify([ row[0].serialize_full() for row in r.all() ]);
 
 
 @app.route("/i/iconography-overall-date-range")
