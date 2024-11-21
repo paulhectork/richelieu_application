@@ -34,7 +34,7 @@
              label="Date"
              help="Choisir le type de filtre pour la date"
              value="dateRange"
-             :options="[{ value: 'a', label: 'Entité nommée 1' },
+             :options="[ { value: 'a', label: 'Entité nommée 1' },
                          { value: 'b', label: 'Entité nommée 2' },
                          { value: 'c', label: 'Entité nommée 3' }]"
     ></FormKit>

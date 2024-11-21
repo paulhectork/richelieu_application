@@ -22,7 +22,10 @@
       {{ tableName === "theme" ? "thèmes" : "entités nommées" }}&nbsp;:
       {{ capitalizeFirstChar(categoryName) }}</h1>
     <IndexCount v-if="loadState === 'loaded'"
-                :indexCount="dataCollectionFull.length"
+                :indexCount="viewType === 'collection'
+                             ? dataCollectionFull.length
+                             : dataTree.reduce((count, currentCategory) =>
+                                  count + currentCategory.entries.length, 0)"
                 :dataType="tableName"
     ></IndexCount>
 
@@ -176,16 +179,66 @@
       -->
     </div>
 
-    <UiLoader v-if="loadState === 'loading'"></UiLoader>
-    <div v-else>
-      <FilterIndexThemeOrNamedEntity v-if="dataCollectionFull.length"
-                                     :data="dataCollectionFull"
-                                     @theme-or-named-entity-filter="handleFilter"
-      ></FilterIndexThemeOrNamedEntity>
+    <div class="view-type-control-wrapper">
+      <FormKit v-if="viewType"
+               type="fkRadioTabs"
+               name="viewTypeSetter"
+               id="view-type-control"
+               label="Changer le type de vue"
+               :help="`Définir la vue des ${tableName === 'theme' ? 'thèmes' : 'entités nommées'}`"
+               :value="viewType"
+               :options="[ { value: 'collection', label: 'collection' }
+                         , { value: 'tree', label: 'arborescence' } ]"
+               @input="changeViewType"
+      ></FormKit>
+    </div>
 
-      <IndexBase :display="display"
-                 :data="dataCollectionFilter"
-      ></IndexBase>
+    <UiLoader v-if="loadState === 'loading'"></UiLoader>
+    <div v-else-if="loadState === 'loaded'">
+      <div v-if="viewType==='collection'">
+        <FilterIndexThemeOrNamedEntity v-if="dataCollectionFull.length"
+                                      :data="dataCollectionFull"
+                                      @theme-or-named-entity-filter="handleFilter"
+        ></FilterIndexThemeOrNamedEntity>
+
+        <IndexBase v-if="viewType==='collection'"
+                  :display="display"
+                  :data="dataCollectionFilter"
+        ></IndexBase>
+      </div>
+
+      <div v-else-if="viewType==='tree'"
+           class="tree-wrapper"
+      >
+        <ul class="tree-category list-invisible">
+          <li v-for="category in dataTree.sort((a,b) => a.category.localeCompare(b.category))"
+              class="category-wrapper"
+          >
+            <span class="category-title">
+              Catégorie&nbsp;:
+              <RouterLink :to="tableName === 'theme'
+                               ? urlToFrontendThemeCategory(category.category_slug).pathname
+                               : urlToFrontendNamedEntityCategory(category.category_slug).pathname"
+                          v-html="category.category"
+                          class="tree-category-name"
+              ></RouterLink> ({{ category.entries.length }}
+                              {{ category.entries.length != 1
+                               ? "entrées" : "entrée" }})
+            </span>
+            <ul class="category-entries">
+              <li v-for="item in category.entries.sort((a,b) => a.entry_name.localeCompare(b.entry_name))"
+                  class="category-entry"
+              >
+                <RouterLink :to="tableName === 'theme'
+                                 ? urlToFrontendTheme(category.category_slug, item.id_uuid).pathname
+                                 : urlToFrontendNamedEntity(category.category_slug, item.id_uuid).pathname"
+                            v-html="item.entry_name"
+                ></RouterLink>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
 
   </div>
@@ -194,7 +247,7 @@
 
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import axios from "axios";
 
@@ -204,6 +257,10 @@ import IndexCount from "@components/IndexCount.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import FilterIndexThemeOrNamedEntity from "@components/FilterIndexThemeOrNamedEntity.vue";
 
+import { urlToFrontendTheme
+       , urlToFrontendNamedEntity
+       , urlToFrontendThemeCategory
+       , urlToFrontendNamedEntityCategory } from "@utils/url.js";
 import { indexDataFormatterTheme
        , indexDataFormatterNamedEntity } from "@utils/indexDataFormatter";
 import { capitalizeFirstChar } from "@utils/strings";
@@ -211,6 +268,7 @@ import { capitalizeFirstChar } from "@utils/strings";
 /*************************************************************/
 
 const route   = useRoute();
+const router  = useRouter();
 const props   = defineProps(["tableName"]);
 const display = "concept";       // define the view to use in `IndexItem`
 
@@ -259,7 +317,7 @@ function resetRefs() {
  */
 function getCurrentCategoryName() {
   if ( categorySlug.value === "all" ) {
-    categoryName.value = "tout"
+    categoryName.value = "toutes catégories confondues"
   } else {
     const apiTarget = tableName.value === "theme"
                     ? new URL(`/i/theme/category/name/${categorySlug.value}`, __API_URL__)
@@ -279,6 +337,15 @@ function getCategoryNames() {
 }
 
 function getDataTree() {
+  const apiTarget = tableName.value === "theme"
+                    ? new URL(`/i/theme/tree/${categorySlug.value}`, __API_URL__)
+                    : new URL(`/i/named-entity/tree/${categorySlug.value}`, __API_URL__);
+  axios.get(apiTarget)
+  .then(r => r.data)
+  .then(data => { dataTree.value = data;
+                  loadState.value = "loaded" })
+  .catch(e => { console.error(e);
+                loadState.value = "error" });
 
 }
 
@@ -316,21 +383,82 @@ function handleFilter(filteredData) {
                      : indexDataFormatterNamedEntity(filteredData);
 }
 
+function changeViewType(newViewType) {
+  // update the refs and the URL to fit the new state
+  router.replace({ query: { viewType: newViewType } });
+  viewType.value             = newViewType;
+  dataCollectionFull.value   = [];
+  dataCollectionFilter.value = [];
+  dataTree.value             = [];
+  loadState.value            = "loading";
+  // fetch the new data
+  if ( newViewType === "collection" ) getDataCollection();
+  else getDataTree();
+}
+
+function initViewHook() {
+  resetRefs();
+  getCurrentCategoryName();
+  if ( viewType.value === "collection" ) getDataCollection();
+  else getDataTree();
+}
+
 /*************************************************************/
 
 watch(props, (oldProps, newProps) => {
-  resetRefs();
-  getCurrentCategoryName();
-  getDataCollection();
+  initViewHook()
 })
 
 onMounted(() => {
-  resetRefs();
-  getCurrentCategoryName();
-  getDataCollection();
+  initViewHook();
 })
 </script>
 
 <style scoped>
+.view-type-control-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  border-top: var(--cs-main-border);
+  border-bottom: var(--cs-main-border);
+  margin: 10px 0;
+}
+.view-type-control-wrapper > :deep(.formkit-outer) {
+  margin: 10px;
+}
+.view-type-control-wrapper :deep(.formkit-wrapper) {
+  min-width: 300px;
+}
+.view-type-control-wrapper :deep(.formkit-help) {
+  visibility: hidden;
+  height: 0;
+}
+
+/************************************/
+
+.tree-wrapper  {
+  /** PROBLEM: NOT WIDE ENOUGH  */
+  width: auto;
+  margin: 0 5%;
+  border: var(--cs-main-border);
+  background-color: lavender;
+}
+.tree-wrapper li {
+  width: 100%;
+}
+
+.category-title {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  border-top: var(--cs-main-border);
+  border-bottom: var(--cs-main-border);
+  padding: 10px;
+  margin: 10px 0;
+}
+.category-wrapper:first-child > .category-title {
+  border-top: none;
+  margin-top: 0;
+}
 
 </style>
