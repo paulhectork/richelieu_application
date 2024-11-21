@@ -4,11 +4,8 @@ basepath: `<APP URL>/i/`
 """
 
 from flask import jsonify, request
-from psycopg2.extras import NumericRange
 from sqlalchemy import text, func
 from sqlalchemy.sql.expression import bindparam
-import random
-import json
 
 from ..search.search_iconography import sanitize_params, make_params, make_query
 from ..utils.spatial import featurelist_to_featurecollection, geometry_to_feature
@@ -128,8 +125,36 @@ def index_theme():
         out = Theme.get_themes_for_category(category_slug)
     return jsonify(out)
 
+@app.route("/i/theme/tree/<string:category_slug>")
+def theme_category_tree(category_slug:str):
+    """
+    returns a tree view of themes.
+    - if `category_slug === "all"`, the tree view is build for all categories
+        (1 item / category)
+    - else, the tree view is build only for the category where
+        Theme.category_slug == category_slug.
+    - if `category_slug` doens't correspond to anything, an empty list is returned.
 
-@app.route("/i/theme/<id_uuid>")
+    :returns: [{ category_slug : str,
+                 category      : str,
+                 entries       : List[{entry_name: str, id_uuid: str}] }]
+    """
+    q = select(Theme.category_slug,
+               Theme.category,
+               func.json_agg(func.json_build_object("id_uuid",
+                                                    Theme.id_uuid,
+                                                    "entry_name",
+                                                    Theme.entry_name)))
+    if category_slug != "all":
+        q = q.filter( Theme.category_slug==category_slug )
+    q = q.group_by( Theme.category_slug, Theme.category )
+    r = db.session.execute( q ).all()
+    return jsonify([ { "category_slug": row[0], "category": row[1], "entries": row[2] }
+                     for row in r ])
+
+
+
+@app.route("/i/theme/<string:id_uuid>")
 def main_theme(id_uuid:str):
     """fetch all iconographic resources related to a theme"""
     r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
@@ -192,6 +217,34 @@ def index_named_entity():
     else:
         out = NamedEntity.get_named_entities_for_category(category_slug)
     return jsonify(out)
+
+
+@app.route("/i/named-entity/tree/<string:category_slug>")
+def named_entity_category_tree(category_slug:str):
+    """
+    returns a tree view of named entities.
+    - if `category_slug === "all"`, the tree view is build for all categories
+        (1 item / category)
+    - else, the tree view is build only for the category where
+        NamedEntity.category_slug == category_slug.
+    - if `category_slug` doens't correspond to anything, an empty list is returned.
+
+    :returns: [{ category_slug : str,
+                 category      : str,
+                 entries       : List[{entry_name: str, id_uuid: str}] }]
+    """
+    q = select(NamedEntity.category_slug,
+               NamedEntity.category,
+               func.json_agg(func.json_build_object("id_uuid",
+                                                    NamedEntity.id_uuid,
+                                                    "entry_name",
+                                                    NamedEntity.entry_name)))
+    if category_slug != "all":
+        q = q.filter( NamedEntity.category_slug==category_slug )
+    q = q.group_by( NamedEntity.category_slug, NamedEntity.category )
+    r = db.session.execute( q ).all()
+    return jsonify([ { "category_slug": row[0], "category": row[1], "entries": row[2] }
+                     for row in r ])
 
 
 @app.route("/i/named-entity/<id_uuid>")
