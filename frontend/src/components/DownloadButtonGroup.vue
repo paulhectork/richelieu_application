@@ -49,8 +49,4 @@ function download(data, filename) {
         align-items: center;
         gap: 0rem;
     }
-<<<<<<< HEAD
 </style>
-=======
-</style>
->>>>>>> 67cb282d9be9ab762953aaf25b38942271af4284
