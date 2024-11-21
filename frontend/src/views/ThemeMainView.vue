@@ -19,54 +19,45 @@
   <div v-else>
     <div class="index-headtext-wrapper">
       <IndexAssociationRedirects v-if="associatedThemes.length"
-                              fromTable="theme"
-                              toTable="theme"
-                              :to="associatedThemes"
-                              :from="{ entry_name: theme.entry_name
-                                     , id_uuid: theme.id_uuid }"
+                                 fromTable="theme"
+                                 toTable="theme"
+                                 :to="associatedThemes"
+                                 :from="{ entry_name: theme.entry_name
+                                        , id_uuid: theme.id_uuid }"
       ></IndexAssociationRedirects>
       <IndexAssociationRedirects v-if="associatedNamedEntities.length"
-                              fromTable="theme"
-                              toTable="named_entity"
-                              :to="associatedNamedEntities"
-                              :from="{ entry_name: theme.entry_name
-                                     , id_uuid: theme.id_uuid }"
+                                 fromTable="theme"
+                                 toTable="named_entity"
+                                 :to="associatedNamedEntities"
+                                 :from="{ entry_name: theme.entry_name
+                                        , id_uuid: theme.id_uuid }"
       ></IndexAssociationRedirects>
     </div>
 
-    <IndexIconographyFilter :data="dataFull"
-                            @iconography-filter="handleIconographyFilter"
-    ></IndexIconographyFilter>
-
-    <IndexBase :data="dataFilter"
-               display="resource"
-    ></IndexBase>
+    <IndexIconography :data="dataFull"></IndexIconography>
   </div>
 </template>
 
 
 <script setup>
 import { onMounted, ref, watch, computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import axios from "axios";
 
-import IndexBase from "@components/IndexBase.vue";
 import UiLoader from "@components/UiLoader.vue";
-import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
 import IndexCount from "@components/IndexCount.vue";
-import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
+import IndexIconography from "@components/IndexIconography.vue";
+import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
 
-import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { capitalizeWords } from "@utils/strings";
 
 /**************************************************/
 
-const route      = useRoute();
-const theme      = ref({});    // the theme object sent from the backend
-const themeName  = ref("");    // the name of the theme.
-const dataFull   = ref([]);    // the complete iconography  data, set from a watcher
-const dataFilter = ref([]);    // the user-filtered iconography data, set from a watcher
-const idUuid     = ref(route.params.idUuid);
+const route         = useRoute();
+const theme         = ref({});    // the theme object sent from the backend
+const themeName     = ref("");    // the name of the theme.
+const dataFull      = ref([]);    // the complete iconography  data, set from a watcher
+const idUuid        = ref(route.params.idUuid);
 const backendLoaded = ref(false);  // when swittched to true, the loader is removed
 
 const associatedThemes        = ref([]); // themes most frequently associated with the current theme
@@ -84,16 +75,6 @@ const formattedThemeName = computed(() =>
 /***************************************************/
 
 /**
- * when IndexIconographyFilter returns the filtered array
- * of Iconography objects, update `dataFilter`, which will
- * trigger the updating of `IndexBase`.
- * @param {Array<Object>} iconographyData
- */
- function handleIconographyFilter(iconographyData) {
-  dataFilter.value = indexDataFormatterIconography(iconographyData);
-}
-
-/**
  * get all backend data from an UUID. we divide the fetching
  * of data in 2 queries because the second query, `apiTargetIconography`,
  * can take time to run
@@ -107,7 +88,6 @@ function getData() {
     if ( r.data.length ) {
       theme.value      = r.data[0];
       dataFull.value   = theme.value.iconography;
-      dataFilter.value = indexDataFormatterIconography(dataFull.value);
     }
   })
 }

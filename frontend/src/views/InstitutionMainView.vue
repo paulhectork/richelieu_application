@@ -51,12 +51,7 @@
     </div>
 
     <div v-if="loadState === 'loaded'">
-      <IndexIconographyFilter :data="dataFull"
-                              @iconography-filter="handleIconographyFilter"
-      ></IndexIconographyFilter>
-      <IndexBase :data="dataFilter"
-                 display="resource"
-      ></IndexBase>
+      <IndexIconography :data="dataFull"></IndexIconography>
     </div>
 
   </div>
@@ -69,13 +64,11 @@ import { useRoute } from "vue-router";
 
 import axios from "axios";
 
-import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
-import IndexBase from "@components/IndexBase.vue";
 import UiLoader from "@components/UiLoader.vue";
 import IndexCount from "@components/IndexCount.vue";
+import IndexIconography from "@components/IndexIconography.vue";
 
-import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { stringifyInstitutionArray } from "@utils/stringifiers";
 
 /**************************************************/
@@ -86,7 +79,6 @@ const institution          = ref({});    // the institution object sent from the
 const institutionIndex     = ref([]);    // index of all institutions. fetched from backend
 const institutionName      = ref("");    // the name of the institution. fetched from backend
 const dataFull             = ref([]);    // the complete iconography  data, set from a watcher
-const dataFilter           = ref([]);    // the user-filtered iconography data, set from a watcher
 
 const apiTargetIndex       = new URL("/i/institution", __API_URL__);
 const apiTargetInstitution = new URL(`/i/institution-name/${idUuid.value}`, __API_URL__);
@@ -131,16 +123,6 @@ const bsvpIndex = computed(() =>
 /***************************************************/
 
 /**
- * when IndexIconographyFilter returns the filtered array
- * of Iconography objects, update `dataFilter`, which will
- * trigger the updating of `IndexBase`.
- * @param {*} iconographyData
- */
- function handleIconographyFilter(iconographyData) {
-  dataFilter.value = indexDataFormatterIconography(iconographyData);
-}
-
-/**
  * get all backend data from an UUID. we divide the fetching
  * of data in 2 queries because the second query, `apiTargetIconography`,
  * can take time to run
@@ -161,7 +143,6 @@ async function getData() {
       if ( data.length ) {
         institution.value = data[0];
         dataFull.value    = institution.value.iconography;
-        dataFilter.value  = indexDataFormatterIconography(dataFull.value);
       }
     })
   ])

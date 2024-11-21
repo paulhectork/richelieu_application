@@ -8,9 +8,7 @@ L'application comprend:
   la base de données et la mise en forme des réponses en JSON
 - un `frontend` en Vue pour l'interface utilisateur et la production
   de HTML à partir du JSON renvoyé par le backend
-- un `staticserver` (serveur de fichiers statiques) utilisé pour afficher
-  des fichiers statiques en développement local.
-- la base de données est en PostgreSQL
+- la base de données est en PostgreSQL (un dump est disponible dans `db/`)
 
 Pour les aspects techniques de chaque appli, voir les `README.md` propres à chaque dossier.
 
@@ -18,15 +16,13 @@ Pour les aspects techniques de chaque appli, voir les `README.md` propres à cha
 
 ## Utilisation rapide
 
-Pour un guide détaillé, voir `backend/`, `staticserver/` et `frontend/`. 
-Il faut avoir un terminal par application (un pour le back, un pour le front
-et un pour `staticserver` si on s'en sert).
+Pour un guide détaillé, voir `backend/`, et `frontend/`. 
+Il faut avoir un terminal par application (un pour le back, un pour le front).
 
 ```bash
 # utilisation en local, avec des environnements python nommés `env/`
-cd staticserver  && source env/bin/activate && python main.py                      # terminal 1
-cd backend && source env/bin/activate && python main.py -m dev                    # terminal 2
-cd frontend && npm run dev -- --mode backend-local     # terminal 3
+bash scripts/run_backend.sh
+bash scripts/run_frontend.sh
 ```
 
 ---

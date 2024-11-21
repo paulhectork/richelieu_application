@@ -10,8 +10,8 @@
           looked for is not found, a 404 is displayed instead
       * `IiifViewer`: a IIIF viewer to display important images
           for the article
-      * `IndexBase`: an index of relevant, but not directly
-          related, iconography entries
+      * `IconographyIndex`: an index of relevant, but not directly
+          related, iconography entries, fetched from a backend db query
       * `ArticleFootnote`: rfootnotes for an article
 
       how to the components interact?
@@ -19,14 +19,14 @@
           components and ALL generic processes (all things that
           can and will be repeated from one article to another)
       * `ArticleContent...` contains the DATA specific to an article:
-          the article itself, query parameters to build the IndexBase,
+          the article itself, query parameters to build the `IconographyIndex`,
           UUIDs for the iconography ressources to display in the
           IIIF viewer, footnotes... all of that is emitted to
           `ArticleMainView`. the data changes from an article to
           another, but the processes are always the same, so they
           are handled by the current component.
-      * `IiifViewer`, `IndexBase` and `ArticleFootnote` display data
-          fetched from `ArticleContent...` and passed to them
+      * `IiifViewer`, `IconographyIndex` and `ArticleFootnote` display data
+          retrieved from `ArticleContent...` and passed to them
           from `ArticleMainView`
 
       view @components/ArticleContentTemplate.vue for more info on
@@ -84,19 +84,14 @@
     </div>
 
     <div class="article-index-wrapper">
-      <h2>Ressources liées {{ iconographyIndexFull.length
-                              ? `(${iconographyIndexFull.length})`
+      <h2>Ressources liées {{ iconographyIndex.length
+                              ? `(${iconographyIndex.length})`
                               : "" }}
       </h2>
 
-      <div v-if="iconographyIndexFull.length">
-        <IndexIconographyFilter :data="iconographyIndexFull"
-                                @iconography-filter="handleIconographyFilter"
-        ></IndexIconographyFilter>
-
-        <IndexBase :data="iconographyIndexFilter"
-                   display="resource"
-        ></IndexBase>
+      <div v-if="iconographyIndex.length">
+        <IndexIconography :data="iconographyIndex"
+        ></IndexIconography>
       </div>
 
       <UiLoader v-else></UiLoader>
@@ -127,15 +122,14 @@ import axios from "axios";
 import _ from "lodash";
 import $ from "jquery";
 
-import IndexBase from "@components/IndexBase.vue";
 import IiifViewer from "@components/IiifViewer.vue";
 import ArticleFootnote from "@components/ArticleFootnote.vue";
 import UiLoader from "@components/UiLoader.vue";
-import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
+
+import IndexIconography from '@components/IndexIconography.vue';
 
 import { stringifyIconographyResource } from "@utils/stringifiers.js";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams.js";
-import { indexDataFormatterIconography } from "@utils/indexDataFormatter.js";
 import { domStore } from "@stores/dom.js";
 
 /************************************************/
@@ -145,8 +139,7 @@ const articleName            = ref();         // the name of the article, define
 const articleComponent       = shallowRef();  // the currentcomponent, or ErrNotFound.vue if articleName is not a key of `urlMapper` below. `shallowRef` is used to avoid vue performance warnings
 const notFoundFlag           = ref(false);    // true if the component `articleComponent` is `ErrNotFound.vue`
 
-const iconographyIndexFull   = ref([]);       // array of iconography objects to display in an index
-const iconographyIndexFilter = ref([]);       // same as the above, but possibly filtered by IndexIconographyFilter. this is what gets sent to IndexBase.
+const iconographyIndex       = ref([]);       // array of iconography objects to display in an index
 const iconographyMainArray   = ref([]);       // array of a few iconography resources (2-6) from which to display IIIFs
 const iconographyMainCurrent = ref();         // the iconography ressource currently viewed in the IIIF viewer. can be modified when clicking on `.button-eye`.
 const iiifViewer             = ref();         // openseadragon viewer returned by `IiifViewer.vue`
@@ -174,16 +167,6 @@ const urlMapper = { "bourse"             : "ArticleContentBourse"
 }
 
 /************************************************/
-
-/**
- * when IndexIconographyFilter returns the filtered array
- * of Iconography objects, update `iconographyIndexFilter`, which will
- * trigger the updating of `IndexBase`.
- * @param {Array<Object>} iconographyData
- */
- function handleIconographyFilter(iconographyData) {
-  iconographyIndexFilter.value = indexDataFormatterIconography(iconographyData);
-}
 
 /**
  * dynamically import the article component based
@@ -214,8 +197,8 @@ function loadCurrentArticleComponent(articleName) {
  *    article, given in `route.params.articleName`)
  * - define the `articleComponent` ref, which will trigger
  *    the loading of the new article
- * - empty `iconographyIndexFull` and `iconographyIndexFilter`:
- *    iconographyIndexFull` is fetched  asynchronously from
+ * - empty `iconographyIndex` and `iconographyIndexFilter`:
+ *    iconographyIndex` is fetched  asynchronously from
  *    fetchIndex()`. if we don't do this, when switching
  *    from componentA to componentB, until the `fetchIndex()`
  *    returns results relevant to `componentB, the index of
@@ -229,8 +212,7 @@ function loadCurrentArticleComponent(articleName) {
  */
 function articleMounter(_route) {
   // empty the previous index
-  iconographyIndexFull.value   = [];
-  iconographyIndexFilter.value = [];
+  iconographyIndex.value   = [];
   // load the new ArticleContent...
   articleName.value = _route.params.articleName;
   [ articleComponent.value, notFoundFlag.value ] = loadCurrentArticleComponent(articleName.value);
@@ -280,8 +262,7 @@ function fetchIndex(newQueryParams) {
   axios
   .post( targetUrl.href, queryParams.toJson() )
   .then(r => {
-    iconographyIndexFull.value = r.data;
-    iconographyIndexFilter.value = indexDataFormatterIconography(r.data);
+    iconographyIndex.value = r.data;
   })
   .catch(e => { console.error( `ArticleMainIndex.fetchIndex(): backend error (${e.response?.data})`
                              , "on query:"
@@ -451,7 +432,7 @@ function mountFootnoteOnClick(evt) {
  *    - `.iiif-wrapper` -> position: relative
  *    - `.iiif-inner-wrapper` -> position: absolute; top: 0; left: 0
  *    => `.iiif-inner-wrapper` will always be at the top of `.iiif-wrapper`
- * - in jQuery, we calculate the needed offset and add it as a
+ * - in js, we calculate the needed offset and add it as a
  *   `transform: translateY()` => it's always positionned right below the navbar.
  *
  * in `portrait` mode, an `transform: translateY(0) !important`
