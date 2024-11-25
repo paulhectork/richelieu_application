@@ -1,6 +1,5 @@
 from typing import Optional
 from functools import cached_property
-from datetime import date
 
 from flask import jsonify
 from flask_openapi3 import Tag
@@ -41,7 +40,7 @@ from ..orm.admin import (
 
 from .to_pydantic import sqlalchemy_to_pydantic
 
-from functools import cached_property
+from ..search.search_iconography import make_query
 
 
 # *************************************************
@@ -57,6 +56,23 @@ class PaginationParameters(BaseModel):
 
 class EntityParameters(BaseModel):
     id_uuid: str
+
+
+class SearchParameters(BaseModel):
+    title: Optional[str] | None = ""
+    title_boolean_op: Optional[str] = "and"
+    author: Optional[str] | None = ""
+    author_boolean_op: Optional[str] = "and"
+    publisher: Optional[str] | None = ""
+    publisher_boolean_op: Optional[str] = "and"
+    theme: Optional[str] | None = ""
+    theme_boolean_op: Optional[str] | None = "and"
+    named_entity: Optional[str] | None = ""
+    named_entity_boolean_op: Optional[str] = "and"
+    institution: Optional[str] | None = ""
+    institution_boolean_op: Optional[str] = "and"
+    date: Optional[str] | None = ""
+    date_boolean_op: Optional[str] = "and"
 
 
 class Resource:
@@ -260,6 +276,34 @@ def make_get_entity_lite(resource):
 
     get_entity_lite.__name__ = f"get_{resource.name}_lite"
     return get_entity_lite
+
+
+def sanitize_search_query(query):
+    prepare_query = {}
+    for key, val in query.items():
+        if "op" in key or "date" in key:
+            prepare_query[key] = val
+        elif "," in val:
+            prepare_query[key] = val.split(",")
+        else:
+            if val:
+                prepare_query[key] = [val]
+            else:
+                prepare_query[key] = []
+    if "title" in prepare_query:
+        prepare_query["title"] = [f"%{val}%" for val in prepare_query["title"]]
+    return prepare_query
+
+
+@api.get("/search", summary="search ressources", tags=[IconographyResource.tag])
+def search(query: SearchParameters):
+    """
+    search resource.
+    """
+    query_dump = sanitize_search_query(query.model_dump())
+    results = make_query(query_dump).all()
+    data = [r[0].serialize_lite() for r in results]
+    return jsonify(data)
 
 
 alls = globals()
