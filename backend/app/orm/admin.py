@@ -38,6 +38,10 @@ class Institution(db.Model):
     def validate_uuid(self, key, value):
         return _validate_uuid(value, self.__tablename__)
 
+    @property
+    def label(self) -> str:
+        return self.entry_name
+
     def get_iconography(self):
         return [ r.iconography.serialize_lite()
                  for r in self.r_institution
@@ -92,6 +96,10 @@ class Licence(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+    @property
+    def label(self) -> str:
+        return self.entry_name
+
     def get_filename(self):
         return [ f.serialize_lite() for f in self.filename ]
 
@@ -135,6 +143,10 @@ class AdminPerson(db.Model):
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return f"{self.first_name} {self.last_name}"
 
     def get_r_admin_person_iconography(self):
         return [ r.iconography.serialize_lite()

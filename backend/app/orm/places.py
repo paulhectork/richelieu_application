@@ -54,6 +54,10 @@ class Place(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+    @property
+    def label(self) -> str:
+        return self.id_richelieu
+
     def get_address(self):
         return [ r.address.serialize_lite()
                  for r in self.r_address_place ]
@@ -149,6 +153,10 @@ class PlaceGroup(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+    @property
+    def label(self) -> str:
+        return self.entry_name
+
     def get_place(self):
         return [ p.serialize_lite()
                  for p in self.place ]
@@ -189,6 +197,10 @@ class Address(db.Model):
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.address
 
     def get_place(self):
         return [ r.place.serialize_lite()

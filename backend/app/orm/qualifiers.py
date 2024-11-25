@@ -47,6 +47,10 @@ class Title(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+    @property
+    def label(self) -> str:
+        return self.entry_name
+
 
 # *******************************************************************
 
@@ -68,6 +72,10 @@ class Annotation(db.Model):
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.id_uuid
 
 
 # *******************************************************************
@@ -91,6 +99,10 @@ class Theme(db.Model):
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.entry_name
 
     @hybrid_property
     def iconography_count(self):
@@ -214,6 +226,10 @@ class NamedEntity(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+    @property
+    def label(self) -> str:
+        return self.entry_name
+
     # see `Theme` for a detailed explanation
     @hybrid_property
     def iconography_count(self) -> int:
@@ -336,6 +352,10 @@ class Actor(db.Model):
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.entry_name
 
     def get_iconography_author(self):
         return [ r.iconography.serialize_lite()

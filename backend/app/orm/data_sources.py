@@ -82,6 +82,14 @@ class Iconography(db.Model):
         l = [ t[0] for t in sorted(l, key=lambda x: x[1]) ]  # [<main title>, <other title>, <...> ]
         return l
 
+    @property
+    def label(self) -> str:
+        label = ""
+        titles = self.get_title()
+        if titles:
+            label = titles[0]
+        return label
+
     def get_publisher(self) -> t.List[t.Dict]:
         """
         get the list of publishers associated to a ressource
@@ -188,6 +196,10 @@ class Cartography(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+    @property
+    def label(self) -> str:
+        return self.title
+
     def get_filename(self) -> t.List[t.Dict]:
         return [ f.serialize_lite() for f in self.filename ]
 
@@ -265,6 +277,10 @@ class Directory(db.Model):
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
 
+    @property
+    def label(self) -> str:
+        return self.entry_name
+
     def get_admin_person(self) -> t.Dict:
         return [ r.admin_person.serialize_lite()
                  for r in self.r_admin_person ]
@@ -314,6 +330,10 @@ class Filename(db.Model):
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.url
 
     def serialize_lite(self):
         return { "url": self.url,                     # str

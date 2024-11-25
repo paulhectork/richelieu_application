@@ -6,6 +6,7 @@ from typing import Type, Dict, Any, List
 class RelatedEntity(BaseModel):
     api_route: str
     identifier: str
+    label: str
 
 
 def sqlalchemy_to_pydantic(model: Type[BaseModel]) -> Type[BaseModel]:
