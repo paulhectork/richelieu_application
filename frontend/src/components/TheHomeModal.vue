@@ -44,10 +44,21 @@
       </div>
 
       <div class="hm-right">
-        <div class="hm-right-img-wrapper">
+        <div class="hm-right-video-wrapper">
+          <!--
           <img src="@/assets/media/home_modal_map_noborder.jpg"
                alt="Dessin de carte du centre de Paris"
           >
+          -->
+          <div class="video-outer-wrapper">
+            <div class="video-inner-wrapper"
+                 v-for="vUrl in videoUrls"
+            >
+              <video controls playsinline muted><source :src="vUrl"
+                                      type="video/mp4"
+              ></source></video>
+            </div>
+          </div>
         </div>
         <UiButtonCross @click="emit('closeHomeModal')"></UiButtonCross>
       </div>
@@ -71,6 +82,12 @@ import { clickOutside } from "@utils/ui.js";
 /*******************************************************/
 
 const emit = defineEmits(["closeHomeModal"]);
+
+const videoUrls = [ new URL('other/AUTOUR_DU_PALAIS_ROYAL_20Mbits.mp4', __STATICS_URL__).href
+                  , new URL('other/LE_LONG_DE_LA_RUE_VIVIENNE_20Mbits.mp4', __STATICS_URL__).href ];
+
+
+/*******************************************************/
 
 onMounted(() => {
   // close on pressing Escape
@@ -181,23 +198,54 @@ onMounted(() => {
   align-items: center;
   position: relative;
 }
-.hm-right-img-wrapper {
+.hm-right-video-wrapper {
   height: calc(100% - 20px);
   width: calc(100% - 20px);
   margin: 10px;
   overflow: hidden;
+  background-image: url("@/assets/media/home_modal_map_noborder.jpg");
+  background-size: cover;
+
+  display: flex;
+  flex-direction: row;
+  align-items: end;
 }
+/*
 .hm-right img {
   object-fit: cover;
   min-width: 100%;
   height: 140%;
 }
+*/
 .hm-right :deep(.button-cross) {
   position: absolute;
   top: 0;
   right: 0;
   height: max(5vh, 50px);
   width: max(5vh, 50px);
+}
+.hm-right .video-outer-wrapper {
+  height: 50%;
+  width: 100%;
+  /*background-color: blue;*/
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 50% 50%;
+}
+.video-outer-wrapper > .video-inner-wrapper {
+  height: 100%;
+  width: 100%;
+  /*background-color: red;*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+}
+.video-inner-wrapper > video {
+  /*background-color: tomato;*/
+  width: 100%;
+  height: 100%;
+
 }
 
 /* hide the right block on small portrait viewports */
@@ -209,7 +257,7 @@ onMounted(() => {
   .hm-left {
     border-right: none;
   }
-  .hm-right-img-wrapper {
+  .hm-right-video-wrapper {
     display: none;
   }
 }
