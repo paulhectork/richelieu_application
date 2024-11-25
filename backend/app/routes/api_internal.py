@@ -4,7 +4,7 @@ basepath: `<APP URL>/i/`
 """
 
 from flask import jsonify, request
-from sqlalchemy import text, func
+from sqlalchemy import text, func, tuple_
 from sqlalchemy.sql.expression import bindparam
 
 from ..search.search_iconography import sanitize_params, make_params, make_query
@@ -169,6 +169,20 @@ def main_theme_name(id_uuid:str):
     r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
     return jsonify([ t[0].entry_name for t in r.all() ])
 
+@app.route("/i/theme/category/name/all")
+def theme_category_name_all():
+    """
+    :returns: an array of all allowed categories
+            [ { category_name: theme.category,
+                category_slug: theme.category_slug } ]
+    """
+    r = db.session.execute(select( Theme )
+                          .distinct( Theme.category, Theme.category_slug ))
+    return jsonify([ { "category_name": row[0].category,
+                       "category_slug": row[0].category_slug }
+                     for row in r.all() ])
+
+
 @app.route("/i/theme/category/name/<string:category_slug>")
 def theme_category_name(category_slug:str):
     """
@@ -264,6 +278,20 @@ def main_named_entity_name(id_uuid:str):
     """
     r = db.session.execute(NamedEntity.query.filter( NamedEntity.id_uuid == id_uuid ))
     return jsonify([ n[0].entry_name for n in r.all() ])
+
+
+@app.route("/i/named-entity/category/name/all")
+def named_entity_category_name_all():
+    """
+    :returns: an array of all allowed categories
+            [ { category_name: named_entity.category,
+                category_slug: named_entity.category_slug } ]
+    """
+    r = db.session.execute(select( NamedEntity )
+                          .distinct( NamedEntity.category, NamedEntity.category_slug ))
+    return jsonify([ { "category_name": row[0].category,
+                       "category_slug": row[0].category_slug }
+                     for row in r.all() ])
 
 
 @app.route("/i/named-entity/category/name/<string:category_slug>")

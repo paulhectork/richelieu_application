@@ -1,15 +1,35 @@
 <!--  ThemeViewOrNamedEntityIndexView.vue
     an index page for all themes or named entities in a category
 
-    see the documentation of ThemeOrNamedEntityCategoryIndexView.vue
-    for a more global outlook on the logic.
+    lifecycle:
+    - the parent `ThemeOrNamedEntityCategoryIndexView`,, redirects
+        to this component to display an index of all themes / named entities.
+        the URL defines 1 argument/path (compulsory) and 1 parameter (optional):
+        - path: <categorySlug>: only themes/named entities from this category will
+            be displayed.
+        - viewType: a parameter that allows to switch between collection and tree view.
+    - on page load or when route parameter changes without a full-page reload
+        (for example, clicking on a button in the menu), `initViewHook()` is called.
+        it resets all refds to their start state and fetches data based on URL data
+    - 2 controllers allow to switch the values of `categorySlug` and `viewType` by
+        triggering 2 functions:
+         - `changeCategory()` will switch from one category to another
+         - `changeViewType()` will switch from "collection"|"tree" view and back.
+         - both functions update the route's URL, the refs and fetch backend data
 
     props :
     - tableName (String)
         "theme"|"named_entity"
-    - categorySlug (String)
-        a value of theme.category_slug, or named_entity.category_slug.
-        used to target a themes/named entities from a specific category
+
+    url path and parameter:
+    - categorySlug (path, parameter, String)
+        a value of theme.category_slug, or named_entity.category_slug or "all".
+        used to target a themes/named entities from a specific category. if "all",
+        then all values are fetched from the backend
+    - viewType (parameter, optional, String)
+        "collection"||"tree", defaults to "collection"
+        this parameter decides if we'll display a collection of items with images,
+        or a tree of category/category-items  with just the name of the item.
 -->
 
 <template>
@@ -18,22 +38,51 @@
   </div>
   <div v-else>
 
-    <h1>Index des
-      {{ tableName === "theme" ? "thèmes" : "entités nommées" }}&nbsp;:
-      {{ capitalizeFirstChar(categoryName) }}</h1>
-    <IndexCount v-if="loadState === 'loaded'"
-                :indexCount="viewType === 'collection'
-                             ? dataCollectionFull.length
-                             : dataTree.reduce((count, currentCategory) =>
-                                  count + currentCategory.entries.length, 0)"
-                :dataType="tableName"
-    ></IndexCount>
+    <div class="title-controller-wrapper">
+      <div class="title-wrapper">
+        <h1>Index des
+          {{ tableName === "theme" ? "thèmes" : "entités nommées" }}&nbsp;:
+          {{ capitalizeFirstChar(categoryName) }}</h1>
+        <IndexCount v-if="loadState === 'loaded'"
+                    :indexCount="viewType === 'collection'
+                                ? dataCollectionFull.length
+                                : dataTree.reduce((count, currentCategory) =>
+                                   count + currentCategory.entries.length, 0)"
+                    :dataType="tableName"></IndexCount>
+      </div>
+
+      <div class="view-controller-wrapper">
+        <FormKit v-if="categories.length"
+                 type="fkSelect"
+                 name="categoryControl"
+                 id="category-control"
+                 label="Changer de catégorie"
+                 :multiple="false"
+                 :value="categorySlug"
+                 :placeholder="categoryName"
+                 :options="categories.map(c => {
+                    return { value: c.category_slug, label: c.category_name } })"
+                 @input="changeCategory"
+        ></FormKit>
+        <FormKit v-if="viewType"
+                 type="fkRadioTabs"
+                 name="viewTypeSetter"
+                 id="view-type-control"
+                 label="Changer le type de vue"
+                 :help="`Définir la vue des ${tableName === 'theme' ? 'thèmes' : 'entités nommées'}`"
+                 :value="viewType"
+                 :options="[ { value: 'collection', label: 'collection' }
+                           , { value: 'tree', label: 'arborescence' }]"
+                 @input="changeViewType"
+        ></FormKit>
+      </div>
+    </div>
+
 
     <!-- presentation text for each category -->
     <div v-if="tableName === 'theme'"
-         class="index-headtext-wrapper"
-    >
-      <p v-if="categorySlug==='s-habiller'">
+         class="index-headtext-wrapper">
+      <p v-if="categorySlug === 's-habiller'">
         La question de l'habillement revêt des significations
         plurielles dans le quartier Richelieu. Elle peut d'abord
         être comprise comme un acte de confection pour autrui,
@@ -53,7 +102,7 @@
         de boutiques, contribuant alors à lier cette notion
         à sa spatialité, son architecture et sa propension
         à faire espace public.</p>
-     <p v-if="categorySlug==='se-divertir'">
+      <p v-if="categorySlug === 'se-divertir'">
         La densité et la variété des activités de divertissement
         qui ont eu lieu dans le quartier Richelieu se perçoivent
         à travers l'abondante production graphique qu'elles
@@ -74,7 +123,7 @@
         Enfin, l'activité des théâtres, à travers les tickets
         d'entrée et la production de décors ou de costumes,
         éclaire le parcours de certains acteurs et actrices.</p>
-      <p v-if="categorySlug==='representer'">
+      <p v-if="categorySlug === 'representer'">
         Ce thème est articulé autour des différents supports
         rendant présent à la vue, mais aussi à l'esprit le
         quartier Richelieu dans toute sa volubilité et sa volatilité.
@@ -99,7 +148,7 @@
         postales dont les angles de vue orientent les perceptions
         du quartier, contribuant à le figer dans son image
         d'Épinal.</p>
-      <p v-if="categorySlug==='s-informer'">
+      <p v-if="categorySlug === 's-informer'">
         L'information est, dans ce cadre thématique, intimement
         liée à la dimension politique et historique des différents
         évènements survenus dans le quartier Richelieu. Si
@@ -122,7 +171,7 @@
         mai 1871. Ce thème accompagne alors les relectures
         historiographiques du récit national par l'entremise
         d'une approche située de la ville.</p>
-      <p v-if="categorySlug==='consommer'">La notion de consommation fait
+      <p v-if="categorySlug === 'consommer'">La notion de consommation fait
         écho à la forte densité des activités économiques recensées dans
         les rues du quartier au XIX<sup>e</sup> siècle. La bourse installée au palais
         Brongniart est l'emblème du dynamisme commercial qui s'empare des
@@ -140,7 +189,7 @@
         de la réclame publicitaire et sur l'évolution du niveau de vie.
         Les brevets d'invention quant à eux soulignent les innovations à
         l'œuvre et la dimension créatrice du développement économique.</p>
-      <p v-if="categorySlug==='habiter'">Habiter est envisagé au sens
+      <p v-if="categorySlug === 'habiter'">Habiter est envisagé au sens
         large, englobant à la fois les espaces privés et publics qui
         composent le cadre de la vie quotidienne des citadins et des
         citadines qui habitent ou fréquentent le quartier. Le dialogue
@@ -159,9 +208,7 @@
         de la fabrique de la ville, telle qu'elle a été conçue et vécue
         par ses contemporains.</p>
     </div>
-    <div v-else
-         class="index-headtext-wrapper"
-    >
+    <div v-else class="index-headtext-wrapper">
       <!--
       <p v-if="categorySlug === 'acteurs-et-actrices'"></p>
       <p v-if="categorySlug === 'banques'"></p>
@@ -179,56 +226,40 @@
       -->
     </div>
 
-    <div class="view-type-control-wrapper">
-      <FormKit v-if="viewType"
-               type="fkRadioTabs"
-               name="viewTypeSetter"
-               id="view-type-control"
-               label="Changer le type de vue"
-               :help="`Définir la vue des ${tableName === 'theme' ? 'thèmes' : 'entités nommées'}`"
-               :value="viewType"
-               :options="[ { value: 'collection', label: 'collection' }
-                         , { value: 'tree', label: 'arborescence' } ]"
-               @input="changeViewType"
-      ></FormKit>
-    </div>
-
     <UiLoader v-if="loadState === 'loading'"></UiLoader>
     <div v-else-if="loadState === 'loaded'">
-      <div v-if="viewType==='collection'">
+      <div v-if="viewType === 'collection'">
         <FilterIndexThemeOrNamedEntity v-if="dataCollectionFull.length"
                                       :data="dataCollectionFull"
                                       @theme-or-named-entity-filter="handleFilter"
         ></FilterIndexThemeOrNamedEntity>
 
-        <IndexBase v-if="viewType==='collection'"
+        <IndexBase v-if="viewType === 'collection'"
                   :display="display"
                   :data="dataCollectionFilter"
         ></IndexBase>
       </div>
 
-      <div v-else-if="viewType==='tree'"
-           class="tree-wrapper"
-      >
+      <div v-else-if="viewType === 'tree'" class="tree-wrapper">
         <ul class="tree-category list-invisible">
-          <li v-for="category in dataTree.sort((a,b) => a.category.localeCompare(b.category))"
-              class="category-wrapper"
-          >
+          <li v-for="category in dataTree.sort((a, b) =>
+                      a.category.localeCompare(b.category))"
+              class="category-wrapper">
             <span class="category-title">
               Catégorie&nbsp;:
               <RouterLink :to="tableName === 'theme'
                                ? urlToFrontendThemeCategory(category.category_slug).pathname
                                : urlToFrontendNamedEntityCategory(category.category_slug).pathname"
-                          v-html="category.category"
-                          class="tree-category-name"
-              ></RouterLink> ({{ category.entries.length }}
-                              {{ category.entries.length != 1
-                               ? "entrées" : "entrée" }})
+                           v-html="category.category"
+                           class="tree-category-name"
+              ></RouterLink>
+              ({{ category.entries.length }}
+              {{ category.entries.length != 1 ? "entrées" : "entrée" }})
             </span>
             <ul class="category-entries">
-              <li v-for="item in category.entries.sort((a,b) => a.entry_name.localeCompare(b.entry_name))"
-                  class="category-entry"
-              >
+              <li v-for="item in category.entries.sort((a, b) =>
+                          a.entry_name.localeCompare(b.entry_name))"
+                  class="category-entry">
                 <RouterLink :to="tableName === 'theme'
                                  ? urlToFrontendTheme(category.category_slug, item.id_uuid).pathname
                                  : urlToFrontendNamedEntity(category.category_slug, item.id_uuid).pathname"
@@ -276,6 +307,7 @@ const tableName            = ref();    // (string) "theme"|"namedEntity"
 const viewType             = ref();    // (string) "collection"|"tree". the kind of display to use. defaults to "collection"
 const categorySlug         = ref();    // (string) theme.category_slug or named_entity.category_slug of "all" if we want to retrieve all themes/named entities
 const categoryName         = ref()     // (string) theme.category or named_entity.category or "tout" if categorySlug === 'all'
+const categories           = ref([]);  // (Array<Object>) : all allowed categories. an array of { category_name: String, category_slug: String }
 const dataCollectionFull   = ref([]);  // (Array<Object>) the full index when viewType==='collection', independent of user filters
 const dataCollectionFilter = ref([]);  // (Array<Object>) the data to pass to `IndexBase.vue` when viewType==='collection'. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> }
 const dataTree             = ref([]);  // (Array<Object>) the data when viewType==='tree'
@@ -284,27 +316,7 @@ const loadState = ref("loading");  // toggled to true when data has loaded, hide
 
 
 /*************************************************************/
-
-/**
- * set all global variables to their start state.
- */
-function resetRefs() {
-  // check that viewType is valid.
-  let newViewType = route.query.viewType || "collection";
-  if ( !["tree", "collection"].includes(newViewType) ) {
-    if ( __MODE__ === "DEV" ) console.error(`ThemeOrNamedEntityIndexView.resetRefs() : expected one of ['collection', 'tree'] for 'route.query.viewType', got '${newViewType}'. defaulting to 'collection'`);
-    newViewType = "collection";
-  }
-
-  tableName.value            = props.tableName;
-  viewType.value             = newViewType;
-  categorySlug.value         = decodeURIComponent(route.params.categorySlug);
-  categoryName.value         = "";
-  dataCollectionFull.value   = [];
-  dataCollectionFilter.value = [];
-  dataTree.value             = [];
-  loadState.value            = "loading";
-}
+/** DATA FETCHING */
 
 /**
  * get the category name for the current category,
@@ -316,36 +328,61 @@ function resetRefs() {
  *    to the value of `categorySlug`
  */
 function getCurrentCategoryName() {
-  if ( categorySlug.value === "all" ) {
+  if (categorySlug.value === "all") {
     categoryName.value = "toutes catégories confondues"
   } else {
     const apiTarget = tableName.value === "theme"
-                    ? new URL(`/i/theme/category/name/${categorySlug.value}`, __API_URL__)
-                    : new URL(`/i/named-entity/category/name/${categorySlug.value}`, __API_URL__);
+      ? new URL(`/i/theme/category/name/${categorySlug.value}`, __API_URL__)
+      : new URL(`/i/named-entity/category/name/${categorySlug.value}`, __API_URL__);
     axios.get(apiTarget)
-    .then(r => r.data)
-    .then(data => categoryName.value = data.length
-                                       ? data
-                                       : categorySlug.value)
-    .catch(e => { console.error(e);
-                  categoryName.value = categorySlug.value });
+      .then(r => r.data)
+      .then(data => categoryName.value = data.length
+                    ? data
+                    : categorySlug.value)
+      .catch(e => {
+        console.error(e);
+        categoryName.value = categorySlug.value
+      });
   }
 }
 
-function getCategoryNames() {
-
-}
-
-function getDataTree() {
+/**
+ * get all allowed categories for the Theme|NamedEntity table.
+ * structure: <Array<{ category_name: String, category_slug: String }>>
+ */
+function getCategories() {
   const apiTarget = tableName.value === "theme"
-                    ? new URL(`/i/theme/tree/${categorySlug.value}`, __API_URL__)
-                    : new URL(`/i/named-entity/tree/${categorySlug.value}`, __API_URL__);
+                  ? new URL(`/i/theme/category/name/all`, __API_URL__)
+                  : new URL(`/i/named-entity/category/name/all`, __API_URL__);
   axios.get(apiTarget)
   .then(r => r.data)
-  .then(data => { dataTree.value = data;
-                  loadState.value = "loaded" })
-  .catch(e => { console.error(e);
-                loadState.value = "error" });
+  .then(data => {
+    categories.value = [ { category_name: "tout voir", category_slug: "all" }, ...data ];
+  })
+  .catch(e => {
+    console.error(e);
+    categories.value = []
+  });
+}
+
+/**
+ * get backend data when `viewType === 'tree'`: fetch a tree of
+ * data for a category or for all categories.
+ */
+function getDataTree() {
+  const apiTarget = tableName.value === "theme"
+                  ? new URL(`/i/theme/tree/${categorySlug.value}`, __API_URL__)
+                  : new URL(`/i/named-entity/tree/${categorySlug.value}`, __API_URL__);
+  axios.get(apiTarget)
+  .then(r => r.data)
+  .then(data => {
+    dataTree.value = data;
+    loadState.value = "loaded"
+  })
+  .catch(e => {
+    console.error(e);
+    loadState.value = "error"
+  });
 
 }
 
@@ -356,19 +393,25 @@ function getDataTree() {
  */
 function getDataCollection() {
   const apiTarget = tableName.value === "theme"
-                    ? new URL("/i/theme", __API_URL__)
-                    : new URL("/i/named-entity", __API_URL__);
-  axios.get(apiTarget.href, { params: { category_slug:categorySlug.value } })
-  .then(r => r.data)
-  .then(data => { dataCollectionFull.value = data;
-                  dataCollectionFilter.value = tableName.value === "theme"
-                                     ? indexDataFormatterTheme(data)
-                                     : indexDataFormatterNamedEntity(data);
-                  loadState.value = "loaded";  })
-  .catch(e => { console.error(e);
-                loadState.value = "error" });
+    ? new URL("/i/theme", __API_URL__)
+    : new URL("/i/named-entity", __API_URL__);
+  axios.get(apiTarget.href, { params: { category_slug: categorySlug.value } })
+    .then(r => r.data)
+    .then(data => {
+      dataCollectionFull.value = data;
+      dataCollectionFilter.value = tableName.value === "theme"
+                                 ? indexDataFormatterTheme(data)
+                                 : indexDataFormatterNamedEntity(data);
+      loadState.value = "loaded";
+    })
+    .catch(e => {
+      console.error(e);
+      loadState.value = "error"
+    });
 }
 
+/*************************************************************/
+/** FRONTEND FILTERING */
 
 /**
  * when `FilterIndexThemeOrNamedEntity` emits a new array of
@@ -379,27 +422,88 @@ function getDataCollection() {
  */
 function handleFilter(filteredData) {
   dataCollectionFilter.value = tableName.value === "theme"
-                     ? indexDataFormatterTheme(filteredData)
-                     : indexDataFormatterNamedEntity(filteredData);
+                             ? indexDataFormatterTheme(filteredData)
+                             : indexDataFormatterNamedEntity(filteredData);
 }
 
+
+/*************************************************************/
+/** HOOKS: CHANGE STATE (VIEWTYPE OR CATEGORY) */
+
+/**
+ * hook to handle a change of `cateogry`.
+ * when the user inputs new data on `#category-control`,
+ * change the category: update the router, reset the refs and fetch backend data.
+ * @param {String} newCategorySlug: the new `(theme|named_entity).category_slug`
+ */
+function changeCategory(newCategorySlug) {
+  if ( newCategorySlug && newCategorySlug.length && newCategorySlug !== categorySlug ) {
+    let newPath = route.path.replace(/[^\/]+$/g, newCategorySlug);  // nice A Scanner Darkly reference :)
+    router.replace({ path: newPath, query: { viewType: viewType.value } });
+    categorySlug.value         = newCategorySlug
+    dataCollectionFull.value   = [];
+    dataCollectionFilter.value = [];
+    dataTree.value             = [];
+    loadState.value            = "loading";
+    // fetch the new data
+    getCurrentCategoryName();
+    if (viewType.value === "collection") getDataCollection();
+    else getDataTree();
+  }
+}
+
+/**
+ * hook to handle a change of `viewType`.
+ * when the user inputs new data on `#view-type-control`,
+ * change the view type (`collection` or `tree`):
+ * update the router, reset the necessary refs and fetch backend data.
+ * @param {String} newViewType: "collection" || "tree"
+ */
 function changeViewType(newViewType) {
-  // update the refs and the URL to fit the new state
-  router.replace({ query: { viewType: newViewType } });
+  if ( newViewType && newViewType.length && newViewType !== viewType.value ) {
+    // update the refs and the URL to fit the new state
+    router.replace({ query: { viewType: newViewType } });
+    viewType.value             = newViewType;
+    dataCollectionFull.value   = [];
+    dataCollectionFilter.value = [];
+    dataTree.value             = [];
+    loadState.value            = "loading";
+    // fetch the new data
+    if (newViewType === "collection") getDataCollection();
+    else getDataTree();
+  }
+}
+
+/**
+ * set all global variables to their start state.
+ */
+ function resetRefs() {
+  // check that viewType is valid.
+  let newViewType = route.query.viewType || "collection";
+  if (!["tree", "collection"].includes(newViewType)) {
+    if (__MODE__ === "DEV") console.error(`ThemeOrNamedEntityIndexView.resetRefs() : expected one of ['collection', 'tree'] for 'route.query.viewType', got '${newViewType}'. defaulting to 'collection'`);
+    newViewType = "collection";
+  }
+  tableName.value            = props.tableName;
   viewType.value             = newViewType;
+  categorySlug.value         = decodeURIComponent(route.params.categorySlug);
+  categoryName.value         = "";
+  categories.value           = [];
   dataCollectionFull.value   = [];
   dataCollectionFilter.value = [];
   dataTree.value             = [];
   loadState.value            = "loading";
-  // fetch the new data
-  if ( newViewType === "collection" ) getDataCollection();
-  else getDataTree();
 }
 
+/**
+ * hook to reset all refs and fetch back all data (basically
+ * a combination of `changeViewType` and `changeCategory`)
+ */
 function initViewHook() {
   resetRefs();
+  getCategories();
   getCurrentCategoryName();
-  if ( viewType.value === "collection" ) getDataCollection();
+  if (viewType.value === "collection") getDataCollection();
   else getDataTree();
 }
 
@@ -415,34 +519,55 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.view-type-control-wrapper {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  border-top: var(--cs-main-border);
-  border-bottom: var(--cs-main-border);
-  margin: 10px 0;
+h1 {
+  margin-bottom: 5px;
 }
-.view-type-control-wrapper > :deep(.formkit-outer) {
+
+.title-controller-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+.view-controller-wrapper {
+  width: 90%;
+  height: 100%;
+}
+
+@media (min-width: 800px) {
+  .title-controller-wrapper {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .view-controller-wrapper {
+    width: auto;
+  }
+}
+
+/************************************/
+
+.view-controller-wrapper {
   margin: 10px;
 }
-.view-type-control-wrapper :deep(.formkit-wrapper) {
+.view-controller-wrapper :deep(.formkit-wrapper) {
   min-width: 300px;
 }
-.view-type-control-wrapper :deep(.formkit-help) {
+.view-controller-wrapper :deep(.formkit-help) {
   visibility: hidden;
   height: 0;
 }
 
 /************************************/
 
-.tree-wrapper  {
+.tree-wrapper {
   /** PROBLEM: NOT WIDE ENOUGH  */
   width: auto;
   margin: 0 5%;
   border: var(--cs-main-border);
   background-color: lavender;
 }
+
 .tree-wrapper li {
   width: 100%;
 }
@@ -456,9 +581,9 @@ onMounted(() => {
   padding: 10px;
   margin: 10px 0;
 }
-.category-wrapper:first-child > .category-title {
+
+.category-wrapper:first-child>.category-title {
   border-top: none;
   margin-top: 0;
 }
-
 </style>
