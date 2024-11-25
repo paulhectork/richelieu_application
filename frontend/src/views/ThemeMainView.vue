@@ -10,10 +10,10 @@
 
 <template>
   <h1>{{ formattedThemeName }}</h1>
-  <IndexCount :indexCount="dataFull.length"
+  <H2IndexCount :indexCount="dataFull.length"
               dataType="iconography"
               v-if="backendLoaded"
-  ></IndexCount>
+  ></H2IndexCount>
 
   <UiLoader v-if="!backendLoaded"></UiLoader>
   <div v-else>
@@ -45,7 +45,7 @@ import { useRoute } from "vue-router";
 import axios from "axios";
 
 import UiLoader from "@components/UiLoader.vue";
-import IndexCount from "@components/IndexCount.vue";
+import H2IndexCount from "@components/H2IndexCount.vue";
 import IndexIconography from "@components/IndexIconography.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
 

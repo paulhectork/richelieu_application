@@ -241,19 +241,23 @@ onMounted(() => {
 
 
 <style scoped>
+/**
+ * for once, the media query is based on window width and not window orientation:
+ * if width <= 750px, we'll have 4 rows / 1 column;
+ * else, we'll have 2 rows / 2 columns.
+ */
 #tne-filter {
-  display: grid;
-  grid-template-columns: 100%;
-  grid-template-rows: repeat(3, calc(100%/3));
+  display: flex;
+  flex-direction: column;
 }
 .form-row1-wrapper, .form-row2-wrapper {
   display: grid;
-  grid-template-columns: 50% 50%;
-  grid-template-rows: 100%;
+  grid-template-rows: 50% 50%;
+  grid-template-columns: 100%;
 }
 .form-row1-wrapper > div, .form-row2-wrapper > div {
-  margin: 0 10px 0 10px;
-}
+    margin: 10px;
+  }
 #tne-filter :deep(.formkit-outer[data-type=submit]) {
   margin-top: 2%;
   display: flex;
@@ -267,12 +271,18 @@ onMounted(() => {
   min-height: 40px;
 }
 
-/*
-#entry-name-filter {
-  grid-column: 1 / 2;
-  grid-row: 1;
-  background-color: pink;
+@media ( min-width: 750px ) {
+  #tne-filter {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: repeat(3, calc(100%/3));
+  }
+  .form-row1-wrapper, .form-row2-wrapper {
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 100%;
+  }
+  .form-row1-wrapper > div, .form-row2-wrapper > div {
+    margin: 0 10px 0 10px;
+  }
 }
-*/
-
 </style>

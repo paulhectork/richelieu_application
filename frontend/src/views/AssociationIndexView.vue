@@ -36,9 +36,9 @@
       &amp;
       {{ capitalizeFirstChar(to.entryName) }} <!--({{ to.table }})-->
     </h1>
-    <IndexCount :indexCount="dataFull.length"
+    <H2IndexCount :indexCount="dataFull.length"
                 dataType="iconography"
-    ></IndexCount>
+    ></H2IndexCount>
 
 
 
@@ -85,7 +85,7 @@ import axios from "axios";
 
 import ErrNotFound from "@components/ErrNotFound.vue";
 import UiLoader from "@components/UiLoader.vue";
-import IndexCount from "@components/IndexCount.vue";
+import H2IndexCount from "@components/H2IndexCount.vue";
 import IndexIconography from "@components/IndexIconography.vue";
 
 import { capitalizeFirstChar  } from "@utils/strings";

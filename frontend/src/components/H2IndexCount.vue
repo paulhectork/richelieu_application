@@ -1,4 +1,4 @@
-<!-- IndexCount.vue
+<!-- H2IndexCount.vue
    a pretty simple h2 title for index pages stating
    how many resources are being displayed
 
@@ -60,7 +60,7 @@ const dataType = ref();
 function setData() {
   let allowedTypes = [ "iconography", "theme", "place", "namedEntity" ];
   if ( !allowedTypes.includes(props.dataType) ) {
-    console.error(`IndexCount.onMounted : invalid value for 'props.dataType'. expected one of '${allowedTypes}', got '${props.dataType}'`);
+    console.error(`H2IndexCount.onMounted : invalid value for 'props.dataType'. expected one of '${allowedTypes}', got '${props.dataType}'`);
     dataType.value = undefined;
   } else {
     dataType.value = props.dataType;

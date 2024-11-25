@@ -10,10 +10,10 @@
   </div>
   <div v-else>
     <h1>{{ computedAddress }}</h1>
-    <IndexCount :indexCount="dataFull.length"
+    <H2IndexCount :indexCount="dataFull.length"
                 dataType="iconography"
                 v-if="loadStatePlace === 'loaded'"
-    ></IndexCount>
+    ></H2IndexCount>
 
     <UiLoader v-if="loadStatePlace==='loading'"></UiLoader>
 
@@ -50,7 +50,7 @@ import UiLoader from "@components/UiLoader.vue";
 import MapPlaceMain from "@components/MapPlaceMain.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
-import IndexCount from "@components/IndexCount.vue";
+import H2IndexCount from "@components/H2IndexCount.vue";
 import IndexIconography from "@components/IndexIconography.vue";
 
 import { cartographySourcePriority } from "@globals";

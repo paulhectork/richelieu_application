@@ -9,10 +9,10 @@
 
 <template>
   <h1>{{ namedEntityName }}</h1>
-  <IndexCount :indexCount="dataFull.length"
+  <H2IndexCount :indexCount="dataFull.length"
               dataType="iconography"
               v-if="loadState === 'loaded'"
-  ></IndexCount>
+  ></H2IndexCount>
 
   <UiLoader v-if="loadState === 'loading'"></UiLoader>
 
@@ -52,7 +52,7 @@ import axios from "axios";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import UiLoader from "@components/UiLoader.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
-import IndexCount from "@components/IndexCount.vue";
+import H2IndexCount from "@components/H2IndexCount.vue";
 import IndexIconography from "@components/IndexIconography.vue";
 
 /**************************************************/
