@@ -107,6 +107,13 @@ class Resource:
     def api_model(self):
         return sqlalchemy_to_pydantic(self.orm_model)
 
+    def _add_linked_entity(self, target_route, target):
+        return {
+            "api_route": f"/api/v1/{target_route}",
+            "identifier": target.id_uuid,
+            "label": target.label,
+        }
+
     def serialize(self, obj):
         output = {}
         for attr in self.columns:
@@ -123,25 +130,16 @@ class Resource:
                             if second_target is None:
                                 continue
                             output[rel_name].append(
-                                {
-                                    "api_route": f"/api/v1/{target_route}",
-                                    "identifier": second_target.id_uuid,
-                                }
+                                self._add_linked_entity(target_route, second_target)
                             )
                         else:
                             output[rel_name].append(
-                                {
-                                    "api_route": f"/api/v1/{target_route}",
-                                    "identifier": target.id_uuid,
-                                }
+                                self._add_linked_entity(target_route, target)
                             )
             else:
                 target = getattr(obj, attr_name)
                 if target:
-                    output[rel_name] = {
-                        "api_route": f"/api/v1/{target_route}",
-                        "identifier": target.id_uuid,
-                    }
+                    output[rel_name] = self._add_linked_entity(target_route, target)
         return output
 
     def get_paginate(self, query: PaginationParameters):
