@@ -9,6 +9,7 @@
   <div v-else>
     <h1>Institutions</h1>
 
+    <DownloadButtonGroup @download="onDownload"/>
     <UiLoader v-if="loadState==='loading'"></UiLoader>
     <IndexBase v-else
                display="concept"
@@ -20,11 +21,15 @@
 
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import axios from "axios";
 
 import { indexDataFormatterInstitution } from "@utils/indexDataFormatter";
+import { institutionToCsvRecord } from "@utils/toCsvRecord";
+import { downloadData } from "@utils/download";
+import { useListExport } from "@composables/useListExport";
 
+import DownloadButtonGroup from "@components/DownloadButtonGroup.vue";
 import UiLoader from "@components/UiLoader.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
@@ -49,6 +54,23 @@ function getData() {
                   loadState.value = "loaded" })
   .catch(e => { console.error(e);
                 loadState.value = "error" });
+}
+
+const selection = computed(() => dataFilter.value.map(({idUuid}) => idUuid));
+
+const dataToExport = useListExport(
+  dataFull,
+  selection,
+  {
+    toJSON(resource) {
+      return resource;
+    },
+    toCSV: institutionToCsvRecord,
+  },
+)
+
+function onDownload(fileType) {
+  downloadData(dataToExport[fileType].value, fileType, "institution")
 }
 
 /*******************************************************************/

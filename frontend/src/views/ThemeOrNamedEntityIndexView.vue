@@ -173,7 +173,7 @@
       <p v-if="categoryName === 'ville et architecture'"></p>
       -->
     </div>
-
+    <DownloadButtonGroup @download="onDownload"/>
     <UiLoader v-if="loadState === 'loading'"></UiLoader>
     <IndexBase v-else
            :display="display"
@@ -192,7 +192,11 @@ import axios from "axios";
 import { indexDataFormatterTheme
        , indexDataFormatterNamedEntity } from "@utils/indexDataFormatter";
 import { capitalizeFirstChar } from "@utils/strings";
+import { themeOrNamedEntityToCsvRecord } from "@utils/toCsvRecord";
+import { downloadData } from "@utils/download";
+import { useListExport } from "@composables/useListExport";
 
+import DownloadButtonGroup from "@components/DownloadButtonGroup.vue";
 import IndexCount from "@components/IndexCount.vue";
 import UiLoader from "@components/UiLoader.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
@@ -214,6 +218,23 @@ const apiTarget = computed(() =>  // defined as a computed property to avoid man
   tableName.value === "theme"
   ? new URL("/i/theme", __API_URL__)
   : new URL("/i/named-entity", __API_URL__));
+
+const selection = computed(() => dataFilter.value.map(({idUuid}) => idUuid));
+
+const dataToExport = useListExport(
+  dataFull,
+  selection,
+  {
+    toJSON(resource) {
+      return resource;
+    },
+    toCSV: themeOrNamedEntityToCsvRecord
+  },
+)
+
+function onDownload(fileType) {
+  downloadData(dataToExport[fileType].value, fileType, tableName.value)
+}
 
 /*************************************************************/
 

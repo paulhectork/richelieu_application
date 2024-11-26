@@ -12,6 +12,8 @@
       <h1>Index des lieux</h1>
     </div>
 
+    <DownloadButtonGroup @download="onDownload"/>
+
     <div class="bottom-container">
       <UiLoader v-if="!isLoaded"></UiLoader>
       <IndexPlace v-else
@@ -25,14 +27,18 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import axios from "axios";
 
 import $ from "jquery";
 
 import { indexDataFormatterPlace } from "@utils/indexDataFormatter";
+import DownloadButtonGroup from "@components/DownloadButtonGroup.vue";
 import UiLoader from "@components/UiLoader.vue";
 import IndexPlace from "@components/IndexPlace.vue";
+import { useListExport } from "@composables/useListExport";
+import { downloadData } from "@utils/download";
+import { placeToCsvRecord } from "@utils/toCsvRecord";
 
 const apiTarget  = new URL("/i/place", __API_URL__);
 const dataFull   = ref([]);     // the full index, independant of user filters
@@ -50,6 +56,21 @@ onMounted(() => {
   // quick fix for the height/scrolling of `.bottom-container`
   $(".bottom-container").css({ maxHeight: $(window).height() - $(".bottom-container")[0].getBoundingClientRect().top })
 })
+
+const selection = computed(() => dataFilter.value.map(({idUuid}) => idUuid));
+
+const dataToExport = useListExport(
+  dataFull,
+  selection,
+  {
+    toJSON(resource) { return resource },
+    toCSV: placeToCsvRecord
+  },
+)
+
+async function onDownload(fileType) {
+  downloadData(dataToExport[fileType].value, fileType, "places")
+}
 
 </script>
 

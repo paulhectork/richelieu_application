@@ -5,39 +5,18 @@
 <template>
     <div class="download-button-group">
         Téléchargement&nbsp;:&nbsp;
-        <button @click="() => downloadJSON()">
+        <button @click="emit('download', 'json')">
             JSON
         </button>
-        <button @click="() => downloadCSV()">
+        <button @click="$emit('download', 'csv')">
             CSV
         </button>
     </div>
 </template>
 
 <script setup>
-import { toValue, watchEffect}  from "vue";
-import { stringify } from "csv-stringify/browser/esm/sync"
 
-const props = defineProps(["data", "filename"]);
-
-function downloadJSON() {
-    download(new Blob([JSON.stringify(toValue(props.data.json), 0, 4)], { type: "application/json" }), `${toValue(props.filename)}.json`);
-}
-
-function downloadCSV() {
-    const output = stringify(toValue(props.data.csv), {header: true});
-    download(new Blob([output], { type: "text/csv"}), `${toValue(props.filename)}.csv`);
-}
-
-function download(data, filename) {
-    const url = URL.createObjectURL(data);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", filename);
-    link.click()
-
-}
-
+const emit = defineEmits(["download"])
 </script>
 
 <style scoped>

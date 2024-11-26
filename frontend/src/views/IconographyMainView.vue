@@ -79,6 +79,7 @@
   >
     <ErrNotFound></ErrNotFound>
   </div>
+  <DownloadButtonGroup @download="onDownload"/>
 
   <!----
   <div v-else>
@@ -95,6 +96,9 @@ import { useRoute } from "vue-router";
 
 import axios from "axios";
 
+import DownloadButtonGroup from "@components/DownloadButtonGroup.vue";
+import { downloadData } from "@utils/download";
+import { iconographyToCsvRecord } from "@utils/toCsvRecord";
 import MapIconographyMain from "@components/MapIconographyMain.vue";
 import IiifViewer from "@components/IiifViewer.vue";
 import UiLoader from "@components/UiLoader.vue";
@@ -207,6 +211,14 @@ onMounted(() => {
 onUpdated(() => {
 
 })
+
+function onDownload(fileType) {
+  if (fileType === "json") {
+    downloadData(iconography.value, "json", "iconography")
+  } else if (fileType === "csv") {
+    downloadData([iconographyToCsvRecord(iconography.value)], "csv", "iconography");
+  }
+}
 </script>
 
 

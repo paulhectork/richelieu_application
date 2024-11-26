@@ -6,7 +6,7 @@
                               @iconography-filter="handleIconographyFilter"
       ></IndexIconographyFilter>
 
-      <DownloadButtonGroup :data="dataToExport" filename="iconography"/>
+      <DownloadButtonGroup @download="onDownload"/>
 
       <IndexBase display="resource"
                  :data="dataFilter"
@@ -19,14 +19,15 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
+import axios from "axios";
 
 import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
 import IndexBase from "@components/IndexBase.vue";
-import DownloadButtonGroup from "../components/DownloadButtonGroup.vue";
+import DownloadButtonGroup from "@components/DownloadButtonGroup.vue";
 
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
-import { useListExport } from "@composables/useListExport";
-import { stringifyDate } from "@utils/stringifiers";
+import { iconographyToCsvRecord } from "@utils/toCsvRecord"
+import { downloadData } from "@utils/download"
 
 /*************************************************/
 
@@ -53,33 +54,16 @@ function handleIconographyFilter(iconographyData) {
 
 const selection = computed(() => dataFilter.value.map(({idUuid}) => idUuid));
 
-const dataToExport = useListExport(
-  dataFull,
-  selection,
-  {
-    toJSON(resource) {
-      return {
-          uuid: resource.id_uuid,
-          title: resource.title.join(', '),
-          iiif_url: resource.iiif_url,
-          authors: resource.authors.map(
-            author => ({name: author.entry_name, uuid: author.id_uuid})
-          ),
-          date: resource.date
-        }
-      },
-    toCSV(resource) {
-      return {
-        uuid: resource.id_uuid,
-        title: resource.title.join('|'),
-        iiif_url: resource.iiif_url,
-        authors: resource.authors.map(author => author.entry_name).join('|'),
-        authors_uuids: resource.authors.map(author => author.id_uuid).join('|'),
-        date: stringifyDate(resource.date),
-      }
-    }
-  },
-)
+async function onDownload(fileType) {
+  const apiTarget = new URL("/i/iconography/from-uuid/full", __API_URL__);
+  const {data: jsonData} = await axios.post(apiTarget, selection.value);
+  if (fileType === "json") {
+    downloadData(jsonData, "json", "iconography");
+  } else {
+    const csvData = jsonData.map(iconographyToCsvRecord)
+    downloadData(csvData, "csv", "iconography");
+  }
+}
 
 /*************************************************/
 
