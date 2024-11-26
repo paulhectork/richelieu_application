@@ -117,7 +117,16 @@ class Resource:
     def serialize(self, obj):
         output = {}
         for attr in self.columns:
-            output[attr.key] = getattr(obj, attr.key)
+            if str(attr.type) == "INT4RANGE":
+                date_range = getattr(obj, attr.key)
+                output[attr.key] = {
+                    "lower": date_range.lower,
+                    "upper": date_range.upper,
+                    "bounds": date_range.bounds,
+                    "empty": date_range.empty,
+                }
+            else:
+                output[attr.key] = getattr(obj, attr.key)
         for relation in self.relationships:
             rel_name = relation.key
             attr_name, target_route = self.join_relations.get(rel_name, (rel_name, rel_name))
@@ -140,7 +149,9 @@ class Resource:
                 target = getattr(obj, attr_name)
                 if target:
                     output[rel_name] = self._add_linked_entity(target_route, target)
-        return output
+        obj = self.api_model(**output)  # output format validation
+        return obj.dict()
+
 
     def get_paginate(self, query: PaginationParameters):
         page = db.paginate(self.orm_model.query, page=query.page, per_page=query.limit)

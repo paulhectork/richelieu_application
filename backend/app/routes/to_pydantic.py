@@ -9,6 +9,13 @@ class RelatedEntity(BaseModel):
     label: str
 
 
+class DateRange(BaseModel):
+    lower: int
+    upper: int
+    bounds: str
+    empty: bool
+
+
 def sqlalchemy_to_pydantic(model: Type[BaseModel]) -> Type[BaseModel]:
     """
     Convert a SQLAlchemy model to Pydantic for API
@@ -28,7 +35,8 @@ def sqlalchemy_to_pydantic(model: Type[BaseModel]) -> Type[BaseModel]:
         try:
             field_type = column.type.python_type
         except Exception:
-            field_type = int
+            if str(column.type) == "INT4RANGE":
+                field_type = DateRange
         if column.nullable is True:
             field_type = field_type | None
         pydantic_fields[column.name] = (field_type, ...)
