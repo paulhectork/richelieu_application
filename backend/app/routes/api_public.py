@@ -4,9 +4,10 @@ from functools import cached_property
 from flask import jsonify
 from flask_openapi3 import Tag
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from sqlalchemy.orm import class_mapper
+from sqlalchemy.exc import NoResultFound
 
 from ..app import db
 from ..api import api
@@ -73,6 +74,11 @@ class SearchParameters(BaseModel):
     institution_boolean_op: Optional[str] = "and"
     date: Optional[str] | None = ""
     date_boolean_op: Optional[str] = "and"
+
+
+class ResourceNotFoundResponse(BaseModel):
+    code: int = Field(-1, description="Status Code")
+    message: str = Field("Resource not found!", description="Exception Information")
 
 
 class Resource:
@@ -290,7 +296,11 @@ def make_get_paginate(resource):
 
 def make_get_entity(resource):
     def get_entity(path: EntityParameters):
-        return resource.get_entity(path)
+        try:
+            return resource.get_entity(path)
+        except NoResultFound:
+            return ResourceNotFoundResponse().dict(), 404
+
 
     get_entity.__name__ = f"get_{resource.name}"
     return get_entity
@@ -363,7 +373,11 @@ for resource in [
 
     get_entity = make_get_entity(resource)
     alls[get_entity.__name__] = api.get(
-        f"{route}/<string:id_uuid>", summary=resource.summary, tags=[resource.tag]
+        f"{route}/<string:id_uuid>",
+        summary=resource.summary,
+        tags=[resource.tag],
+        doc_ui=True,
+        responses={200: resource.api_model, 404: ResourceNotFoundResponse},
     )(get_entity)
 
     get_entity_lite = make_get_entity_lite(resource)
