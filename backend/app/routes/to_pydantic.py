@@ -16,7 +16,7 @@ class DateRange(BaseModel):
     empty: bool
 
 
-def sqlalchemy_to_pydantic(model: Type[BaseModel]) -> Type[BaseModel]:
+def sqlalchemy_to_pydantic(model: Type[BaseModel], lite: bool=False) -> Type[BaseModel]:
     """
     Convert a SQLAlchemy model to Pydantic for API
     Args:
@@ -31,6 +31,8 @@ def sqlalchemy_to_pydantic(model: Type[BaseModel]) -> Type[BaseModel]:
 
     pydantic_fields: Dict[str, Any] = {}
 
+    model_name = f"{model.__name__}LiteModel"
+
     for column in columns:
         try:
             field_type = column.type.python_type
@@ -41,10 +43,12 @@ def sqlalchemy_to_pydantic(model: Type[BaseModel]) -> Type[BaseModel]:
             field_type = field_type | None
         pydantic_fields[column.name] = (field_type, ...)
 
-    for rel_name, rel in relationships.items():
-        if rel.is_property:
-            if rel.uselist:
-                pydantic_fields[rel_name] = (List[RelatedEntity], ...)
-            else:
-                pydantic_fields[rel_name] = (RelatedEntity, ...)
-    return create_model(f"{model.__name__}Model", **pydantic_fields)
+    if not lite:
+        model_name = f"{model.__name__}LiteModel"
+        for rel_name, rel in relationships.items():
+            if rel.is_property:
+                if rel.uselist:
+                    pydantic_fields[rel_name] = (List[RelatedEntity], ...)
+                else:
+                    pydantic_fields[rel_name] = (RelatedEntity, ...)
+    return create_model(model_name, **pydantic_fields)

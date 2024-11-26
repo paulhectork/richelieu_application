@@ -107,6 +107,10 @@ class Resource:
     def api_model(self):
         return sqlalchemy_to_pydantic(self.orm_model)
 
+    @cached_property
+    def api_model_lite(self):
+        return sqlalchemy_to_pydantic(self.orm_model, lite=True)
+
     def _add_linked_entity(self, target_route, target):
         return {
             "api_route": f"/api/v1/{target_route}",
@@ -114,19 +118,7 @@ class Resource:
             "label": target.label,
         }
 
-    def serialize(self, obj):
-        output = {}
-        for attr in self.columns:
-            if str(attr.type) == "INT4RANGE":
-                date_range = getattr(obj, attr.key)
-                output[attr.key] = {
-                    "lower": date_range.lower,
-                    "upper": date_range.upper,
-                    "bounds": date_range.bounds,
-                    "empty": date_range.empty,
-                }
-            else:
-                output[attr.key] = getattr(obj, attr.key)
+    def _serialize_relationships(self, obj, output):
         for relation in self.relationships:
             rel_name = relation.key
             attr_name, target_route = self.join_relations.get(rel_name, (rel_name, rel_name))
@@ -149,7 +141,32 @@ class Resource:
                 target = getattr(obj, attr_name)
                 if target:
                     output[rel_name] = self._add_linked_entity(target_route, target)
-        obj = self.api_model(**output)  # output format validation
+
+    def serialize(self, obj, lite=False):
+        output = {}
+        api_model = self.api_model_lite
+        for attr in self.columns:
+            if str(attr.type) == "INT4RANGE":
+                date_range = getattr(obj, attr.key)
+
+                if date_range:
+                    output[attr.key] = {
+                        "lower": date_range.lower,
+                        "upper": date_range.upper,
+                        "bounds": date_range.bounds,
+                        "empty": date_range.empty,
+                    }
+                else:
+                    output[attr.key] = None
+
+            else:
+                output[attr.key] = getattr(obj, attr.key)
+
+        if not lite:
+            self._serialize_relationships(obj, output)
+            api_model = self.api_model
+
+        obj = api_model(**output)  # output format validation
         return obj.dict()
 
 
@@ -165,7 +182,7 @@ class Resource:
 
     def get_entity_lite(self, query: PaginationParameters):
         page = db.paginate(self.orm_model.query, page=query.page, per_page=query.limit)
-        return jsonify([obj.serialize_lite() for obj in page])
+        return jsonify([self.serialize(obj, lite=True) for obj in page])
 
 
 class IconographyResource(Resource):
@@ -351,5 +368,9 @@ for resource in [
 
     get_entity_lite = make_get_entity_lite(resource)
     alls[get_entity_lite.__name__] = api.get(
-        f"{route}/lite", summary=resource.summary, tags=[resource.tag]
+        f"{route}/lite",
+        summary=resource.summary,
+        tags=[resource.tag],
+        doc_ui=True,
+        responses={200: resource.api_model_lite},
     )(get_entity_lite)
