@@ -13,11 +13,20 @@
 
       <div class="hm-left">
 
-        <div class="hm-left-title">
-          <img src="@/assets/icons/logo-text.svg"
-               alt="logo du projet Richelieu"
-          >
-          <span style="visibility: hidden">Quartier Richelieu</span>
+        <div class="hm-left-header">
+          <div class="hm-left-title-wrapper">
+            <img src="@/assets/icons/logo-text.svg"
+                 alt="logo du projet Richelieu"
+            >
+            <span style="visibility: hidden; height: 0; width: 0;"
+            >Quartier Richelieu</span>
+          </div>
+          <div class="hm-left-redirect-wrapper">
+            <div class="hm-left-redirect">
+              <span>En savoir plus</span>
+              <RouterLink to="/a-propos/projet"><UiButtonLink></UiButtonLink></RouterLink>
+            </div>
+          </div>
 
         </div>
 
@@ -29,13 +38,46 @@
             architecturales, humaines et économiques et en croisant des sources
             iconographiques et cartographiques, à l'échelle du long XIX<sup>e</sup> siècle.
           </p>
-          <div class="hm-left-redirect-wrapper">
-            <div class="hm-left-redirect">
-              <span>En savoir plus</span>
-              <RouterLink to="/a-propos/projet"><UiButtonLink></UiButtonLink></RouterLink>
 
+          <div class="video-outer-wrapper">
+            <div class="video-controller-wrapper">
+              <button @click="showCredit"
+                      :class="{ 'button-activated': displayCredit }"
+              >Crédits</button>
+              <button @click="switchVideo">Changer de vidéo</button>
+            </div>
+            <!--
+            <div class="video-controller-credits-wrapper">
+              <div v-if=""
+            </div>
+            -->
+            <div class="video-inner-wrapper">
+              <div class="video-loader-wrapper"
+                   v-if="videoLoading"
+              >
+                <UiLoader></UiLoader>
+              </div>
+              <figure :class="{ 'video-loading': videoLoading }">
+                <video v-if="currentVideoIndex !== undefined"
+                       id="video-container"
+                       :alt="promoVideoArray[currentVideoIndex].credit"
+                       autoplay
+                       controls
+                       playsinline
+                       muted
+                >
+                  <source id="video-source"
+                          :src="promoVideoArray[currentVideoIndex].source"
+                          type="video/mp4"
+                  ></source>
+                </video>
+                <figcaption v-if="displayCredit">
+                  <span v-html="promoVideoArray[currentVideoIndex].credit"></span>
+                </figcaption>
+              </figure>
             </div>
           </div>
+
         </div>
 
         <div class="hm-left-logos">
@@ -50,15 +92,6 @@
                alt="Dessin de carte du centre de Paris"
           >
           -->
-          <div class="video-outer-wrapper">
-            <div class="video-inner-wrapper"
-                 v-for="vUrl in videoUrls"
-            >
-              <video controls playsinline muted><source :src="vUrl"
-                                      type="video/mp4"
-              ></source></video>
-            </div>
-          </div>
         </div>
         <UiButtonCross @click="emit('closeHomeModal')"></UiButtonCross>
       </div>
@@ -76,20 +109,45 @@ import $ from "jquery";
 import UiButtonCross from "@components/UiButtonCross.vue";
 import UiButtonLink from "@components/UiButtonLink.vue";
 import LogoBanner from "@components/LogoBanner.vue";
+import UiLoader from "@components/UiLoader.vue";
 
 import { clickOutside } from "@utils/ui.js";
+import { promoVideoArray } from "@globals";
 
 /*******************************************************/
 
 const emit = defineEmits(["closeHomeModal"]);
 
-const videoUrls = [ new URL('other/AUTOUR_DU_PALAIS_ROYAL_20Mbits.mp4', __STATICS_URL__).href
-                  , new URL('other/LE_LONG_DE_LA_RUE_VIVIENNE_20Mbits.mp4', __STATICS_URL__).href ];
-
+const currentVideoIndex = ref();
+const displayCredit     = ref();
+const videoLoading      = ref(false);
 
 /*******************************************************/
 
+function showCredit() {
+  displayCredit.value = !displayCredit.value;
+}
+
+/**
+ * switch the video: update `currentVideoIndex` and trigger a reload.
+ * see:
+ *   https://tomelliott.com/html-5/changing-html5-video-javascript-jquery
+ */
+function switchVideo() {
+  videoLoading.value = true;
+  setTimeout(() => videoLoading.value = false, 1000);
+
+  let vContainer = document.querySelector("#video-container");
+  vContainer.pause();
+  currentVideoIndex.value = currentVideoIndex.value === 0 ? 1 : 0;
+  vContainer.load();
+  vContainer.play();
+}
+
 onMounted(() => {
+  currentVideoIndex.value = 0;
+  displayCredit.value = false;
+
   // close on pressing Escape
   $(document).on("keyup", (e) => {
     if ( e.key === "Escape" ) {
@@ -148,29 +206,30 @@ onMounted(() => {
 .hm-left > :not(:last-child) {
   border-bottom: var(--cs-main-border);
 }
-.hm-left-title {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
+.hm-left-header {
+  display: grid;
+  grid-template-rows: 100%;
+  grid-template-columns: 60% 40%;
   height: 100%;
+  width: 100%;
 }
-.hm-left-title > img {
+.hm-left-title-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+.hm-left-title-wrapper > img {
   object-fit: contain;
   max-width: 90%;
   height: 90%;
-  margin: 5%;
-}
-.hm-left-content {
-  overflow: scroll;
-  overflow: auto !important;
-  scrollbar-width: thin;
-  scrollbar-color: var(--cs-darkplum) white;
+  margin-left: 5px;
 }
 .hm-left-redirect-wrapper {
   display: flex;
   flex-direction: column;
   align-items: end;
+  justify-content: center;
 }
 .hm-left-redirect {
   display: flex;
@@ -186,6 +245,56 @@ onMounted(() => {
 .hm-left-redirect :deep(button) {
   height: max(5vh, 40px);
   width: max(5vh, 40px);
+}
+
+.hm-left-content {
+  overflow: scroll;
+  overflow: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cs-darkplum) white;
+}
+
+.video-outer-wrapper {
+  border-top: var(--cs-main-border);
+  width: 100%;
+}
+.video-controller-wrapper {
+  border-bottom: var(--cs-main-border);
+  display: flex;
+  justify-content: space-between;
+}
+.video-inner-wrapper {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  position: relative;
+}
+.video-inner-wrapper > * {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.video-inner-wrapper > .video-loader-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  margin-top: 25%;
+}
+.video-inner-wrapper > figure {
+  margin: 0;
+  padding: 0;
+  transition: opacity .3s;
+}
+.video-inner-wrapper > figure.video-loading {
+  opacity: 0.5;
+}
+.video-inner-wrapper video {
+  width: 100%;
 }
 
 /**********************************************/
@@ -210,13 +319,6 @@ onMounted(() => {
   flex-direction: row;
   align-items: end;
 }
-/*
-.hm-right img {
-  object-fit: cover;
-  min-width: 100%;
-  height: 140%;
-}
-*/
 .hm-right :deep(.button-cross) {
   position: absolute;
   top: 0;
@@ -224,31 +326,10 @@ onMounted(() => {
   height: max(5vh, 50px);
   width: max(5vh, 50px);
 }
-.hm-right .video-outer-wrapper {
-  height: 50%;
-  width: 100%;
-  /*background-color: blue;*/
-  display: grid;
-  grid-template-columns: 100%;
-  grid-template-rows: 50% 50%;
-}
-.video-outer-wrapper > .video-inner-wrapper {
-  height: 100%;
-  width: 100%;
-  /*background-color: red;*/
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 5px;
-}
-.video-inner-wrapper > video {
-  /*background-color: tomato;*/
-  width: 100%;
-  height: 100%;
 
-}
+/**********************************************/
 
-/* hide the right block on small portrait viewports */
+/* hide the right block + change title display on small portrait viewports */
 @media ( orientation:portrait ) and ( max-width: 600px ) {
   .hm-inner-wrapper {
     grid-template-columns: 100% 0%;
@@ -256,6 +337,12 @@ onMounted(() => {
   }
   .hm-left {
     border-right: none;
+  }
+  .hm-left-header {
+    padding-top: 6vh;  /** vertical space for the .button-cross */
+  }
+  .hm-left-title-wrapper {
+    transform: translateY(-3vh);  /** recenter the logo. yes it's hacky. */
   }
   .hm-right-video-wrapper {
     display: none;

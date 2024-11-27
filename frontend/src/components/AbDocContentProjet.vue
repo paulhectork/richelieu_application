@@ -1,6 +1,7 @@
 <template>
 
   <div class="textpage-text-wrapper">
+    <h3>Le projet de recherche <i>Richelieu. Histoire du quartier</i></h3>
     <p>Le projet de recherche <i>Richelieu. Histoire du quartier</i>
       (1750-1950) est né de la collaboration de plusieurs
       institutions publiques situées au cœur du II<sup>e</sup>
@@ -95,11 +96,35 @@
     </p>
   </div>
 
+  <div class="textpage-text-wrapper">
+    <h3>Le projet en vidéos</h3>
+    <div class="video-outer-wrapper">
+      <figure v-for="vid in promoVideoArray">
+        <video id="video-container"
+               :alt="vid.credit"
+               controls
+               playsinline
+        >
+          <source id="video-source"
+                  :src="vid.source"
+                  type="video/mp4"
+          ></source>
+        </video>
+        <figcaption>
+          <span v-html="vid.credit"></span>
+        </figcaption>
+      </figure>
+
+    </div>
+  </div>
+
 </template>
 
 
 <script setup>
 import { onMounted } from "vue";
+
+import { promoVideoArray } from "@globals";
 
 /****************************************/
 
@@ -113,5 +138,23 @@ onMounted(() => emit("h2", subtitle))
 
 
 <style scoped>
-
+figure {
+  border: var(--cs-main-border);
+  margin: 15px;
+}
+video {
+  width: 100%;
+  border-bottom: var(--cs-main-border);
+}
+.video-outer-wrapper {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 50% 50%;
+}
+@media ( min-width: 1000px ) {
+  .video-outer-wrapper {
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 100%;
+  }
+}
 </style>

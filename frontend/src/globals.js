@@ -51,6 +51,16 @@ export const hasTouch = Modernizr.touchevents || Modernizr.pointerevents;
 export const clickOrTouchEvent = hasTouch ? "click touchend" : "click";
 
 /**
+ * array of 2 promotional videos
+ */
+export const promoVideoArray =
+  [ { source: new URL('other/AUTOUR_DU_PALAIS_ROYAL_20Mbits.mp4', __STATICS_URL__).href,
+      credit: "Lorem ipsum dolor sit amet" }
+  , { source: new URL('other/LE_LONG_DE_LA_RUE_VIVIENNE_20Mbits.mp4', __STATICS_URL__).href,
+      credit: "Amet sit dolor ipsum lorem" }
+  ];
+
+/**
  * a JSON representation of all articles: their title and subtitle,
  * an URL pointing to an image and a slug to build an URL redirecting
  * to the article's main page
