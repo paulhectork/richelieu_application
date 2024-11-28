@@ -41,7 +41,7 @@ from ..orm.admin import (
 
 from .to_pydantic import sqlalchemy_to_pydantic
 
-from ..search.search_iconography import make_query
+from ..search.search_iconography import make_query, sanitize_params
 
 
 # *************************************************
@@ -174,6 +174,13 @@ class Resource:
 
         obj = api_model(**output)  # output format validation
         return obj.dict()
+
+    def serialize_as_link(self, obj):
+        return {
+            "api_route": f"/api/v1/{self.name}",
+            "identifier": obj.id_uuid,
+            "label": obj.label,
+        }
 
 
     def get_paginate(self, query: PaginationParameters):
@@ -316,19 +323,29 @@ def make_get_entity_lite(resource):
 
 def sanitize_search_query(query):
     prepare_query = {}
+    col_sep = ","
     for key, val in query.items():
-        if "op" in key or "date" in key:
+        if "op" in key:
             prepare_query[key] = val
-        elif "," in val:
-            prepare_query[key] = val.split(",")
+        elif "date" in key:
+            dates = val.split(col_sep)
+            if len(dates) == 1:
+                prepare_query[key] = [{'filter': 'dateExact', 'data': [int(dates[0])]}]
+            elif len(dates) == 2:
+                prepare_query[key] = [{'filter': 'dateRange', 'data': [int(d) for d in dates]}]
+            else:
+                raise ValueError("more than 2 dates is not allowed")
+        elif col_sep in val:
+            prepare_query[key] = val.split(col_sep)
         else:
             if val:
                 prepare_query[key] = [val]
             else:
                 prepare_query[key] = []
-    if "title" in prepare_query:
-        prepare_query["title"] = [f"%{val}%" for val in prepare_query["title"]]
-    return prepare_query
+    return sanitize_params(prepare_query)[0]
+
+
+ICONOGRAPHY_RESOURCE = IconographyResource()
 
 
 @api.get("/search", summary="search ressources", tags=[IconographyResource.tag])
@@ -338,7 +355,7 @@ def search(query: SearchParameters):
     """
     query_dump = sanitize_search_query(query.model_dump())
     results = make_query(query_dump).all()
-    data = [r[0].serialize_lite() for r in results]
+    data = [ICONOGRAPHY_RESOURCE.serialize_as_link(r[0]) for r in results]
     return jsonify(data)
 
 
@@ -346,7 +363,7 @@ alls = globals()
 
 for resource in [
     CartographyResource(),
-    IconographyResource(),
+    ICONOGRAPHY_RESOURCE,
     DirectoryResource(),
     FilenameResource(),
     TitleResource(),
