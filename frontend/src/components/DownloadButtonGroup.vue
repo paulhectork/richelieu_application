@@ -1,22 +1,48 @@
 <!-- DownloadButtonGroup.vue
-    A button that allows to download viewed content as JSON or CSV.
-    The button receives one prop containing json data.
+    a button that allows to download viewed content as JSON or CSV.
+
+    props:
+      - disableButtons (bool)
+          if `true`, the buttons will have the attribute @disabled
+          to block launching extra downloads when one is aldready ongoing.
+          (used by IndexIconography, where download takes a lot of time)
+
+    emits
+      - download (String "csv"|"json")
+          an order to trigger data download
 -->
 <template>
     <div class="download-button-group">
         Téléchargement&nbsp;:&nbsp;
-        <button @click="emit('download', 'json')">
-            JSON
-        </button>
-        <button @click="$emit('download', 'csv')">
-            CSV
-        </button>
+        <button @click="emit('download', 'json')"
+                :disabled="disabled===true"
+        >JSON</button>
+        <button @click="$emit('download', 'csv')"
+                :disabled="disabled===true"
+        >CSV</button>
     </div>
 </template>
 
 <script setup>
+import { onMounted, ref, watch } from "vue";
 
-const emit = defineEmits(["download"])
+/************************************/
+
+const props = defineProps([ "disableButtons" ]);
+const emit  = defineEmits(["download"])
+
+const disabled = ref();
+
+/************************************/
+
+watch(props, (newP, oldP) => {
+  disabled.value = newP.disableButtons;
+})
+
+onMounted(() => {
+  disabled.value = props.disableButtons;
+})
+
 </script>
 
 <style scoped>

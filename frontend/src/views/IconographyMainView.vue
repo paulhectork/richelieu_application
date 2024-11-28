@@ -29,14 +29,6 @@
           <div v-if="viewerType === 'osd'"
                class="iiif-wrapper"
           >
-            <!--
-            <IiifViewer v-if="iconography.iiif_url"
-                        :osdId="`iiif-${idUuid}`"
-                        :iiifUrl="iconography.iiif_url"
-                        :backupImgUrl="imageUrl"
-            ></IiifViewer>
-            <div v-else><p>Pas d'image IIIF à montrer</p></div>
-            -->
             <IiifViewer :osdId="`iiif-${idUuid}`"
                         :iiifUrl="iconography.iiif_url"
                         :backupImgUrl="imageUrl"
@@ -50,18 +42,20 @@
             ></MapIconographyMain>
           </div>
         </div>
-
-        <div class="viewer-selector">
-          <button :class="viewerType === 'osd' ? 'button-activated' : ''"
-                  @click="(e) => toggleViewer(e)"
-                  @touchend="(e) => toggleViewer(e)"
-                  value="osd"
-          >Image</button>
-          <button :class="viewerType === 'leaflet' ? 'button-activated' : ''"
-                  @click="(e) => toggleViewer(e)"
-                  @touchend="(e) => toggleViewer(e)"
-                  value="leaflet"
-          >Carte</button>
+        <div class="viewer-controller-wrapper">
+          <div class="viewer-selector">
+            <button :class="viewerType === 'osd' ? 'button-activated' : ''"
+                    @click="(e) => toggleViewer(e)"
+                    @touchend="(e) => toggleViewer(e)"
+                    value="osd"
+            >Image</button>
+            <button :class="viewerType === 'leaflet' ? 'button-activated' : ''"
+                    @click="(e) => toggleViewer(e)"
+                    @touchend="(e) => toggleViewer(e)"
+                    value="leaflet"
+            >Carte</button>
+          </div>
+          <DownloadButtonGroup @download="onDownload"/>
         </div>
       </div>
 
@@ -79,7 +73,6 @@
   >
     <ErrNotFound></ErrNotFound>
   </div>
-  <DownloadButtonGroup @download="onDownload"/>
 
   <!----
   <div v-else>
@@ -199,6 +192,14 @@ function toggleViewer(e) {
   viewerType.value = e.target.value;
 }
 
+function onDownload(fileType) {
+  if (fileType === "json") {
+    downloadData(iconography.value, "json", "iconography")
+  } else if (fileType === "csv") {
+    downloadData([iconographyToCsvRecord(iconography.value)], "csv", "iconography");
+  }
+}
+
 /***************************************************/
 
 watch(() => route.params.idUuid, (newIdUuid, oldIdUuid) => {
@@ -211,14 +212,6 @@ onMounted(() => {
 onUpdated(() => {
 
 })
-
-function onDownload(fileType) {
-  if (fileType === "json") {
-    downloadData(iconography.value, "json", "iconography")
-  } else if (fileType === "csv") {
-    downloadData([iconographyToCsvRecord(iconography.value)], "csv", "iconography");
-  }
-}
 </script>
 
 
@@ -271,7 +264,7 @@ function onDownload(fileType) {
 .viewer-wrapper {
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: 90% 10%;
+  grid-template-rows: 85% 15%;
   max-height: 100%;
   border-bottom: var(--cs-negative-border);
 }
@@ -282,14 +275,23 @@ function onDownload(fileType) {
   max-height: 100%;
   max-width: 100%;
 }
+.viewer-controller-wrapper {
+  display: grid;
+  grid-template-rows: 2fr auto;
+  grid-template-columns: 100%;
+}
 .viewer-selector {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   border-top: var(--cs-negative-border);
+  border-bottom: var(--cs-negative-border);
 }
 .viewer-selector > button {
   width: 50%;
+}
+.viewer-controller-wrapper :deep(.download-button-group) {
+  margin: 5px 0 5px 15px;
 }
 
 @media ( orientation:portrait ) {
