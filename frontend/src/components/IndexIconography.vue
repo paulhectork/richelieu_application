@@ -10,7 +10,7 @@
 
   props:
     - data (Array<Object>)
-          an array of Iconography.serialize_lite objects.
+          an array of Iconography.serialize_lite objects
     - oneItemRow (bool)
          the index will only display 1 item/row
     - hideFilter (bool)
