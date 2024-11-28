@@ -1,5 +1,7 @@
 <!-- TheHomeModal.vue
-    a small modal displaying basic info on the project.
+    a small modal displaying basic info on the project and 2 videos.
+    2 buttons allow to switch between videos and to hide/display info
+    on the video.
 
     emits:
     - closeHomeModal
