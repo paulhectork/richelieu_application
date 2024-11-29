@@ -209,8 +209,10 @@ const expandedTreeCategories = ref([]);  // array of expanded category slugs
 
 const loadState = ref("loading");  // toggled to true when data has loaded, hides the loader
 
+const selection = computed(() => dataCollectionFilter.value.map(({idUuid}) => idUuid));  // id_uuids of items to export
 
-const selection = computed(() => dataCollectionFilter.value.map(({idUuid}) => idUuid));
+/*************************************************************/
+/** EXPORT */
 
 const dataToExport = useListExport(
   dataCollectionFull,

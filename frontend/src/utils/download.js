@@ -1,3 +1,9 @@
+/**
+ * module to export data. `downloadData` is called by components with
+ * formatted data, structures it to JSON|CSV, and triggers a client download
+ * of the file
+ */
+
 import { stringify } from "csv-stringify/browser/esm/sync"
 
 export function download(blob, fileName) {
