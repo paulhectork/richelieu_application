@@ -1,7 +1,6 @@
-from pydantic import BaseModel, create_model
+from pydantic import BaseModel, create_model, Field
 from sqlalchemy.orm import class_mapper
 from typing import Type, Dict, Any, List
-
 
 class RelatedEntity(BaseModel):
     api_route: str
@@ -41,7 +40,12 @@ def sqlalchemy_to_pydantic(model: Type[BaseModel], lite: bool=False) -> Type[Bas
                 field_type = DateRange
         if column.nullable is True:
             field_type = field_type | None
-        pydantic_fields[column.name] = (field_type, ...)
+
+        if column.comment:
+            pydantic_fields[column.name] = (field_type, Field(description=column.comment))
+        else:
+            pydantic_fields[column.name] = (field_type, ...)
+
 
     if not lite:
         model_name = f"{model.__name__}LiteModel"

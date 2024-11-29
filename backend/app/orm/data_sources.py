@@ -31,23 +31,23 @@ class Iconography(db.Model):
     """
     __tablename__: str = "iconography"
 
-    id               : Mapped[int]         = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid          : Mapped[str]         = mapped_column(Text, nullable=False)
-    id_richelieu     : Mapped[str]         = mapped_column(Text, nullable=False)
-    iiif_url         : Mapped[str]         = mapped_column(Text, nullable=True)
-    iiif_folio       : Mapped[t.List[int]] = mapped_column(psql.ARRAY(psql.INTEGER, dimensions=1), nullable=True)
-    source_url       : Mapped[str]         = mapped_column(Text, nullable=True)
-    date_source      : Mapped[str]         = mapped_column(Text, nullable=True)
-    date_corr        : Mapped[str]         = mapped_column(Text, nullable=True)
-    date             : Mapped[t.List[int]] = mapped_column(psql.INT4RANGE, nullable=True)
-    technique        : Mapped[t.List[str]] = mapped_column(psql.ARRAY(Text, dimensions=1), nullable=True)
-    description      : Mapped[str]         = mapped_column(Text, nullable=True)
-    inscription      : Mapped[str]         = mapped_column(Text, nullable=True)
-    corpus           : Mapped[str]         = mapped_column(Text, nullable=True)
-    inventory_number : Mapped[str]         = mapped_column(Text, nullable=True)
-    produced         : Mapped[bool]        = mapped_column(Boolean, nullable=True)
-    represents       : Mapped[bool]        = mapped_column(Boolean, nullable=True)
-    id_licence       : Mapped[int]         = mapped_column(psql.INTEGER, ForeignKey("licence.id"), nullable=False)
+    id               : Mapped[int]         = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid          : Mapped[str]         = mapped_column(Text, nullable=False, comment="identifiant unique")
+    id_richelieu     : Mapped[str]         = mapped_column(Text, nullable=False, comment="identifiant Richelieu")
+    iiif_url         : Mapped[str]         = mapped_column(Text, nullable=True, comment="url iif")
+    iiif_folio       : Mapped[t.List[int]] = mapped_column(psql.ARRAY(psql.INTEGER, dimensions=1), nullable=True, comment="folio iif")
+    source_url       : Mapped[str]         = mapped_column(Text, nullable=True, comment="lien externe")
+    date_source      : Mapped[str]         = mapped_column(Text, nullable=True, comment="date")
+    date_corr        : Mapped[str]         = mapped_column(Text, nullable=True, comment="date")
+    date             : Mapped[t.List[int]] = mapped_column(psql.INT4RANGE, nullable=True, comment="date")
+    technique        : Mapped[t.List[str]] = mapped_column(psql.ARRAY(Text, dimensions=1), nullable=True, comment="technique")
+    description      : Mapped[str]         = mapped_column(Text, nullable=True, comment="description")
+    inscription      : Mapped[str]         = mapped_column(Text, nullable=True, comment="inscription")
+    corpus           : Mapped[str]         = mapped_column(Text, nullable=True, comment="corpus")
+    inventory_number : Mapped[str]         = mapped_column(Text, nullable=True, comment="numéro d'inventaire")
+    produced         : Mapped[bool]        = mapped_column(Boolean, nullable=True, comment="produit")
+    represents       : Mapped[bool]        = mapped_column(Boolean, nullable=True, comment="represente")
+    id_licence       : Mapped[int]         = mapped_column(psql.INTEGER, ForeignKey("licence.id"), nullable=False, comment="identifiant interne de la licence")
 
     title                      : Mapped[t.List["Title"]]                    = relationship("Title", back_populates="iconography", lazy="selectin")
     annotation                 : Mapped[t.List["Annotation"]]               = relationship("Annotation", back_populates="iconography")
@@ -173,18 +173,18 @@ class Cartography(db.Model):
     """
     __tablename__: str = "cartography"
 
-    id               : Mapped[int]                   = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid          : Mapped[str]                   = mapped_column(Text, nullable=False)
-    source_url       : Mapped[str]                   = mapped_column(Text, nullable=True)
-    title            : Mapped[str]                   = mapped_column(Text, nullable=True)
-    date_source      : Mapped[str]                   = mapped_column(Text, nullable=True)
-    inventory_number : Mapped[str]                   = mapped_column(Text, nullable=True)
-    date             : Mapped[intervals.IntInterval] = mapped_column(psql.INT4RANGE, nullable=True)
-    vector           : Mapped[t.Dict]                = mapped_column(psql.JSON, nullable=False)
-    crs_epsg         : Mapped[int]                   = mapped_column(psql.INTEGER, nullable=False)
-    granularity      : Mapped[str]                   = mapped_column(Text, nullable=False)
-    map_source       : Mapped[str]                   = mapped_column(Text, nullable=False)
-    id_licence       : Mapped[int]                   = mapped_column(psql.INTEGER, ForeignKey("licence.id"), nullable=False)
+    id               : Mapped[int]                   = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identitfiant interne")
+    id_uuid          : Mapped[str]                   = mapped_column(Text, nullable=False, comment="identifiant unique")
+    source_url       : Mapped[str]                   = mapped_column(Text, nullable=True , comment="url de la source")
+    title            : Mapped[str]                   = mapped_column(Text, nullable=True, comment="titre")
+    date_source      : Mapped[str]                   = mapped_column(Text, nullable=True, comment="date")
+    inventory_number : Mapped[str]                   = mapped_column(Text, nullable=True, comment="numéro d'inventaire")
+    date             : Mapped[intervals.IntInterval] = mapped_column(psql.INT4RANGE, nullable=True, comment="date")
+    vector           : Mapped[t.Dict]                = mapped_column(psql.JSON, nullable=False, comment="Coordonnée géographique (GeoJson)")
+    crs_epsg         : Mapped[int]                   = mapped_column(psql.INTEGER, nullable=False, comment="Système de coordonnées géographique CRS ESPG")
+    granularity      : Mapped[str]                   = mapped_column(Text, nullable=False, comment="granularité")
+    map_source       : Mapped[str]                   = mapped_column(Text, nullable=False, comment="source du plan")
+    id_licence       : Mapped[int]                   = mapped_column(psql.INTEGER, ForeignKey("licence.id"), nullable=False, comment="identifiant interne de la licence")
 
     filename            : Mapped[t.List["Filename"]]           = relationship("Filename", back_populates="cartography")
     licence             : Mapped["Licence"]                    = relationship("Licence", back_populates="cartography")
@@ -256,17 +256,17 @@ class Directory(db.Model):
     """
     __tablename__ = "directory"
 
-    id           : Mapped[int]         = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid      : Mapped[str]         = mapped_column(Text, nullable=False)
-    gallica_ark  : Mapped[str]         = mapped_column(Text, nullable=False)
-    gallica_page : Mapped[str]         = mapped_column(Text, nullable=False)  # the page on the directory
-    gallica_row  : Mapped[str]         = mapped_column(Text, nullable=False)  # the page row in the directory
-    entry_name   : Mapped[str]         = mapped_column(Text, nullable=False)
-    occupation   : Mapped[str]         = mapped_column(Text, nullable=False)
-    date         : Mapped[str]         = mapped_column(psql.INT4RANGE, nullable=False)
-    tags         : Mapped[t.List[str]] = mapped_column(psql.ARRAY(Text, dimensions=1), nullable=True)
-    id_address   : Mapped[int]         = mapped_column(psql.INTEGER, ForeignKey("address.id"), nullable=False)
-    id_licence   : Mapped[int]         = mapped_column(psql.INTEGER, ForeignKey("licence.id"), nullable=False)
+    id           : Mapped[int]         = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid      : Mapped[str]         = mapped_column(Text, nullable=False, comment="identifiant unique")
+    gallica_ark  : Mapped[str]         = mapped_column(Text, nullable=False, comment="ark gallica")
+    gallica_page : Mapped[str]         = mapped_column(Text, nullable=False, comment="page du répertoire")  # the page on the directory
+    gallica_row  : Mapped[str]         = mapped_column(Text, nullable=False, comment="ligne du répertoire")  # the page row in the directory
+    entry_name   : Mapped[str]         = mapped_column(Text, nullable=False, comment="nom")
+    occupation   : Mapped[str]         = mapped_column(Text, nullable=False, comment="occupation")
+    date         : Mapped[str]         = mapped_column(psql.INT4RANGE, nullable=False, comment="date")
+    tags         : Mapped[t.List[str]] = mapped_column(psql.ARRAY(Text, dimensions=1), nullable=True, comment="étiquette")
+    id_address   : Mapped[int]         = mapped_column(psql.INTEGER, ForeignKey("address.id"), nullable=False, comment="identifiant interne de l'adresse")
+    id_licence   : Mapped[int]         = mapped_column(psql.INTEGER, ForeignKey("licence.id"), nullable=False, comment="identifiant interne de la licence")
 
     address        : Mapped["Address"]               = relationship("Address", back_populates="directory")
     licence        : Mapped["Licence"]               = relationship("Licence", back_populates="directory")
@@ -315,13 +315,13 @@ class Filename(db.Model):
     """
     __tablename__ = "filename"
 
-    id             : Mapped[int]                          = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid        : Mapped[str]                          = mapped_column(Text, nullable=False)
-    url            : Mapped[str]                          = mapped_column(Text, nullable=False)
-    latlngbounds   : Mapped[t.List[t.List[float]] | None] = mapped_column(psql.ARRAY(Float, dimensions=2), nullable=True)  # [ [<float>,<float>], [<float>,<float>] ]
-    id_licence     : Mapped[int]                          = mapped_column(psql.INTEGER, ForeignKey("licence.id"), nullable=True)
-    id_iconography : Mapped[int]                          = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=True)
-    id_cartography : Mapped[int]                          = mapped_column(psql.INTEGER, ForeignKey("cartography.id"), nullable=True)
+    id             : Mapped[int]                          = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid        : Mapped[str]                          = mapped_column(Text, nullable=False, comment="identifiant interne unique")
+    url            : Mapped[str]                          = mapped_column(Text, nullable=False, comment="url")
+    latlngbounds   : Mapped[t.List[t.List[float]] | None] = mapped_column(psql.ARRAY(Float, dimensions=2), nullable=True, comment="limites de latitude et longitude")  # [ [<float>,<float>], [<float>,<float>] ]
+    id_licence     : Mapped[int]                          = mapped_column(psql.INTEGER, ForeignKey("licence.id"), nullable=True, comment="identifiant interne de la licence")
+    id_iconography : Mapped[int]                          = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=True, comment="identifiant interne de l'iconographie")
+    id_cartography : Mapped[int]                          = mapped_column(psql.INTEGER, ForeignKey("cartography.id"), nullable=True, comment="identifiant interne de la cartographie")
 
     licence     : Mapped["Licence"]     = relationship("Licence", back_populates="filename")
     iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="filename")

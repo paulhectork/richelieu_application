@@ -35,11 +35,11 @@ class Title(db.Model):
     """
     __tablename__: str = "title"
 
-    id             : Mapped[int]  = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid        : Mapped[str]  = mapped_column(Text, nullable=False)
-    entry_name     : Mapped[str]  = mapped_column(Text, nullable=False)
-    ismain         : Mapped[bool] = mapped_column(Boolean, nullable=False)
-    id_iconography : Mapped[int]  = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=False)
+    id             : Mapped[int]  = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid        : Mapped[str]  = mapped_column(Text, nullable=False, comment="identifiant unique")
+    entry_name     : Mapped[str]  = mapped_column(Text, nullable=False, comment="nom")
+    ismain         : Mapped[bool] = mapped_column(Boolean, nullable=False, comment="est le titre principal")
+    id_iconography : Mapped[int]  = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=False, comment="identifiant interne de l'iconographie")
 
     iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="title")
 
@@ -62,10 +62,10 @@ class Annotation(db.Model):
     """
     __tablename__: str = "annotation"
 
-    id             : Mapped[int]    = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid        : Mapped[str]    = mapped_column(Text, nullable=False)
-    content        : Mapped[t.Dict] = mapped_column(psql.JSON, nullable=False)
-    id_iconography : Mapped[int]    = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=False)
+    id             : Mapped[int]    = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid        : Mapped[str]    = mapped_column(Text, nullable=False, comment="identifiant unique")
+    content        : Mapped[t.Dict] = mapped_column(psql.JSON, nullable=False, comment="contenu")
+    id_iconography : Mapped[int]    = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=False, comment="identifiant interne de l'iconographie")
 
     iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="annotation")
 
@@ -87,11 +87,11 @@ class Theme(db.Model):
     """
     __tablename__: str = "theme"
 
-    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False)
-    entry_name  : Mapped[str] = mapped_column(Text, nullable=False)
-    category    : Mapped[str] = mapped_column(Text, nullable=False)
-    description : Mapped[str] = mapped_column(Text, nullable=True)
+    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False, comment="identifiant unique")
+    entry_name  : Mapped[str] = mapped_column(Text, nullable=False, comment="nom")
+    category    : Mapped[str] = mapped_column(Text, nullable=False, comment="catégorie")
+    description : Mapped[str] = mapped_column(Text, nullable=True, comment="description")
 
     r_iconography_theme : Mapped[t.List["R_IconographyTheme"]] = relationship("R_IconographyTheme", back_populates="theme", lazy="selectin")
     # r_iconography_theme : Mapped[t.List["R_IconographyTheme"]] = relationship("R_IconographyTheme", back_populates="theme")
@@ -213,11 +213,11 @@ class NamedEntity(db.Model):
     """
     __tablename__: str = "named_entity"
 
-    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False)
-    entry_name  : Mapped[str] = mapped_column(Text, nullable=False)
-    category    : Mapped[str] = mapped_column(Text, nullable=False)
-    description : Mapped[str] = mapped_column(Text, nullable=True)
+    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False, comment="identifiant unique")
+    entry_name  : Mapped[str] = mapped_column(Text, nullable=False, comment="nom")
+    category    : Mapped[str] = mapped_column(Text, nullable=False, comment="catégorie")
+    description : Mapped[str] = mapped_column(Text, nullable=True, comment="description")
 
     r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity", back_populates="named_entity", lazy="selectin")
     # r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity", back_populates="named_entity")
@@ -343,9 +343,9 @@ class Actor(db.Model):
     """
     __tablename__: str = "actor"
 
-    id         : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid    : Mapped[str] = mapped_column(Text, nullable=False)
-    entry_name : Mapped[str] = mapped_column(Text, nullable=False)
+    id         : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant")
+    id_uuid    : Mapped[str] = mapped_column(Text, nullable=False, comment="identifiant unique")
+    entry_name : Mapped[str] = mapped_column(Text, nullable=False, comment="nom")
 
     r_iconography_actor : Mapped[t.List["R_IconographyActor"]] = relationship("R_IconographyActor", back_populates="actor")
 

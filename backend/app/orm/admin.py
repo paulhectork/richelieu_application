@@ -27,10 +27,10 @@ class Institution(db.Model):
     """
     __tablename__ = "institution"
 
-    id            : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid       : Mapped[str] = mapped_column(Text, nullable=False)
-    entry_name    : Mapped[str] = mapped_column(Text, nullable=False)
-    description   : Mapped[str] = mapped_column(Text, nullable=True)
+    id            : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid       : Mapped[str] = mapped_column(Text, nullable=False, comment="identifiant unique")
+    entry_name    : Mapped[str] = mapped_column(Text, nullable=False, comment="nom")
+    description   : Mapped[str] = mapped_column(Text, nullable=True, comment="description")
 
     r_institution : Mapped[t.List["R_Institution"]] = relationship("R_Institution", back_populates="institution")
 
@@ -82,10 +82,10 @@ class Licence(db.Model):
     """
     __tablename__ = "licence"
 
-    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False)
-    entry_name  : Mapped[str] = mapped_column(Text, nullable=False)
-    description : Mapped[str] = mapped_column(Text, nullable=True)
+    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False, comment="identifiant unique")
+    entry_name  : Mapped[str] = mapped_column(Text, nullable=False, comment="nom")
+    description : Mapped[str] = mapped_column(Text, nullable=True, comment="description")
 
     filename    : Mapped[t.List["Filename"]]    = relationship("Filename", back_populates="licence")
     iconography : Mapped[t.List["Iconography"]] = relationship("Iconography", back_populates="licence")
@@ -132,11 +132,11 @@ class AdminPerson(db.Model):
     """
     __tablename__ = "admin_person"
 
-    id             : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid        : Mapped[str] = mapped_column(Text, nullable=False)
-    first_name     : Mapped[str] = mapped_column(Text, nullable=False)
-    last_name      : Mapped[str] = mapped_column(Text, nullable=False)
-    id_persistent  : Mapped[int] = mapped_column(Text, nullable=True)
+    id             : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid        : Mapped[str] = mapped_column(Text, nullable=False, comment="identifiant unique")
+    first_name     : Mapped[str] = mapped_column(Text, nullable=False, comment="nom")
+    last_name      : Mapped[str] = mapped_column(Text, nullable=False, comment="prénom")
+    id_persistent  : Mapped[int] = mapped_column(Text, nullable=True, comment="identifiant persitent")
 
     r_admin_person : Mapped[t.List["R_AdminPerson"]] = relationship("R_AdminPerson", back_populates="admin_person")
 
