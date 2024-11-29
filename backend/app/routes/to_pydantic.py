@@ -15,11 +15,14 @@ class DateRange(BaseModel):
     empty: bool
 
 
-def sqlalchemy_to_pydantic(model: Type[BaseModel], lite: bool=False) -> Type[BaseModel]:
+def sqlalchemy_to_pydantic(model: Type[BaseModel], resource_type: str, lite: bool=False) -> Type[BaseModel]:
     """
     Convert a SQLAlchemy model to Pydantic for API
     Args:
         model (Type[Base]): SQLAlchemy model.
+        resource_type: name of the resource associated to the model
+        lite selector for model with or without relationships
+
 
     Returns:
         Type[BaseModel]: generated Pydantic model.
@@ -46,7 +49,6 @@ def sqlalchemy_to_pydantic(model: Type[BaseModel], lite: bool=False) -> Type[Bas
         else:
             pydantic_fields[column.name] = (field_type, ...)
 
-
     if not lite:
         model_name = f"{model.__name__}LiteModel"
         for rel_name, rel in relationships.items():
@@ -55,4 +57,10 @@ def sqlalchemy_to_pydantic(model: Type[BaseModel], lite: bool=False) -> Type[Bas
                     pydantic_fields[rel_name] = (List[RelatedEntity], ...)
                 else:
                     pydantic_fields[rel_name] = (RelatedEntity, ...)
-    return create_model(model_name, **pydantic_fields)
+    model = create_model(model_name, **pydantic_fields)
+
+    doc = f"Schéma de données pour les resources de type {resource_type}"
+    if lite:
+        doc += " en version simplifiée sans les resources liées"
+    model.__doc__ = doc
+    return model

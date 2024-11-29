@@ -124,11 +124,11 @@ class Resource:
 
     @cached_property
     def api_model(self):
-        return sqlalchemy_to_pydantic(self.orm_model)
+        return sqlalchemy_to_pydantic(self.orm_model, self.ui_name)
 
     @cached_property
     def api_model_lite(self):
-        return sqlalchemy_to_pydantic(self.orm_model, lite=True)
+        return sqlalchemy_to_pydantic(self.orm_model, self.ui_name, lite=True)
 
     def _add_linked_entity(self, target_route, target):
         return {
