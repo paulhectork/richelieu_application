@@ -1,7 +1,6 @@
 <!-- TheHomeModal.vue
     a small modal displaying basic info on the project and 2 videos.
-    2 buttons allow to switch between videos and to hide/display info
-    on the video.
+    1 button allows to switch between videos
 
     emits:
     - closeHomeModal
@@ -18,15 +17,16 @@
         <div class="hm-left-header">
           <div class="hm-left-title-wrapper">
             <img src="@/assets/icons/logo-text.svg"
-                 alt="logo du projet Richelieu"
-            >
+                 alt="logo du projet Richelieu">
             <span style="visibility: hidden; height: 0; width: 0;"
             >Quartier Richelieu</span>
           </div>
           <div class="hm-left-redirect-wrapper">
             <div class="hm-left-redirect">
               <span>En savoir plus</span>
-              <RouterLink to="/a-propos/projet"><UiButtonLink></UiButtonLink></RouterLink>
+              <RouterLink to="/a-propos/projet">
+                <UiButtonLink></UiButtonLink>
+              </RouterLink>
             </div>
           </div>
 
@@ -43,25 +43,16 @@
 
           <div class="video-outer-wrapper">
             <div class="video-controller-wrapper">
-              <button @click="showCredit"
-                      :class="{ 'button-activated': displayCredit }"
-              >Crédits</button>
               <button @click="switchVideo">Changer de vidéo</button>
             </div>
-            <!--
-            <div class="video-controller-credits-wrapper">
-              <div v-if=""
-            </div>
-            -->
             <div class="video-inner-wrapper">
-              <div class="video-loader-wrapper"
-                   v-if="videoLoading"
-              >
+              <div class="video-loader-wrapper" v-if="videoLoading">
                 <UiLoader></UiLoader>
               </div>
-              <figure :class="{ 'video-loading': videoLoading }">
-                <video v-if="currentVideoIndex !== undefined"
-                       id="video-container"
+              <figure v-if="currentVideoIndex !== undefined"
+                       :class="{ 'video-loading': videoLoading }"
+              >
+                <video id="video-container"
                        :alt="promoVideoArray[currentVideoIndex].credit"
                        autoplay
                        controls
@@ -73,7 +64,7 @@
                           type="video/mp4"
                   ></source>
                 </video>
-                <figcaption v-if="displayCredit">
+                <figcaption style="visibility: hidden; height: 0;">
                   <span v-html="promoVideoArray[currentVideoIndex].credit"></span>
                 </figcaption>
               </figure>
@@ -88,13 +79,7 @@
       </div>
 
       <div class="hm-right">
-        <div class="hm-right-video-wrapper">
-          <!--
-          <img src="@/assets/media/home_modal_map_noborder.jpg"
-               alt="Dessin de carte du centre de Paris"
-          >
-          -->
-        </div>
+        <div class="hm-right-video-wrapper"></div>
         <UiButtonCross @click="emit('closeHomeModal')"></UiButtonCross>
       </div>
     </div>
@@ -121,14 +106,9 @@ import { promoVideoArray } from "@globals";
 const emit = defineEmits(["closeHomeModal"]);
 
 const currentVideoIndex = ref();
-const displayCredit     = ref();
-const videoLoading      = ref(false);
+const videoLoading = ref(false);
 
 /*******************************************************/
-
-function showCredit() {
-  displayCredit.value = !displayCredit.value;
-}
 
 /**
  * switch the video: update `currentVideoIndex` and trigger a reload.
@@ -141,25 +121,24 @@ function switchVideo() {
 
   let vContainer = document.querySelector("#video-container");
   vContainer.pause();
-  currentVideoIndex.value = currentVideoIndex.value === 0 ? 1 : 0;
+  currentVideoIndex.value = currentVideoIndex.value===0 ? 1 : 0;
   vContainer.load();
   vContainer.play();
 }
 
 onMounted(() => {
   currentVideoIndex.value = 0;
-  displayCredit.value = false;
 
   // close on pressing Escape
   $(document).on("keyup", (e) => {
-    if ( e.key === "Escape" ) {
+    if (e.key === "Escape") {
       emit('closeHomeModal');
       $(document).off("keyup");
     };
   });
   // close when clicking outside of the modal
   $(document).on("click", (e) => {
-    if ( clickOutside(e, ".hm-inner-wrapper") ) {
+    if (clickOutside(e, ".hm-inner-wrapper")) {
       $(document).off("click");
       emit('closeHomeModal');
     }
@@ -177,13 +156,14 @@ onMounted(() => {
   left: 0;
   height: 100vh;
   width: 100vw;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
 
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
+
 .hm-inner-wrapper {
   width: max(300px, 80%);
   height: max(80%, 500px);
@@ -193,7 +173,9 @@ onMounted(() => {
   border: var(--cs-main-border);
   box-shadow: 8px 8px var(--cs-plum);
 }
-.hm-left, .hm-right {
+
+.hm-left,
+.hm-right {
   height: 100%;
 }
 
@@ -205,9 +187,11 @@ onMounted(() => {
   grid-template-rows: 20% auto 20%;
   border-right: var(--cs-main-border);
 }
-.hm-left > :not(:last-child) {
+
+.hm-left> :not(:last-child) {
   border-bottom: var(--cs-main-border);
 }
+
 .hm-left-header {
   display: grid;
   grid-template-rows: 100%;
@@ -215,24 +199,28 @@ onMounted(() => {
   height: 100%;
   width: 100%;
 }
+
 .hm-left-title-wrapper {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
 }
-.hm-left-title-wrapper > img {
+
+.hm-left-title-wrapper>img {
   object-fit: contain;
   max-width: 90%;
   height: 90%;
   margin-left: 5px;
 }
+
 .hm-left-redirect-wrapper {
   display: flex;
   flex-direction: column;
   align-items: end;
   justify-content: center;
 }
+
 .hm-left-redirect {
   display: flex;
   flex-direction: row;
@@ -241,9 +229,11 @@ onMounted(() => {
   border: var(--cs-main-border);
   margin: 5px;
 }
-.hm-left-redirect > span {
+
+.hm-left-redirect>span {
   margin: 3px;
 }
+
 .hm-left-redirect :deep(button) {
   height: max(5vh, 40px);
   width: max(5vh, 40px);
@@ -260,11 +250,13 @@ onMounted(() => {
   border-top: var(--cs-main-border);
   width: 100%;
 }
+
 .video-controller-wrapper {
   border-bottom: var(--cs-main-border);
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
+
 .video-inner-wrapper {
   height: 100%;
   width: 100%;
@@ -274,12 +266,14 @@ onMounted(() => {
   padding: 5px;
   position: relative;
 }
-.video-inner-wrapper > * {
+
+.video-inner-wrapper>* {
   position: absolute;
   top: 0;
   left: 0;
 }
-.video-inner-wrapper > .video-loader-wrapper {
+
+.video-inner-wrapper>.video-loader-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -287,14 +281,21 @@ onMounted(() => {
   height: 100%;
   margin-top: 25%;
 }
-.video-inner-wrapper > figure {
+
+.video-inner-wrapper>figure {
   margin: 0;
   padding: 0;
   transition: opacity .3s;
+  border-bottom: var(--cs-main-border);
+  display: grid;
+  grid-template-rows: 100% 0%;
+  grid-template-columns: 100%;
 }
-.video-inner-wrapper > figure.video-loading {
+
+.video-inner-wrapper>figure.video-loading {
   opacity: 0.5;
 }
+
 .video-inner-wrapper video {
   width: 100%;
 }
@@ -309,6 +310,7 @@ onMounted(() => {
   align-items: center;
   position: relative;
 }
+
 .hm-right-video-wrapper {
   height: calc(100% - 20px);
   width: calc(100% - 20px);
@@ -321,6 +323,7 @@ onMounted(() => {
   flex-direction: row;
   align-items: end;
 }
+
 .hm-right :deep(.button-cross) {
   position: absolute;
   top: 0;
@@ -332,20 +335,24 @@ onMounted(() => {
 /**********************************************/
 
 /* hide the right block + change title display on small portrait viewports */
-@media ( orientation:portrait ) and ( max-width: 600px ) {
+@media (orientation:portrait) and (max-width: 600px) {
   .hm-inner-wrapper {
     grid-template-columns: 100% 0%;
     overflow: hidden;
   }
+
   .hm-left {
     border-right: none;
   }
+
   .hm-left-header {
-    padding-top: 6vh;  /** vertical space for the .button-cross */
+    padding-top: 6vh; /** vertical space for the .button-cross */
   }
+
   .hm-left-title-wrapper {
-    transform: translateY(-3vh);  /** recenter the logo. yes it's hacky. */
+    transform: translateY(-3vh); /** recenter the logo. yes it's hacky. */
   }
+
   .hm-right-video-wrapper {
     display: none;
   }

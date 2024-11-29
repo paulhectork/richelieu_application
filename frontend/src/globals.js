@@ -55,9 +55,9 @@ export const clickOrTouchEvent = hasTouch ? "click touchend" : "click";
  */
 export const promoVideoArray =
   [ { source: new URL('other/AUTOUR_DU_PALAIS_ROYAL_20Mbits.mp4', __STATICS_URL__).href,
-      credit: "Lorem ipsum dolor sit amet" }
+      credit: "<i><q>&nbsp;Richelieu. Histoire du quartier (1750-1950)&nbsp;</q> &mdash; Autour du Palais Royal</i> (voir sur <a href='https://youtu.be/9YvnioZripk'>YouTube</a>)" }
   , { source: new URL('other/LE_LONG_DE_LA_RUE_VIVIENNE_20Mbits.mp4', __STATICS_URL__).href,
-      credit: "Amet sit dolor ipsum lorem" }
+      credit: "<i><q>&nbsp;Richelieu. Histoire du quartier (1750-1950)&nbsp;</q> &mdash; Le long de la rue Vivienne</i> (voir sur <a href='https://youtu.be/k05PZYWka7U'>YouTube</a>)" }
   ];
 
 /**
@@ -274,5 +274,5 @@ export const themeCategoryPresentation = {
     moyens de transports, et la représentation de chantiers&nbsp;: un
     dynamisme qui capte l'attention des observateurs. C'est un aperçu
     de la fabrique de la ville, telle qu'elle a été conçue et vécue
-    par ses contemporains.`,
+    par ses contemporains.`
 }
