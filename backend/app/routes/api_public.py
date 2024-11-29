@@ -87,6 +87,7 @@ class Resource:
     columns = None
     relationships = None
     join_relations = None
+    ui_name = None
 
     def __init__(self):
         self.columns = class_mapper(self.orm_model).columns
@@ -104,6 +105,18 @@ class Resource:
     @property
     def name(self):
         return self.orm_model.__name__.lower()
+
+    @property
+    def summary(self):
+        return f"Récupération des resources correspondant aux {self.ui_name}"
+
+    @property
+    def summary_id_uuid(self):
+        return f"Récupération d'une ressource de type {self.ui_name[:-1]} à partir de son identifiant unique"
+
+    @property
+    def summary_lite(self):
+        return f"Récupération des resources correspondant aux {self.ui_name} sans les resources liées"
 
     @cached_property
     def orm_type(self):
@@ -203,7 +216,7 @@ class IconographyResource(Resource):
     tag = Tag(
         name="Iconographies", description="Récupération des données iconographiques"
     )
-    summary = "Les resources iconographiques"
+    ui_name = "iconographies"
 
 
 class CartographyResource(Resource):
@@ -211,7 +224,7 @@ class CartographyResource(Resource):
     tag = Tag(
         name="Cartographies", description="Récupération des données cartographiques"
     )
-    summary = "Les resources cartographiques"
+    ui_name = "cartographies"
 
 
 class DirectoryResource(Resource):
@@ -220,19 +233,19 @@ class DirectoryResource(Resource):
         name="Répertoire",
         description="Récupération des données répertoires de fichiers",
     )
-    summary = "Les resources répertoires de fichiers"
+    ui_name = "répertoires de fichiers"
 
 
 class FilenameResource(Resource):
     orm_model = Filename
     tag = Tag(name="Fichiers", description="Récupération des fichiers")
-    summary = "Les resources fichiers"
+    ui_name = "fichiers"
 
 
 class TitleResource(Resource):
     orm_model = Title
     tag = Tag(name="Titres", description="Récupération des titres des iconographies")
-    summary = "Les resources titre iconographique"
+    ui_name = "titres des iconographies"
 
 
 class AnnotationResource(Resource):
@@ -240,49 +253,49 @@ class AnnotationResource(Resource):
     tag = Tag(
         name="Annotations", description="Récupération des annotations des iconographies"
     )
-    summary = "Les resources annotations"
+    ui_name = "annotations"
 
 
 class ThemeResource(Resource):
     orm_model = Theme
     tag = Tag(name="Thèmes", description="Récupération des thèmes")
-    summary = "Les resources thèmes"
+    ui_name = "thèmes"
 
 
 class NamedEntityResource(Resource):
     orm_model = NamedEntity
     tag = Tag(name="Entités nommées", description="Récupération des entités nommées")
-    summary = "Les resources entités nommées"
+    ui_name = "entités nommées"
 
 
 class ActorResource(Resource):
     orm_model = Actor
     tag = Tag(name="Acteurs", description="Récupération des acteurs")
-    summary = "Les resources acteurs"
+    ui_name = "acteurs"
 
 
 class PlaceResource(Resource):
     orm_model = Place
     tag = Tag(name="Lieux", description="Récupération des lieux")
-    summary = "Les resources lieux"
+    ui_name = "lieux"
 
 
 class AddressResource(Resource):
     orm_model = Address
     tag = Tag(name="Adresses", description="Récupération des adresses")
-    summary = "Les resources adresses"
+    ui_name = "adresses"
 
 
 class InstitutionResource(Resource):
     orm_model = Institution
     tag = Tag(name="Institutions", description="Récupération des institutions")
-    summary = "Les resources institutions"
+    ui_name = "institutions"
 
 
 class LicenceResource(Resource):
     orm_model = Licence
     tag = Tag(name="Licences", description="Récupération des licences")
-    summary = "Les resources licences"
+    ui_name = "licences"
 
 
 class AdminPersonResource(Resource):
@@ -290,7 +303,7 @@ class AdminPersonResource(Resource):
     tag = Tag(
         name="AdminPerson", description="Récupération des personnes administrateur"
     )
-    summary = "Les resources personnes administrateur"
+    ui_name = "administrateurs"
 
 
 def make_get_paginate(resource):
@@ -391,7 +404,7 @@ for resource in [
     get_entity = make_get_entity(resource)
     alls[get_entity.__name__] = api.get(
         f"{route}/<string:id_uuid>",
-        summary=resource.summary,
+        summary=resource.summary_id_uuid,
         tags=[resource.tag],
         doc_ui=True,
         responses={200: resource.api_model, 404: ResourceNotFoundResponse},
@@ -400,7 +413,7 @@ for resource in [
     get_entity_lite = make_get_entity_lite(resource)
     alls[get_entity_lite.__name__] = api.get(
         f"{route}/lite",
-        summary=resource.summary,
+        summary=resource.summary_lite,
         tags=[resource.tag],
         doc_ui=True,
         responses={200: resource.api_model_lite},
