@@ -30,14 +30,21 @@ function serializeGeometry(geo) {
 
 // Transform specific to entity types
 
-export function iconographyToCsvRecord({id_uuid, title, iiif_url, author, date}) {
+export function iconographyToCsvRecord({id_uuid, title, iiif_url, author, date, theme, place , named_entity}) {
   return {
     id_uuid,
     title: title.join('|'),
     iiif_url: iiif_url,
     authors: author.map(author => author.entry_name).join('|'),
     authors_uuids: author.map(author => author.id_uuid).join('|'),
-    date: stringifyDate(date)
+    date: stringifyDate(date),
+    themes: theme.map(theme => theme.entry_name).join('|'),
+    themes_uuids: theme.map(theme => theme.id_uuid).join('|'),
+    named_entities: named_entity.map(entity => entity.entry_name).join('|'),
+    named_entities_uuids: named_entity.map(entity => entity.id_uuid).join('|'),
+    places_address: place.map(({address:[address]}) => `${address.address}, ${address.city}, ${address.country}`).join('|'),
+    places_geometry: place.map(place => serializeGeometry(place.vector)).join('|'),
+    places_uuids: place.map(place => place.id_uuid).join('|'),
   }
 }
 
