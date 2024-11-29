@@ -36,9 +36,9 @@
       &amp;
       {{ capitalizeFirstChar(to.entryName) }} <!--({{ to.table }})-->
     </h1>
-    <IndexCount :indexCount="dataFull.length"
+    <H2IndexCount :indexCount="dataFull.length"
                 dataType="iconography"
-    ></IndexCount>
+    ></H2IndexCount>
 
 
 
@@ -85,7 +85,7 @@ import axios from "axios";
 
 import ErrNotFound from "@components/ErrNotFound.vue";
 import UiLoader from "@components/UiLoader.vue";
-import IndexCount from "@components/IndexCount.vue";
+import H2IndexCount from "@components/H2IndexCount.vue";
 import IndexIconography from "@components/IndexIconography.vue";
 
 import { capitalizeFirstChar  } from "@utils/strings";
@@ -132,26 +132,26 @@ async function getNames() {
   let fromRoute, toRoute;
   switch ( props.fromTable ) {
     case "place":
-      fromRoute = new URL(`/i/place-address/${props.fromIdUuid}`, __API_URL__);
+      fromRoute = new URL(`/i/place/address/${props.fromIdUuid}`, __API_URL__);
       break;
     case "theme":
-      fromRoute = new URL(`/i/theme-name/${props.fromIdUuid}`, __API_URL__);
+      fromRoute = new URL(`/i/theme/name/${props.fromIdUuid}`, __API_URL__);
       break;
     case "named_entity":
-      fromRoute = new URL(`/i/named-entity-name/${props.fromIdUuid}`, __API_URL__);
+      fromRoute = new URL(`/i/named-entity/name/${props.fromIdUuid}`, __API_URL__);
       break;
     default:
       throw new Error(`AssociationIndexView.getNames(): could not build URL for "fromTable": "${props.fromTable}"`);
   }
   switch ( props.toTable ) {
     case "place":
-      toRoute = new URL(`/i/place-address/${props.toIdUuid}`, __API_URL__);
+      toRoute = new URL(`/i/place/address/${props.toIdUuid}`, __API_URL__);
       break;
     case "theme":
-      toRoute = new URL(`/i/theme-name/${props.toIdUuid}`, __API_URL__);
+      toRoute = new URL(`/i/theme/name/${props.toIdUuid}`, __API_URL__);
       break;
     case "named_entity":
-      toRoute = new URL(`/i/named-entity-name/${props.toIdUuid}`, __API_URL__);
+      toRoute = new URL(`/i/named-entity/name/${props.toIdUuid}`, __API_URL__);
       break;
     default:
       throw new Error(`AssociationIndexView.getNames(): could not build URL for "toTable": "${props.toTable}"`)

@@ -67,21 +67,21 @@ const router = createRouter({
       //
       // theme/qr1.+
       //    => we're looking for a main theme
-      //    => redirect to ThemeMainView. else, the slug after "entite-nommee/"
-      //       should be a category (see route below).
+      //    => redirect to ThemeMainView. else, the slug after "theme/"
+      //       should be a value of the column theme.category_slug (see route below).
       // in practical terms, this means that ThemeMainView and NamedEntityMainView
       // can be reached by 2 URLs:
-      // - (theme|entite-nommee)/<category>/<idUuid>
-      // - (theme|entite-nommee)/<idUuid>   => the <category> is optional
+      // - (theme|entite-nommee)/<category_slug>/<idUuid>
+      // - (theme|entite-nommee)/<idUuid>   => the <category_slug> is optional
       // https://router.vuejs.org/guide/essentials/route-matching-syntax.html#Custom-regex-in-params
       path: '/theme/:idUuid(qr1.+)',
       component: () => import("@views/ThemeMainView.vue"),
     }, {
-      path: '/theme/:categoryName',
+      path: '/theme/:categorySlug',
       component: () => import("@views/ThemeOrNamedEntityIndexView.vue"),
       props: { tableName: "theme" }
     }, {
-      path: '/theme/:categoryName/:idUuid',
+      path: '/theme/:categorySlug/:idUuid',
       name: 'Thème',
       component: () => import("@views/ThemeMainView.vue")
     }, {
@@ -96,11 +96,11 @@ const router = createRouter({
       path: '/entite-nommee/:idUuid(qr1.+)',
       component: () => import("@views/NamedEntityMainView.vue")
     }, {
-      path: '/entite-nommee/:categoryName',
+      path: '/entite-nommee/:categorySlug',
       component: () => import("@views/ThemeOrNamedEntityIndexView.vue"),
       props: { tableName: "namedEntity" }
     }, {
-      path: '/entite-nommee/:categoryName/:idUuid',
+      path: '/entite-nommee/:categorySlug/:idUuid',
       component: () => import("@views/NamedEntityMainView.vue")
     }, {
       path: '/lieu',

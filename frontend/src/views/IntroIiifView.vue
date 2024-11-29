@@ -12,7 +12,9 @@
 <div class="intro-outer-wrapper">
   <div class="intro-inner-wrapper">
     <div class="intro-iiif-wrapper">
-      <div class="intro-iiif-inner-wrapper">
+      <div class="intro-iiif-inner-wrapper"
+           :class="{ 'iiif-hidden' : viewer===undefined }"
+      >
         <IiifViewer :osdId="htmlId"
                     :iiifUrl="iiifUrl"
                     :backupImgUrl="imgUrl"
@@ -334,8 +336,6 @@ h2 {
   grid-template-rows: 2fr 1fr;
   grid-template-columns: 100%;
 }
-.count-block {
-}
 .button-wrapper {
   display: flex;
   flex-direction: column;
@@ -375,6 +375,10 @@ h2 {
   width: calc(100% - 2vh);
   border: var(--cs-main-border);
   z-index: 0 !important;
-
+  opacity: 1;
+  transition: opacity 1.5s;
+}
+.intro-iiif-inner-wrapper.iiif-hidden {
+  opacity: 0;
 }
 </style>

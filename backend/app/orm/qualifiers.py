@@ -79,11 +79,12 @@ class Theme(db.Model):
     """
     __tablename__: str = "theme"
 
-    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False)
-    entry_name  : Mapped[str] = mapped_column(Text, nullable=False)
-    category    : Mapped[str] = mapped_column(Text, nullable=False)
-    description : Mapped[str] = mapped_column(Text, nullable=True)
+    id            : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
+    id_uuid       : Mapped[str] = mapped_column(Text, nullable=False)
+    entry_name    : Mapped[str] = mapped_column(Text, nullable=False)
+    category      : Mapped[str] = mapped_column(Text, nullable=False)
+    category_slug : Mapped[str] = mapped_column(Text, nullable=False)
+    description   : Mapped[str] = mapped_column(Text, nullable=True)
 
     r_iconography_theme : Mapped[t.List["R_IconographyTheme"]] = relationship("R_IconographyTheme", back_populates="theme", lazy="selectin")
     # r_iconography_theme : Mapped[t.List["R_IconographyTheme"]] = relationship("R_IconographyTheme", back_populates="theme")
@@ -123,6 +124,7 @@ class Theme(db.Model):
         return { "id_uuid": self.id_uuid,                     # str
                  "entry_name": self.entry_name,               # str
                  "category": self.category,                   # str
+                 "category_slug": self.category_slug,         # str
                  "thumbnail": self.get_thumbnail(),           # t.List[str]
                  "iconography_count": self.iconography_count  # int
         }
@@ -132,6 +134,7 @@ class Theme(db.Model):
                  "entry_name": self.entry_name,               # str
                  "description": self.description,             # str
                  "category": self.category,                   # str
+                 "category_slug": self.category_slug,         # str
                  "iconography": self.get_iconography(),       # t.List[t.Dict]
                  "iconography_count": self.iconography_count  # int
         }
@@ -153,39 +156,41 @@ class Theme(db.Model):
                              "s'informer" : "qr13f4af1da6eee4caabdc8e39f30ac92a6_thumbnail.jpg"  }
         if not preview:
             query = select( Theme.category
+                          , Theme.category_slug
                           , func.count(Theme.id_uuid).label("count"))
         else:
             query = select( Theme.category
+                          , Theme.category_slug
                           , func.count(Theme.id_uuid).label("count")
                           , func.array_agg(Theme.entry_name, type_=ARRAY(TEXT))
                             [0:3]
                             .label("preview") )
-        query = query.group_by( Theme.category ).order_by( Theme.category )
+        query = query.group_by( Theme.category, Theme.category_slug ).order_by( Theme.category )
         r = db.session.execute(query).all()
         # structure as JSON
         if not preview:
             out = [ { "category_name": row[0],                       # str
-                      "count"        : row[1],                       # int
+                      "category_slug": row[1],                       # str
+                      "count"        : row[2],                       # int
                       "thumbnail"    : [ thumbnail_mapper[row[0]] ]  # t.List[str] (is a list for consistency with other serializations)
-                    }
-                    for row in r ]
+                    } for row in r ]
         else:
             out = [ { "category_name": row[0],                       # str
-                      "count"        : row[1],                       # int
+                      "category_slug": row[1],                       # str
+                      "count"        : row[2],                       # int
                       "thumbnail"    : [ thumbnail_mapper[row[0]] ], # t.List[str] (is a list for consistency with other serializations)
-                      "preview"      : row[2]                        # t.List[str]
-                    }
-                    for row in r ]
+                      "preview"      : row[3]                        # t.List[str]
+                    } for row in r ]
         return out
 
 
     @classmethod
-    def get_themes_for_category(cls, category:str):
+    def get_themes_for_category(cls, category_slug:str):
         """
-        return all themes for category `category`
+        return all themes where theme.category_slug == category_slug
         """
         query = (select(Theme)
-                .filter(Theme.category==category)
+                .filter(Theme.category_slug==category_slug)
                 .order_by(Theme.entry_name))
         r = db.session.execute(query).all()
         return [ t[0].serialize_lite() for t in r ]
@@ -201,11 +206,12 @@ class NamedEntity(db.Model):
     """
     __tablename__: str = "named_entity"
 
-    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False)
-    entry_name  : Mapped[str] = mapped_column(Text, nullable=False)
-    category    : Mapped[str] = mapped_column(Text, nullable=False)
-    description : Mapped[str] = mapped_column(Text, nullable=True)
+    id            : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
+    id_uuid       : Mapped[str] = mapped_column(Text, nullable=False)
+    entry_name    : Mapped[str] = mapped_column(Text, nullable=False)
+    category      : Mapped[str] = mapped_column(Text, nullable=False)
+    category_slug : Mapped[str] = mapped_column(Text, nullable=False)
+    description   : Mapped[str] = mapped_column(Text, nullable=True)
 
     r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity", back_populates="named_entity", lazy="selectin")
     # r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity", back_populates="named_entity")
@@ -243,7 +249,8 @@ class NamedEntity(db.Model):
     def serialize_lite(self):
         return { "id_uuid": self.id_uuid,                     # str
                  "entry_name": self.entry_name,               # str
-                 "category": self.category,                   # str
+                 "category_name": self.category,                   # str
+                 "category_slug": self.category_slug,         # str
                  "thumbnail": self.get_thumbnail(),           # t.List[str]
                  "iconography_count": self.iconography_count  # int
         }
@@ -251,7 +258,8 @@ class NamedEntity(db.Model):
     def serialize_full(self):
         return { "id_uuid": self.id_uuid,                     # str
                  "entry_name": self.entry_name,               # str
-                 "category": self.category,                   # str
+                 "category_name": self.category,                   # str
+                 "category_slug": self.category_slug,         # str
                  "description": self.description,             # str
                  "iconography": self.get_iconography(),       # t.List[t.Dict]
                  "iconography_count": self.iconography_count  # int
@@ -280,37 +288,39 @@ class NamedEntity(db.Model):
                            }
         if not preview:
             query = select( NamedEntity.category
+                          , NamedEntity.category_slug
                           , func.count(NamedEntity.id_uuid).label("count"))
         else:
             query = select( NamedEntity.category
+                          , NamedEntity.category_slug
                           , func.count(NamedEntity.id_uuid).label("count")
                           , func.array_agg(NamedEntity.entry_name, type_=ARRAY(TEXT))
                             [0:3]
                             .label("preview") )
-        query = query.group_by( NamedEntity.category ).order_by( NamedEntity.category )
+        query = query.group_by( NamedEntity.category, NamedEntity.category_slug ).order_by( NamedEntity.category )
         r = db.session.execute(query).all()
         if not preview:
             out = [ { "category_name": row[0],
-                      "count": row[1],
+                      "category_slug": row[1],
+                      "count"        : row[2],
                       "thumbnail": [ thumbnail_mapper[row[0]] if row[0] in thumbnail_mapper.keys() else "" ]
-                    }
-                    for row in r ]
+                    } for row in r ]
         else:
             out = [ { "category_name": row[0],                       # str
-                      "count"        : row[1],                       # int
+                      "category_slug": row[1],
+                      "count"        : row[2],                       # int
                       "thumbnail"    : [ thumbnail_mapper[row[0]] ], # t.List[str] (is a list for consistency with other serializations)
-                      "preview"      : row[2]                        # t.List[str]
-                    }
-                    for row in r ]
+                      "preview"      : row[3]                        # t.List[str]
+                    } for row in r ]
         return out
 
     @classmethod
-    def get_named_entities_for_category(cls, category:str):
+    def get_named_entities_for_category(cls, category_slug:str):
         """
-        return all named entities for category `category`
+        return all named entities where `named_entity.category_slug==category_slug`
         """
         query = (select(NamedEntity)
-                .filter(NamedEntity.category==category)
+                .filter(NamedEntity.category_slug==category_slug)
                 .order_by(NamedEntity.entry_name))
         r = db.session.execute(query).all()
         return [ t[0].serialize_lite() for t in r ]

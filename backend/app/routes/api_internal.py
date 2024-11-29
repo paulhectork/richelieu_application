@@ -5,11 +5,8 @@ basepath: `<APP URL>/i/`
 
 from flask import jsonify, request
 from flask_cors import cross_origin
-from psycopg2.extras import NumericRange
 from sqlalchemy import text, func
 from sqlalchemy.sql.expression import bindparam
-import random
-import json
 
 from ..search.search_iconography import sanitize_params, make_params, make_query
 from ..utils.spatial import featurelist_to_featurecollection, geometry_to_feature
@@ -56,7 +53,7 @@ def main_iconography(id_uuid):
     return jsonify(out)
 
 
-@app.route("/i/iconography-from-uuid")
+@app.route("/i/iconography/from-uuid")
 def iconography_from_uuid():
     """
     return Iconography objects matching the UUIDs in `id_uuid_arr`.
@@ -85,7 +82,7 @@ def iconography_from_uuid_full():
     return jsonify([ row[0].serialize_full() for row in r.all() ]);
 
 
-@app.route("/i/iconography-overall-date-range")
+@app.route("/i/iconography/date-range")
 def iconography_overall_date_range():
     """
     get the overall minimum/maximum
@@ -119,42 +116,100 @@ def index_theme():
     return an index of theme categories or an
     index of themes for a single category.
     2 optional arguments can be passed in the query string:
-    * "category" (null|str):
+    * "category_slug" (None|str):
+        a value of `theme.category_slug`.
         category determines the kind of index returned:
-        * category is null: an index of distinct categories is returned
-        * category == all: all themes are returned
-        * category is not null (a category is given): all themes for this
+        * category_slug is None: an index of distinct categories is returned
+        * category_slug == all: all themes are returned
+        * category_slug is not None (a category is given): all themes for this
             category are returned.
     * "preview" (bool):
         when category is None (returning an index of categories)
         and preview is true, we'll also return a few themes as an example
     """
-    category_name = request.args.get("category", None)
+    category_slug = request.args.get("category_slug", None)
     preview       = request.args.get("preview", None)
-    if not category_name:
+    if not category_slug:
         out = Theme.get_categories(preview=preview)
-    elif category_name == "all":
+    elif category_slug == "all":
         out = [ t[0].serialize_lite()
                 for t in db.session.execute(Theme.query).all() ]
     else:
-        out = Theme.get_themes_for_category(category_name)
+        out = Theme.get_themes_for_category(category_slug)
     return jsonify(out)
 
+@app.route("/i/theme/tree/<string:category_slug>")
+def theme_category_tree(category_slug:str):
+    """
+    returns a tree view of themes.
+    - if `category_slug === "all"`, the tree view is build for all categories
+        (1 item / category)
+    - else, the tree view is build only for the category where
+        Theme.category_slug == category_slug.
+    - if `category_slug` doens't correspond to anything, an empty list is returned.
 
-@app.route("/i/theme/<id_uuid>")
+    :returns: [{ category_slug : str,
+                 category      : str,
+                 entries       : List[{entry_name: str, id_uuid: str}] }]
+    """
+    q = select(Theme.category_slug,
+               Theme.category,
+               func.json_agg(func.json_build_object("id_uuid",
+                                                    Theme.id_uuid,
+                                                    "entry_name",
+                                                    Theme.entry_name)))
+    if category_slug != "all":
+        q = q.filter( Theme.category_slug==category_slug )
+    q = q.group_by( Theme.category_slug, Theme.category )
+    r = db.session.execute( q ).all()
+    return jsonify([ { "category_slug": row[0], "category": row[1], "entries": row[2] }
+                     for row in r ])
+
+
+
+@app.route("/i/theme/<string:id_uuid>")
 def main_theme(id_uuid:str):
     """fetch all iconographic resources related to a theme"""
     r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
     return jsonify([ t[0].serialize_full() for t in r.all() ])
 
 
-@app.route("/i/theme-name/<id_uuid>")
+@app.route("/i/theme/name/<id_uuid>")
 def main_theme_name(id_uuid:str):
     """
     get the name of a theme from its UUID. used in the main page for a theme.
     """
     r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
     return jsonify([ t[0].entry_name for t in r.all() ])
+
+@app.route("/i/theme/category/name/all")
+def theme_category_name_all():
+    """
+    :returns: an array of all allowed categories
+            [ { category_name: theme.category,
+                category_slug: theme.category_slug } ]
+    """
+    r = db.session.execute(select( Theme )
+                          .distinct( Theme.category, Theme.category_slug ))
+    return jsonify([ { "category_name": row[0].category,
+                       "category_slug": row[0].category_slug }
+                     for row in r.all() ])
+
+
+@app.route("/i/theme/category/name/<string:category_slug>")
+def theme_category_name(category_slug:str):
+    """
+    returns as a string the category name corresponding to a category_slug
+    (or empty string if category_slug is not in the database)
+    """
+    r = db.session.execute(select(Theme.category)
+                          .filter(Theme.category_slug==category_slug)
+                          .limit(1)).all()
+    if len(r):
+        return r[0][0]
+    else:
+        return ""
+
 
 
 # *************************************************************************
@@ -167,27 +222,56 @@ def index_named_entity():
     """
     return an index of named entity categories or an index of named entities.
     2 optional arguments can be passed in the query string:
-    * "category" (null|str):
-        category determines the kind of index returned:
-        * category is null: an index of distinct categories is returned
-        * category == all: all named entities are returned
-        * category is not null (a category is given): all named entities
+    * "category_slug" (null|str):
+        a value of `named_entity.category_slug`.
+        category_slug determines the kind of index returned:
+        * category_slug is null: an index of distinct categories is returned
+        * category_slug == all: all named entities are returned
+        * category_slug is not null (a category is given): all named entities
           for this category are returned.
     * "preview" (bool):
         when category is None (returning an index of categories)
         and preview is true, we'll also return a few named entities as
         an example
     """
-    category_name = request.args.get("category", None)
+    category_slug = request.args.get("category_slug", None)
     preview       = request.args.get("preview", None)
-    if not category_name:
+    if not category_slug:
         out = NamedEntity.get_categories(preview=preview)
-    elif category_name == "all":
+    elif category_slug == "all":
         out = [ n[0].serialize_lite()
                 for n in db.session.execute(NamedEntity.query).all() ]
     else:
-        out = NamedEntity.get_named_entities_for_category(category_name)
+        out = NamedEntity.get_named_entities_for_category(category_slug)
     return jsonify(out)
+
+
+@app.route("/i/named-entity/tree/<string:category_slug>")
+def named_entity_category_tree(category_slug:str):
+    """
+    returns a tree view of named entities.
+    - if `category_slug === "all"`, the tree view is build for all categories
+        (1 item / category)
+    - else, the tree view is build only for the category where
+        NamedEntity.category_slug == category_slug.
+    - if `category_slug` doens't correspond to anything, an empty list is returned.
+
+    :returns: [{ category_slug : str,
+                 category      : str,
+                 entries       : List[{entry_name: str, id_uuid: str}] }]
+    """
+    q = select(NamedEntity.category_slug,
+               NamedEntity.category,
+               func.json_agg(func.json_build_object("id_uuid",
+                                                    NamedEntity.id_uuid,
+                                                    "entry_name",
+                                                    NamedEntity.entry_name)))
+    if category_slug != "all":
+        q = q.filter( NamedEntity.category_slug==category_slug )
+    q = q.group_by( NamedEntity.category_slug, NamedEntity.category )
+    r = db.session.execute( q ).all()
+    return jsonify([ { "category_slug": row[0], "category": row[1], "entries": row[2] }
+                     for row in r ])
 
 
 @app.route("/i/named-entity/<id_uuid>")
@@ -195,11 +279,11 @@ def main_named_entity(id_uuid:str):
     """
     fetch all iconographic resources related to a named entity.
     """
-    r = db.session.execute(NamedEntity.query.filter( NamedEntity.id_uuid == id_uuid ))
+    r = db.session.execute(NamedEntity.query.filter( NamedEntity.id_uuid==id_uuid ))
     return jsonify([ n[0].serialize_full() for n in r.all() ])
 
 
-@app.route("/i/named-entity-name/<id_uuid>")
+@app.route("/i/named-entity/name/<id_uuid>")
 def main_named_entity_name(id_uuid:str):
     """
     get the name of a named entity from its UUID
@@ -207,6 +291,36 @@ def main_named_entity_name(id_uuid:str):
     """
     r = db.session.execute(NamedEntity.query.filter( NamedEntity.id_uuid == id_uuid ))
     return jsonify([ n[0].entry_name for n in r.all() ])
+
+
+@app.route("/i/named-entity/category/name/all")
+def named_entity_category_name_all():
+    """
+    :returns: an array of all allowed categories
+            [ { category_name: named_entity.category,
+                category_slug: named_entity.category_slug } ]
+    """
+    r = db.session.execute(select( NamedEntity )
+                          .distinct( NamedEntity.category, NamedEntity.category_slug ))
+    return jsonify([ { "category_name": row[0].category,
+                       "category_slug": row[0].category_slug }
+                     for row in r.all() ])
+
+
+@app.route("/i/named-entity/category/name/<string:category_slug>")
+def named_entity_category_name(category_slug:str):
+    """
+    returns as a string the category name corresponding to a category_slug
+    (or empty string if category_slug is not in the database)
+    """
+    r = db.session.execute(select(NamedEntity.category)
+                          .filter(NamedEntity.category_slug==category_slug)
+                          .limit(1)).all()
+    if len(r):
+        return r[0][0]
+    else:
+        return ""
+
 
 
 # *************************************************************************
@@ -282,7 +396,7 @@ def main_institution(id_uuid: str):
     r = db.session.execute(select(Institution).filter(Institution.id_uuid == id_uuid))
     return jsonify([ i[0].serialize_full() for i in r.all() ])
 
-@app.route("/i/institution-name/<string:id_uuid>")
+@app.route("/i/institution/name/<string:id_uuid>")
 def main_institution_name(id_uuid:str):
     """
     get the name of an institution from its UUID
@@ -314,7 +428,7 @@ def place_main(id_uuid:str):
     return jsonify([ _[0].serialize_full() for _ in r.all() ])
 
 
-@app.route("/i/place-lite/<string:place_uuid>")
+@app.route("/i/place/lite/<string:place_uuid>")
 def place_lite(place_uuid:str):
     """
     get a single `place` item and return its `serialize_lite()` repr
@@ -322,7 +436,7 @@ def place_lite(place_uuid:str):
     r = db.session.execute(Place.query.filter(Place.id_uuid==place_uuid).limit(1))
     return jsonify([ _[0].serialize_lite() for _ in r.all() ])
 
-@app.route("/i/place-address/<string:id_uuid>")
+@app.route("/i/place/address/<string:id_uuid>")
 def place_address(id_uuid):
     """
     get an address for a place based on this place's `id_uuid`

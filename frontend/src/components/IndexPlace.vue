@@ -95,7 +95,7 @@ const map = ref();  // will be defined in `onMounted`
 function displayVector(e) {
   const placeUrl = e.currentTarget.value;
   const placeUuid = placeUrl.split(/\//g).at(-1);  // extract the place's UUID from the URL
-  const placeUuidTarget = new URL(`/i/place-lite/${placeUuid}`, __API_URL__);
+  const placeUuidTarget = new URL(`/i/place/lite/${placeUuid}`, __API_URL__);
 
   let _map = map.value;
 

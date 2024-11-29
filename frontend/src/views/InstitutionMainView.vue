@@ -19,10 +19,10 @@
 
   <div v-else>
     <h1>{{ institutionName }}</h1>
-    <IndexCount :indexCount="dataFull.length"
+    <H2IndexCount :indexCount="dataFull.length"
                 dataType="iconography"
                 v-if="loadState === 'loaded'"
-    ></IndexCount>
+    ></H2IndexCount>
 
     <UiLoader v-if="loadState==='loading'"></UiLoader>
     <div v-if="loadState==='loaded'"
@@ -66,7 +66,7 @@ import axios from "axios";
 
 import ErrNotFound from "@components/ErrNotFound.vue";
 import UiLoader from "@components/UiLoader.vue";
-import IndexCount from "@components/IndexCount.vue";
+import H2IndexCount from "@components/H2IndexCount.vue";
 import IndexIconography from "@components/IndexIconography.vue";
 
 import { stringifyInstitutionArray } from "@utils/stringifiers";
@@ -81,7 +81,7 @@ const institutionName      = ref("");    // the name of the institution. fetched
 const dataFull             = ref([]);    // the complete iconography  data, set from a watcher
 
 const apiTargetIndex       = new URL("/i/institution", __API_URL__);
-const apiTargetInstitution = new URL(`/i/institution-name/${idUuid.value}`, __API_URL__);
+const apiTargetInstitution = new URL(`/i/institution/name/${idUuid.value}`, __API_URL__);
 const apiTargetIconography = new URL(`/i/institution/${idUuid.value}`, __API_URL__);
 const loadState            = ref("loading");  // loaded/loading/error
 

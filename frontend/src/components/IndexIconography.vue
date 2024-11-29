@@ -1,20 +1,21 @@
 <!-- IndexIconography.vue
-  a view displaying a collection of Iconography objects.
+  a component that centralizes all indexes/catalogs of Iconography objects.
 
   this view is to be used every time we need to display an array
   of `Iconography.serialize_lite()`. what is does is wrap IndexBase
   with a few extra functionnalities:
-    - IndexIconographyFilter allows to filter the disiplayed data
+    - FilterIndexIconographyIndex allows to filter the disiplayed data
     - DownloadButtonGroup allows to download the filtered data in CSV or JSON
-    - IndexBase displays the icono index.
+    - IndexBase handles the UI display of the iconography index)
 
   props:
     - data (Array<Object>)
           an array of Iconography.serialize_lite objects
     - oneItemRow (bool)
-         the index will only display 1 item/row
+        a flag indicating that the IndexBase build will display only 1 item per row
+        (useful for small viewports: `CartographyPlaceInfo`)
     - hideFilter (bool)
-          IndexIconographyFilter won't be displayed
+        a flag to hide the FilterIndexIconography block
 
   as with all collections with filters, we use 2 refs:
     - dataFull (Array<Object>)
@@ -27,10 +28,10 @@
 <template>
   <div class="index-iconography-outer-wrapper">
     <div class="index-iconography-inner-wrapper">
-      <IndexIconographyFilter v-if="!hideFilter"
+      <FilterIndexIconography v-if="!hideFilter"
                               :data="dataFull"
                               @iconography-filter="handleIconographyFilter"
-      ></IndexIconographyFilter>
+      ></FilterIndexIconography>
 
       <div class="download-button-wrapper"
            :class="{ 'download-loading': downloadLoading }"
@@ -54,8 +55,8 @@
 import { computed, onMounted, ref, watch } from "vue";
 import axios from "axios";
 
-import IndexIconographyFilter from "@components/IndexIconographyFilter.vue";
 import DownloadButtonGroup from "@components/DownloadButtonGroup.vue";
+import FilterIndexIconography from "@components/FilterIndexIconography.vue";
 import IndexBase from "@components/IndexBase.vue";
 import UiLoader from "@components/UiLoader.vue";
 

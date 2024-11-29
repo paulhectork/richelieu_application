@@ -149,8 +149,8 @@ onUnmounted(() => {
 /**********************************/
 
 .noUi-target {
-  width: 90%;
-  margin: 5px;
+  width: 100%;
+  margin: 5px 0;
 }
 :deep(.noUi-handle) {
   border-radius: 100%;

@@ -8,7 +8,9 @@ import _ from "lodash";
 import { urlToFrontendActor
        , urlToFrontendTheme
        , urlToFrontendNamedEntity
-       , urlToFrontendInstitution } from "@utils/url";
+       , urlToFrontendInstitution
+       , urlToFrontendThemeNoCategory
+       , urlToFrontendNamedEntityNoCategory } from "@utils/url";
 import { capitalizeFirstChar
        , capitalizeWords } from "@utils/strings";
 
@@ -103,8 +105,8 @@ export const stringifyInstitutionResource = (x) =>
   `<span>${x.entry_name}</span><span>[${x.iconography_count}]</span>`;
 
 /**
- * stringify a Theme.category or NamedEntity.category,
- * (as returned by `/i/theme`, or `/i/category`)
+ * stringify a Theme.category_name or NamedEntity.category_name,
+ * (as returned by `/i/theme`, or `/i/named_entity`)
  */
 export const stringifyThemeOrNamedEntityCategory = (x) =>
   `<span>${x.category_name}</span><span>[${x.count}]</span>`;
@@ -145,7 +147,7 @@ export function stringifyActorArray(actorArray, hyperlink=false) {
 
 export function stringifyThemeArray(themeArray, hyperlink=false) {
   const doHyperlink = (theme) =>
-    `<a href="${ urlToFrontendTheme(theme.category, theme.id_uuid).href }"
+    `<a href="${ urlToFrontendTheme(theme.category_slug, theme.id_uuid).href }"
      >${theme.entry_name}</a>`;
 
   let out = "";
@@ -168,7 +170,7 @@ export function stringifyThemeArray(themeArray, hyperlink=false) {
 
 export function stringifyNamedEntityArray(namedEntityArray, hyperlink=false) {
   const doHyperlink = (ne) =>
-    `<a href="${ urlToFrontendNamedEntity(ne.category, ne.id_uuid).href }"
+    `<a href="${ urlToFrontendNamedEntity(ne.category_slug, ne.id_uuid).href }"
      >${ne.entry_name}</a>`;
   let out = "";
   if ( namedEntityArray != null && namedEntityArray.length ) {
@@ -235,8 +237,8 @@ export function stringifyInstitutionArray(institutionArray, hyperlink=false) {
  */
 export function stringifyAssociated(associated, targetKey) {
   const urlBuilder = targetKey === "theme"
-                     ? urlToFrontendTheme
-                     : urlToFrontendNamedEntity;
+                     ? urlToFrontendThemeNoCategory
+                     : urlToFrontendNamedEntityNoCategory;
   const processEl = (el) =>
     `<a href="${urlBuilder((el.id_uuid))}">${el.entry_name}</a>
      (${el.count} co-occurrence${ el.count > 1 ? 's' : '' })`;

@@ -23,38 +23,63 @@ export const urlToOsdIcons = () =>
 
 /**
  * build an URL to a theme category.
- * @param {string} categoryName: the name of the category (as is in the database)
+ * @param {string} categorySlug: theme.category_slug
  * @returns {URL}
  */
-export const urlToFrontendThemeCategory = (categoryName) =>
-  new URL(`/theme/${ encodeURIComponent(categoryName) }`, window.location.origin);
+export const urlToFrontendThemeCategory = (categorySlug) =>
+  new URL(`/theme/${ encodeURIComponent(categorySlug) }`, window.location.origin);
 
 /**
- * build an URL to a frontend page on a theme, based on this theme's UUID
+ * build an URL to a frontend page on a theme, based on this theme's UUID and category_slug.
+ * @param {string} categorySlug: the category_slug of the theme.
  * @param {string} themeIdUuid: the UUID of the theme
  * @returns {URL}
  */
-export const urlToFrontendTheme = (categoryName, themeIdUuid) =>
-  new URL( `/theme/${ encodeURIComponent(categoryName) }/${ themeIdUuid }`
+export const urlToFrontendTheme = (categorySlug, themeIdUuid) =>
+  new URL( `/theme/${ encodeURIComponent(categorySlug) }/${ themeIdUuid }`
          , window.location.origin);
 
+         /**
+ * build an URL to a frontend page on a theme, based on its UUID.
+ * to be used when the category of the theme is not known.
+ * basically this works exactly the same as sending an uuid instead of a category_slug
+ * to `urlToFrontendThemeCategory`.
+ * @param {string} themeIdUuid: the UUID of the theme
+ * @returns {URL}
+ */
+export const urlToFrontendThemeNoCategory = (themeIdUuid) =>
+  new URL( `/theme/${ themeIdUuid }`
+         , window.location.origin);
 
 /**
  * build an URL to a named entity category.
- * @param {string} categoryName: the name of the category (as is in the database)
+ * @param {string} categorySlug: the named_entity.category_slug
  * @returns {URL}
  */
-export const urlToFrontendNamedEntityCategory = (categoryName) =>
-  new URL( `/entite-nommee/${ encodeURIComponent(categoryName) }`
+export const urlToFrontendNamedEntityCategory = (categorySlug) =>
+  new URL( `/entite-nommee/${ encodeURIComponent(categorySlug) }`
          , window.location.origin);
 
 /**
- * build an URL to a frontend page on a named entity, based on this NE's UUID
+ * build an URL to a frontend page on a named entity, based on this NE's UUID and category
+ * @param {string} categorySlug: the named_entity.category_slug
  * @param {string} namedEntityIdUuid: the UUID of the named entity
  * @returns {URL}
  */
-export const urlToFrontendNamedEntity = (categoryName, namedEntityIdUuid) =>
-  new URL( `/entite-nommee/${ encodeURIComponent(categoryName) }/${ namedEntityIdUuid }`
+export const urlToFrontendNamedEntity = (categorySlug, namedEntityIdUuid) =>
+  new URL( `/entite-nommee/${ encodeURIComponent(categorySlug) }/${ namedEntityIdUuid }`
+         , window.location.origin);
+
+/**
+ * build an URL to a frontend page on a named entity, based on this NE's UUID.
+ * to be used when the category of the named entity is not known.
+ * basically this works exactly the same as sending an uuid instead of a category_slug
+ * to `urlToFrontendNamedEntityCategory`.
+ * @param {string} namedEntityIdUuid: the UUID of the named entity
+ * @returns {URL}
+ */
+export const urlToFrontendNamedEntityNoCategory = (namedEntityIdUuid) =>
+  new URL( `/entite-nommee/${ namedEntityIdUuid }`
          , window.location.origin);
 
 /**

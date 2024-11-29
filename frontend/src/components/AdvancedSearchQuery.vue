@@ -261,13 +261,13 @@ onMounted(() => {
   // fetch data
   Promise.all([
     axios
-    .get(new URL("/i/theme", __API_URL__).href, { params:{category:"all"} })
+    .get(new URL("/i/theme", __API_URL__).href, { params:{ category_slug:"all" } })
     .then(r => themeArray.value = r.data
                                   .map(itemToFormEntry)
                                   .sort((a,b) => sortByValue(a,b)) )
     ,
     axios
-    .get(new URL("/i/named-entity", __API_URL__).href, { params:{category:"all"} })
+    .get(new URL("/i/named-entity", __API_URL__).href, { params:{ category_slug:"all" } })
     .then(r => namedEntityArray.value = r.data
                                         .map(itemToFormEntry)
                                         .sort((a,b) => sortByValue(a,b)) )

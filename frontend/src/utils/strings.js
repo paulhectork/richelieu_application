@@ -43,9 +43,16 @@ export const simplifyAndUnaccentString = s =>
      .trim()
   : s;
 
-
 /**
  * remove html tags from the string `_string`
  */
 export const stripHtml = s => s.replace(/<[^>]*>?/gm, '');
 
+/**
+ * a combination of 2 string simplifiers to super-simplify HTML.
+ * @param {String} s: the HTML string to simplify
+ */
+export const simplifyHtml = s =>
+s != null && typeof s === "string"
+? simplifyAndUnaccentString(stripHtml( s ))
+: console.error(`@utils/strings.localStringSimplify: 's' must be string, got '${s}' instead`);

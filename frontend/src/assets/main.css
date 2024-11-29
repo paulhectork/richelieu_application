@@ -382,7 +382,8 @@ strong {
   /*width: 100%;*/
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  /*align-items: flex-start;*/
+  align-items: center;
   justify-content: center;
   margin: 0 5% 0 5%;
 }
@@ -627,6 +628,9 @@ button:active > svg > path {
   width: 100%;
   border: var(--cs-main-border);
 }
+.formkit-inner > input[type=text] {
+  min-height: 28px; /** input height is the same for text and selects */
+}
 .form-submit-input {
   margin-top: min(3vh, 15%);
   width: 100%;
@@ -660,6 +664,96 @@ button:active > svg > path {
 }
 .form-boolean-flag-wrapper .select2-container {
   height: 100% !important
+}
+
+/**************************************************************************/
+/* index filters */
+
+.filter-outer-wrapper {
+  margin: 3%;
+  border: var(--cs-main-border);
+  /* max-width: 1000px; */
+}
+.negative-default .filter-outer-wrapper {
+  border: var(--cs-negative-border);
+}
+.filter-outer-wrapper .filter-loader-wrapper {
+  display: grid;
+  padding: 1%;
+  border-top: var(--cs-main-border);
+}
+.negative-default .filter-outer-wrapper .filter-loader-wrapper {
+  border-top: var(--cs-negative-border);
+}
+
+.filter-outer-wrapper .filter-loader-wrapper > * {
+  grid-column-start: 1;
+  grid-row-start: 1;
+}
+.filter-outer-wrapper .loader-wrapper {
+  z-index: 2;
+}
+.filter-outer-wrapper .form-outer-wrapper {
+  transition: opacity .3s ease-out;
+}
+.filter-outer-wrapper .form-outer-wrapper.is-loading {
+  opacity: 0.2;
+  transition: opacity .3s ease-in;
+}
+
+/** hide help messages */
+.filter-outer-wrapper .formkit-help {
+  visibility: hidden !important;
+  height: 0;
+}
+
+/** submit button */
+.filter-outer-wrapper .formkit-actions button[type=submit] {
+  width: 100%;
+  height: 100%;
+  box-shadow: 3px 3px var(--cs-main-second-bg);
+}
+
+/** input-level error messages.
+    these are displayed as popups: the `.formkit-outer`
+    has a position:relative, which allows .formkit-messages to
+    be positionned with a position:absolute relative to `.formkit-outer`.
+    then, we just position .formkit-messages above the `.formkit-outer`
+    and add a pure CSS arrow tooltip (see rule below).
+    otherwise the messages get hidden by other inputs with display:grid.
+ */
+.filter-outer-wrapper .formkit-outer {
+  position: relative;
+  padding: 0 10px;
+}
+.filter-outer-wrapper .formkit-outer .formkit-messages {
+  background-color: var(--cs-main-default-bg);
+  transform: translateY(-110%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 5px;
+  border: var(--cs-main-border);
+}
+.negative-default .filter-outer-wrapper .formkit-outer .formkit-messages {
+  background-color: var(--cs-negative-default-bg);
+  border: var(--cs-negative-border);
+}
+.filter-outer-wrapper .formkit-outer .formkit-messages:after {
+  /** css tooltip. see: https://css-tricks.com/snippets/css/css-triangle/ */
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  height: 0px;
+  width: 0px;
+  transform: translateX(-15px);
+  border: solid transparent 15px;
+  border-top-color: var(--cs-main-default);
+  background: transparent;
+}
+.negative-default .filter-outer-wrapper .formkit-outer .formkit-messages:after {
+  border-top-color: var(--cs-negative-default);
 }
 
 /**************************************************************************/

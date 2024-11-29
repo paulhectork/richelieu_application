@@ -87,12 +87,14 @@ export function placeToCsvRecord({
 
 export function themeOrNamedEntityToCsvRecord({
   id_uuid,
-  category,
+  category_name,
+  category_slug,
   entry_name,
 }) {
   return {
     id_uuid,
-    category,
+    category_name,
+    category_slug,
     entry_name,
   };
 }
