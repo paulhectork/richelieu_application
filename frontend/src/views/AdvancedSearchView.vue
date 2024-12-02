@@ -81,6 +81,7 @@ import AdvancedSearchResults from "@components/AdvancedSearchResults.vue";
 import UiLoader from "@components/UiLoader.vue";
 
 import { IconographyQueryParams } from "@modules/iconographyQueryParams";
+import "@typedefs";
 
 /***************************************/
 
@@ -89,10 +90,10 @@ const targetUrl = new URL("/i/search/iconography", __API_URL__);
 const route          = useRoute();  // the current route
 const router         = useRouter(); // the full router
 const queryParams    = ref();       // an IconographyQueryParams object with query params defined by the user in `AdvancedSearchQuery`, or query params visible in the URL
-const queryResults   = ref([]);     // results of a query to the server
-const queryError     = ref(false);  // switched to true if a backend internal server error occurs
-const displayResults = ref("no");   // `no|loading|yes`. controls the display of `AdvancedSearchResults` and `UiLoader`. when the value is 'no', neither are shown. when it is 'loading', `UiLoader` is shown. when 'yes', `UiLoader` is not shown and `AdvancedSearchResults` is shown.
-const displayQuery   = ref(true);   // when switched to false, the AdvancedSearchQuery block is hidden using the `slideInOut` transition
+const queryResults   = ref([]);     /** @type { typedefs.IconographyItemLite[] } results of a query to the server */
+const queryError     = ref(false);  /** @type {bool}switched to true if a backend internal server error occurs */
+const displayResults = ref("no");   /** @type {("no"|"loading"|"yes")}. controls the display of `AdvancedSearchResults` and `UiLoader`. when the value is 'no', neither are shown. when it is 'loading', `UiLoader` is shown. when 'yes', `UiLoader` is not shown and `AdvancedSearchResults` is shown. */
+const displayQuery   = ref(true);   /** @type {bool} when switched to false, the AdvancedSearchQuery block is hidden using the `slideInOut` transition */
 
 /***************************************/
 

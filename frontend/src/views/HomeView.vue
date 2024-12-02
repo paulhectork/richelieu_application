@@ -6,16 +6,8 @@
 
     the themes and namedEntities received from the backend
     have the following structure:
-    both are arrays of:
-    ```
-    {
-       "category_name" : "<category name, to display on the page>",
-       "category_slug" : "<category slug, to build urls>",
-       "count"         : <number of associated themes or named entities>,
-       "preview"       : [ <Array<string> of a few themes or named entities of that resource> ],
-       "thumbnail"     : [ <filename> ]
-    }
-    ```
+    both are arrays of `@types.ThemeOrNamedEntityCategoryItemFull`
+
     themes, named entities and articles are reformatted to be
     passed to `HomeItemPreview.vue`, with the following structure
     (see HomeItemPreview for more info):
@@ -126,7 +118,6 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
-import { useRoute } from "vue-router";
 
 import axios from "axios";
 import $ from "jquery";
@@ -142,11 +133,10 @@ import { urlToFrontendNamedEntityCategory
        , urlToFrontendThemeCategory
        , urlToArticleMain } from "@utils/url";
 import { randomColorLight } from "@utils/colors";
+import "@typedefs";
 
 
 /**************************************************/
-
-const route = useRoute();
 
 // `*Formatted`: arrays restructured to fit the HomeItemPreview data model
 const namedEntitiesFormatted = ref([]);
@@ -180,7 +170,7 @@ const onMapMouseOut = () =>
  * visually the same length as the categoryName.
  * the regex allows to split `preview` at the end of an item,
  * instead of in the middle
- * @param {Array<String>} preview: the array of theme or category names
+ * @param {string[]} preview: the array of theme or category names
  * @param {string} categoryName: the name of the category
  *   the preview items are related to.
  */
@@ -197,7 +187,7 @@ function stringifyThemeOrNamedEntityPreview(preview, categoryName) {
 /**
  * format a Theme or NamedEntity array returned by the backend (see `getData()`)
  * into an array that fits the HomeItemPreview data model.
- * @param {Array<Object>} arr: the array to format
+ * @param {typedefs.ThemeOrNamedEntityCategoryItemFull} arr: the array to format
  * @param {string} tableName: theme or namedEntity
  */
 const formatCategoryArray = (arr, tableName) =>

@@ -25,12 +25,14 @@
       <div class="icono-block-wrapper">
 
         <div class="index-headtext-wrapper">
-          <IndexAssociationRedirects v-if="loadStateAssociated === 'loaded'"
-                                     from-table="place"
-                                     to-table="place"
-                                     :from="{ entry_name: computedAddress, id_uuid: idUuid }"
-                                     :to="associatedPlaces"
-          ></IndexAssociationRedirects>
+          <div>
+            <IndexAssociationRedirects v-if="loadStateAssociated === 'loaded'"
+                                       from-table="place"
+                                       to-table="place"
+                                       :from="{ entry_name: computedAddress, id_uuid: idUuid }"
+                                       :to="associatedPlaces"
+            ></IndexAssociationRedirects>
+          </div>
         </div>
 
         <IndexIconography :data="dataFull"></IndexIconography>

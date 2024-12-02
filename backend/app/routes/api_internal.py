@@ -136,7 +136,7 @@ def theme_category_tree(category_slug:str):
     - if `category_slug` doens't correspond to anything, an empty list is returned.
 
     :returns: [{ category_slug : str,
-                 category      : str,
+                 category_name : str,
                  entries       : List[{entry_name: str, id_uuid: str}] }]
     """
     q = select(Theme.category_slug,
@@ -149,7 +149,9 @@ def theme_category_tree(category_slug:str):
         q = q.filter( Theme.category_slug==category_slug )
     q = q.group_by( Theme.category_slug, Theme.category )
     r = db.session.execute( q ).all()
-    return jsonify([ { "category_slug": row[0], "category": row[1], "entries": row[2] }
+    return jsonify([ { "category_slug": row[0],
+                       "category_name": row[1],
+                       "entries"      : row[2] }
                      for row in r ])
 
 
@@ -217,7 +219,7 @@ def index_named_entity():
         * category_slug is not null (a category is given): all named entities
           for this category are returned.
     * "preview" (bool):
-        when category is None (returning an index of categories)
+        when category_slug is None (returning an index of categories)
         and preview is true, we'll also return a few named entities as
         an example
     """
@@ -244,7 +246,7 @@ def named_entity_category_tree(category_slug:str):
     - if `category_slug` doens't correspond to anything, an empty list is returned.
 
     :returns: [{ category_slug : str,
-                 category      : str,
+                 category_name : str,
                  entries       : List[{entry_name: str, id_uuid: str}] }]
     """
     q = select(NamedEntity.category_slug,
@@ -257,7 +259,9 @@ def named_entity_category_tree(category_slug:str):
         q = q.filter( NamedEntity.category_slug==category_slug )
     q = q.group_by( NamedEntity.category_slug, NamedEntity.category )
     r = db.session.execute( q ).all()
-    return jsonify([ { "category_slug": row[0], "category": row[1], "entries": row[2] }
+    return jsonify([ { "category_slug": row[0],
+                       "category_name": row[1],
+                       "entries"      : row[2] }
                      for row in r ])
 
 

@@ -11,7 +11,7 @@
   the structure of a single Theme or NamedEntity object is:
   ```
   {
-    "category": "consommer",
+    "category_name": "consommer",
     "entry_name": "alimentation",
     "iconography_count": 364,
     "id_uuid": "qr17eaf451869db4d64b5d9942651d7ed5b",

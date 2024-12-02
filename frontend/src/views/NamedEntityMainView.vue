@@ -9,7 +9,7 @@
 
 <template>
   <h1>{{ namedEntityName }}</h1>
-  <H2IndexCount :indexCount="dataFull.length"
+  <H2IndexCount :indexCount="namedEntity.iconography.length"
               dataType="iconography"
               v-if="loadState === 'loaded'"
   ></H2IndexCount>
@@ -19,24 +19,31 @@
   <div v-else-if="loadState === 'loaded'">
 
     <div class="index-headtext-wrapper">
-      <IndexAssociationRedirects v-if="associatedThemes.length"
-                                 fromTable="named_entity"
-                                 toTable="theme"
-                                 :to="associatedThemes"
-                                 :from="{ entry_name: namedEntity.entry_name
-                                        , id_uuid: namedEntity.id_uuid }"
-      ></IndexAssociationRedirects>
+      <div>
+        <p>Cette entité nommée appartient à la catégorie
+          <RouterLink :to="urlToFrontendNamedEntityCategory(namedEntity.category_slug)"
+                      v-html="namedEntity.category_name"
+          ></RouterLink>.</p>
 
-      <IndexAssociationRedirects v-if="associatedNamedEntities.length"
-                                 fromTable="named_entity"
-                                 toTable="named_entity"
-                                 :to="associatedNamedEntities"
-                                 :from="{ entry_name: namedEntity.entry_name
-                                        , id_uuid: namedEntity.id_uuid }"
-      ></IndexAssociationRedirects>
+        <IndexAssociationRedirects v-if="associatedThemes.length"
+                                   fromTable="named_entity"
+                                   toTable="theme"
+                                   :to="associatedThemes"
+                                   :from="{ entry_name: namedEntity.entry_name
+                                          , id_uuid: namedEntity.id_uuid }"
+        ></IndexAssociationRedirects>
+
+        <IndexAssociationRedirects v-if="associatedNamedEntities.length"
+                                   fromTable="named_entity"
+                                   toTable="named_entity"
+                                   :to="associatedNamedEntities"
+                                   :from="{ entry_name: namedEntity.entry_name
+                                          , id_uuid: namedEntity.id_uuid }"
+        ></IndexAssociationRedirects>
+      </div>
     </div>
 
-    <IndexIconography :data="dataFull"></IndexIconography>
+    <IndexIconography :data="namedEntity.iconography"></IndexIconography>
 
   </div>
 
@@ -47,6 +54,7 @@
 <script setup>
 import { onMounted, ref, watch, computed } from "vue";
 import { useRoute } from "vue-router";
+
 import axios from "axios";
 
 import ErrNotFound from "@components/ErrNotFound.vue";
@@ -55,17 +63,19 @@ import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue
 import H2IndexCount from "@components/H2IndexCount.vue";
 import IndexIconography from "@components/IndexIconography.vue";
 
+import { urlToFrontendNamedEntityCategory } from "@utils/url.js";
+import "@typedefs";
+
 /**************************************************/
 
 const route           = useRoute();
-const namedEntity     = ref({});    // the namedEntity object sent from the backend
-const namedEntityName = ref("");    // the name of the namedEntity.
-const dataFull        = ref([]);    // the complete iconography  data, set from a watcher
-const idUuid          = ref(route.params.idUuid);
-const loadState       = ref("loading");  // loading/loaded/error
+const namedEntity     = ref({});                   /** @type {typedefs.ThemeOrNamedEntityItemFull} the namedEntity object sent from the backend */
+const namedEntityName = ref("");                   /** @type {string} the name of the namedEntity */
+const idUuid          = ref(route.params.idUuid);  /** @type {string} */
+const loadState       = ref("loading");            /** @type {typedefs.AsyncRequestState}: the loading state */
 
-const associatedThemes      = ref([]); // themes most frequently associated with the current named entity
-const associatedNamedEntities = ref([]); // named entites most frequently associated with the current named entity
+const associatedThemes        = ref([]);  /** @type { {id_uuid: string, entry_name: string, count: Number}[] } themes most frequently associated with the current named entity */
+const associatedNamedEntities = ref([]);  /** @type { {id_uuid: string, entry_name: string, count: Number}[] } named entites most frequently associated with the current named entity */
 
 // the backend URLs, defined as `computed` to handle reactivity
 const apiTargetNamedEntity = computed(() =>
@@ -90,7 +100,6 @@ function getData() {
   .then(r => {
     if ( r.data.length ) {
       namedEntity.value = r.data[0];
-      dataFull.value   = namedEntity.value.iconography;
       loadState.value  = 'loaded';
     }
   })

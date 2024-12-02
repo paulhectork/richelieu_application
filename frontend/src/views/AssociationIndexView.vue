@@ -45,23 +45,25 @@
     <div class="index-wrapper">
 
       <div class="index-headtext-wrapper">
-        <p v-if="dataFull.length === 1">
-          {{ dataFull.length }} ressource est associée à cette combinaison.</p>
-        <p v-else-if="dataFull.length > 1">
-          {{ dataFull.length }} ressources sont associées à cette combinaison.
-        </p>
-        <p v-else>Aucun résultat ne correspond à cette combinaison.</p>
+        <div>
+          <p v-if="dataFull.length === 1">
+            {{ dataFull.length }} ressource est associée à cette combinaison.</p>
+          <p v-else-if="dataFull.length > 1">
+            {{ dataFull.length }} ressources sont associées à cette combinaison.
+          </p>
+          <p v-else>Aucun résultat ne correspond à cette combinaison.</p>
 
-        <p v-if="from.entryName && to.entryName">
-          Voir tous les résultats pour
-          <RouterLink :to="toFrontendSlug(from)"
-                      v-html="from.entryName"
-          ></RouterLink>
-          et
-          <RouterLink :to="toFrontendSlug(to)"
-                      v-html="to.entryName"
-          ></RouterLink>.
-        </p>
+          <p v-if="from.entryName && to.entryName">
+            Voir tous les résultats pour
+            <RouterLink :to="toFrontendSlug(from)"
+                        v-html="from.entryName"
+            ></RouterLink>
+            et
+            <RouterLink :to="toFrontendSlug(to)"
+                        v-html="to.entryName"
+            ></RouterLink>.
+          </p>
+        </div>
       </div>
 
       <IndexIconography :data="dataFull"

@@ -18,8 +18,8 @@
         1) ThemeOrNamedEntityCategoryIndexView.vue:
           a category index (the current view). categories are broad
           groups in which individual themes/named entities are
-          classified, and correspond to theme.category or
-          named_entity.category, in the SQL DB.
+          classified, and correspond to theme.category_name or
+          named_entity.category_name, in the SQL DB.
         2) ThemeOrNamedEntityIndexView.vue:
           an index of themes/named entities for a single category.
           this gives access to individual themes / named entities.
@@ -49,41 +49,30 @@
 
     <!-- paragraph decribing what themes/named entities are. -->
     <div class="index-headtext-wrapper">
-      <p v-if="tableName==='theme' && databaseCounts && dataFull">
-        L'analyse des documents iconographiques
-        fait apparaître dans chaque image plusieurs thèmes saillants.
-        Au total, <strong>{{ databaseCounts.theme }} thèmes</strong> ont été identifiés.
-        Ces thèmes ont été regroupés en
-        <strong>{{ dataFull.length }} catégories</strong>,
-        visibles sur cette page. Cliquer sur une catégorie permet d'accéder
-        aux thèmes qu'elle contient.
-      </p>
-      <p v-else-if="tableName==='namedEntity' && databaseCounts && dataFull">
-        Chaque image décrit une ou plusieurs <q>&nbsp;entités nommées&nbsp;</q>,
-        c'est-à-dire des points d'intérêt du quartier&nbsp;: commerces,
-        acteurs et actrices, personnalités, monuments... Au total,
-        <strong>{{ databaseCounts.named_entity }} entités nommées</strong>
-        ont été identifiées
-        dans le corpus. Elles sont été classées en
-        <strong>{{ dataFull.length }} catégories</strong>, visibles
-        sur cette page. Cliquer sur une catégorie permet
-        d'accéder aux entités nommées liées.
-      </p>
+      <div>
+        <p v-if="tableName==='theme' && databaseCounts && dataFull">
+          L'analyse des documents iconographiques
+          fait apparaître dans chaque image plusieurs thèmes saillants.
+          Au total, <strong>{{ databaseCounts.theme }} thèmes</strong> ont été identifiés.
+          Ces thèmes ont été regroupés en
+          <strong>{{ dataFull.length }} catégories</strong>,
+          visibles sur cette page. Cliquer sur une catégorie permet d'accéder
+          aux thèmes qu'elle contient.
+        </p>
+        <p v-else-if="tableName==='namedEntity' && databaseCounts && dataFull">
+          Chaque image décrit une ou plusieurs <q>&nbsp;entités nommées&nbsp;</q>,
+          c'est-à-dire des points d'intérêt du quartier&nbsp;: commerces,
+          acteurs et actrices, personnalités, monuments... Au total,
+          <strong>{{ databaseCounts.named_entity }} entités nommées</strong>
+          ont été identifiées
+          dans le corpus. Elles sont été classées en
+          <strong>{{ dataFull.length }} catégories</strong>, visibles
+          sur cette page. Cliquer sur une catégorie permet
+          d'accéder aux entités nommées liées.
+        </p>
+      </div>
     </div>
 
-    <!--
-    <FormKit type="fkRadioTabs"
-             id="select-view"
-             name="selectView"
-             label="Changer de vue"
-             help="Choisir comment voir les thèmes"
-             value="category"
-             :options="[ { value: 'category', label: 'Par catégories' }
-                       , { value: 'all', label: `${tableName==='theme' ? 'Tous les thèmes' : 'Toutes les entités nommées' }` }
-                       , { value: 'tree', label: 'Arborescence' } ]"
-             @input="changeDisplay"
-    ></FormKit>
-    -->
     <div class="select-view-wrapper">
       <div class="select-view">
         <span>Changer de vue&nbsp;:</span>
@@ -118,7 +107,6 @@
 
 <script setup>
 import { onMounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
 
 import axios from "axios";
 
@@ -131,7 +119,6 @@ import IndexBase from "@components/IndexBase.vue";
 /*************************************************************/
 
 const props  = defineProps([ "tableName" ]);
-const router = useRouter();
 
 const tableName      = ref(props.tableName);
 const loadState      = ref("loading");  // "loading"/"loaded"/"error"

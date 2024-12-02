@@ -65,12 +65,6 @@
         ></IndexAssociationRedirects>
 
         <div class="iconography-index-wrapper">
-          <!--
-          <IndexBase :data="iconographyDataFilter"
-                     :itemsPerRow="1"
-                     display="resource"
-          ></IndexBase>
-          -->
           <IndexIconography :data="place.iconography"
                             :oneItemRow="true"
                             :hideFilter="true"
@@ -94,24 +88,21 @@ import UiButtonCross from "@components/UiButtonCross.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
 import IndexIconography from "@components/IndexIconography.vue";
 
-//xxx import IndexBase from "@components/IndexBase.vue";
-//xxx import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
-
 import { sortAddressBySource } from "@utils/array.js";
 import { capitalizeFirstChar } from "@utils/strings";
+import "@typedefs";
 
 /***************************************/
 
-const props                 = defineProps(["placeIdUuid", "associatedPlaces"]);
-const emit                  = defineEmits(["closePlaceInfo"]);
+const props = defineProps(["placeIdUuid", "associatedPlaces"]);
+const emit  = defineEmits(["closePlaceInfo"]);
 
-const placeIdUuid           = ref("");
-const associatedPlaces      = ref([]);
-const place                 = ref();
-const address               = ref()
-//xxx const iconographyDataFilter = ref([]);
-const loadStateAddress      = ref("loading");  // loading/loaded/error
-const loadStatePlace        = ref("loading");  // loading/loaded/error
+const placeIdUuid      = ref("");         /** @type {String} : the id_uuid of the currently selected place*/
+const associatedPlaces = ref([]);         /** @type {object[]} : places most often associed to the current place */
+const place            = ref();           /** @type {typedefs.PlaceItemFull}: the currently selected place */
+const address          = ref();           /** @type {typedefs.AddressItemFull} */
+const loadStateAddress = ref("loading");  /** @type {typedefs.AsyncRequestState} */
+const loadStatePlace   = ref("loading");  /** @type {typedefs.AsyncRequestState} */
 
 /***************************************/
 
@@ -120,22 +111,11 @@ const loadStatePlace        = ref("loading");  // loading/loaded/error
  */
 const escHandler = (e) => e.key === "Escape" ? emit("closePlaceInfo") : "";
 
-/**
- * UNUSED: it also closes the component when dragging the map around.
- * emit an event to close this component when clicking outside of it
- */
-// const clickHandler = (e) => {
-//   $(e.target).closest($(`#cpi-${ placeIdUuid }`)).length === 0
-//   ? emit("close")
-//   : "";
-// };
-
 function resetData() {
   placeIdUuid.value           = "";
   place.value                 = undefined;
   associatedPlaces.value      = undefined;
   address.value               = undefined;
-  // iconographyDataFilter.value = [];
   loadStateAddress.value      = "loading";
   loadStatePlace.value        = "loading";
 }
@@ -145,8 +125,6 @@ function getData() {
   .then(r => r.data[0])
   .then(data => {
     place.value = data;
-    //xxx iconographyDataFilter.value = indexDataFormatterIconography(place.value.iconography);
-    console.log(">", data.iconography);
     loadStatePlace.value = "loaded";
   })
   .catch(e => { console.error(e); loadStatePlace.value = "error" });
@@ -155,7 +133,7 @@ function getData() {
   .then(r => r.data)
   .then(sortAddressBySource)
   .then(r => { address.value = r[0];
-               loadStateAddress.value = "loaded" })
+               loadStateAddress.value = "loaded"; })
   .catch(e => { console.error(e); loadStateAddress.value = "error" })
 }
 
@@ -175,9 +153,9 @@ watch(props, (newProps, oldProps) => {
 
 onMounted(() => {
   placeIdUuid.value = props.placeIdUuid;
+  associatedPlaces.value = props.associatedPlaces;
   getData();
   $(document).on("keydown", escHandler);
-
 })
 
 onUnmounted(() =>

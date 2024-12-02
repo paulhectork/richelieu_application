@@ -28,26 +28,28 @@
     <div v-if="loadState==='loaded'"
          class="index-headtext-wrapper"
     >
+      <div>
 
-      <p v-if="parisMusees.includes(institutionName)">Ce musée est membre du réseau
-        <RouterLink to="/institution/qr1ea925dc913804199ac1c0576480da5aa">
-          Paris Musées</RouterLink>.</p>
+        <p v-if="parisMusees.includes(institutionName)">Ce musée est membre du réseau
+          <RouterLink to="/institution/qr1ea925dc913804199ac1c0576480da5aa">
+            Paris Musées</RouterLink>.</p>
 
-      <p v-if="bibliSpe.includes(institutionName)">Cette bibliothèque est membre
-        du réseau des
-        <RouterLink to="/institution/qr1882f452734fc4049ae13bab3ae018981">
-          Bibliothèques spécialisées de la ville de Paris</RouterLink>.</p>
+        <p v-if="bibliSpe.includes(institutionName)">Cette bibliothèque est membre
+          du réseau des
+          <RouterLink to="/institution/qr1882f452734fc4049ae13bab3ae018981">
+            Bibliothèques spécialisées de la ville de Paris</RouterLink>.</p>
 
-      <p v-if="institutionName==='Paris Musées'">Le réseau Paris Musées regroupe les
-        institutions suivantes&nbsp;:
-        <span v-html="stringifyInstitutionArray(parisMuseesIndex, true)"></span>.
-      </p>
+        <p v-if="institutionName==='Paris Musées'">Le réseau Paris Musées regroupe les
+          institutions suivantes&nbsp;:
+          <span v-html="stringifyInstitutionArray(parisMuseesIndex, true)"></span>.
+        </p>
 
-      <p v-if="institutionName === 'Bibliothèques spécialisées de la Ville de Paris'">
-        Le réseau des Bibliothèques spécialisées de la Ville de Paris regroupe les
-        institutions suivantes&nbsp;:
-        <span v-html="stringifyInstitutionArray(bsvpIndex, true)"></span>.
-      </p>
+        <p v-if="institutionName === 'Bibliothèques spécialisées de la Ville de Paris'">
+          Le réseau des Bibliothèques spécialisées de la Ville de Paris regroupe les
+          institutions suivantes&nbsp;:
+          <span v-html="stringifyInstitutionArray(bsvpIndex, true)"></span>.
+        </p>
+      </div>
     </div>
 
     <div v-if="loadState === 'loaded'">

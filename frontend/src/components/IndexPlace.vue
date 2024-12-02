@@ -7,21 +7,10 @@
       props:
       * `display`: one of "resource"|"concept".
           passed to `IndexItem` to determine the style used.
-      * `data`   : the array of data to display. the structure is the same
+      * `data`   : `@typedefs.IndexBaseItem[]`
+          the array of data to display. the structure is the same
           no matter the parent which calls IndexBase, or the kind of object
-          to display (Icono, Named Entity...):
-        ```
-        [
-          // 1st object
-          {
-            "idUuid" : <uuid of the resource>,
-            "href"   : <relative url to redirect to on click (without the url origin)>,
-            "img"    : <url to the background image>,
-            "text"   : <text to display in the `IndexItem`>
-          },
-          // other objects
-          {...}
-        ]
+          to display (Icono, Named Entity...)
         ```
 
 -->
@@ -78,13 +67,13 @@ import { globalDefineMap
        , lflDefaultStyle
        , lflDefaultMouseOver
        , lflDefaultMouseOut  } from "@utils/leaflet.js";
-import { clickOrTouchEvent } from "@globals";
 import { capitalizeFirstChar } from "@utils/strings";
+import "@typedefs";
 
 /******************************************************/
 
-const props = defineProps(["display", "data"])
-const map = ref();  // will be defined in `onMounted`
+const props = defineProps(["display", "data"]); /** @type { Array<String, typedefs.IndesBaseItem> } */
+const map = ref();  /** @type {L.Map}, will be defined in `onMounted` */
 
 /******************************************************/
 

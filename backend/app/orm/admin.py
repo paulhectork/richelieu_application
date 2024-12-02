@@ -63,7 +63,7 @@ class Institution(db.Model):
                  "description" : self.description,        # str
                  "iconography" : self.get_iconography(),  # t.Dict
                  "cartography" : self.get_cartography(),  # t.Dict
-                 "dicterory"   : self.get_directory()     # t.Dict
+                 "directory"   : self.get_directory()     # t.Dict
         }
 
 
