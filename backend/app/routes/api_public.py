@@ -39,7 +39,7 @@ from ..orm.admin import (
 )
 
 
-from .to_pydantic import sqlalchemy_to_pydantic
+from .to_pydantic import sqlalchemy_to_pydantic, RelatedEntity
 
 from ..search.search_iconography import make_query, sanitize_params
 
@@ -189,12 +189,8 @@ class Resource:
         return obj.dict()
 
     def serialize_as_link(self, obj):
-        return {
-            "api_route": f"/api/v1/{self.name}",
-            "identifier": obj.id_uuid,
-            "label": obj.label,
-        }
-
+        link = RelatedEntity(api_route=f"/api/v1/{self.name}", identifier=obj.id_uuid, label=obj.label)
+        return link.dict()
 
     def get_paginate(self, query: PaginationParameters):
         page = db.paginate(self.orm_model.query, page=query.page, per_page=query.limit)
@@ -361,7 +357,11 @@ def sanitize_search_query(query):
 ICONOGRAPHY_RESOURCE = IconographyResource()
 
 
-@api.get("/search", summary="search ressources", tags=[IconographyResource.tag])
+@api.get("/search",
+         summary="search ressources",
+         tags=[IconographyResource.tag],
+         doc_ui=True,
+         responses={200: RelatedEntity})
 def search(query: SearchParameters):
     """
     search resource.
