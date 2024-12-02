@@ -3,9 +3,9 @@ from sqlalchemy.orm import class_mapper
 from typing import Type, Dict, Any, List
 
 class RelatedEntity(BaseModel):
-    api_route: str
-    identifier: str
-    label: str
+    api_route: str = Field(description="Route permettant de récupérer la resource liée")
+    id_uuid: str = Field(description="Identitfiant unique la resource liée")
+    label: str = Field(description="libellé de la resource liéz (le nom du champ retourné dépend de la resource)")
 
 
 class DateRange(BaseModel):

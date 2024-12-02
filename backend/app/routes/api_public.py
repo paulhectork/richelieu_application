@@ -133,7 +133,7 @@ class Resource:
     def _add_linked_entity(self, target_route, target):
         return {
             "api_route": f"/api/v1/{target_route}",
-            "identifier": target.id_uuid,
+            "id_uuid": target.id_uuid,
             "label": target.label,
         }
 
@@ -189,7 +189,7 @@ class Resource:
         return obj.dict()
 
     def serialize_as_link(self, obj):
-        link = RelatedEntity(api_route=f"/api/v1/{self.name}", identifier=obj.id_uuid, label=obj.label)
+        link = RelatedEntity(api_route=f"/api/v1/{self.name}", id_uuid=obj.id_uuid, label=obj.label)
         return link.dict()
 
     def get_paginate(self, query: PaginationParameters):
