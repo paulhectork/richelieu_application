@@ -51,12 +51,14 @@ from ..search.search_iconography import make_query, sanitize_params
 
 
 class PaginationParameters(BaseModel):
-    page: Optional[int] | None = 1
-    limit: Optional[int] | None = 20
+    """Paramètres pour les routes fournisant de la pagination"""
+    page: Optional[int] | None = Field(default=1, description="numéro de la page à consulter")
+    limit: Optional[int] | None = Field(default=20, description="nombre maximum de resources décrites par page")
 
 
 class EntityParameters(BaseModel):
-    id_uuid: str
+    """Paramètres pour la récupération d'une resource à partir de son identifiant"""
+    id_uuid: str = Field("identifiant unique de la resource à récupérer")
 
 
 class SearchParameters(BaseModel):
