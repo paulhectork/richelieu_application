@@ -1,4 +1,5 @@
 from typing import Optional
+from enum import Enum
 from functools import cached_property
 
 from flask import jsonify
@@ -61,21 +62,27 @@ class EntityParameters(BaseModel):
     id_uuid: str = Field("identifiant unique de la resource à récupérer")
 
 
+class BooleanEnum(str, Enum):
+    and_selection = 'and'
+    or_selection  = 'or'
+
+
 class SearchParameters(BaseModel):
-    title: Optional[str] | None = ""
-    title_boolean_op: Optional[str] = "and"
-    author: Optional[str] | None = ""
-    author_boolean_op: Optional[str] = "and"
-    publisher: Optional[str] | None = ""
-    publisher_boolean_op: Optional[str] = "and"
-    theme: Optional[str] | None = ""
-    theme_boolean_op: Optional[str] | None = "and"
-    named_entity: Optional[str] | None = ""
-    named_entity_boolean_op: Optional[str] = "and"
-    institution: Optional[str] | None = ""
-    institution_boolean_op: Optional[str] = "and"
-    date: Optional[str] | None = ""
-    date_boolean_op: Optional[str] = "and"
+    """Paramètres pour la recherche des iconographies"""
+    title: Optional[str] | None = Field(default="", description="chaîne de caractères à rechercher dans tous les titres des iconographies")
+    title_boolean_op: BooleanEnum = Field(default=BooleanEnum.and_selection, description="opérateur de sélection pour les titres")
+    author: Optional[str] | None = Field(default="", description="chaîne de caractères à rechercher dans tous les noms des auteurs/autrices")
+    author_boolean_op: BooleanEnum = Field(default=BooleanEnum.and_selection, description="opérateur de sélection pour les auteurs/autrices")
+    publisher: Optional[str] | None = Field(default="", description="chaîne de caractères à rechercher dans tous les noms des éditeurs/éditrices")
+    publisher_boolean_op: BooleanEnum = Field(default=BooleanEnum.and_selection, description="opérateur de sélection pour les éditeurs/éditrices")
+    theme: Optional[str] | None = Field(default="", description="sélection des iconographies correspondant à un ou plusieurs thème")
+    theme_boolean_op: BooleanEnum = Field(default=BooleanEnum.and_selection, description="opérateur de sélection pour les thèmes")
+    named_entity: Optional[str] | None = Field(default="", description="sélection des iconographies correspondant à une ou plusieurs entités nommées")
+    named_entity_boolean_op: BooleanEnum = Field(default=BooleanEnum.and_selection, description="opérateur de sélection pour les entités nommées")
+    institution: Optional[str] | None = Field(default="", description="sélection des iconographies correspondant à une ou plusieurs institutions")
+    institution_boolean_op: BooleanEnum = Field(default=BooleanEnum.and_selection, description="opérateur de sélection pour les institutions")
+    date: Optional[str] | None = Field(default="", description="sélection d'une date ou d'un intervalle de date")
+    date_boolean_op: BooleanEnum = Field(default=BooleanEnum.and_selection, description="opérateur de sélection des dates")
 
 
 class ResourceNotFoundResponse(BaseModel):
@@ -360,7 +367,7 @@ ICONOGRAPHY_RESOURCE = IconographyResource()
 
 
 @api.get("/search",
-         summary="search ressources",
+         summary="Recherche des iconographies",
          tags=[IconographyResource.tag],
          doc_ui=True,
          responses={200: RelatedEntity})
