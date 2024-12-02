@@ -345,7 +345,7 @@ def sanitize_search_query(query):
     for key, val in query.items():
         if "op" in key:
             prepare_query[key] = val
-        elif "date" in key:
+        elif "date" in key and val:
             dates = val.split(col_sep)
             if len(dates) == 1:
                 prepare_query[key] = [{'filter': 'dateExact', 'data': [int(dates[0])]}]
