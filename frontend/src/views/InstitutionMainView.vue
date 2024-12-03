@@ -72,20 +72,21 @@ import H2IndexCount from "@components/H2IndexCount.vue";
 import IndexIconography from "@components/IndexIconography.vue";
 
 import { stringifyInstitutionArray } from "@utils/stringifiers";
+import "@typedefs";
 
 /**************************************************/
 
 const route                = useRoute();
-const idUuid               = ref(route.params.idUuid);  // id_uuid of the current institution
-const institution          = ref({});    // the institution object sent from the backend
-const institutionIndex     = ref([]);    // index of all institutions. fetched from backend
-const institutionName      = ref("");    // the name of the institution. fetched from backend
-const dataFull             = ref([]);    // the complete iconography  data, set from a watcher
+const idUuid               = ref(route.params.idUuid);  /** @type {String} id_uuid of the current institution */
+const institution          = ref({});                   /** @type {typedefs.InstitutionItemFull} the institution object sent from the backend */
+const institutionIndex     = ref([]);                   /** @type {typedefs.InstitutionItemLite[]} index of all institutions. fetched from backend */
+const institutionName      = ref("");                   /** @type {String} the name of the institution. fetched from backend */
+const dataFull             = ref([]);                   /** @type {typedefs.IconographyItemLite[]} the complete iconography  data, set from a watcher */
+const loadState            = ref("loading");            /** @type {typedefs.AsyncRequestState} loaded/loading/error */
 
 const apiTargetIndex       = new URL("/i/institution", __API_URL__);
 const apiTargetInstitution = new URL(`/i/institution/name/${idUuid.value}`, __API_URL__);
 const apiTargetIconography = new URL(`/i/institution/${idUuid.value}`, __API_URL__);
-const loadState            = ref("loading");  // loaded/loading/error
 
 // 2-way binding stuff
 // institution names from `Paris Musées` and
@@ -137,7 +138,7 @@ async function getData() {
     ,
     axios.get(apiTargetIndex.href)
     .then(r => r.data)
-    .then(data => { institutionIndex.value = data })
+    .then(data => { institutionIndex.value = data; })
     ,
     axios.get(apiTargetIconography.href)
     .then(r => r.data)

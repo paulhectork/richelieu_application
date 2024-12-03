@@ -110,21 +110,23 @@ import { onMounted, ref, watch } from "vue";
 
 import axios from "axios";
 
-import { indexDataFormatterThemeCategory
-       , indexDataFormatterNamedEntityCategory } from "@utils/indexDataFormatter";
 import UiLoader from "@components/UiLoader.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
+
+import { indexDataFormatterThemeCategory
+       , indexDataFormatterNamedEntityCategory } from "@utils/indexDataFormatter";
+import "@typedefs";
 
 /*************************************************************/
 
 const props  = defineProps([ "tableName" ]);
 
-const tableName      = ref(props.tableName);
-const loadState      = ref("loading");  // "loading"/"loaded"/"error"
-const dataFull       = ref([]);
+const tableName      = ref(props.tableName); /** @type {String} */
+const loadState      = ref("loading");       /** @type {typedefs.AsyncRequestState} */
+const dataFull       = ref([]);              /** @type {typedefs.ThemeOrNamedEntityCategoryItemFull[]} */
+const databaseCounts = ref();                /** @type {Object<string, number>} super basic stats on the database for an introductory paragraph */
 const display        = "concept";
-const databaseCounts = ref();  // super basic stats on the database for an introductory paragraph
 
 /*************************************************************/
 
@@ -138,24 +140,24 @@ function resetRefs() {
   if ( !["theme", "namedEntity"].includes(props.tableName) ) {
     throw new Error(`ThemeOrNamedEntityCategoryView: "tableName" props must be one of ["theme", "namedEntity"], got "${tableName.value}"`);
   }
-  tableName.value  = props.tableName;
-  dataFull.value   = [];
-  loadState.value  = "loading";
+  tableName.value = props.tableName;
+  dataFull.value  = [];
+  loadState.value = "loading";
 }
 
 /**
  * fetch data from the backend.
  */
 function getData() {
-  const apiTarget  =  tableName.value === "theme"
-                      ? new URL("/i/theme", __API_URL__)
-                      : new URL("/i/named-entity", __API_URL__);
+  const apiTarget  = tableName.value === "theme"
+                   ? new URL("/i/theme", __API_URL__)
+                   : new URL("/i/named-entity", __API_URL__);
 
   axios.get(apiTarget.href)
   .then(r => r.data)
   .then(data => { dataFull.value = tableName.value === "theme"
-                                   ? indexDataFormatterThemeCategory(data)
-                                   : indexDataFormatterNamedEntityCategory(data);
+                                 ? indexDataFormatterThemeCategory(data)
+                                 : indexDataFormatterNamedEntityCategory(data);
                   loadState.value = "loaded";
                 })
   .catch(e => { console.error(e);
@@ -163,7 +165,7 @@ function getData() {
               });
   axios.get(new URL("/i/database-counts", __API_URL__))
   .then(r => r.data)
-  .then(data => { databaseCounts.value = data; })
+  .then(data => { databaseCounts.value = data; console.log(data) })
   .catch(e => console.error(e));
   ;
 

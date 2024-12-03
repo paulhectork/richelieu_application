@@ -113,10 +113,10 @@ const currentlyFiltering = ref(false); /** @type {bool} flag to ensure that one 
 const loadState = ref("loading");      /** @type {typedefs.AsyncRequestState} */
 
 // leaflet objects
-const lflMap = ref();  /** @type {L.Map}, defined in onMounted */
-const lflPlaces = ref();  /** @type {L.GeoJSON}: the places geoJson as a leaflet L.geoJSON object. this object only contains features that match the user filters defined in `CartographyController`. it is this object that is actually added to the map */
-const lflInfoHover = ref();  /** @type {L.Controller} that displays info on hover */
-const lflLayerControl = ref();  /** @type {L.Control.Layers} : used to programatically change background layers */
+const lflMap = ref();             /** @type {L.Map}, defined in onMounted */
+const lflPlaces = ref();          /** @type {L.GeoJSON}: the places geoJson as a leaflet L.geoJSON object. this object only contains features that match the user filters defined in `CartographyController`. it is this object that is actually added to the map */
+const lflInfoHover = ref();       /** @type {L.Controller} that displays info on hover */
+const lflLayerControl = ref();    /** @type {L.Control.Layers} : used to programatically change background layers */
 const lflFallBackBounds = ref();  /** @type {L.LatLngBounds} */
 
 // data from the backend

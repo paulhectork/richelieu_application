@@ -91,15 +91,16 @@ import H2IndexCount from "@components/H2IndexCount.vue";
 import IndexIconography from "@components/IndexIconography.vue";
 
 import { capitalizeFirstChar  } from "@utils/strings";
+import "@typedefs";
 
 /***************************************/
 
 const props = defineProps([ "toIdUuid", "fromIdUuid", "fromTable", "toTable" ]);
 
-const from      = ref({});     // { entryName: "...", idUuid: "qr1...", table: "table name" }
-const to        = ref({});     // { entryName: "...", idUuid: "qr1...", table: "table name" }
-const dataFull  = ref([]);     // array of iconography objects. populated in `getData`
-const loadState = ref("loading");  // "loading"/"loaded"/"error"
+const from      = ref({});         /** @type { {entryName: String, idUuid: String, table: String }*/
+const to        = ref({});         /** @type { {entryName: String, idUuid: String, table: String }*/
+const dataFull  = ref([]);         /** @type { typedefs.IconographyItemLite[] } array of iconography objects. populated in `getData`*/
+const loadState = ref("loading");  /** @type { typedefs.AsyncRequestState }
 
 /***************************************/
 

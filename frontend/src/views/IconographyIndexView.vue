@@ -25,13 +25,13 @@ import UiLoader from "@components/UiLoader.vue";
 import H2IndexCount from "@components/H2IndexCount.vue";
 import IndexIconography from "@components/IndexIconography.vue";
 
+import "@typedefs";
+
 /******************************************/
 
 const apiTarget = new URL("/i/iconography", __API_URL__);
-const dataFull = ref([]);      // the full index, independent of user filters
-const isLoaded = ref(false);   // switched to true when the data is loaded, will hide the loader and show the index
-
-/******************************************/
+const dataFull = ref([]);      /** @type {typedefs.IconographyItemLite[]} the full index, independent of user filters */
+const isLoaded = ref(false);   /** @type {boolean} switched to true when the data is loaded, will hide the loader and show the index */
 
 /******************************************/
 

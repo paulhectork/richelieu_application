@@ -10,7 +10,7 @@
   </div>
   <div v-else>
     <h1>{{ computedAddress }}</h1>
-    <H2IndexCount :indexCount="dataFull.length"
+    <H2IndexCount :indexCount="place.iconography.length"
                 dataType="iconography"
                 v-if="loadStatePlace === 'loaded'"
     ></H2IndexCount>
@@ -35,7 +35,7 @@
           </div>
         </div>
 
-        <IndexIconography :data="dataFull"></IndexIconography>
+        <IndexIconography :data="place.iconography"></IndexIconography>
       </div>
     </div>
   </div>
@@ -55,20 +55,19 @@ import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue
 import H2IndexCount from "@components/H2IndexCount.vue";
 import IndexIconography from "@components/IndexIconography.vue";
 
-import { cartographySourcePriority } from "@globals";
 import { sortAddressBySource } from "@utils/array.js";
+import "@typedefs";
 
 /******************************************************************/
 
 const route = useRoute();
-const idUuid = route.params.idUuid;
-const address = ref([]);  // array of addresses related to that place. fetched from backend
-const source = ref("");   // currently used `source` for `Place.vector_source`, `Address.source` and `Cartography.map_source`
-const place = ref({});    // fetched from backend
-const dataFull = ref([]);   // iconography data. fetched from backend
-const associatedPlaces = ref([]);  // places most frequently tagged together with the current place
+const idUuid = route.params.idUuid; /** @type {String} */
+const address = ref([]);            /** @type {typedefs.AddressItemFull[]} array of addresses related to that place. fetched from backend */
+const source = ref("");             /** @type {String} currently used `source` for `Place.vector_source`, `Address.source` and `Cartography.map_source` */
+const place = ref({});              /** @type {typedefs.PlaceItemFull} fetched from backend */
+const associatedPlaces = ref([]);   /** @type {typedefs.PlaceItemLite[]} places most frequently tagged together with the current place */
 
-// loading/loaded/error
+/** @type {typedefs.AsyncRequestState} */
 const loadStatePlace = ref("loading");
 const loadStateAddress = ref("loading");
 const loadStateAssociated = ref("loading");
@@ -78,6 +77,7 @@ const loadStateAssociated = ref("loading");
  * represent it as a string, or undefined.
  * if `source` is defined, then select address by its source;
  * else, by the order specified in `sourcePriority`
+ * @type {String?}
  */
 const computedAddress = computed(() =>
   source.value && address.value?.filter(a => a.source === source.value).length
@@ -97,7 +97,6 @@ async function getData() {
   .then(r => r.data)
   .then(data => {
     place.value = data[0];
-    dataFull.value = place.value.iconography;
     loadStatePlace.value = "loaded";
   })
   .catch(e => { console.error(e);

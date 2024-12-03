@@ -28,6 +28,33 @@
  * @property {(String|URL)} img  : url to the image displayed on the IndexItem
  */
 
+/**
+ * @typedef HomeItemPreviewItem
+ *    data model used by @components/HomeItemPreview
+ * @type {String} title_main
+ * @type {String} title_second
+ * @type {String} title_sub
+ * @type {(String|URL)} href
+ * @type {String[]} thumbnail
+ */
+
+/** formkit stuff */
+
+/**
+ * @typedef FormKitOptionSingle
+ *    structure of the "options" prop used by formkit
+ *    see: https://formkit.com/inputs/select#array-of-objects.
+ * @type {object}
+ * @property {String} value: the "backend" (value that will be transmitted to the code when selected)
+ * @property {String} label: "frontend" (the text displayed to the user)
+ */
+
+/**
+ * @typedef FormKitOptionArray
+ *    an array of `FormKitOptionSingle`, passed to the formkit `options` prop.
+ * @type {FormKitOptionSingle[]}
+ */
+
 /** backend responses */
 /** iconography */
 
@@ -109,7 +136,7 @@
 
 /**
  * @typedef ThemeOrNamedEntityCategoryItem
- *    view of a category
+ *    very light view of a category
  * @type {object}
  * @property {String} category_name
  * @property {String} category_slug

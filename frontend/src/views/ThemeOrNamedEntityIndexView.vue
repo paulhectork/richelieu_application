@@ -186,7 +186,6 @@ import { urlToFrontendTheme
 import { indexDataFormatterTheme
        , indexDataFormatterNamedEntity } from "@utils/indexDataFormatter";
 import { capitalizeFirstChar } from "@utils/strings";
-
 import "@typedefs";
 
 /*************************************************************/
@@ -200,14 +199,13 @@ const tableName              = ref();    /** @type {String} "theme"|"namedEntity
 const viewType               = ref();    /** @type {String} "collection"|"tree". the kind of display to use. defaults to "collection" */
 const categorySlug           = ref();    /** @type {String} theme.category_slug or named_entity.category_slug of "all" if we want to retrieve all themes/named entities */
 const categoryName           = ref()     /** @type {String} theme.category_name or named_entity.category_name or "tout" if categorySlug === 'all' */
-const categories             = ref([]);  /** @type {typedefs.ThemeOrNamedEntityCategoryItem} : all allowed categories */
+const categories             = ref([]);  /** @type {typedefs.ThemeOrNamedEntityCategoryItem[]} : all allowed categories */
 const dataCollectionFull     = ref([]);  /** @type {typedefs.ThemeOrNamedEntityItemLite[]} the full index when viewType==='collection', independent of user filters */
 const dataCollectionFilter   = ref([]);  /** @type {typedefs.IndexBaseItem[]} the data to pass to `IndexBase.vue` when viewType==='collection'. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> } */
 const dataTree               = ref([]);  /** @type {typedefs.ThemeOrNamedEntityTree} the data when viewType==='tree' */
 const expandedTreeCategories = ref([]);  /** @type {String[]} array of `category.category_slug`. all categories with a category_slug in this array will be expanded in the HTML. */
 
-const loadState = ref("loading");  // toggled to true when data has loaded, hides the loader
-
+const loadState = ref("loading");  /** @type {typedefs.AsyncRequestState} */
 
 /*************************************************************/
 /** DATA FETCHING */

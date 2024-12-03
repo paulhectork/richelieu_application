@@ -23,18 +23,19 @@
 import { onMounted, ref } from "vue";
 import axios from "axios";
 
-import { indexDataFormatterInstitution } from "@utils/indexDataFormatter";
-
 import UiLoader from "@components/UiLoader.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
 
+import { indexDataFormatterInstitution } from "@utils/indexDataFormatter";
+import "@typedefs";
+
 /*******************************************************************/
 
 const apiTarget  = new URL ("/i/institution", __API_URL__);
-const dataFull   = ref([]);
-const dataFilter = ref([]);
-const loadState  = ref("loading");  // loading/loaded/error
+const dataFull   = ref([]);         /** @type {typedefs.InstitutionItemLite[]} */
+const dataFilter = ref([]);         /** @type {typedefs.IndexBaseItem[]} */
+const loadState  = ref("loading");  /** @type {typedefs.AsyncRequestState} loading/loaded/error */
 
 /*******************************************************************/
 

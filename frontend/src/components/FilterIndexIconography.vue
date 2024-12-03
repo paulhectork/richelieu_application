@@ -19,11 +19,11 @@
   css-wise, it supports `main-default` and `negative-default` themes.
 
   props:
-    - data (Array<Object>):
+    - data (typedefs.IconographyItemLite[]):
         an array of Iconography objects.
 
   emits:
-    - iconographyFilter (Array<Object>):
+    - iconographyFilter (Array<typedefs.IconographyItemLite[]>):
         the `data`, updated to fit the user-defined filters, is sent back to the parent.
 -->
 
@@ -135,21 +135,33 @@ import _ from "lodash";
 import UiLoader from "@components/UiLoader.vue";
 
 import { simplifyHtml } from "@utils/strings";
+import "@typedefs";
 
 /*************************************/
+
+/**
+ * @typedef FilterParameters
+ *    the object containing the different filters
+ * @type {object}
+ * @property {String?} titleFilter: title contains titleFilter
+ * @property {String?} authorFilter: IconographyItemLite.authors.entry_name contains authorFilter
+ * @property {Array<Number>?} dateFilter : IconographyItemLite.date is included in dateFilter. format [YYYY,YYYY]
+ * @property {("author"|"date"|"title")} orderBy: the key by which to order IconographyItemLite[]
+ * @property {("asc"|"desc")} orderDirection : sorting order
+ */
 
 const props                   = defineProps(["data"]);
 const emit                    = defineEmits(["iconographyFilter"]);  // after filtering, send filtered data back to the parent
 
-const data                    = ref();  // the data sent from the parent. this is never modified (so why is it in a ref ???)
-const theForm                 = ref();  // the FormKitNode form.
-const currentFilter           = ref();  // the filter applied by the user, defined in onSubmit. this ref allows to compare a new filter with the previous filter, to avoid running the same filter twice.
-const currentIconographyCount = ref();  // number of iconography items currently displayed
-const minDate                 = ref();  // min/max allowed dates for the slider `#date-slider`.
-const maxDate                 = ref();  // min/max allowed dates for the slider `#date-slider`.
+const data                    = ref();  /** @type {typedefs.IconographyItemLite[]} the data sent from the parent. this is never modified (so why is it in a ref ???) */
+const theForm                 = ref();  /** @type {FormKitNode} the FormKitNode form. */
+const currentFilter           = ref();  /** @type {FilterParameters} the filter applied by the user, defined in onSubmit. this ref allows to compare a new filter with the previous filter, to avoid running the same filter twice. */
+const currentIconographyCount = ref();  /** @type {Number} number of iconography items currently displayed */
+const minDate                 = ref();  /** @type {number[]} min/max allowed dates for the slider `#date-slider`. */
+const maxDate                 = ref();  /** @type {number[]} min/max allowed dates for the slider `#date-slider`. */
 
-const isLoading               = ref(false);  // when true, a loader will be displayed on top of the form.
-const disableOrderDirection   = ref(true);   // when true, `orderDirection` is disabled
+const isLoading               = ref(false);  /** @type {typedefs.AsyncRequestState} when true, a loader will be displayed on top of the form. */
+const disableOrderDirection   = ref(true);   /** @type {typedefs.AsyncRequestState} when true, `orderDirection` is disabled */
 
 /*************************************/
 
@@ -165,8 +177,8 @@ const disableOrderDirection   = ref(true);   // when true, `orderDirection` is d
  *      to find the actual data to be sorted
  * 3) return the 2 arrays
  *
- * @param {Array<Object>} dataObj : the array of Iconography objects to sort
- * @returns {Array<Array>} : 2 arrays:
+ * @param {typedefs.IconographyItemLite[]}
+ * @returns {typedefs.IconographyItemLite[][]} : 2 arrays:
  *  - 1 of items that have been sorted
  *  - 1 of items that could not be sorted
  */
@@ -187,6 +199,12 @@ function orderByTitle(dataObj) {
   return [ dataObjWithTitle, dataObjWithoutTitle ];
 }
 
+/**
+ * @param {typedefs.IconographyItemLite[]}
+ * @returns {typedefs.IconographyItemLite[][]} : 2 arrays:
+ *  - 1 of items that have been sorted
+ *  - 1 of items that could not be sorted
+ */
 function orderByAuthor(dataObj) {
   let dataObjWithAuthor = dataObj.filter(d =>
     d.authors && d.authors.length);
@@ -204,6 +222,12 @@ function orderByAuthor(dataObj) {
   return [ dataObjWithAuthor, dataObjWithoutAuthor ];
 }
 
+/**
+ * @param {typedefs.IconographyItemLite[]}
+ * @returns {typedefs.IconographyItemLite[][]} : 2 arrays:
+ *  - 1 of items that have been sorted
+ *  - 1 of items that could not be sorted
+ */
 function orderByDate(dataObj) {
   let dataObjWithDate = dataObj.filter(d =>
     d.date && d.date.length);
@@ -221,14 +245,8 @@ function orderByDate(dataObj) {
  *
  * TODO: optimize this function ?
  *
- * @param {Object} filterParams: the user-defined filter.structure:
- *  { titleFilter    : String|undefined,
- *    authorFilter   : String|undefined,
- *    dateFilter     : undefined|Array<Number>,   // [YYYY,YYYY]
- *    orderBy        : "author"|"date"|"title",
- *    orderDirection : "asc"|"desc"?
- *  }
- * @param {Array<Object>} dataObj: an array of Iconography objects
+ * @param {FilterParameters} filterParams
+ * @param {typedefs.IconographyItemLite[]}
  */
 function filterIconography(filterParams, dataObj) {
   // 1) FILTERING dataObj
@@ -294,7 +312,7 @@ function filterIconography(filterParams, dataObj) {
  * - do the filtering
  * - emit the filtered data back to the parent
  *
- * @param {Object} formData : the filter
+ * @param {FilterParameters} formData : the filter
 ​ * @param {FormKitNode} formNode : formKit formNode. https://formkit.com/api-reference/formkit-core#formkitnode
  */
 function onSubmit(formData, formNode) {
@@ -331,7 +349,7 @@ function onOrderByInput(newInput) {
 
 /**
  * define all the refs from `props.data`. used in `onMounted` and `watch(props)`
- * @param {Array<Object>} theData: array of Iconography objects to filter
+ * @param {typedefs.IconographyItemLite[]} theData: array of Iconography objects to filter
  */
 function setRefs(theData) {
   data.value = theData;
@@ -340,7 +358,6 @@ function setRefs(theData) {
   maxDate.value = Math.max(...theData.filter(i => i.date != null && i.date.length)
                                         .map(i => i.date[1]));
   currentIconographyCount.value = theData.length;
-
 }
 
 /*************************************/

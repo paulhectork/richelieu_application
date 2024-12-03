@@ -102,30 +102,31 @@ import IiifViewer from "@components/IiifViewer.vue";
 
 import { urlToIconographyFile } from "@utils/url";
 import { randomColorLight } from "@utils/colors";
+import "@typedefs";
 
 /****************************************************/
 
 const router = useRouter();
 
-const viewer = ref();
+const viewer = ref();  /** @type {OpenSeadragon} */
 const iiifUrl           = "https://apicollections.parismusees.paris.fr/iiif/320057446/manifest";
 const imgUrl            = "qr16080c31522fa44a3b238cb3790054d1c.jpg";
 const htmlId            = "intro-iiif-viewer";
 const idUuidIconography = "qr11679c39145004726a591f2b7086234e5";
 
-const dbCounts = ref({});
-const showIconography = ref(false)
-const showInstitution = ref(false)
-const showNamedEntity = ref(false)
-const showTheme       = ref(false)
-const showPlace       = ref(false)
-const showEnter       = ref(false);
+const dbCounts = ref({});            /** @type {Object<string, number>} */
+const showIconography = ref(false);  /** @type {boolean} */
+const showInstitution = ref(false);  /** @type {boolean} */
+const showNamedEntity = ref(false);  /** @type {boolean} */
+const showTheme       = ref(false);  /** @type {boolean} */
+const showPlace       = ref(false);  /** @type {boolean} */
+const showEnter       = ref(false);  /** @type {boolean} */
 
 const customColors = [ randomColorLight(), randomColorLight()
                      , randomColorLight(), randomColorLight() ];
 
-const loadStateIiif   = ref("loading");  // "loading|loaded|error"
-const loadStateCounts = ref("loading");  // "loading|loaded|error"
+const loadStateIiif   = ref("loading");  /** @type {typedefs.AsyncRequestState} */
+const loadStateCounts = ref("loading");  /** @type {typedefs.AsyncRequestState} */
 
 const vasserotImgSrc = new URL('/statics/other/adp_vasserot_crop.jpg', __STATICS_URL__);
 

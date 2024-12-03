@@ -1,3 +1,13 @@
+<!-- IndexItem.vue
+  a single item in @components/IndexBase
+
+  props:
+    - item (typedefs.IndexBaseItem)
+        the item to format
+    - display (String)
+        a keyword to switch between display styles
+-->
+
 <template>
   <RouterLink v-if="display==='resource'"
      class="index-item index-item-resource"
@@ -10,11 +20,6 @@
     <p v-html="item.text"></p>
   </RouterLink>
 
-  <!--<RouterLink v-if="display==='concept'"
-     class="index-item index-item-concept"
-     :to="item.href"
-     :style="{ 'background-image': `url(${item.img})` }"
-  >-->
   <RouterLink v-if="display==='concept'"
      class="index-item index-item-concept"
      :to="item.href"

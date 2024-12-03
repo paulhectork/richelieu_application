@@ -62,20 +62,21 @@ import "@typedefs";
 /**************************************************/
 
 const route         = useRoute();
-const theme         = ref({});     /** @type {typedefs.ThemeOrNamedEntityItemFull}: the theme object sent from the backend */
-const themeName     = ref("");     /** @type {String} */
-const backendLoaded = ref(false);  /** @type {bool} when swittched to true, the loader is removed */
+const theme         = ref({});                   /** @type {typedefs.ThemeOrNamedEntityItemFull}: the theme object sent from the backend */
+const themeName     = ref("");                   /** @type {String} */
+const backendLoaded = ref(false);                /** @type {bool} when swittched to true, the loader is removed */
 const idUuid        = ref(route.params.idUuid);  /** @type {String} */
 
 const associatedThemes        = ref([]); /** @type { { count: Number, id_uuid: String, entry_name: string }[] } themes most frequently associated with the current theme */
 const associatedNamedEntities = ref([]); /** @type { { count: Number, id_uuid: String, entry_name: string }[] } named entites most frequently associated with the current theme  */
 
-// the backend URLs, defined as `computed` to handle reactivity
+/** @type {computed<URL>} the backend URLs, defined as `computed` to handle reactivity */
 const apiTargetThemeName = computed(() =>
   new URL(`/i/theme/name/${idUuid?.value}`, __API_URL__));
 const apiTargetTheme  = computed(() =>
   new URL(`/i/theme/${idUuid?.value}`, __API_URL__) );
-// the theme name
+
+/** @type {String} */
 const formattedThemeName = computed(() =>
   themeName.value ? capitalizeWords(themeName.value) : themeName.value );
 

@@ -5,7 +5,7 @@
         display (string): one of 'article'|'category',
           to set HTML style classes
 
-     resource data model:
+     resource data model: @typedefs.HomeItemPreviewItem
      {
       title_main   : <string. the main item to be displayed>,
       title_second : <string. an item that will be displayed next to title_main, in gray>,
@@ -68,11 +68,12 @@ import { ref, onMounted } from "vue";
 import $ from "jquery";
 
 import { randomColorLight, randomColorDark } from "@utils/colors.js";
+import "@typedefs";
 
 /*************************************************/
 
 const props = defineProps(["resource", "display"]);
-const resource = ref();
+const resource = ref();                                /** @type {typedefs.HomeItemPreviewItem} */
 const htmlId = `home-item-preview-${window.crypto.randomUUID()}`;
 
 /*************************************************/

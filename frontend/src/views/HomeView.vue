@@ -139,9 +139,9 @@ import "@typedefs";
 /**************************************************/
 
 // `*Formatted`: arrays restructured to fit the HomeItemPreview data model
-const namedEntitiesFormatted = ref([]);
-const themesFormatted        = ref([]);
-const articlesFormatted      = ref([]);
+const namedEntitiesFormatted = ref([]);  /** @type { typedefs.HomeItemPreviewItem } */
+const themesFormatted        = ref([]);  /** @type { typedefs.HomeItemPreviewItem } */
+const articlesFormatted      = ref([]);  /** @type { typedefs.HomeItemPreviewItem } */
 
 /**************************************************/
 

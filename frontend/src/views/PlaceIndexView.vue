@@ -30,21 +30,27 @@ import axios from "axios";
 
 import $ from "jquery";
 
-import { indexDataFormatterPlace } from "@utils/indexDataFormatter";
-import UiLoader from "@components/UiLoader.vue";
 import IndexPlace from "@components/IndexPlace.vue";
+import UiLoader from "@components/UiLoader.vue";
+
+import { indexDataFormatterPlace } from "@utils/indexDataFormatter";
+import "@typedefs";
+
+/**********************************************/
 
 const apiTarget  = new URL("/i/place", __API_URL__);
-const dataFull   = ref([]);     // the full index, independant of user filters
-const dataFilter = ref([]);     // the data to pass to `IndexBase.vue`, can vary based on user filters
-const display    = "resource";  // which display style to use
-const isLoaded   = ref(false);  // hide the loader, show the index when toggled to true
+const dataFull   = ref([]);     /** @type {typedefs.PlaceItemLite[]} the full index, independant of user filters */
+const dataFilter = ref([]);     /** @type {typedefs.IndexBaseItem[]} the data to pass to `IndexBase.vue`, can vary based on user filters */
+const display    = "resource";  /** @type {String} which display style to use */
+const isLoaded   = ref(false);  /** @type {typedefs.AsyncRequestState} hide the loader, show the index when toggled to true */
+
+/**********************************************/
 
 onMounted(() => {
   axios.get(apiTarget).then((r) => {
     dataFull.value   = JSON.parse(r.request.response);
     dataFilter.value = indexDataFormatterPlace(dataFull.value);
-    isLoaded.value = true;
+    isLoaded.value   = true;
   })
 
   // quick fix for the height/scrolling of `.bottom-container`

@@ -1,16 +1,11 @@
 <!-- FormKit custom component with tabs-like selection
 
     the parent can pass 2 props to this component:
-    * `value`  : the default value in one of our options.
-    * `options`: the different options for this select.
-                 defaults to an empty array.
-                 options must be an array of objects,
-                 following the structure:
-                 [
-                  { 'value': <value1>, 'label': <label1> },  // object 1
-                  { 'value': <value2>, 'label': <label2> }   // object 2
-                 ]
-                 https://formkit.com/inputs/select#array-of-objects.
+    * `value`  (String)
+        the default value in one of our options.
+    * `options` (FormKitOptions)
+        the different options for this select.
+        defaults to an empty array.
 
     our custom input doesn't check all the things in the checklist
     as they're not needed by the project.
@@ -70,22 +65,19 @@
 <script setup>
 import { onMounted, ref } from "vue";
 
+import "@typedefs";
+
 /*******************************************/
 
 const props = defineProps([ "context" ]);
-const optionsArray = props.context.options || [];
-const defaultValue = props.context.value
+const optionsArray = props.context.options || [];  /** @type {typedefs.FormKitOptionArray} */
+const defaultValue = props.context.value           /** @type {String?} : if the "value" is passed from the parent in the context, use it; else, if options are provided, select the 1st value; else, `undefined` */
                      ? props.context.value
                      : optionsArray.length
                      ? optionsArray[0].value
                      : undefined;
 const htmlId = `form-radio-tabs-${window.crypto.randomUUID()}`;
 const checkedInput = ref(defaultValue);  // `v-model` on the `input`, that helps us to track the currently checked item
-
-function propagateInputToFormKit(e) {
-  props.context.node.input(e.target.value);
-
-}
 
 /*******************************************/
 onMounted(() => {

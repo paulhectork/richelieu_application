@@ -9,9 +9,10 @@
   - it does so without any ajax requests.
 
   the structure of a single Theme or NamedEntity object is:
-  ```
-  {
+  @typedefs.ThemeOrNamedEntityItemLite :
+    {
     "category_name": "consommer",
+    "category_slug": "consommer",
     "entry_name": "alimentation",
     "iconography_count": 364,
     "id_uuid": "qr17eaf451869db4d64b5d9942651d7ed5b",
@@ -19,7 +20,7 @@
       "qr1b6cc58cb98f14868ad4f0d9120cfbb9b_thumbnail.jpg"
     ]
   }
-  ```
+
 -->
 
 <template>
@@ -122,24 +123,40 @@ import _ from "lodash";
 import UiLoader from "@components/UiLoader.vue";
 
 import { simplifyHtml } from "@utils/strings";
+import "@typedefs";
 
 /**************************************/
+
+/**
+ * @typedef FilterParameters
+ *    theme or named entity filter parameters structure
+ * @type {object}
+ * @property {String?} entryNameFilter: themes or named enitity names must contain this string
+ * @property {number[]?} countSlider: filter only items within a range of [min, max]
+ * @property {String?} orderBy: sorting key
+ * @property {("asc"|"desc")} orderDirection: sorting direction
+
+ */
 
 const props = defineProps(["data"]);
 const emit  = defineEmits(["themeOrNamedEntityFilter"]);
 
-const data          = ref();
-const theForm       = ref();
-const currentFilter = ref();
-const currentCount  = ref();
-const sliderMin     = ref();
-const sliderMax     = ref();
+const data          = ref();  /** @type {typedefs.ThemeOrNamedEntityItemLite[]} */
+const theForm       = ref();  /** @type {FormKitNode} */
+const currentFilter = ref();  /** @type {FilterParameters?} */
+const currentCount  = ref();  /** @type {Number?} */
+const sliderMin     = ref();  /** @type {Number?} */
+const sliderMax     = ref();  /** @type {Number?} */
 
 const isLoading     = ref(false);
 const disableOrderDirection = ref(true);  // `orderDirection` is disabled unless `orderBy` is not undefined.
 
 /**************************************/
 
+/**
+ * reset the refs
+ * @param {typedefs.ThemeOrNamedEntityItemLite[]} theData : new array of themes or named entites
+ */
 function setRefs(theData) {
   data.value = theData;
   currentCount.value = theData.length;
@@ -158,14 +175,8 @@ function onOrderByInput(theInput) {
 /**
  * do the actual filtering
  *
- * @param {Object} filterParams: user-defined filters. structure:
- * {
- *   "entryNameFilter": String?,
- *   "countSlider": Array<Number>?,
- *   "orderBy": String?,
- *   "orderDirection": "asc"|"desc"?
- * }
- * @param {Array<Object>} dataObj: array of Theme or NamedEntity objects.
+ * @param {FilterParameters} filterParams: user-defined filters
+ * @param {typedefs.ThemeOrNamedEntityItemLite[]} dataObj: array of Theme or NamedEntity objects.
  */
 function filterThemeOrNamedEntity(filterParams, dataObj) {
 
@@ -201,7 +212,7 @@ function filterThemeOrNamedEntity(filterParams, dataObj) {
 /**
  * this function is exactly the same as `@components/FilterIndexIconography.vue`.
  *
- * @param {Object} formData : the filter
+ * @param {FilterParameters} formData : the filter
 ​ * @param {FormKitNode} formNode : formKit formNode. https://formkit.com/api-reference/formkit-core#formkitnode
  */
 function onSubmit(formData, formNode) {
