@@ -35,14 +35,20 @@
       </RouterLink>
     </h1>
 
-    <div id="burger"
-         :class="props.menuActive ? 'burger-cross' : ''"
-         @click="emit('menuActiveUpdate', !props.menuActive)"
-         @touchend="emit('menuActiveUpdate', !props.menuActive)"
-    >
-      <span></span>
-      <span></span>
-      <span></span>
+    <div class="navbar-right-wrapper">
+      <TheQuickSearchBar></TheQuickSearchBar>
+
+      <div class="burger-wrapper">
+        <div id="burger"
+             :class="props.menuActive ? 'burger-cross' : ''"
+             @click="emit('menuActiveUpdate', !props.menuActive)"
+             @touchend="emit('menuActiveUpdate', !props.menuActive)"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
     </div>
   </nav>
 </template>
@@ -51,7 +57,10 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router';
 import { onMounted, onUnmounted, computed, ref } from "vue";
+
 import $ from "jquery";
+
+import TheQuickSearchBar from "@components/TheQuickSearchBar.vue";
 
 import { domStore } from "@stores/dom";
 import { clickOrTouchEvent } from "@globals";
@@ -97,6 +106,16 @@ h1 > a {
   height: calc(var(--cs-navbar-height) - 10px);
   object-fit: contain;
   margin-left: 10px;
+}
+.navbar-right-wrapper {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+.burger-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #burger {
   width: calc(var(--cs-navbar-height) - 20px);

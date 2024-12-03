@@ -50,6 +50,9 @@ const router = createRouter({
       path: '/recherche',
       component: () => import("@views/AdvancedSearchView.vue")
     }, {
+      path: '/recherche-rapide',
+      component: () => import("@views/QuickSearchView.vue")
+    }, {
       path: '/iconographie',
       component: () => import("@views/IconographyIndexView.vue")
     }, {
