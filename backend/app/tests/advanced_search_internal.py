@@ -1,15 +1,18 @@
+"""
+test the advanced search module using the internal API
+(route "/i/search/iconography")
+
+the batches of tests here test at the same time:
+  - the route in `src/routes/api_internal.py` (parameter sanitization and validation)
+  - the advanced search module (`src/search/search_iconography.py`)
+by running the same queries as raw sql and http post requests.
+"""
+
 from sqlalchemy import text
 import unittest
 
 from ..app import app, db
 from .. import orm
-
-
-# *******************************************
-# test our sql queries and query builders,
-# and especially the query builders inn
-# `app.search`
-# *******************************************
 
 
 """
@@ -53,7 +56,7 @@ ON q1.id = q2.id;
 
 
 
-class TestQueries(unittest.TestCase):
+class TestAdvancedSearchInternal(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client()
         self.route = "/i/search/iconography"
@@ -77,7 +80,6 @@ class TestQueries(unittest.TestCase):
         '%' is a special character in python strings, so we need to prefix
         strings that contain it with 'r'.
         """
-
         # queries is an array of [ <route params>, <raw sql query> ]
         queries = [
             [ { "title": ["bourse", "théâtre"] },
@@ -241,6 +243,42 @@ class TestQueries(unittest.TestCase):
                 AND named_entity.entry_name IN ('Galerie Vivienne')
               );
               """
+            ]
+            ,
+            # chaining `and`s
+            [ { "theme"            : ["commerce"],
+                "themeBooleanOp" : "and",
+                "title"            : ["galerie"],
+                "titleBooleanOp" : "and",
+                "author"           : ["atget"],
+                "authorBooleanOp": "and"  },
+              r"""
+              SELECT DISTINCT iconography.id_uuid
+              FROM iconography
+              WHERE iconography.id_uuid IN (
+                SELECT iconography.id_uuid
+                FROM iconography
+                JOIN r_iconography_theme
+                ON r_iconography_theme.id_iconography = iconography.id
+                JOIN theme
+                ON r_iconography_theme.id_theme = theme.id
+                AND theme.entry_name IN ('commerce')
+              ) AND iconography.id_uuid IN (
+                  SELECT DISTINCT iconography.id_uuid
+                  FROM iconography
+                  JOIN r_iconography_actor
+                  ON r_iconography_actor.id_iconography = iconography.id
+                  AND r_iconography_actor.role = 'author'
+                  JOIN actor
+                  ON r_iconography_actor.id_actor = actor.id
+                  AND actor.entry_name ILIKE ANY(ARRAY['%atget%'])
+              ) AND iconography.id_uuid IN (
+                  SELECT DISTINCT iconography.id_uuid
+                  FROM iconography
+                  JOIN title
+                  ON title.id_iconography = iconography.id
+                  AND title.entry_name ILIKE ANY(ARRAY['%galerie%'])
+              );"""
             ]
             ,
             # fancier query
@@ -407,8 +445,12 @@ class TestQueries(unittest.TestCase):
                 r_sql = self.db.session.execute(text(raw_sql))
 
                 if r_http.status_code != 200:
-                    print(f"\n\n{'~'*50}\n", r_http.get_data(True), f"\n{'~'*50}\n\n")
-                    exit()
+                    print( f"\n\n{'*'*100}\n"
+                         , r_http.get_data(True)
+                         , f"\n{'*'*100}\n"
+                         , "with params : ", http_params
+                         , f"\n{'*'*100}\n\n")
+                    # exit()
 
                 r_http_count = len(r_http.json)
                 r_sql_count = r_sql.rowcount
@@ -430,7 +472,6 @@ class TestQueries(unittest.TestCase):
         error to be raised.
         here, we don't need to check for raw SQL or anything.
         """
-
         # get on this route returns a 400
         with self.app.app_context():
             r = self.client.get(self.route)
