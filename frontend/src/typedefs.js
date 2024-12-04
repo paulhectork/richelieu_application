@@ -19,6 +19,49 @@
  */
 
 /**
+ * @typedef QuickSearchResultGroupArray
+ *    the results of a quick search
+ *    (initiated in `@components/TheQuickSeachBar`
+ *    and processed in `@modules/quickSearchBackend`),
+ *    grouped by page type (article, named entity, place...)
+ * @type {QuickSearchResultGroup[]}
+ */
+
+/**
+ * @typedef QuickSearchResultFlatArray
+ *    the results of a quick search, but without
+ *    group hierarchy and only result items.
+ * @type {QuickSearchResultItem[]}
+ */
+
+/**
+ * @typedef QuickSearchResultGroup
+ *    a group of results in a quick search. a `group`
+ *    is defined for a certain page type: theme, icono, articles...
+ * @type {Object}
+ * @property {("iconography"|"theme"|"named_entity"|"place"|"institution"|"article")} groupName
+ *    1 result type per data type + 1 for the articles, which are also queried
+ * @property { QuickSearchResultItem[] } entries
+ *    an array of all the results for that group
+ */
+
+/**
+ * @typedef QuickSearchResultItem
+ *    an individual result in a quick search. this contains
+ *    enough data to display a "result title" to the user and to
+ *    redirect to another page of the website.
+ * @type {Object}
+ * @property {String} entryName : the "name" of the result displayed to the user
+ * @property {String | URL | RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric} entryUrl
+ *    the URL to redirect to, either as a string, a URL or a vue-router object.
+ */
+
+/**
+ * @typedef QuickSearchResultItemEntries
+ *    the individidual search results.
+ */
+
+/**
  * @typedef IndexBaseItem
  *    data structure expected by `@components/IndexBase.vue`
  * @type {object}

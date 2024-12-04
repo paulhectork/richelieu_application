@@ -106,18 +106,25 @@ const validateText = (txt) =>
  * @param {FormKitNode} node : the node to validate
  * @returns {boolean}
  */
-export function textValidator(node) {
-  return validateText(node.value);
-}
+export const textValidator = (node) =>
+  validateText(node.value);
+
 /**
  * validate a repeatable text element
  * @param {FormKitNode} node: the node to validate
  * @returns {boolean}
  */
-export function textArrayValidator(node) {
-  return node.value.every(validateText);
-}
+export const textArrayValidator = (node) =>
+  node.value.every(validateText);
 
+/**
+ * same as `textValidator` using `validateText`,
+ * but we don't allow empty values. works as expected.
+ * @param {FormKitNode} node: the node to validate
+ * @returns {boolean}
+ */
+export const textValidatorNoEmpty = (node) =>
+  ((s) => typeof s === "string" && s.length >= 3)(node.value);
 
 /*******************************************/
 // the messages
