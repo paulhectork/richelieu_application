@@ -56,10 +56,12 @@ ON q1.id = q2.id;
 class TestQueries(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client()
+        self.route = "/i/search/iconography"
         self.app = app
         self.db = db
     def tearDown(self):
         self.client = None
+        self.route = None
         self.app = None
         self.db = None
 
@@ -75,7 +77,6 @@ class TestQueries(unittest.TestCase):
         '%' is a special character in python strings, so we need to prefix
         strings that contain it with 'r'.
         """
-        route = "/i/search/iconography"
 
         # queries is an array of [ <route params>, <raw sql query> ]
         queries = [
@@ -170,7 +171,7 @@ class TestQueries(unittest.TestCase):
 
         with self.app.app_context():  # avoid RuntimeError
             for ( http_params, raw_sql ) in queries:
-                r_http = self.client.post(route, json=http_params)
+                r_http = self.client.post(self.route, json=http_params)
                 r_sql = self.db.session.execute(text(raw_sql))
                 r_http_count = len(r_http.json)
                 r_sql_count = r_sql.rowcount
@@ -189,7 +190,6 @@ class TestQueries(unittest.TestCase):
         """
         test the combination of different params with AND, OR, NOT boolean operators.
         """
-        route = "/i/search/iconography"
         queries = [
             # basic OR
             [ { "namedEntity"   : [ "Galerie Vivienne" ],
@@ -403,7 +403,7 @@ class TestQueries(unittest.TestCase):
         # the queries change but the tests are the same as in the previous function
         with self.app.app_context():  # avoid RuntimeError
             for ( http_params, raw_sql ) in queries:
-                r_http = self.client.post(route, json=http_params)
+                r_http = self.client.post(self.route, json=http_params)
                 r_sql = self.db.session.execute(text(raw_sql))
 
                 if r_http.status_code != 200:
@@ -430,11 +430,10 @@ class TestQueries(unittest.TestCase):
         error to be raised.
         here, we don't need to check for raw SQL or anything.
         """
-        route = "/i/search/iconography"
 
         # get on this route returns a 400
         with self.app.app_context():
-            r = self.client.get(route)
+            r = self.client.get(self.route)
             self.assertEqual(r.status_code, 400)
 
         # assert that all the below queries will raise errors
@@ -450,7 +449,7 @@ class TestQueries(unittest.TestCase):
         ]
         with self.app.app_context():
             for http_params in queries:
-                r = self.client.post(route, json=http_params )
+                r = self.client.post(self.route, json=http_params )
                 if r.status_code != 500:
                     print(http_params)
                 self.assertEqual(r.status_code, 500)
