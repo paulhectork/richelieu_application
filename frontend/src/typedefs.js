@@ -22,7 +22,7 @@
  * @typedef QuickSearchResultGroupArray
  *    the results of a quick search
  *    (initiated in `@components/TheQuickSeachBar`
- *    and processed in `@modules/quickSearchBackend`),
+ *    and processed in `@modules/quickSearchInternals`),
  *    grouped by page type (article, named entity, place...)
  * @type {QuickSearchResultGroup[]}
  */

@@ -83,7 +83,7 @@ import { useRoute } from "vue-router";
 
 import { FormKitMessages, FormKitIcon } from '@formkit/vue';
 
-import { quickSearch } from "@modules/quickSearchBackend.js";
+import { quickSearch } from "@modules/quickSearchInternals.js";
 import "@typedefs";
 import { pushScopeId } from "vue";
 
@@ -98,8 +98,8 @@ const searchResults = ref([]);  /** @type {typedefs.QuickSearchResultFlatArray} 
 /**********************************/
 
 /**
- * flatten the search results returned by quickSearchBackend.
- * @param {typedefs.QuickSearchResultGroupArray} theSearchResults: the search results returned by `quickSearchBackend`
+ * flatten the search results returned by quickSearchInternals.
+ * @param {typedefs.QuickSearchResultGroupArray} theSearchResults: the search results returned by `quickSearchInternals`
  * @returns {typedefs.QuickSearchResultFlatArray}
  */
 const flattenSearchResults = (theSearchResults) =>
