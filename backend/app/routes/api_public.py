@@ -50,6 +50,8 @@ from ..search.search_iconography import make_query, sanitize_params
 # basepath: `<APP URL>/api/v1`
 # *************************************************
 
+QUERY_COL_SEP = ","
+
 
 class PaginationParameters(BaseModel):
     """Paramètres pour les routes fournisant de la pagination"""
@@ -340,22 +342,25 @@ def make_get_entity_lite(resource):
     return get_entity_lite
 
 
+def split_multivaluate(text):
+    return [val for val in text.split(QUERY_COL_SEP) if val]
+
+
 def sanitize_search_query(query):
     prepare_query = {}
-    col_sep = ","
     for key, val in query.items():
         if "op" in key:
             prepare_query[key] = val
         elif "date" in key and val:
-            dates = val.split(col_sep)
+            dates = split_multivaluate(val)
             if len(dates) == 1:
                 prepare_query[key] = [{'filter': 'dateExact', 'data': [int(dates[0])]}]
             elif len(dates) == 2:
                 prepare_query[key] = [{'filter': 'dateRange', 'data': [int(d) for d in dates]}]
             else:
                 raise ValueError("more than 2 dates is not allowed")
-        elif col_sep in val:
-            prepare_query[key] = val.split(col_sep)
+        elif QUERY_COL_SEP in val:
+            prepare_query[key] = split_multivaluate(val)
         else:
             if val:
                 prepare_query[key] = [val]
