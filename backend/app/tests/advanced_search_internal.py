@@ -7,6 +7,8 @@ the batches of tests here test at the same time:
   - the advanced search module (`src/search/search_iconography.py`)
 by running the same queries as raw sql and http post requests.
 """
+import typing as t
+import os
 
 from sqlalchemy import text
 import unittest
@@ -53,7 +55,6 @@ INNER JOIN
     WHERE iconography.id IN (2,5,6) ) AS q2
 ON q1.id = q2.id;
 """
-
 
 
 class TestAdvancedSearchInternal(unittest.TestCase):
@@ -171,20 +172,7 @@ class TestAdvancedSearchInternal(unittest.TestCase):
             ]
         ]
 
-        with self.app.app_context():  # avoid RuntimeError
-            for ( http_params, raw_sql ) in queries:
-                r_http = self.client.post(self.route, json=http_params)
-                r_sql = self.db.session.execute(text(raw_sql))
-                r_http_count = len(r_http.json)
-                r_sql_count = r_sql.rowcount
-
-                self.assertEqual(r_http.status_code, 200)
-                self.assertEqual( r_http_count, r_sql_count
-                                , f"a different number of results was returned "
-                                + f"by HTTP ({r_http_count}) and SQL ({r_sql_count}) for params {http_params}")
-                self.assertTrue( r_http_count > 0 and r_sql_count > 0
-                               , f"queries must return at least 1 result, "
-                               + f"got {r_http_count} (HTTP) and {r_sql_count} (SQL) for params {http_params}"  )
+        tester_all_good(self, queries)
         return self
 
 
@@ -439,29 +427,7 @@ class TestAdvancedSearchInternal(unittest.TestCase):
             ]
         ]
         # the queries change but the tests are the same as in the previous function
-        with self.app.app_context():  # avoid RuntimeError
-            for ( http_params, raw_sql ) in queries:
-                r_http = self.client.post(self.route, json=http_params)
-                r_sql = self.db.session.execute(text(raw_sql))
-
-                if r_http.status_code != 200:
-                    print( f"\n\n{'*'*100}\n"
-                         , r_http.get_data(True)
-                         , f"\n{'*'*100}\n"
-                         , "with params : ", http_params
-                         , f"\n{'*'*100}\n\n")
-                    # exit()
-
-                r_http_count = len(r_http.json)
-                r_sql_count = r_sql.rowcount
-
-                self.assertEqual(r_http.status_code, 200)
-                self.assertEqual( r_http_count, r_sql_count
-                                , f"a different number of results was returned "
-                                + f"by HTTP ({r_http_count}) and SQL ({r_sql_count}) for params {http_params}")
-                self.assertTrue( r_http_count > 0 and r_sql_count > 0
-                               , f"queries must return at least 1 result, "
-                               + f"got {r_http_count} (HTTP) and {r_sql_count} (SQL) for params {http_params}"  )
+        tester_all_good(self, queries)
         return self
 
 
@@ -495,3 +461,44 @@ class TestAdvancedSearchInternal(unittest.TestCase):
                     print(http_params)
                 self.assertEqual(r.status_code, 500)
         return self
+
+
+def tester_all_good( ctx: TestAdvancedSearchInternal
+                   , _queries: t.List[ t.Dict|str ]):
+    """
+    this function does the actual testing in some functions
+    of `TestAdvancedSearchInternal` that need the same test being done
+    but using different data (in `_queries`).
+
+    :param ctx: the context: our test case class defined above
+    :param _queries: an array of [ <json_params>, <sql_query> ]
+        both json and sql describing the same query (one in route params,
+        the other in raw sql).
+    """
+    with ctx.app.app_context():  # avoid RuntimeError
+        for ( http_params, raw_sql ) in _queries:
+            r_http = ctx.client.post(ctx.route, json=http_params)
+            r_sql = ctx.db.session.execute(text(raw_sql))
+
+            if r_http.status_code != 200:  # debug message
+                mul = 150 #os.terminal_size().columns
+                print( f"\n\n{ '*' * mul }\n"
+                     , r_http.get_data(True)
+                     , f"\n{ '*' * mul }\n"
+                     , "with params : ", http_params
+                     , f"\n{ '*' * mul }\n\n")
+
+            r_http_count = len(r_http.json)
+            r_sql_count = r_sql.rowcount
+
+            # http request success
+            ctx.assertEqual(r_http.status_code, 200)
+            # same number of rows in both results
+            ctx.assertEqual( r_http_count, r_sql_count
+                            , f"a different number of results was returned "
+                            + f"by HTTP ({r_http_count}) and SQL ({r_sql_count}) for params {http_params}")
+            # both queries returned at least 1 row
+            ctx.assertTrue( r_http_count > 0 and r_sql_count > 0
+                           , f"queries must return at least 1 result, "
+                           + f"got {r_http_count} (HTTP) and {r_sql_count} (SQL) for params {http_params}"  )
+    return ctx
