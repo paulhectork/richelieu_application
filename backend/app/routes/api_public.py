@@ -172,6 +172,8 @@ class Resource:
                 target = getattr(obj, attr_name)
                 if target:
                     output[rel_name] = self._add_linked_entity(target_route, target)
+                else:
+                    output[rel_name] = None
 
     def serialize(self, obj, lite=False):
         output = {}
