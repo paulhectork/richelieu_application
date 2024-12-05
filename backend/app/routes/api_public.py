@@ -65,6 +65,7 @@ class EntityParameters(BaseModel):
 class BooleanEnum(str, Enum):
     and_selection = 'and'
     or_selection  = 'or'
+    not_selection  = 'not'
 
 
 class SearchParameters(BaseModel):
