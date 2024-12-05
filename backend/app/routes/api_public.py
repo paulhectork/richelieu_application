@@ -376,7 +376,7 @@ ICONOGRAPHY_RESOURCE = IconographyResource()
          summary="Recherche des iconographies",
          tags=[IconographyResource.tag],
          doc_ui=True,
-         responses={200: RelatedEntity})
+         responses={200: RelatedEntity, 404: ResourceNotFoundResponse})
 def search(query: SearchParameters):
     """
     search resource.
@@ -384,6 +384,8 @@ def search(query: SearchParameters):
     query_dump = sanitize_search_query(query.model_dump())
     results = make_query(query_dump).all()
     data = [ICONOGRAPHY_RESOURCE.serialize_as_link(r[0]) for r in results]
+    if not data:
+        return ResourceNotFoundResponse().dict(), 404
     return jsonify(data)
 
 
