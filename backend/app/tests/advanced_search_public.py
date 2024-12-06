@@ -74,8 +74,7 @@ class TestAdvancedSearchPublic(unittest.TestCase):
               """
             ]
             ,
-            #TODO so far, the separator is ",". it should be "\s*,\s*" or "\s*|\s*"
-            # with a `.strip()` on individual values and this should be valid
+            # handle spaces around separator
             [ { "publisher": "Aubert, Martinet" },
               r"""
               SELECT DISTINCT iconography.id_uuid
@@ -209,7 +208,6 @@ class TestAdvancedSearchPublic(unittest.TestCase):
               """
             ]
             ,
-            #TODO `NOT` is not yet allowed as a boolean_op in the public api.
             # basic NOT
             [ { "theme"                  : "boutique",
                 "named_entity"           : "Galerie Vivienne",
@@ -272,7 +270,6 @@ class TestAdvancedSearchPublic(unittest.TestCase):
               );"""
             ]
             ,
-            #TODO: "NOT" is not yet allowed in the public api.
             # fancier query
             [ { "institution"             : "Bibliothèque historique de la Ville de Paris",
                 "institution_boolean_op"  : "and",
@@ -336,11 +333,10 @@ class TestAdvancedSearchPublic(unittest.TestCase):
               """
             ]
             ,
-            #TODO: "NOT" is not yet allowed in the public api.
             # query with only NOT boolean operators
-            [ { "date"                 : "1800,1850",
+            [ { "date"                   : "1800,1850",
                 "date_boolean_op"        : "not",
-                "institution"          : "Paris Musées",
+                "institution"            : "Paris Musées",
                 "institution_boolean_op" : "not" },
               """
               SELECT iconography.id
