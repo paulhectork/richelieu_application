@@ -50,7 +50,7 @@ def sqlalchemy_to_pydantic(model: Type[BaseModel], resource_type: str, lite: boo
             pydantic_fields[column.name] = (field_type, ...)
 
     if not lite:
-        model_name = f"{model.__name__}LiteModel"
+        model_name = f"{model.__name__}Model"
         for rel_name, rel in relationships.items():
             if rel.is_property:
                 if rel.uselist:
