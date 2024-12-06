@@ -118,6 +118,14 @@ def index_theme():
         when category is None (returning an index of categories)
         and preview is true, we'll also return a few themes as an example
     """
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # PROBLEM
+    # THE `category_slug` PARAMETER IS NOT TAKEN INTO ACCOUNT
+    # WHEN CACHING THE ROUTES => ONLY THE 1ST QUERY IS CACHED
+    # (IF YOUR FIRST QUERY IS `category_slug=all`, THEN THIS WILL
+    # BE CACHED AND SENT TO THE FRONT NO MATTER THE CATEGORY_SLUG
+    # YOU ARE QUERYING)
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     category_slug = request.args.get("category_slug", None)
     preview       = request.args.get("preview", None)
     if not category_slug:
@@ -233,6 +241,14 @@ def index_named_entity():
         and preview is true, we'll also return a few named entities as
         an example
     """
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # PROBLEM
+    # THE `category_slug` PARAMETER IS NOT TAKEN INTO ACCOUNT
+    # WHEN CACHING THE ROUTES => ONLY THE 1ST QUERY IS CACHED
+    # (IF YOUR FIRST QUERY IS `category_slug=all`, THEN THIS WILL
+    # BE CACHED AND SENT TO THE FRONT NO MATTER THE CATEGORY_SLUG
+    # YOU ARE QUERYING)
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     category_slug = request.args.get("category_slug", None)
     preview       = request.args.get("preview", None)
     if not category_slug:
