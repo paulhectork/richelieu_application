@@ -15,9 +15,12 @@ class DateRange(BaseModel):
     empty: bool
 
 
-def sqlalchemy_to_pydantic(model: Type[BaseModel], resource_type: str, lite: bool=False) -> Type[BaseModel]:
+def sqlalchemy_to_pydantic(model: Type[BaseModel], resource_type: str, excluded_rel: List[str], lite: bool=False) -> Type[BaseModel]:
     """
     Convert a SQLAlchemy model to Pydantic for API
+
+    id attributes are always excluded
+
     Args:
         model (Type[Base]): SQLAlchemy model.
         resource_type: name of the resource associated to the model
@@ -36,6 +39,8 @@ def sqlalchemy_to_pydantic(model: Type[BaseModel], resource_type: str, lite: boo
     model_name = f"{model.__name__}LiteModel"
 
     for column in columns:
+        if column.name != "id_uuid" and column.name.startswith("id"):
+            continue
         try:
             field_type = column.type.python_type
         except Exception:
@@ -52,6 +57,8 @@ def sqlalchemy_to_pydantic(model: Type[BaseModel], resource_type: str, lite: boo
     if not lite:
         model_name = f"{model.__name__}Model"
         for rel_name, rel in relationships.items():
+            if rel_name in excluded_rel:
+                continue
             if rel.is_property:
                 if rel.uselist:
                     pydantic_fields[rel_name] = (List[RelatedEntity], ...)

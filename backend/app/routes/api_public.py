@@ -100,6 +100,9 @@ class Resource:
     relationships = None
     join_relations = None
     ui_name = None
+    excluded_relations = [
+        "r_admin_person",
+    ]
 
     def __init__(self):
         self.columns = class_mapper(self.orm_model).columns
@@ -136,11 +139,11 @@ class Resource:
 
     @cached_property
     def api_model(self):
-        return sqlalchemy_to_pydantic(self.orm_model, self.ui_name)
+        return sqlalchemy_to_pydantic(self.orm_model, self.ui_name, self.excluded_relations)
 
     @cached_property
     def api_model_lite(self):
-        return sqlalchemy_to_pydantic(self.orm_model, self.ui_name, lite=True)
+        return sqlalchemy_to_pydantic(self.orm_model, self.ui_name, self.excluded_relations, lite=True)
 
     def _add_linked_entity(self, target_route, target):
         return {
@@ -152,6 +155,8 @@ class Resource:
     def _serialize_relationships(self, obj, output):
         for relation in self.relationships:
             rel_name = relation.key
+            if rel_name in self.excluded_relations:
+                continue
             attr_name, target_route = self.join_relations.get(rel_name, (rel_name, rel_name))
             if relation.uselist:
                 output[rel_name] = []
@@ -179,6 +184,8 @@ class Resource:
         output = {}
         api_model = self.api_model_lite
         for attr in self.columns:
+            if attr.name != "id_uuid" and attr.name.startswith("id"):
+                continue
             if str(attr.type) == "INT4RANGE":
                 date_range = getattr(obj, attr.key)
 
@@ -227,6 +234,7 @@ class IconographyResource(Resource):
         name="Iconographies", description="Récupération des données iconographiques"
     )
     ui_name = "iconographies"
+    excluded_relations = Resource.excluded_relations + ["annotation"]
 
 
 class CartographyResource(Resource):
@@ -235,15 +243,6 @@ class CartographyResource(Resource):
         name="Cartographies", description="Récupération des données cartographiques"
     )
     ui_name = "cartographies"
-
-
-class DirectoryResource(Resource):
-    orm_model = Directory
-    tag = Tag(
-        name="Répertoire",
-        description="Récupération des données répertoires de fichiers",
-    )
-    ui_name = "répertoires de fichiers"
 
 
 class FilenameResource(Resource):
@@ -256,14 +255,6 @@ class TitleResource(Resource):
     orm_model = Title
     tag = Tag(name="Titres", description="Récupération des titres des iconographies")
     ui_name = "titres des iconographies"
-
-
-class AnnotationResource(Resource):
-    orm_model = Annotation
-    tag = Tag(
-        name="Annotations", description="Récupération des annotations des iconographies"
-    )
-    ui_name = "annotations"
 
 
 class ThemeResource(Resource):
@@ -294,26 +285,20 @@ class AddressResource(Resource):
     orm_model = Address
     tag = Tag(name="Adresses", description="Récupération des adresses")
     ui_name = "adresses"
+    excluded_relations = Resource.excluded_relations + ["directory"]
 
 
 class InstitutionResource(Resource):
     orm_model = Institution
     tag = Tag(name="Institutions", description="Récupération des institutions")
     ui_name = "institutions"
+    excluded_relations = Resource.excluded_relations + ["r_institution"]
 
 
 class LicenceResource(Resource):
     orm_model = Licence
     tag = Tag(name="Licences", description="Récupération des licences")
     ui_name = "licences"
-
-
-class AdminPersonResource(Resource):
-    orm_model = AdminPerson
-    tag = Tag(
-        name="AdminPerson", description="Récupération des personnes administrateur"
-    )
-    ui_name = "administrateurs"
 
 
 def make_get_paginate(resource):
@@ -396,10 +381,8 @@ alls = globals()
 for resource in [
     CartographyResource(),
     ICONOGRAPHY_RESOURCE,
-    DirectoryResource(),
     FilenameResource(),
     TitleResource(),
-    AnnotationResource(),
     ThemeResource(),
     NamedEntityResource(),
     ActorResource(),
@@ -407,7 +390,6 @@ for resource in [
     AddressResource(),
     InstitutionResource(),
     LicenceResource(),
-    AdminPersonResource(),
 ]:
     route = f"/{resource.name}"
 
