@@ -11,8 +11,9 @@ import { textValidatorMessage
        , dateRangeValidatorMessage
        , textValidator
        , textArrayValidator
+       , textValidatorNoEmpty
        , dateValidator
-       , dateRangeValidator } from "@modules/formkitValidationRules";
+       , dateRangeValidator } from "@utils/formkitValidationRules";
 
 const config = {
   locales: { fr },
@@ -26,14 +27,16 @@ const config = {
   },
   rules: { textValidator
          , textArrayValidator
+         , textValidatorNoEmpty
          , dateValidator
          , dateRangeValidator },
   messages: {
     fr: {
-      validation: { textValidator      : textValidatorMessage
-                  , textArrayValidator : textValidatorMessage
-                  , dateValidator      : dateValidatorMessage
-                  , dateRangeValidator : dateRangeValidatorMessage
+      validation: { textValidator        : textValidatorMessage
+                  , textArrayValidator   : textValidatorMessage
+                  , textValidatorNoEmpty : textValidatorMessage
+                  , dateValidator        : dateValidatorMessage
+                  , dateRangeValidator   : dateRangeValidatorMessage
       }
     }
   }

@@ -61,9 +61,9 @@
       <div id="map-main"></div>
     </div>
 
-    <!--<Transition name="slideInOut">-->
     <div class="cartography-place-wrapper" v-if="placeIdUuid !== undefined">
-      <CartographyPlaceInfo :place-id-uuid="placeIdUuid" :associated-places="currentAssociatedPlaces"
+      <CartographyPlaceInfo :place-id-uuid="placeIdUuid"
+                            :associated-places="currentAssociatedPlaces"
         @close-place-info="closeCartographyPlaceInfo">
       </CartographyPlaceInfo>
     </div>
@@ -94,13 +94,13 @@ import CartographyController from "@components/CartographyController.vue";
 import { domStore } from "@stores/dom.js";
 import { uiButtonPlus, uiButtonFilter, uiButtonQuestion } from "@utils/ui";
 import { colorScaleBlue, colorScaleRed } from "@utils/colors";
-import {
-  globalDefineMap
-  , layerBounds
-  , lflDefaultMarker
-  , getLayerByName
-  , mapCenter
-} from "@utils/leaflet";
+import { globalDefineMap
+       , layerBounds
+       , lflDefaultMarker
+       , getLayerByName
+       , mapCenter
+       } from "@utils/leaflet";
+import "@typedefs";
 
 /************************************************************/
 
@@ -109,26 +109,23 @@ const placeIdUuid = ref();  // when this is set, an indx of iconography resource
 const displayLeft = ref(false);  // when true, the left block (controller) will be displayed
 const displayRight = ref(false);  // when true, the right block will be displayed
 
-const currentlyFiltering = ref(false);      // flag to ensure that one `onFilterUpdate` is finished before a new one is started
-const loadState = ref("loading");  // loading/loaded/error
-
-// finally handled by `domStore.cartographyModalVisible`
-// const displayModal = ref(true);  // when true, display an explanatory modal
+const currentlyFiltering = ref(false); /** @type {bool} flag to ensure that one `onFilterUpdate` is finished before a new one is started */
+const loadState = ref("loading");      /** @type {typedefs.AsyncRequestState} */
 
 // leaflet objects
-const lflMap = ref();  // L.Map, defined in onMounted
-const lflPlaces = ref();  // L.GeoJSON: the places geoJson as a leaflet L.geoJSON object. this object only contains features that match the user filters defined in `CartographyController`. it is this object that is actually added to the map
-const lflInfoHover = ref();  // an L.Controller that displays info on hover
-const lflLayerControl = ref();  // L.Control.Layers: used to programatically change background layers
-const lflFallBackBounds = ref();  // L.LatLngBounds
+const lflMap = ref();             /** @type {L.Map}, defined in onMounted */
+const lflPlaces = ref();          /** @type {L.GeoJSON}: the places geoJson as a leaflet L.geoJSON object. this object only contains features that match the user filters defined in `CartographyController`. it is this object that is actually added to the map */
+const lflInfoHover = ref();       /** @type {L.Controller} that displays info on hover */
+const lflLayerControl = ref();    /** @type {L.Control.Layers} : used to programatically change background layers */
+const lflFallBackBounds = ref();  /** @type {L.LatLngBounds} */
 
 // data from the backend
-const places = ref({});  // the default geoJson describing places, with no filters. not modified after being fetched from the backend
-const placesFilter = ref({});  // the geoJson describing places, with filters
-const cartographyForSource = ref();    // { source: "sourceName", features: [] }. `features` contains all rows of the `Cartography` table with the same "sourceName"
-const cartographyForGranularity = ref();    // { granularity: "granularityName", features: [] }. `features` contains all rows of the `Cartography` table with the same "granularityName"
-const currentFeatureCount = ref();    // number of features currently displayed on the map
-const currentAssociatedPlaces = ref();    // a list of the 5 places most frequently associated with the currently clicked on place (targeted by `placeIdUuid`)
+const places                    = ref({});  /** @type {object} : the default geoJson describing places, with no filters. not modified after being fetched from the backend */
+const placesFilter              = ref({});  /** @type {object} the geoJson describing places, with filters */
+const cartographyForSource      = ref();    /** @type { {source: String, features: Array} }. `features` contains all rows of the `Cartography` table with the same "sourceName" */
+const cartographyForGranularity = ref();    /** @type { {granularity: String, features: Array} }. `features` contains all rows of the `Cartography` table with the same "granularityName" */
+const currentFeatureCount       = ref();    /** @type {Number} number of features currently displayed on the map */
+const currentAssociatedPlaces   = ref();    /** @type {object[]} : a list of the 5 places most frequently associated with the currently clicked on place (targeted by `placeIdUuid`) */
 
 // css
 const transDur = 500;  // transition duration in JS
@@ -540,7 +537,7 @@ function addPlaces(init) {
  * 1) only keeping features for which we can find a vector in `_cartography`.
  * 2) updating the `vector` of each feature by the matched vector in `_cartography`
  * `_cartography` is a local version of `cartographyForSource`
- * @param {GeoJSON} geoJsonObj: a geoJson describing places
+ * @param {object} geoJsonObj: a geoJson describing places
  * @param {Object} _cartography: an object with the structure: { features: [<array of Cartography objects>] }
  */
 const updatePlacesByCartography = (geoJsonObj, _cartography) => {

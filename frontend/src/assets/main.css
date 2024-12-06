@@ -624,9 +624,12 @@ button:active > svg > path {
 .formkit-inner {
   border: none;
 }
-.formkit-inner > input {
+.formkit-inner input {
   width: 100%;
   border: var(--cs-main-border);
+  font-family: var(--cs-font-sans-serif);
+  padding-top: 3px;
+
 }
 .formkit-inner > input[type=text] {
   min-height: 28px; /** input height is the same for text and selects */

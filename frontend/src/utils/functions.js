@@ -30,7 +30,7 @@ export function cleanClickOrTouchend(event) {
  * this is a generic function that works for scalars
  * (string, float, int) and complex types (arrays, dicts)
  * @param {any} obj
- * @returns {bool}
+ * @returns {boolean}
  */
 export const isKindaEmpty = (obj) =>
   Array.isArray(obj)                        // for Arrays: contains no elements or only null or undefined elts
@@ -45,7 +45,7 @@ export const isKindaEmpty = (obj) =>
 /**
  * a scalar (undefined, null, string or number) contains no data
  * @param {undefined | null | String | Number} s: the scalar we want to test
- * @returns {bool}
+ * @returns {boolean}
  */
 export const isEmptyScalar = s =>
   s === undefined || s === null || s === "" || s.length === 0;
@@ -54,7 +54,7 @@ export const isEmptyScalar = s =>
 /**
  * an array is empty, or it contains only elements with no data
  * @param {Array} s: the array we want to test
- * @returns {bool}
+ * @returns {boolean}
  */
 export const isEmptyArray = a => a.length === 0 || a.every(x => isEmptyScalar(x));
 

@@ -28,7 +28,7 @@ import { urlToFrontendPlace } from "@utils/url";
 /******************************************************/
 
 const props = defineProps([ "lflId", "placeGeoJson" ]);
-const map = ref();
+const map = ref();  /** @type {L.map} */
 
 /******************************************************/
 

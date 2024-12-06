@@ -5,21 +5,21 @@
   based on `select2`.
 
   the parent can pass 2 props to this component:
-  * `placeholder`: a placeholder value. otherwise,
-                   a default value is given
-  * `options`    : the different options for this select.
-                   defaults to an empty array.
-                   options must be an array of objects,
-                   following the structure:
-                   https://formkit.com/inputs/select#array-of-objects,
-                   with a `value` key containing the form data and a
-                   `label` key containing the displayed data.
-                   (of course, `label` and `value` can be the same)
-  * `multiple`   : (bool) : if `true`, then it's a multi-option select.
-                   else, single option. defaults to true
-  * `disabled`   : (bool) : if `true`, then the select will be disabled.
-                   this option is THE ONLY ONE that can be dynamically
-                   switched using a watcher.
+  * `placeholder` (String?)
+        a placeholder value. otherwise a default value is given
+  * `options`(typedefs.FormKitOptionArray)
+        the different options for this select. defaults to an empty array.
+        options must be an array of objects, following the structure :
+        https://formkit.com/inputs/select#array-of-objects,
+        with a `value` key containing the form data and a `label` key
+        containing the displayed data. (of course, `label` and `value` can
+        be the same)
+  * `multiple` (boolean)
+        if `true`, then it's a multi-option select. else, single option.
+        defaults to true
+  * `disabled` (boolean)
+        if `true`, then the select will be disabled. this option is THE ONLY
+        ONE that can be dynamically switched using a watcher.
 
   style notes:
   according to the docs, it's best to set sizes
@@ -65,6 +65,8 @@ import select2 from "select2";
 import "select2/dist/css/select2.css";
 import $ from "jquery";
 
+import "@typedefs";
+
 // hook the select2 plugin to jquery.
 // not shown in the doc, see: https://stackoverflow.com/a/49722514/17915803
 select2($);
@@ -73,13 +75,13 @@ select2($);
 
 const props        = defineProps([ "context" ]);
 
-const selectId     = `form-select-basic-${window.crypto.randomUUID()}`;  // HTML ID of this select
-const selectNode   = ref();         // formkit node for the current FormKit @type='fkSelect' input. see: https://formkit.com/essentials/architecture#node
-const optionsArray = ref([]);       // array of all the possible options
-const placeholder  = ref("Sélectionner une valeur");
-const multiple     = ref(true);  // multi-select by default
+const selectId     = `form-select-basic-${window.crypto.randomUUID()}`;  /** @type {String} HTML ID of this select */
+const selectNode   = ref();                          /** @type {FormKitNode} formkit node for the current FormKit @type='fkSelect' input. see: https://formkit.com/essentials/architecture#node */
+const optionsArray = ref([]);                        /** @type {typedefs.FormKitOptionArray} array of all the possible options */
+const placeholder  = ref("Sélectionner une valeur"); /** @type {String} */
+const multiple     = ref(true);                      /** @type {boolean} multi-select by default */
 
-const isDisabled   = ref(false);    // if `true`, the select will be disabled.
+const isDisabled   = ref(false);    /** @type {boolean} */
 
 /****************************************/
 

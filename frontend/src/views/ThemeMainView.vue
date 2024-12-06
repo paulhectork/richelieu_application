@@ -10,31 +10,37 @@
 
 <template>
   <h1>{{ formattedThemeName }}</h1>
-  <H2IndexCount :indexCount="dataFull.length"
-              dataType="iconography"
-              v-if="backendLoaded"
+  <H2IndexCount :indexCount="theme.iconography.length"
+                dataType="iconography"
+                v-if="backendLoaded"
   ></H2IndexCount>
 
   <UiLoader v-if="!backendLoaded"></UiLoader>
   <div v-else>
     <div class="index-headtext-wrapper">
-      <IndexAssociationRedirects v-if="associatedThemes.length"
-                                 fromTable="theme"
-                                 toTable="theme"
-                                 :to="associatedThemes"
-                                 :from="{ entry_name: theme.entry_name
-                                        , id_uuid: theme.id_uuid }"
-      ></IndexAssociationRedirects>
-      <IndexAssociationRedirects v-if="associatedNamedEntities.length"
-                                 fromTable="theme"
-                                 toTable="named_entity"
-                                 :to="associatedNamedEntities"
-                                 :from="{ entry_name: theme.entry_name
-                                        , id_uuid: theme.id_uuid }"
-      ></IndexAssociationRedirects>
+      <div>
+        <p>Ce thème appartient à la catégorie
+          <RouterLink :to="urlToFrontendThemeCategory(theme.category_slug)"
+                      v-html="theme.category_name"
+          ></RouterLink>.</p>
+        <IndexAssociationRedirects v-if="associatedThemes.length"
+                                   fromTable="theme"
+                                   toTable="theme"
+                                   :to="associatedThemes"
+                                   :from="{ entry_name: theme.entry_name
+                                          , id_uuid: theme.id_uuid }"
+        ></IndexAssociationRedirects>
+        <IndexAssociationRedirects v-if="associatedNamedEntities.length"
+                                   fromTable="theme"
+                                   toTable="named_entity"
+                                   :to="associatedNamedEntities"
+                                   :from="{ entry_name: theme.entry_name
+                                          , id_uuid: theme.id_uuid }"
+        ></IndexAssociationRedirects>
+      </div>
     </div>
 
-    <IndexIconography :data="dataFull"></IndexIconography>
+    <IndexIconography :data="theme.iconography"></IndexIconography>
   </div>
 </template>
 
@@ -49,26 +55,28 @@ import H2IndexCount from "@components/H2IndexCount.vue";
 import IndexIconography from "@components/IndexIconography.vue";
 import IndexAssociationRedirects from "@components/IndexAssociationRedirects.vue";
 
+import { urlToFrontendThemeCategory } from "@utils/url.js";
 import { capitalizeWords } from "@utils/strings";
+import "@typedefs";
 
 /**************************************************/
 
 const route         = useRoute();
-const theme         = ref({});    // the theme object sent from the backend
-const themeName     = ref("");    // the name of the theme.
-const dataFull      = ref([]);    // the complete iconography  data, set from a watcher
-const idUuid        = ref(route.params.idUuid);
-const backendLoaded = ref(false);  // when swittched to true, the loader is removed
+const theme         = ref({});                   /** @type {typedefs.ThemeOrNamedEntityItemFull}: the theme object sent from the backend */
+const themeName     = ref("");                   /** @type {String} */
+const backendLoaded = ref(false);                /** @type {bool} when swittched to true, the loader is removed */
+const idUuid        = ref(route.params.idUuid);  /** @type {String} */
 
-const associatedThemes        = ref([]); // themes most frequently associated with the current theme
-const associatedNamedEntities = ref([]); // named entites most frequently associated with the current theme
+const associatedThemes        = ref([]); /** @type { { count: Number, id_uuid: String, entry_name: string }[] } themes most frequently associated with the current theme */
+const associatedNamedEntities = ref([]); /** @type { { count: Number, id_uuid: String, entry_name: string }[] } named entites most frequently associated with the current theme  */
 
-// the backend URLs, defined as `computed` to handle reactivity
-const apiTargetTheme = computed(() =>
+/** @type {computed<URL>} the backend URLs, defined as `computed` to handle reactivity */
+const apiTargetThemeName = computed(() =>
   new URL(`/i/theme/name/${idUuid?.value}`, __API_URL__));
-const apiTargetIconography  = computed(() =>
+const apiTargetTheme  = computed(() =>
   new URL(`/i/theme/${idUuid?.value}`, __API_URL__) );
-// the theme name
+
+/** @type {String} */
 const formattedThemeName = computed(() =>
   themeName.value ? capitalizeWords(themeName.value) : themeName.value );
 
@@ -76,18 +84,17 @@ const formattedThemeName = computed(() =>
 
 /**
  * get all backend data from an UUID. we divide the fetching
- * of data in 2 queries because the second query, `apiTargetIconography`,
+ * of data in 2 queries because the second query, `apiTargetTheme`,
  * can take time to run
  */
 function getData() {
-  axios.get(apiTargetTheme.getter().href).then(r => {
+  axios.get(apiTargetThemeName.getter().href).then(r => {
     themeName.value = r.data.length ? r.data[0] : undefined;
   })
-  axios.get(apiTargetIconography.getter().href).then(r => {
+  axios.get(apiTargetTheme.getter().href).then(r => {
     backendLoaded.value = true;
     if ( r.data.length ) {
       theme.value      = r.data[0];
-      dataFull.value   = theme.value.iconography;
     }
   })
 }
@@ -99,7 +106,7 @@ function getData() {
  */
 function getAssociated() {
   axios.get( new URL(`/i/association/theme-from-theme/${idUuid.value}`, __API_URL__).href )
-       .then(r => { associatedThemes.value = r.data });
+       .then(r => { associatedThemes.value = r.data; });
   axios.get( new URL(`/i/association/named-entity-from-theme/${idUuid.value}`, __API_URL__).href )
        .then(r => { associatedNamedEntities.value = r.data });
 }
@@ -112,8 +119,6 @@ watch(route, (newRoute, oldRoute) => {
   getData();
   getAssociated();
 })
-
-/***************************************************/
 
 onMounted(() => {
   getData();

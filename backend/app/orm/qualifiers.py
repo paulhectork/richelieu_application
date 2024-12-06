@@ -123,7 +123,7 @@ class Theme(db.Model):
     def serialize_lite(self):
         return { "id_uuid": self.id_uuid,                     # str
                  "entry_name": self.entry_name,               # str
-                 "category": self.category,                   # str
+                 "category_name": self.category,                   # str
                  "category_slug": self.category_slug,         # str
                  "thumbnail": self.get_thumbnail(),           # t.List[str]
                  "iconography_count": self.iconography_count  # int
@@ -133,7 +133,7 @@ class Theme(db.Model):
         return { "id_uuid": self.id_uuid,                     # str
                  "entry_name": self.entry_name,               # str
                  "description": self.description,             # str
-                 "category": self.category,                   # str
+                 "category_name": self.category,                   # str
                  "category_slug": self.category_slug,         # str
                  "iconography": self.get_iconography(),       # t.List[t.Dict]
                  "iconography_count": self.iconography_count  # int

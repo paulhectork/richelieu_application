@@ -18,8 +18,8 @@
         1) ThemeOrNamedEntityCategoryIndexView.vue:
           a category index (the current view). categories are broad
           groups in which individual themes/named entities are
-          classified, and correspond to theme.category or
-          named_entity.category, in the SQL DB.
+          classified, and correspond to theme.category_name or
+          named_entity.category_name, in the SQL DB.
         2) ThemeOrNamedEntityIndexView.vue:
           an index of themes/named entities for a single category.
           this gives access to individual themes / named entities.
@@ -49,41 +49,30 @@
 
     <!-- paragraph decribing what themes/named entities are. -->
     <div class="index-headtext-wrapper">
-      <p v-if="tableName==='theme' && databaseCounts && dataFull">
-        L'analyse des documents iconographiques
-        fait apparaître dans chaque image plusieurs thèmes saillants.
-        Au total, <strong>{{ databaseCounts.theme }} thèmes</strong> ont été identifiés.
-        Ces thèmes ont été regroupés en
-        <strong>{{ dataFull.length }} catégories</strong>,
-        visibles sur cette page. Cliquer sur une catégorie permet d'accéder
-        aux thèmes qu'elle contient.
-      </p>
-      <p v-else-if="tableName==='namedEntity' && databaseCounts && dataFull">
-        Chaque image décrit une ou plusieurs <q>&nbsp;entités nommées&nbsp;</q>,
-        c'est-à-dire des points d'intérêt du quartier&nbsp;: commerces,
-        acteurs et actrices, personnalités, monuments... Au total,
-        <strong>{{ databaseCounts.named_entity }} entités nommées</strong>
-        ont été identifiées
-        dans le corpus. Elles sont été classées en
-        <strong>{{ dataFull.length }} catégories</strong>, visibles
-        sur cette page. Cliquer sur une catégorie permet
-        d'accéder aux entités nommées liées.
-      </p>
+      <div>
+        <p v-if="tableName==='theme' && databaseCounts && dataFull">
+          L'analyse des documents iconographiques
+          fait apparaître dans chaque image plusieurs thèmes saillants.
+          Au total, <strong>{{ databaseCounts.theme }} thèmes</strong> ont été identifiés.
+          Ces thèmes ont été regroupés en
+          <strong>{{ dataFull.length }} catégories</strong>,
+          visibles sur cette page. Cliquer sur une catégorie permet d'accéder
+          aux thèmes qu'elle contient.
+        </p>
+        <p v-else-if="tableName==='namedEntity' && databaseCounts && dataFull">
+          Chaque image décrit une ou plusieurs <q>&nbsp;entités nommées&nbsp;</q>,
+          c'est-à-dire des points d'intérêt du quartier&nbsp;: commerces,
+          acteurs et actrices, personnalités, monuments... Au total,
+          <strong>{{ databaseCounts.named_entity }} entités nommées</strong>
+          ont été identifiées
+          dans le corpus. Elles sont été classées en
+          <strong>{{ dataFull.length }} catégories</strong>, visibles
+          sur cette page. Cliquer sur une catégorie permet
+          d'accéder aux entités nommées liées.
+        </p>
+      </div>
     </div>
 
-    <!--
-    <FormKit type="fkRadioTabs"
-             id="select-view"
-             name="selectView"
-             label="Changer de vue"
-             help="Choisir comment voir les thèmes"
-             value="category"
-             :options="[ { value: 'category', label: 'Par catégories' }
-                       , { value: 'all', label: `${tableName==='theme' ? 'Tous les thèmes' : 'Toutes les entités nommées' }` }
-                       , { value: 'tree', label: 'Arborescence' } ]"
-             @input="changeDisplay"
-    ></FormKit>
-    -->
     <div class="select-view-wrapper">
       <div class="select-view">
         <span>Changer de vue&nbsp;:</span>
@@ -118,26 +107,26 @@
 
 <script setup>
 import { onMounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
 
 import axios from "axios";
 
-import { indexDataFormatterThemeCategory
-       , indexDataFormatterNamedEntityCategory } from "@utils/indexDataFormatter";
 import UiLoader from "@components/UiLoader.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
 
+import { indexDataFormatterThemeCategory
+       , indexDataFormatterNamedEntityCategory } from "@utils/indexDataFormatter";
+import "@typedefs";
+
 /*************************************************************/
 
 const props  = defineProps([ "tableName" ]);
-const router = useRouter();
 
-const tableName      = ref(props.tableName);
-const loadState      = ref("loading");  // "loading"/"loaded"/"error"
-const dataFull       = ref([]);
+const tableName      = ref(props.tableName); /** @type {String} */
+const loadState      = ref("loading");       /** @type {typedefs.AsyncRequestState} */
+const dataFull       = ref([]);              /** @type {typedefs.ThemeOrNamedEntityCategoryItemFull[]} */
+const databaseCounts = ref();                /** @type {Object<string, number>} super basic stats on the database for an introductory paragraph */
 const display        = "concept";
-const databaseCounts = ref();  // super basic stats on the database for an introductory paragraph
 
 /*************************************************************/
 
@@ -151,24 +140,24 @@ function resetRefs() {
   if ( !["theme", "namedEntity"].includes(props.tableName) ) {
     throw new Error(`ThemeOrNamedEntityCategoryView: "tableName" props must be one of ["theme", "namedEntity"], got "${tableName.value}"`);
   }
-  tableName.value  = props.tableName;
-  dataFull.value   = [];
-  loadState.value  = "loading";
+  tableName.value = props.tableName;
+  dataFull.value  = [];
+  loadState.value = "loading";
 }
 
 /**
  * fetch data from the backend.
  */
 function getData() {
-  const apiTarget  =  tableName.value === "theme"
-                      ? new URL("/i/theme", __API_URL__)
-                      : new URL("/i/named-entity", __API_URL__);
+  const apiTarget  = tableName.value === "theme"
+                   ? new URL("/i/theme", __API_URL__)
+                   : new URL("/i/named-entity", __API_URL__);
 
   axios.get(apiTarget.href)
   .then(r => r.data)
   .then(data => { dataFull.value = tableName.value === "theme"
-                                   ? indexDataFormatterThemeCategory(data)
-                                   : indexDataFormatterNamedEntityCategory(data);
+                                 ? indexDataFormatterThemeCategory(data)
+                                 : indexDataFormatterNamedEntityCategory(data);
                   loadState.value = "loaded";
                 })
   .catch(e => { console.error(e);
@@ -176,7 +165,7 @@ function getData() {
               });
   axios.get(new URL("/i/database-counts", __API_URL__))
   .then(r => r.data)
-  .then(data => { databaseCounts.value = data; })
+  .then(data => { databaseCounts.value = data; console.log(data) })
   .catch(e => console.error(e));
   ;
 

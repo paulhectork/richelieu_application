@@ -10,7 +10,7 @@
         - viewType: a parameter that allows to switch between collection and tree view.
     - on page load or when route parameter changes without a full-page reload
         (for example, clicking on a button in the menu), `initViewHook()` is called.
-        it resets all refds to their start state and fetches data based on URL data
+        it resets all refs to their start state and fetches data based on URL data
     - 2 controllers allow to switch the values of `categorySlug` and `viewType` by
         triggering 2 functions:
          - `changeCategory()` will switch from one category to another
@@ -52,7 +52,7 @@
           {{ tableName === "theme" ? "thèmes" : "entités nommées" }}&nbsp;:
           {{ capitalizeFirstChar(categoryName) }}</h1>
         <H2IndexCount v-if="loadState === 'loaded'"
-                      :indexCount="viewType === 'collection'
+                      :indexCount=" viewType === 'collection'
                                   ? dataCollectionFull.length
                                   : dataTree.reduce((count, currentCategory) =>
                                      count + currentCategory.entries.length, 0)"
@@ -91,7 +91,9 @@
     <!-- presentation text for each category -->
     <div v-if="tableName === 'theme'"
          class="index-headtext-wrapper">
-      <p v-html="themeCategoryPresentation[categorySlug]"></p>
+      <div>
+        <p v-html="themeCategoryPresentation[categorySlug]"></p>
+      </div>
     </div>
     <div v-else class="index-headtext-wrapper">
       <!-- not yet implemented: named entity category presentations don't exist -->
@@ -119,7 +121,7 @@
         <ul class="tree-category list-invisible"
         >
           <li v-for="category in dataTree.sort((a, b) =>
-                      a.category.localeCompare(b.category))"
+                      a.category_name.localeCompare(b.category_name))"
               class="category-wrapper"
               :class="{ 'category-expanded':
                 expandedTreeCategories.includes(category.category_slug) }"
@@ -133,7 +135,7 @@
                                     ? urlToFrontendThemeCategory(category.category_slug).pathname
                                     : urlToFrontendNamedEntityCategory(category.category_slug).pathname,
                                    query: { viewType: viewType } }"
-                             v-html="category.category"
+                             v-html="category.category_name"
                              class="tree-category-name"
                 ></RouterLink>
                 ({{ category.entries.length }}
@@ -163,7 +165,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import axios from "axios";
@@ -184,6 +186,7 @@ import { urlToFrontendTheme
 import { indexDataFormatterTheme
        , indexDataFormatterNamedEntity } from "@utils/indexDataFormatter";
 import { capitalizeFirstChar } from "@utils/strings";
+import "@typedefs";
 
 /*************************************************************/
 
@@ -192,18 +195,17 @@ const router  = useRouter();
 const props   = defineProps(["tableName"]);
 const display = "concept";       // define the view to use in `IndexItem`
 
-const tableName              = ref();    // (string) "theme"|"namedEntity"
-const viewType               = ref();    // (string) "collection"|"tree". the kind of display to use. defaults to "collection"
-const categorySlug           = ref();    // (string) theme.category_slug or named_entity.category_slug of "all" if we want to retrieve all themes/named entities
-const categoryName           = ref()     // (string) theme.category or named_entity.category or "tout" if categorySlug === 'all'
-const categories             = ref([]);  // (Array<Object>) : all allowed categories. an array of { category_name: String, category_slug: String }
-const dataCollectionFull     = ref([]);  // (Array<Object>) the full index when viewType==='collection', independent of user filters
-const dataCollectionFilter   = ref([]);  // (Array<Object>) the data to pass to `IndexBase.vue` when viewType==='collection'. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> }
-const dataTree               = ref([]);  // (Array<Object>) the data when viewType==='tree'
-const expandedTreeCategories = ref([]);  // array of expanded category slugs
+const tableName              = ref();    /** @type {String} "theme"|"namedEntity" */
+const viewType               = ref();    /** @type {String} "collection"|"tree". the kind of display to use. defaults to "collection" */
+const categorySlug           = ref();    /** @type {String} theme.category_slug or named_entity.category_slug of "all" if we want to retrieve all themes/named entities */
+const categoryName           = ref()     /** @type {String} theme.category_name or named_entity.category_name or "tout" if categorySlug === 'all' */
+const categories             = ref([]);  /** @type {typedefs.ThemeOrNamedEntityCategoryItem[]} : all allowed categories */
+const dataCollectionFull     = ref([]);  /** @type {typedefs.ThemeOrNamedEntityItemLite[]} the full index when viewType==='collection', independent of user filters */
+const dataCollectionFilter   = ref([]);  /** @type {typedefs.IndexBaseItem[]} the data to pass to `IndexBase.vue` when viewType==='collection'. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> } */
+const dataTree               = ref([]);  /** @type {typedefs.ThemeOrNamedEntityTree} the data when viewType==='tree' */
+const expandedTreeCategories = ref([]);  /** @type {String[]} array of `category.category_slug`. all categories with a category_slug in this array will be expanded in the HTML. */
 
-const loadState = ref("loading");  // toggled to true when data has loaded, hides the loader
-
+const loadState = ref("loading");  /** @type {typedefs.AsyncRequestState} */
 
 /*************************************************************/
 /** DATA FETCHING */
@@ -238,7 +240,7 @@ function getCurrentCategoryName() {
 
 /**
  * get all allowed categories for the Theme|NamedEntity table.
- * structure: <Array<{ category_name: String, category_slug: String }>>
+ * @type { typedefs.ThemeOrNamedEntityCategoryItem }: the structure of `categories`
  */
 function getCategories() {
   const apiTarget = tableName.value === "theme"
@@ -266,7 +268,7 @@ function getDataTree() {
   axios.get(apiTarget)
   .then(r => r.data)
   .then(data => {
-    dataTree.value = data;
+    dataTree.value = data;  /** @type { typedefs.ThemeOrNamedEntityTree } */
     loadState.value = "loaded"
   })
   .catch(e => {
@@ -288,7 +290,7 @@ function getDataCollection() {
   axios.get(apiTarget.href, { params: { category_slug: categorySlug.value } })
     .then(r => r.data)
     .then(data => {
-      dataCollectionFull.value = data;
+      dataCollectionFull.value = data;  /** @type { typedefs.ThemeOrNamedEntityItemLite[] } */
       dataCollectionFilter.value = tableName.value === "theme"
                                  ? indexDataFormatterTheme(data)
                                  : indexDataFormatterNamedEntity(data);
@@ -307,8 +309,8 @@ function getDataCollection() {
  * when `FilterIndexThemeOrNamedEntity` emits a new array of
  * filtered Theme or NamedEntity objects, update `dataCollectionFilter`.
  *
- * @param {Array<Object>} filteredData: the new filtered array of
- *    Iconography or NamedEntity objects
+ * @param {typedefs.ThemeOrNamedEntityItemLite[]} filteredData:
+ *    the new filtered array of Iconography or NamedEntity objects
  */
 function handleFilter(filteredData) {
   dataCollectionFilter.value = tableName.value === "theme"
@@ -397,7 +399,7 @@ function initViewHook() {
 /*************************************************************/
 
 /**
- * hook to handle a change of `category` in the route path:
+ * hook to handle a change of `category_slug` in the route path:
  * reset the refs, fetch backend data for the new category.
  */
 watch(() => route.path, (newPath, oldPath) => {

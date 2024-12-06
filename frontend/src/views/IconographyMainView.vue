@@ -107,19 +107,21 @@ import { stringifyActorArray
        , stringifyInstitutionArray
        , stringifyGenericArray
        , stringifyDate } from "@utils/stringifiers";
+import "@typedefs";
 
 /***************************************************/
 
 const route       = useRoute();
-const idUuid      = ref(route.params.idUuid);
-const iconography = ref();
-const loadState   = ref("loading");  // "loading"/"loaded"/"error"
-const viewerType  = ref("osd");  // "osd" for a IIIF viewer, "leaflet" for a leaflet map of the place of this image
+const idUuid      = ref(route.params.idUuid); /** @type {String} */
+const iconography = ref();                    /** @type {typedefs.IconpgraphyItemFull}  */
+const loadState   = ref("loading");           /** @type {typedefs.AsyncRequestState} "loading"/"loaded"/"error" */
+const viewerType  = ref("osd");               /** @type {("osd"|"leaflet")} "osd" for a IIIF viewer, "leaflet" for a leaflet map of the place of this image */
 
-
+/** @type {computed<URL>} */
 const apiTarget = computed(() =>
   new URL(`/i/iconography/${idUuid.value}`, __API_URL__) );
-// a backup image url in case the IIIF one doesn't load properly
+
+/**  @type {String} a backup image url in case the IIIF one doesn't load properly */
 const imageUrl = computed(() => {
   return iconography.value !== undefined
   ? iconography
@@ -128,6 +130,7 @@ const imageUrl = computed(() => {
     .filter( f => !f.url.match(/compress|thumbnail/) )[0].url
   : "not yet defined" });
 
+/** @type {computed<string[][]>} */
 const structuredCartel = computed(() => {
   const cartel = [],  // Array of [ title, data ]
         icn = iconography.value;

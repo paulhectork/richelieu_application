@@ -131,23 +131,24 @@ import IndexIconography from '@components/IndexIconography.vue';
 import { stringifyIconographyResource } from "@utils/stringifiers.js";
 import { IconographyQueryParams } from "@modules/iconographyQueryParams.js";
 import { domStore } from "@stores/dom.js";
+import "@typedefs";
 
 /************************************************/
 
 const route                  = useRoute();
-const articleName            = ref();         // the name of the article, defined in `setArticleName`, allows us to load the relevant `ArticleContent...`.
-const articleComponent       = shallowRef();  // the currentcomponent, or ErrNotFound.vue if articleName is not a key of `urlMapper` below. `shallowRef` is used to avoid vue performance warnings
-const notFoundFlag           = ref(false);    // true if the component `articleComponent` is `ErrNotFound.vue`
+const articleName            = ref();         /** @type {string} the name of the article, defined in `setArticleName`, allows us to load the relevant `ArticleContent...`.*/
+const articleComponent       = shallowRef();  /** @type {ComponentPublicInstance} the currentcomponent, or ErrNotFound.vue if articleName is not a key of `urlMapper` below. `shallowRef` is used to avoid vue performance warnings*/
+const notFoundFlag           = ref(false);    /** @type {bool} true if the component `articleComponent` is `ErrNotFound.vue`*/
 
-const iconographyIndex       = ref([]);       // array of iconography objects to display in an index
-const iconographyMainArray   = ref([]);       // array of a few iconography resources (2-6) from which to display IIIFs
-const iconographyMainCurrent = ref();         // the iconography ressource currently viewed in the IIIF viewer. can be modified when clicking on `.button-eye`.
-const iiifViewer             = ref();         // openseadragon viewer returned by `IiifViewer.vue`
+const iconographyIndex       = ref([]);       /** @type {typedefs.IconographyItemLite[]} array of iconography objects to display in an index */
+const iconographyMainArray   = ref([]);       /** @type {typedefs.IconographyItemFull[]} array of a few iconography resources (2-6) from which to display IIIFs*/
+const iconographyMainCurrent = ref();         /** @type {typedefs.IconographyItemFull} the iconography ressource currently viewed in the IIIF viewer. can be modified when clicking on `.button-eye`.*/
+const iiifViewer             = ref();         /** @type {OpenSeadragon.viewer} openseadragon viewer returned by `IiifViewer.vue`*/
 
-const articleFootnotes       = ref({})        // the footnotes of the `articleComponent`. structure: { <footnote key>: <footnote content> }
-const currentFootnoteContent = ref("")        // when a footnote is clicked, this ref will hold its HTML content
-const currentFootnoteHtmlId  = ref("")        // the htmlId of the current footnote, if a footnote is displayed
-const currentFootnotePos     = ref([])        // [x:float, y:float]. where to position the
+const articleFootnotes       = ref({})        /** @type { {[string]: string} } the footnotes of the `articleComponent`. structure: { <footnote key>: <footnote content> }*/
+const currentFootnoteContent = ref("")        /** @type {string} when a footnote is clicked, this ref will hold its HTML content*/
+const currentFootnoteHtmlId  = ref("")        /** @type string} the htmlId of the current footnote, if a footnote is displayed*/
+const currentFootnotePos     = ref([])        /** @type {Number[]}. [x,y] coordinates where to position the footnote */
 
 // url to component name mapper
 const urlMapper = { "bourse"             : "ArticleContentBourse"
@@ -323,8 +324,8 @@ function fetchIndex(newQueryParams) {
 /**
  * set the `articleFootnotes` ref from the `footnotes`
  * emitted by the child `ArticleContent...` component.
- * @param {Object} footnotes: the footnotes
- *   (strucutre: { <footnote key>: <footnote content> })
+ * @param { {[string]: string} } footnotes: the footnotes
+ *   (structure: { <footnote key>: <footnote content> })
  */
 function setArticleFootnotes(footnotes) {
   // basic error checking : do some UiButtonEllipsis@data-key

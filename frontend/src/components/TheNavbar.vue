@@ -35,14 +35,21 @@
       </RouterLink>
     </h1>
 
-    <div id="burger"
-         :class="props.menuActive ? 'burger-cross' : ''"
-         @click="emit('menuActiveUpdate', !props.menuActive)"
-         @touchend="emit('menuActiveUpdate', !props.menuActive)"
-    >
-      <span></span>
-      <span></span>
-      <span></span>
+    <div class="navbar-right-wrapper">
+      <div class="nav-qsb-wrapper">
+        <TheQuickSearchBar></TheQuickSearchBar>
+      </div>
+      <div class="burger-wrapper">
+        <div id="burger"
+             :class="props.menuActive ? 'burger-cross' : ''"
+             @click="emit('menuActiveUpdate', !props.menuActive)"
+             @touchend="emit('menuActiveUpdate', !props.menuActive)"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
     </div>
   </nav>
 </template>
@@ -51,7 +58,10 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router';
 import { onMounted, onUnmounted, computed, ref } from "vue";
+
 import $ from "jquery";
+
+import TheQuickSearchBar from "@components/TheQuickSearchBar.vue";
 
 import { domStore } from "@stores/dom";
 import { clickOrTouchEvent } from "@globals";
@@ -83,10 +93,27 @@ onMounted(() => {
   background-color: white;
 
   display: grid;
-  grid-template-columns: 1fr auto;
+    grid-template-columns: 50% 50%;
   grid-template-rows: 100%;
   justify-items: start;
   align-items: center;
+
+}
+@media (orientation:landscape) {
+  .navbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: 100%;
+    justify-items: start;
+    align-items: center;
+  }
+}
+
+/*****************************/
+
+h1 {
+  margin: 0;
+  padding: 0;
 }
 h1 > a {
   display: flex;
@@ -97,6 +124,29 @@ h1 > a {
   height: calc(var(--cs-navbar-height) - 10px);
   object-fit: contain;
   margin-left: 10px;
+}
+
+/*****************************/
+
+.navbar-right-wrapper {
+  height: 100%;
+  height: calc(var(--cs-navbar-height) - 10px);
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.nav-qsb-wrapper {
+  flex-grow: 2;
+}
+/*****************************/
+
+
+.burger-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #burger {
   width: calc(var(--cs-navbar-height) - 20px);

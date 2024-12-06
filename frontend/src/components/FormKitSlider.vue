@@ -60,13 +60,13 @@ import '@plugins/nouislider.min.css';
 /**********************************************/
 
 const htmlId      = `formkit-slider-${window.crypto.randomUUID()}`;
-const props       = defineProps(["context"]);  // "minVal", "maxVal", "step", "number" ("integer"|"float")
+const props       = defineProps(["context"]);  /** @type { { minVal: Number?, maxVal: Number?, step: Number?, number: ("integer"|"float") } } */
 const slider      = ref();
 const context     = ref();
-const allowedMin  = ref();  // allowed minimum/maximum values
-const allowedMax  = ref();
-const selectedMin = ref();  // currently selected mimumums / maximums
-const selectedMax = ref();
+const allowedMin  = ref();  /** @type {Number} allowed minimum value */
+const allowedMax  = ref();  /** @type {Number} allowed maximum value */
+const selectedMin = ref();  /** @type {Number} currently selected minimum value */
+const selectedMax = ref();  /** @type {Number} currently selected maximum value */
 // const showPopup   = ref(false);
 
 /**********************************************/

@@ -28,26 +28,28 @@
     <div v-if="loadState==='loaded'"
          class="index-headtext-wrapper"
     >
+      <div>
 
-      <p v-if="parisMusees.includes(institutionName)">Ce musée est membre du réseau
-        <RouterLink to="/institution/qr1ea925dc913804199ac1c0576480da5aa">
-          Paris Musées</RouterLink>.</p>
+        <p v-if="parisMusees.includes(institutionName)">Ce musée est membre du réseau
+          <RouterLink to="/institution/qr1ea925dc913804199ac1c0576480da5aa">
+            Paris Musées</RouterLink>.</p>
 
-      <p v-if="bibliSpe.includes(institutionName)">Cette bibliothèque est membre
-        du réseau des
-        <RouterLink to="/institution/qr1882f452734fc4049ae13bab3ae018981">
-          Bibliothèques spécialisées de la ville de Paris</RouterLink>.</p>
+        <p v-if="bibliSpe.includes(institutionName)">Cette bibliothèque est membre
+          du réseau des
+          <RouterLink to="/institution/qr1882f452734fc4049ae13bab3ae018981">
+            Bibliothèques spécialisées de la ville de Paris</RouterLink>.</p>
 
-      <p v-if="institutionName==='Paris Musées'">Le réseau Paris Musées regroupe les
-        institutions suivantes&nbsp;:
-        <span v-html="stringifyInstitutionArray(parisMuseesIndex, true)"></span>.
-      </p>
+        <p v-if="institutionName==='Paris Musées'">Le réseau Paris Musées regroupe les
+          institutions suivantes&nbsp;:
+          <span v-html="stringifyInstitutionArray(parisMuseesIndex, true)"></span>.
+        </p>
 
-      <p v-if="institutionName === 'Bibliothèques spécialisées de la Ville de Paris'">
-        Le réseau des Bibliothèques spécialisées de la Ville de Paris regroupe les
-        institutions suivantes&nbsp;:
-        <span v-html="stringifyInstitutionArray(bsvpIndex, true)"></span>.
-      </p>
+        <p v-if="institutionName === 'Bibliothèques spécialisées de la Ville de Paris'">
+          Le réseau des Bibliothèques spécialisées de la Ville de Paris regroupe les
+          institutions suivantes&nbsp;:
+          <span v-html="stringifyInstitutionArray(bsvpIndex, true)"></span>.
+        </p>
+      </div>
     </div>
 
     <div v-if="loadState === 'loaded'">
@@ -70,20 +72,21 @@ import H2IndexCount from "@components/H2IndexCount.vue";
 import IndexIconography from "@components/IndexIconography.vue";
 
 import { stringifyInstitutionArray } from "@utils/stringifiers";
+import "@typedefs";
 
 /**************************************************/
 
 const route                = useRoute();
-const idUuid               = ref(route.params.idUuid);  // id_uuid of the current institution
-const institution          = ref({});    // the institution object sent from the backend
-const institutionIndex     = ref([]);    // index of all institutions. fetched from backend
-const institutionName      = ref("");    // the name of the institution. fetched from backend
-const dataFull             = ref([]);    // the complete iconography  data, set from a watcher
+const idUuid               = ref(route.params.idUuid);  /** @type {String} id_uuid of the current institution */
+const institution          = ref({});                   /** @type {typedefs.InstitutionItemFull} the institution object sent from the backend */
+const institutionIndex     = ref([]);                   /** @type {typedefs.InstitutionItemLite[]} index of all institutions. fetched from backend */
+const institutionName      = ref("");                   /** @type {String} the name of the institution. fetched from backend */
+const dataFull             = ref([]);                   /** @type {typedefs.IconographyItemLite[]} the complete iconography  data, set from a watcher */
+const loadState            = ref("loading");            /** @type {typedefs.AsyncRequestState} loaded/loading/error */
 
 const apiTargetIndex       = new URL("/i/institution", __API_URL__);
 const apiTargetInstitution = new URL(`/i/institution/name/${idUuid.value}`, __API_URL__);
 const apiTargetIconography = new URL(`/i/institution/${idUuid.value}`, __API_URL__);
-const loadState            = ref("loading");  // loaded/loading/error
 
 // 2-way binding stuff
 // institution names from `Paris Musées` and
@@ -135,7 +138,7 @@ async function getData() {
     ,
     axios.get(apiTargetIndex.href)
     .then(r => r.data)
-    .then(data => { institutionIndex.value = data })
+    .then(data => { institutionIndex.value = data; })
     ,
     axios.get(apiTargetIconography.href)
     .then(r => r.data)

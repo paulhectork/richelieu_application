@@ -20,13 +20,12 @@
           item in this array.
 
       props:
-      - display:
-          one of "resource"|"concept".
+      - display ("resource"|"concept")
           passed to `IndexItem` to determine the style used.
-      - itemsPerRow: int|undefined
+      - itemsPerRow (Number|undefined)
           the maximum number of items to display per row. so far it's only used
           by `CartographyPlaceInfo`
-      - data:
+      - data ( @typedefs.IndexBaseItem[] )
           the array of data to display. the structure is the same
           no matter the parent which calls IndexBase, or the kind of object
           to display (Icono, Named Entity...):
@@ -47,27 +46,9 @@
 
 <template>
   <div class="index-outer-wrapper">
-    <!--
-    <div class="index-filter-wrapper">
-      <FormKit type="search"
-               placeholder="..."
-               label="Filtrer"
-               :delay="1000"
-               @input="textFilter"
-      ></FormKit>
-    </div>
-    -->
     <div class="index-inner-wrapper animate__animated animate__slideInLeft"
          :style="computedStyle"
     >
-      <!-- without paging -->
-      <!--
-      <IndexItem v-for="d in dataFilter"
-                 :item="d"
-                 :display="display"
-      ></IndexItem>
-      -->
-
       <!-- with infinite scrolling -->
       <div v-for="d in pageRenderer(pageNumber, pageSize)"
            class="index-item-wrapper"
@@ -88,19 +69,18 @@ import $ from "jquery";
 
 import IndexItem from "@components/IndexItem.vue";
 
+import "@typedefs";
+
 /*******************************************************/
 
 const props = defineProps([ "display"      // which component to use for rendering a component: `resource` => `IndexItem.vue`, `concept` => `IndexItem.vue`
                           , "data"         // data to display
                           , "itemsPerRow"  // (optional) number of items to display for each row
                           ])  // the data to display.
-const data = ref([]);  // the items of the index.
 
-// const dataFull   = ref([]);   // all items of the index
-// const dataFilter = ref([]);   // index items filtered in `.index-filter-wrapper`
-
-const pageNumber = ref(0);    // which page we're on: offset
-const pageSize   = 20;        // number of new items to add to the "page"
+const data = ref([]);      /** @type {typedefs.IndexBaseItem[]}  the items of the index. */
+const pageNumber = ref(0); /** @type {Number}  which page we're on: offset */
+const pageSize   = 20;     /** @type {Number}  number of new items to add to the "page" */
 
 /**
  * if there is a props.itemsPerRow, set the grid-template-columns.

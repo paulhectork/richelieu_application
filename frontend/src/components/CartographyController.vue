@@ -54,7 +54,7 @@
                  :submit-attrs="{ inputClass   : 'form-submit-input',
                                   wrapperClass : 'form-submit-wrapper',
                                   outerClass   : 'form-submit-outer' }"
-                 @submit="''/*onSubmit*/"
+                 @submit="''"
                  :actions="false"
                  @input="emitFilterUpdate"
         >
@@ -122,16 +122,14 @@ import UiLoader from "@components/UiLoader.vue";
 
 import { cartographySourceMapper } from "@globals";
 import { sortCartographyBySource } from "@utils/array";
+import "@typedefs";
 
 /***************************************/
 
-const emit   = defineEmits(["closeCartographyController"
-                           , "filterUpdate"
-                           ]);
-const props  = defineProps([ "places"
-                           , "currentFeatureCount" ]);
-const places = props.places;  // the whole place geoJson
-const cartographySources = ref([]);  // [{ value: "...", label: "..." }]
+const emit   = defineEmits(["closeCartographyController", "filterUpdate" ]);
+const props  = defineProps([ "places", "currentFeatureCount" ]);
+const places = props.places;              /** @type {Object}: the whole place geoJson */
+const cartographySources = ref([]);       /** @type { { value: String, label: String }[] } : the different cartography sources */
 const cartographyGranularities = ref([]);
 
 /***************************************/
@@ -179,9 +177,6 @@ function emitFilterUpdate(inputData) {
   }
   emit("filterUpdate", newFilter);
 }
-
-
-const onSubmit = () => {};
 
 /***************************************/
 

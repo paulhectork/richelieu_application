@@ -61,6 +61,7 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
         "@modules": fileURLToPath(new URL("./src/modules", import.meta.url)),
         "@globals": fileURLToPath(new URL("./src/globals.js", import.meta.url)),
         "@plugins": fileURLToPath(new URL("./src/plugins", import.meta.url)),
+        "@typedefs": fileURLToPath(new URL("./src/typedefs.js", import.meta.url)),
         "@components": fileURLToPath(new URL("./src/components", import.meta.url)),
         "@composables": fileURLToPath(new URL("./src/composables", import.meta.url))
       }
