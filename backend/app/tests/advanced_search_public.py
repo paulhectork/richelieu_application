@@ -76,19 +76,19 @@ class TestAdvancedSearchPublic(unittest.TestCase):
             ,
             #TODO so far, the separator is ",". it should be "\s*,\s*" or "\s*|\s*"
             # with a `.strip()` on individual values and this should be valid
-            # [ { "publisher": "Aubert, Martinet" },
-            #   r"""
-            #   SELECT DISTINCT iconography.id_uuid
-            #   FROM iconography
-            #   JOIN r_iconography_actor
-            #   ON r_iconography_actor.id_iconography = iconography.id
-            #   AND r_iconography_actor.role = 'publisher'
-            #   JOIN actor
-            #   ON r_iconography_actor.id_actor = actor.id
-            #   AND actor.entry_name ILIKE ANY(ARRAY['%Aubert%', '%Martinet%']);
-            #   """
-            # ]
-            # ,
+            [ { "publisher": "Aubert, Martinet" },
+              r"""
+              SELECT DISTINCT iconography.id_uuid
+              FROM iconography
+              JOIN r_iconography_actor
+              ON r_iconography_actor.id_iconography = iconography.id
+              AND r_iconography_actor.role = 'publisher'
+              JOIN actor
+              ON r_iconography_actor.id_actor = actor.id
+              AND actor.entry_name ILIKE ANY(ARRAY['%Aubert%', '%Martinet%']);
+              """
+            ]
+            ,
             [ { "named_entity": 'Martinet Éditeur,Lecointe architecte' },
               r"""
               SELECT DISTINCT iconography.id_uuid
@@ -211,31 +211,31 @@ class TestAdvancedSearchPublic(unittest.TestCase):
             ,
             #TODO `NOT` is not yet allowed as a boolean_op in the public api.
             # basic NOT
-            # [ { "theme"                  : "boutique",
-            #     "named_entity"           : "Galerie Vivienne",
-            #     "named_entity_boolean_op": "not"
-            #   },
-            #   """
-            #   SELECT iconography.id
-            #   FROM iconography
-            #   JOIN r_iconography_theme
-            #   ON r_iconography_theme.id_iconography = iconography.id
-            #   JOIN theme
-            #   ON theme.id = r_iconography_theme.id_theme
-            #   AND theme.entry_name IN ('boutique')
-            #   WHERE iconography.id NOT IN
-            #   (
-            #     SELECT iconography.id
-            #     FROM iconography
-            #     JOIN r_iconography_named_entity
-            #     ON r_iconography_named_entity.id_iconography = iconography.id
-            #     JOIN named_entity
-            #     ON named_entity.id = r_iconography_named_entity.id_named_entity
-            #     AND named_entity.entry_name IN ('Galerie Vivienne')
-            #   );
-            #   """
-            # ]
-            # ,
+            [ { "theme"                  : "boutique",
+                "named_entity"           : "Galerie Vivienne",
+                "named_entity_boolean_op": "not"
+              },
+              """
+              SELECT iconography.id
+              FROM iconography
+              JOIN r_iconography_theme
+              ON r_iconography_theme.id_iconography = iconography.id
+              JOIN theme
+              ON theme.id = r_iconography_theme.id_theme
+              AND theme.entry_name IN ('boutique')
+              WHERE iconography.id NOT IN
+              (
+                SELECT iconography.id
+                FROM iconography
+                JOIN r_iconography_named_entity
+                ON r_iconography_named_entity.id_iconography = iconography.id
+                JOIN named_entity
+                ON named_entity.id = r_iconography_named_entity.id_named_entity
+                AND named_entity.entry_name IN ('Galerie Vivienne')
+              );
+              """
+            ]
+            ,
             # chaining `and`s
             [ { "theme"            : "commerce",
                 "theme_boolean_op" : "and",
@@ -274,41 +274,41 @@ class TestAdvancedSearchPublic(unittest.TestCase):
             ,
             #TODO: "NOT" is not yet allowed in the public api.
             # fancier query
-            # [ { "institution"             : "Bibliothèque historique de la Ville de Paris",
-            #     "institution_boolean_op"  : "and",
-            #     "theme"                   : "actualité",
-            #     "theme_boolean_op"        : "not",
-            #     "named_entity"            : "Franck photographe",
-            #     "named_entity_boolean_op" : "or",
-            #     "date"                    : "1800,1850"  # dateBooleanOp is implicit
-            #   },
-            #   """
-            #   SELECT iconography.id
-            #   FROM iconography
-            #   JOIN r_institution ON r_institution.id_iconography = iconography.id
-            #   JOIN institution ON institution.id = r_institution.id_institution
-            #   AND institution.entry_name IN ('Bibliothèque historique de la Ville de Paris')
-            #   WHERE iconography.date IS NOT NULL
-            #   AND NOT isempty( iconography.date * '[1800,1851)'::int4range )
-            #   AND iconography.id NOT IN
-            #   (
-            #     SELECT iconography.id
-            #     FROM iconography
-            #     JOIN r_iconography_theme ON r_iconography_theme.id_iconography = iconography.id
-            #     JOIN theme ON theme.id = r_iconography_theme.id_theme
-            #     AND theme.entry_name IN ('actualité')
-            #   )
-            #   UNION
-            #   (
-            #     SELECT iconography.id
-            #     FROM iconography
-            #     JOIN r_iconography_named_entity ON r_iconography_named_entity.id_iconography = iconography.id
-            #     JOIN named_entity ON named_entity.id = r_iconography_named_entity.id_named_entity
-            #     AND named_entity.entry_name IN ('Franck photographe')
-            #   )
-            #   """
-            # ]
-            # ,
+            [ { "institution"             : "Bibliothèque historique de la Ville de Paris",
+                "institution_boolean_op"  : "and",
+                "theme"                   : "actualité",
+                "theme_boolean_op"        : "not",
+                "named_entity"            : "Franck photographe",
+                "named_entity_boolean_op" : "or",
+                "date"                    : "1800,1850"  # dateBooleanOp is implicit
+              },
+              """
+              SELECT iconography.id
+              FROM iconography
+              JOIN r_institution ON r_institution.id_iconography = iconography.id
+              JOIN institution ON institution.id = r_institution.id_institution
+              AND institution.entry_name IN ('Bibliothèque historique de la Ville de Paris')
+              WHERE iconography.date IS NOT NULL
+              AND NOT isempty( iconography.date * '[1800,1851)'::int4range )
+              AND iconography.id NOT IN
+              (
+                SELECT iconography.id
+                FROM iconography
+                JOIN r_iconography_theme ON r_iconography_theme.id_iconography = iconography.id
+                JOIN theme ON theme.id = r_iconography_theme.id_theme
+                AND theme.entry_name IN ('actualité')
+              )
+              UNION
+              (
+                SELECT iconography.id
+                FROM iconography
+                JOIN r_iconography_named_entity ON r_iconography_named_entity.id_iconography = iconography.id
+                JOIN named_entity ON named_entity.id = r_iconography_named_entity.id_named_entity
+                AND named_entity.entry_name IN ('Franck photographe')
+              )
+              """
+            ]
+            ,
             # another fancy query
             [ { "named_entity"          : "Agence Fournier",
                 "theme"                 : "architecture",
@@ -338,30 +338,30 @@ class TestAdvancedSearchPublic(unittest.TestCase):
             ,
             #TODO: "NOT" is not yet allowed in the public api.
             # query with only NOT boolean operators
-            # [ { "date"                 : "1800,1850",
-            #     "date_boolean_op"        : "not",
-            #     "institution"          : "Paris Musées",
-            #     "institution_boolean_op" : "not" },
-            #   """
-            #   SELECT iconography.id
-            #   FROM iconography
-            #   WHERE iconography.id NOT IN
-            #   (
-            #     SELECT iconography.id
-            #     FROM iconography
-            #     WHERE iconography.date IS NOT NULL
-            #     AND  NOT isempty( iconography.date * '[1800,1851)'::int4range ))
-            #   AND iconography.id NOT IN
-            #   (
-            #     SELECT iconography.id
-            #     FROM iconography
-            #     JOIN r_institution ON r_institution.id_iconography = iconography.id
-            #     JOIN institution ON r_institution.id_institution = institution.id
-            #     AND institution.entry_name IN ('Paris Musées')
-            #   );
-            #   """
-            # ]
-            # ,
+            [ { "date"                 : "1800,1850",
+                "date_boolean_op"        : "not",
+                "institution"          : "Paris Musées",
+                "institution_boolean_op" : "not" },
+              """
+              SELECT iconography.id
+              FROM iconography
+              WHERE iconography.id NOT IN
+              (
+                SELECT iconography.id
+                FROM iconography
+                WHERE iconography.date IS NOT NULL
+                AND  NOT isempty( iconography.date * '[1800,1851)'::int4range ))
+              AND iconography.id NOT IN
+              (
+                SELECT iconography.id
+                FROM iconography
+                JOIN r_institution ON r_institution.id_iconography = iconography.id
+                JOIN institution ON r_institution.id_institution = institution.id
+                AND institution.entry_name IN ('Paris Musées')
+              );
+              """
+            ]
+            ,
             # query with only OR boolean operators
             # this will test the transformation of the first "or" to an "and"
             [ { "institution"           : "Paris Musées",

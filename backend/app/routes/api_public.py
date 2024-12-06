@@ -67,7 +67,7 @@ class EntityParameters(BaseModel):
 class BooleanEnum(str, Enum):
     and_selection = 'and'
     or_selection  = 'or'
-    not_selection  = 'not'
+    not_selection = 'not'
 
 
 class SearchParameters(BaseModel):
@@ -330,7 +330,8 @@ def make_get_entity_lite(resource):
 
 
 def split_multivaluate(text):
-    return [val for val in text.split(QUERY_COL_SEP) if val]
+    return [ val.strip() for val in text.split(QUERY_COL_SEP)
+             if val and isinstance(val, str) ]
 
 
 def sanitize_search_query(query):
