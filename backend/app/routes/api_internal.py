@@ -8,6 +8,7 @@ from sqlalchemy import text, func, tuple_
 from sqlalchemy.sql.expression import bindparam
 
 from ..search.search_iconography import sanitize_params, make_params, make_query
+from ..search.search_quicksearch import quick_search
 from ..utils.spatial import featurelist_to_featurecollection, geometry_to_feature
 from ..app import app, db, cache
 from ..orm import *
@@ -540,7 +541,7 @@ def cartography_for_granularity(cartography_granularity: str):
 
 
 # *************************************************************************
-# advanced search
+# search functions
 # *************************************************************************
 
 @app.route("/i/search/iconography", methods=["GET", "POST"])
@@ -572,6 +573,17 @@ def advanced_search_iconography():
     else:
         return "This route only accepts HTTP with JSON parameters", 400
 
+@app.route("/i/search/quicksearch/<string:query_string>", methods=["GET"])
+def search_quicksearch(query_string:str):
+    """
+    run a quicksearch: return all rows from several tables based on `query_string`.
+
+    :returns:
+        [ { table_name: str, id_uuid: str, entry_name: str } ].
+        (each item represents a single result)
+    """
+    out = quick_search(query_string)
+    return jsonify(out) if len(out) else jsonify([])
 
 # *************************************************************************
 # associations

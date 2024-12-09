@@ -103,7 +103,7 @@ const searchResults = ref([]);  /** @type {typedefs.QuickSearchResultFlatArray} 
  * @returns {typedefs.QuickSearchResultFlatArray}
  */
 const flattenSearchResults = (theSearchResults) =>
-  Array.from(...theSearchResults.map(group => group.entries));
+  theSearchResults.map(group => group.entries).flat();
 
 /**
  * when submitting data, run the query
@@ -112,7 +112,6 @@ function onSubmit(e) {
   queryString.value = e.qsbInput;
   quickSearch(queryString.value).then(data => {
     searchResults.value = flattenSearchResults(data);
-    console.log(searchResults.value);
   });
 }
 
@@ -153,6 +152,12 @@ watch(route, (newR, oldR) => {
   grid-template-columns: 1fr auto;
   grid-template-rows: 100%;
   height: calc(var(--cs-navbar-height) - 20px);  /** same height as the burger button */
+
+}
+.qsb-outer-wrapper :deep(.formkit-wrapper),
+.qsb-outer-wrapper :deep(.formkit-inner),
+.qsb-outer-wrapper :deep(#qsb-input) {
+  height: 100%;
 }
 .qsb-outer-wrapper :deep(#qsb-input),
 .qsb-outer-wrapper :deep(#qsb-submit)  {

@@ -39,7 +39,7 @@
  *    a group of results in a quick search. a `group`
  *    is defined for a certain page type: theme, icono, articles...
  * @type {Object}
- * @property {("iconography"|"theme"|"named_entity"|"place"|"institution"|"article")} groupName
+ * @property {("iconography"|"theme"|"named_entity"|"place"|"cartography"|"institution"|"article")} groupName
  *    1 result type per data type + 1 for the articles, which are also queried
  * @property { QuickSearchResultItem[] } entries
  *    an array of all the results for that group
