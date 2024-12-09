@@ -57,8 +57,6 @@ function setRefs(theProps) {
   hideFilter.value  = theProps.hideFilter || false;
   itemsPerRow.value = theProps.oneItemRow === true ? 1 : undefined;
   dataFilter.value  = indexDataFormatterIconography(theProps.data);
-
-  console.log("****", hideFilter.value, itemsPerRow.value);
 }
 
 function handleIconographyFilter(iconographyData) {
