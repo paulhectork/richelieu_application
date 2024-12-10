@@ -71,6 +71,7 @@ function restructureBackendData(data) {
     out.push({ groupName: groupName, entries: entries })
   })
   console.log("restructureBackendData out :", out);
+  return out;
 }
 
 /**
@@ -117,9 +118,9 @@ function matchAppSections(queryString) {
   queryString = simplifyAndUnaccentString(queryString);
 
   // return QuickSearchResultItem[] where queryString is included in any of the strings in `item.searchKeys`
-  return appSections.filter((item) =>
-    item.searchKeys.some(key => key.includes(queryString))
-  ).map((item) => item.searchResult);
+  return appSections.filter((groupItem) =>
+    groupItem.searchKeys.some(key => key.includes(queryString))
+  ).map((groupItem) => groupItem.searchResult);
 }
 
 /**
@@ -154,15 +155,15 @@ function matchArticles(queryString) {
  * @param {String} queryString
  * @returns {typedefs.QuickSearchResultGroup[]}
  */
-async function matchData(queryString) {
+async function matchBackendData(queryString) {
   const apiTarget = new URL(`/i/search/quicksearch/${queryString}`, __API_URL__);
 
   queryString = simplifyString(queryString);
   return axios.get( apiTarget )
          .then(r => r.data)
-         .then(data => { return restructureBackendData })
+         .then(data => { return restructureBackendData(data) })
          .catch(e => {
-          console.error("quickSearchInternals.matchData() : error", e);
+          console.error("quickSearchInternals.matchBackendData() : error", e);
           return []
         })
 
@@ -171,7 +172,7 @@ async function matchData(queryString) {
 /**************************************/
 
 /**
- *
+ * main pipeline function
  * @async
  * @param {String} input: the user input
  * @returns {typedefs.QuickSearchResultGroupArray}: an array of results.
@@ -179,13 +180,34 @@ async function matchData(queryString) {
  */
 export async function quickSearch(queryString) {
   /** @type {typedefs.QuickSearchResultGroupArray} */
-  const results = [];
+  let results = [];
+  // /!\ push order matters: we want what's in each `entries` of
+  // `matchAppSections` to be the 1st item of its group entries.
+  results.push( ...matchAppSections(queryString) );
+  results.push( matchArticles(queryString) );
 
-  matchData(queryString).then(data => results.push(...data));
+  return matchBackendData(queryString).then(backendData => {
+    // divide `backendData` in 2 arrays:
+    // `inResults`,  with groups that are aldready in `results`
+    // `notInResults`, with groups that are not yet in `results`
+    let resultsGroupNames = results.map(group => group.groupName),
+        inResults = backendData.filter(group =>
+          resultsGroupNames.includes(group.groupName)),
+        notInResults = backendData.filter(group =>
+          !resultsGroupNames.includes(group.groupName));
 
-  // results.push( matchArticles(queryString) );
-  // results.push( ...matchAppSections(queryString) );
-  // console.log("from : ", results);
+    // complete `results` with `backendData`, preserving the order.
+    results.push(...notInResults);
+    inResults.map(group => {
+      let currentGroup = results.filter(resultGroup =>
+        resultGroup.groupName === group.groupName)[0];
+      currentGroup.entries = [ ...currentGroup.entries, ...group.entries ]
+    })
 
-  return results
+    // remove empty groups with no entries + sort by number of entries (descending)
+    results = results.filter((resultGroup) => resultGroup.entries.length)
+                     .sort((groupA, groupB) =>
+                        groupA.entries.length < groupB.entries.length);
+    return results;
+  });
 }

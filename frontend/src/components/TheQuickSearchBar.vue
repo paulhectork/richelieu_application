@@ -65,12 +65,12 @@
                        :to="result.entryUrl.pathname"
             ></RouterLink>
           </li>
-          <li class="qsb-result see-more">
-            <RouterLink :to="{ path: 'recherche-rapide',
-                               query: { queryString: queryString } }"
-            ><strong>Afficher plus de résultats</strong></RouterLink>
-          </li>
         </ul>
+        <span class="qsb-result see-more negative-default">
+          <RouterLink :to="{ path: 'recherche-rapide',
+                             query: { queryString: queryString } }"
+          ><strong>Afficher plus de résultats</strong></RouterLink>
+        </span>
       </div>
     </div>
   </div>
@@ -201,22 +201,30 @@ watch(route, (newR, oldR) => {
 
 .qsb-output-wrapper {
   position: relative;
+  width: 100%;
 }
 .qsb-output-inner {
+  width: 100%;
   position: absolute;
   top: 0;
   left: 0;
   background-color: var(--cs-main-default-bg);
   border: var(--cs-main-border);
+
+  max-height: 50vh;
+  height: auto;
+  display: grid;
+  grid-template-rows: 2fr 50px;
+  grid-template-columns: 100%;
+}
+.qsb-result-list {
+  overflow: scroll;
 }
 .qsb-result {
   border-bottom: var(--cs-main-border);
   display: grid;
   grid-template-rows: 100%;
   transition: background-color .3s;
-}
-.qsb-result:last-child {
-  border-bottom: none;
 }
 .qsb-result:hover {
   background-color: var(--cs-main-second-bg);
@@ -227,6 +235,20 @@ watch(route, (newR, oldR) => {
   text-decoration: none;
   color: var(--cs-main-default);
   width: 100%;
+}
+.qsb-result.see-more {
+  width: 100%;
+  height: max(15%, 40px);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-top: var(--cs-main-border);
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+}
+.qsb-result.see-more a {
+  color: var(--cs-negative-default);
 }
 
 
