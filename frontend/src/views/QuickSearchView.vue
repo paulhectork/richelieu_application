@@ -1,3 +1,7 @@
+<!-- QuickSearchView.vue
+  displays the results of a quick search in a tree.
+-->
+
 <template>
   <div class="qsv-wrapper">
     <div class="qsv-title-wrapper">
@@ -5,42 +9,11 @@
       <h2>Votre recherche&nbsp;: <q>&nbsp;{{ queryString }}&nbsp;</q>
         ({{ computedResultCount }})</h2>
     </div>
-  </div>
-  <div class="qsv-results-wrapper">
-    <!--
-    <ul v-if="queryResults.length"
-        class="list-invisible"
-    >
-      <li v-for="group in queryResults"></li>
-    </ul>
-    -->
-    <ul class="tree-category list-invisible"
-    >
-      <li v-for="group in queryResults"
-          class="category-wrapper"
-          :class="{ 'category-expanded':
-            expandedTreeCategories.includes(group.groupName) }"
-      >
-        <span class="category-title-wrapper">
-          <UiButtonPlus @click="() => expandOrCollapseTreeCategory(group.groupName)"
-          ></UiButtonPlus>
-          <span class="category-title">
-            {{ group.groupName }} ({{ group.entries.length }}
-            {{ group.entries.length != 1 ? "entrées" : "entrée" }})
-          </span>
-        </span>
-        <div class="category-entries-wrapper">
-        <ul class="category-entries">
-          <li v-for="item in group.entries"
-              class="category-entry">
-            <RouterLink :to="item.entryUrl"
-                        v-html="item.entryName"
-            ></RouterLink>
-          </li>
-        </ul>
-        </div>
-      </li>
-    </ul>
+    <div class="qsv-results-wrapper">
+      <TreeComponent :data="queryResultsTree"
+                     v-if="queryResultsTree.length"
+      ></TreeComponent>
+    </div>
 
   </div>
 
@@ -50,9 +23,11 @@
 import { ref, onMounted, watch, computed } from "vue";
 import { useRoute } from "vue-router";
 
-import UiButtonPlus from "@components/UiButtonPlus.vue";
+import TreeComponent from "@components/TreeComponent.vue";
 
 import { quickSearch } from "@modules/quickSearchInternals.js";
+import { capitalizeFirstChar } from "@utils/strings";
+import "@typedefs";
 
 /*******************************************/
 
@@ -60,7 +35,7 @@ const route = useRoute();
 
 const queryString = ref();  /** @type {String?}  */
 const queryResults = ref([]);  /** @type {typedefs.QuickSearchResultGroupArray} */
-const expandedTreeCategories = ref([]);  /** @type { string[] } */
+// const expandedTreeCategories = ref([]);  /** @type { string[] } */
 
 /** @type {string} */
 const computedResultCount = computed(() => {
@@ -74,10 +49,38 @@ const computedResultCount = computed(() => {
          : "aucun résultat";
 })
 
+const queryResultsTree = computed(() => restructureToTree(queryResults.value))
+
 /*******************************************/
 
-function expandOrCollapseTreeCategory() {
+/**
+ * restructure data to be used by `TreeComponent`
+ * @param {typedefs.QuickSearchResultGroupArray} data
+ * @returns {typedefs.treeData}
+ */
+function restructureToTree(data) {
+  const restructureGroupEntries = (x) => {
+    return { nodeLabel: x.entryName,
+             nodeUrl: x.entryUrl,
+             nodeChildren: undefined } };
+  const humanReadableGroupName = {
+    "iconography"  : "ressources iconographiques",
+    "named_entity" : "entités nommées",
+    "theme"        : "thèmes",
+    "place"        : "lieux",
+    "article"      : "articles sur le quartier",
+    "institution"  : "institutions",
+    "cartography"  : "cartographie du quartier"
+  }
+  const restructureGroupName = (x) =>
+    `${capitalizeFirstChar(humanReadableGroupName[x.groupName])}
+    (${x.entries.length}  ${ x.entries.length > 1 ? 'résultats' : 'résultat'})`;
+  console.log(">>>>>", data);
 
+  return data.map(group => {
+    return { nodeLabel: restructureGroupName(group),
+             nodeUrl: group.groupUrl,
+             nodeChildren: group.entries.map(restructureGroupEntries)  } });
 }
 
 /**

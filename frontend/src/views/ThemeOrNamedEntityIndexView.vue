@@ -42,11 +42,6 @@
     <div class="title-controller-wrapper"
         :style="{ 'align-items': loadState === 'loading' ? 'start' : 'center' }"
     >
-      <!--
-      <div class="title-wrapper"
-          :style="{ 'align-items': loadState === 'loading' ? 'flex-start' : 'center' }"
-      >
-      -->
       <div class="title-wrapper">
         <h1>Index des
           {{ tableName === "theme" ? "thèmes" : "entités nommées" }}&nbsp;:
@@ -117,46 +112,10 @@
         ></IndexBase>
       </div>
 
-      <div v-else-if="viewType === 'tree'" class="tree-wrapper">
-        <ul class="tree-category list-invisible"
-        >
-          <li v-for="category in dataTree.sort((a, b) =>
-                      a.category_name.localeCompare(b.category_name))"
-              class="category-wrapper"
-              :class="{ 'category-expanded':
-                expandedTreeCategories.includes(category.category_slug) }"
-          >
-            <span class="category-title-wrapper">
-              <UiButtonPlus @click="() => expandOrCollapseTreeCategory(category.category_slug)"
-              ></UiButtonPlus>
-              <span class="category-title">
-                Catégorie&nbsp;:
-                <RouterLink :to="{ path: tableName === 'theme'
-                                    ? urlToFrontendThemeCategory(category.category_slug).pathname
-                                    : urlToFrontendNamedEntityCategory(category.category_slug).pathname,
-                                   query: { viewType: viewType } }"
-                             v-html="category.category_name"
-                             class="tree-category-name"
-                ></RouterLink>
-                ({{ category.entries.length }}
-                {{ category.entries.length != 1 ? "entrées" : "entrée" }})
-              </span>
-            </span>
-            <div class="category-entries-wrapper">
-            <ul class="category-entries">
-              <li v-for="item in category.entries.sort((a, b) =>
-                          a.entry_name.localeCompare(b.entry_name))"
-                  class="category-entry">
-                <RouterLink :to="tableName === 'theme'
-                                 ? urlToFrontendTheme(category.category_slug, item.id_uuid).pathname
-                                 : urlToFrontendNamedEntity(category.category_slug, item.id_uuid).pathname"
-                            v-html="item.entry_name"
-                ></RouterLink>
-              </li>
-            </ul>
-            </div>
-          </li>
-        </ul>
+      <div v-else-if="viewType === 'tree'" class="tree-outer-wrapper">
+        <TreeComponent :data="dataTreeRestructured"
+                       v-if="dataTreeRestructured.length"
+        ></TreeComponent>
       </div>
     </div>
 
@@ -165,18 +124,18 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import axios from "axios";
 import _ from "lodash";
 
-import UiButtonPlus from "@components/UiButtonPlus.vue";
 import UiLoader from "@components/UiLoader.vue";
 import IndexBase from "@components/IndexBase.vue";
 import H2IndexCount from "@components/H2IndexCount.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import FilterIndexThemeOrNamedEntity from "@components/FilterIndexThemeOrNamedEntity.vue";
+import TreeComponent from "@components/TreeComponent.vue";
 
 import { themeCategoryPresentation } from "@globals";
 import { urlToFrontendTheme
@@ -195,20 +154,61 @@ const router  = useRouter();
 const props   = defineProps(["tableName"]);
 const display = "concept";       // define the view to use in `IndexItem`
 
-const tableName              = ref();    /** @type {String} "theme"|"namedEntity" */
-const viewType               = ref();    /** @type {String} "collection"|"tree". the kind of display to use. defaults to "collection" */
-const categorySlug           = ref();    /** @type {String} theme.category_slug or named_entity.category_slug of "all" if we want to retrieve all themes/named entities */
-const categoryName           = ref()     /** @type {String} theme.category_name or named_entity.category_name or "tout" if categorySlug === 'all' */
-const categories             = ref([]);  /** @type {typedefs.ThemeOrNamedEntityCategoryItem[]} : all allowed categories */
-const dataCollectionFull     = ref([]);  /** @type {typedefs.ThemeOrNamedEntityItemLite[]} the full index when viewType==='collection', independent of user filters */
-const dataCollectionFilter   = ref([]);  /** @type {typedefs.IndexBaseItem[]} the data to pass to `IndexBase.vue` when viewType==='collection'. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> } */
-const dataTree               = ref([]);  /** @type {typedefs.ThemeOrNamedEntityTree} the data when viewType==='tree' */
-const expandedTreeCategories = ref([]);  /** @type {String[]} array of `category.category_slug`. all categories with a category_slug in this array will be expanded in the HTML. */
+const tableName            = ref();    /** @type {String} "theme"|"namedEntity" */
+const viewType             = ref();    /** @type {String} "collection"|"tree". the kind of display to use. defaults to "collection" */
+const categorySlug         = ref();    /** @type {String} theme.category_slug or named_entity.category_slug of "all" if we want to retrieve all themes/named entities */
+const categoryName         = ref()     /** @type {String} theme.category_name or named_entity.category_name or "tout" if categorySlug === 'all' */
+const categories           = ref([]);  /** @type {typedefs.ThemeOrNamedEntityCategoryItem[]} : all allowed categories */
+const dataCollectionFull   = ref([]);  /** @type {typedefs.ThemeOrNamedEntityItemLite[]} the full index when viewType==='collection', independent of user filters */
+const dataCollectionFilter = ref([]);  /** @type {typedefs.IndexBaseItem[]} the data to pass to `IndexBase.vue` when viewType==='collection'. this can depend on user-defined filters. an array of { href: <url to redirect to when clicking on an item>, img: <url to the background img to display>, text, <text to display> } */
+const dataTree             = ref([]);  /** @type {typedefs.ThemeOrNamedEntityTree} the data when viewType==='tree' */
 
 const loadState = ref("loading");  /** @type {typedefs.AsyncRequestState} */
 
+const dataTreeRestructured = computed(() => restructureToTree(dataTree.value))
+
 /*************************************************************/
 /** DATA FETCHING */
+
+/**
+ * restructure `data` to fit the data model expected by `TreeComponent`.
+ * @param {typedefs.ThemeOrNamedEntityTree} data
+ * @returns {typedefs.treeData}
+ */
+function restructureToTree(data) {
+  // url building functions
+  const urlToEntry = tableName.value === "theme"
+    ? urlToFrontendTheme
+    : urlToFrontendNamedEntity;
+  const urlToCategory = tableName.value === "theme"
+    ? urlToFrontendThemeCategory
+    : urlToFrontendNamedEntityCategory;
+
+  // helper functions
+  /**
+   * @param {ThemeOrNamedEntityTreeItem} x
+   * @returns {treeNode}
+   */
+  const restructureCategoryName = (x) =>
+    `<a href="${urlToCategory(x.category_slug)}">${x.category_name}</a>
+    (${x.entries.length} ${x.entries.length > 1 ? "entrées" : "entrée"})`;
+  /**
+   * @param { {entry_name: String, id_uuid: String} } x
+   * @returns {treeNode}
+   */
+   const restructureEntry = (x, categorySlug) => {
+    return { nodeLabel: x.entry_name,
+             nodeUrl: urlToEntry(categorySlug, x.id_uuid) } }
+
+  // process
+  return data.map(category => {
+    return { nodeLabel: restructureCategoryName(category),
+             nodeUrl: undefined,
+             nodeChildren: category.entries.map(entry =>
+              restructureEntry(entry, category.category_slug)) }
+  })
+}
+
 
 /**
  * get the category name for the current category,
@@ -323,22 +323,6 @@ function handleFilter(filteredData) {
 /** STATE MANAGERS AND HANDLERS */
 
 /**
- * add or remove `categorySlug` from `expandedTreeCategories`.
- * this will add/remove to the current `.category-wrapper` a
- * class named `category-expanded` which will
- * - rotate the UiButtonPlus to a cross
- * - display/hide the `.category-entries`, with a css transition
- * @param {String} categorySlug: the category.
- */
-function expandOrCollapseTreeCategory(categorySlug) {
-  let treeCategories = _.clone(expandedTreeCategories.value),
-      slugPos        = treeCategories.indexOf(categorySlug);
-  slugPos > -1 ? treeCategories.splice(slugPos, 1)
-               : treeCategories.push(categorySlug);
-  expandedTreeCategories.value = treeCategories;
-}
-
-/**
  * when the user inputs new data on `#category-control`, update the route path.
  * this will trigger the `watch(route.path)`.
  * @param {String} newCategorySlug: the new `(theme|named_entity).category_slug`
@@ -380,7 +364,6 @@ function changeViewType(newViewType) {
   dataCollectionFull.value     = [];
   dataCollectionFilter.value   = [];
   dataTree.value               = [];
-  expandedTreeCategories.value = [];  // array of expanded category slugs
   loadState.value              = "loading";
 }
 
@@ -408,7 +391,6 @@ watch(() => route.path, (newPath, oldPath) => {
   dataCollectionFull.value     = [];
   dataCollectionFilter.value   = [];
   dataTree.value               = [];
-  expandedTreeCategories.value = [];
   loadState.value              = "loading";
   // fetch the new data
   getCurrentCategoryName();
@@ -427,7 +409,6 @@ watch(() => route.query.viewType, (newViewType, oldViewType) => {
   dataCollectionFull.value     = [];
   dataCollectionFilter.value   = [];
   dataTree.value               = [];
-  expandedTreeCategories.value = [];
   loadState.value              = "loading";
   // fetch the new data
   if (newViewType === "collection") getDataCollection();
@@ -488,58 +469,4 @@ h1 {
   height: 0;
 }
 
-/************************************/
-
-.tree-wrapper {
-  width: auto;
-  margin: 0 5%;
-  border: var(--cs-main-border);
-  display: flex;
-  flex-direction: column;
-}
-ul.tree-category {
-  width: 100%;
-  max-width: 100%;
-}
-.tree-wrapper li {
-  width: 100%;
-}
-.category-title-wrapper {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  border-top: var(--cs-main-border);
-  padding: 10px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-.category-wrapper:first-child > .category-title-wrapper {
-  border-top: none;
-}
-
-.category-title-wrapper > button {
-  height: max(4vh, 40px);
-  width: max(4vh, 40px);
-}
-.category-title-wrapper > button :deep(svg) {
-  transition: transform var(--animate-duration);
-}
-.category-expanded button :deep(svg) {
-  transform: rotate(45deg);
-}
-/** height animation:
- * https://keithjgrant.com/posts/2023/04/transitioning-to-height-auto/#with-grid
- */
-.category-entries-wrapper {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows var(--animate-duration) ease-out;
-}
-.category-expanded .category-entries-wrapper {
-  grid-template-rows: 1fr;
-}
-ul.category-entries {
-  overflow: hidden;
-}
 </style>
