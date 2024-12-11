@@ -15,7 +15,27 @@
  *    a string describing the state of an async http request.
  *    only 3 values are allowed, as seen below.
  * @type {("loading"|"loaded"|"error")}
- *
+ */
+
+/**
+ * @typedef treeData
+ *    the data structure expected by `@components/TreeComponent`
+ * @type {treeNode[]}
+ */
+
+/**
+ * @typedef treeNode
+ *    a single node in a `treeData`
+ * @type {Object}
+ * @property {string} nodeLabel
+ *    the node's name, displayed to the user
+ * @property {URL?|String?} nodeUrl
+ *    a redirection URL. if defined, `nodeLabel` will be enclosed
+ *    in a RouterLink redirecting to `nodeUrl`
+ * @property {treeNode[]} nodeChildren
+ *    the children of the node, if any.
+ *    although this type is recursive, in practice, `TreeComponent`
+ *    only handles a depth of 2.
  */
 
 /**
@@ -167,10 +187,18 @@
  * @property {IconographyItemLite[]}: the iconography items related to the theme or named entity
  */
 
+
 /**
  * @typedef ThemeOrNamedEntityTree
  *    a tree view for themes or named entities,
  *    grouped together by category
+ * @type {ThemeOrNamedEntityTreeItem[]}
+ *
+ */
+
+/**
+ * @typedef ThemeOrNamedEntityTreeItem
+ *    a single category in `ThemeOrNamedEntityTree`
  * @type {object}
  * @property {String} category_name: the name of the category
  * @property {String} category_slug: the URL slug for the category
