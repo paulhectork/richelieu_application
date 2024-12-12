@@ -79,6 +79,22 @@ Vue fonctionne avec des composants; les composants principaux, qui correspondent
 
 ---
 
+## Style
+
+Le style est écrit en CSS sans Bootstrap. 
+- le fichier `src/assets/main.css` contient les bases du style : variables CSS (couleurs, polices), classes 
+  réutilisables, styles de base utilisés par plusieurs composants).
+  - on définit notamment des thèmes de couleurs (`main` et `negative`) avec des jeux de couleurs associés
+- le style est réactif. 2 types d'affichage sont définis: *paysage* et *portrait*.
+  - les *media queries* correspondantes sont :  `@media ( orientation:landscape )` et `@media ( orientation:portrait )`
+  - dans le CSS, le *portrait* est l'affichage par défaut et on utilise des *media queries* spécifiques
+    pour l'affichage en paysage. La logique, c'est que le portrait est l'affichage le plus restrictif, donc
+    on l'utilise comme base avant de l'adapter au paysage, moins restrictif. Mais comme toujours, il y 
+    a des exceptions :)
+  - dans quelques très rares cas, on utilise des *media queries* plus précises, mais vraiment c'est rare
+
+---
+
 ## Installation de `Modernizr`
 
 On utilise un `custom build` de la librairie qui à priori est dans `src/plugins`. 
@@ -91,3 +107,8 @@ sudo npm -g install modernizr                                # installation glob
 modernizr -c modernizr.config.json -d src/plugins/modernizr  # faire un build à partir de la config `modernizr.config.json`
 ```
 
+---
+
+## Licence
+
+GNU GPL 3.0

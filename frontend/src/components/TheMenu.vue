@@ -107,11 +107,6 @@
       </li>
 
     </ul>
-    <!--
-    <div class="menu-wrapper-visual">
-      <img :src="menuCropPath">
-    </div>
-    -->
   </div>
 </template>
 
@@ -125,8 +120,6 @@ import $ from "jquery";
 import _ from "lodash";
 
 import { randomColorDark, randomColorLight } from "@utils/colors";
-
-/***************************************************/
 
 /**************************************************/
 
@@ -207,7 +200,7 @@ a {
 .menu {
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: repeat(6, max( 90px, calc(100%/6) ));  /* max/calc allows a min-height of 80px for all li elements */
+  grid-template-rows: repeat(6, max( 140px, calc(100%/6) ));  /* max/calc allows a min-height of N px for all li elements */
   overflow: scroll;
 
   height: 100%;
@@ -269,6 +262,8 @@ a {
   color: var(--cs-main-default);
   width: 100%;
   height: 100%;
+  min-height: 30px;
+  padding: 3px 0;
   text-align: center;
   display: flex;
   align-items: center;
