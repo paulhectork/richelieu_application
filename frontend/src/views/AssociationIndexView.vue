@@ -109,7 +109,6 @@ const loadState = ref("loading");  /** @type { typedefs.AsyncRequestState }
  * slug to redirect to that resource's main page.
  */
 const toFrontendSlug = (resource) => {
-  console.log(">>>", resource)
   let slug = "/";
   const implementedTables = [ "theme", "named_entity", "place" ];
   if ( implementedTables.includes(resource.table) ) {

@@ -145,8 +145,6 @@ async function initNewViewer() {
  * this component (for example, when changing iiif viewer in `ArticleMainView`).
  */
 watch(props, (newProps, oldProps) => {
-  console.log("IiifViewer:watch(props)", newProps);
-
   revertToStartState();
   initNewViewer();
 })

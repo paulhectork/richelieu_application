@@ -165,7 +165,7 @@ function getData() {
               });
   axios.get(new URL("/i/database-counts", __API_URL__))
   .then(r => r.data)
-  .then(data => { databaseCounts.value = data; console.log(data) })
+  .then(data => { databaseCounts.value = data; })
   .catch(e => console.error(e));
   ;
 

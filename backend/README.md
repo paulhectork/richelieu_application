@@ -1,5 +1,12 @@
 # Backend
 
+Le backend de l'application gère l'interaction avec la base de données du projet et offre deux API:
+
+- `$root_url/i/`: l'API privée, utilisée pour la communication entre backend et frontend;
+- `$root_url/api/v1`: l'API publique, qui dispose d'une documentation Swagger, utilisée pour récupérer
+   et réutiliser les données du projet
+- `$root_url/` est la racine du site du projet: `https://quartier-richelieu.inha.fr` pour le site en ligne
+
 ---
 
 ## Installation et utilisation
@@ -58,6 +65,27 @@ identifiants de la BDD à laquelle on veut se connecter:
   "uri": "<l'URI de connexion à la BDD>",
   "db": "<le nom de la BDD>"
 }
+```
+
+---
+
+## Structure de l'application 
+
+```
+/
+|_main.py : lancement de l'application
+|_prod-gunicorn.py : lancement de l'application en prod
+|
+|_app/ : racine de l'application
+  |
+  |_orm/    : classes SQLAlchemy
+  |_routes/ : routes de l'application
+  |_search/ : modules de recherche avancée
+  |_tests/  : modules de test
+  |_utils/  : fonctions utilitaires
+  |
+  |_app.py  : script initiant l'application
+  |_config.py : différentes configurations possibles pour l'application
 ```
 
 ---
