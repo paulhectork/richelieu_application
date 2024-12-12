@@ -1,5 +1,8 @@
 # Frontend
 
+Le frontend comprend l'interface graphique du site; il communique avec le backend pour reçevoir des données
+via une API interne, les met en forme et les affiche.
+
 ---
 
 ## Installation et utilisation
@@ -14,12 +17,18 @@ npm install npm install
 
 L'argument `--mode` permet de changer de configuration, selon que le
 backend auquel on est connecté soit sur serveur ou sur notre machine locale.
+Le principal effet de cet argument est de déterminer quels URLs sont utilisés
+pour l'API et pour le serveur de fichiers statiques.
+
 Voir le fichier `vite.config.js` et [la documentation vite](https://vitejs.dev/config/#conditional-config)
 pour plus d'informations.
 
 **Attention: le `--` est très important pour séparer le script npm de ses arguments**
 
 ```bash
+# installer les dépendances
+npm install
+
 # si le backend est en local
 npm run dev -- --mode backend-local
 
@@ -29,7 +38,13 @@ npm run dev -- --mode backend-server
 
 ### Utilisation (prod)
 
-TODO
+En prod, l'application Vue est packagée en un fichier Javascript minifié. Il faut bien 
+configurer le serveur pour rendre ce fichier accessible.
+
+```bash
+npm install
+npm run build -- --mode backend-server
+```
 
 ---
 
