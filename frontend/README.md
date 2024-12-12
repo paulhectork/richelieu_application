@@ -43,11 +43,11 @@ TODO
   |_assets/     : fichiers statiques utilisés par l'application (images...)
   |_components/ : composents vue intégrés à des pages de l'application.  
   |_modules/    : modules javascript remplissant des fonctions spécifiques. contrairement aux `utils/` qui sont génériques et faits pour pouvoir être utilisés partout, les `modules` ont une fonction précise et ne sont appelés qu'à certains endroits de l'application (par exemple, il existe un module qui gère toute la recherche rapide)
-  |_plugins/   : librairies JS installés comme plugins. dans certains cas, on a pas pu installer la librairie via `npm`. On l'installe alors comme fichier JS minifié.
-  |_router/    : le routeur qui gère les routes de l'application en rattachant à chaque URL des composants
-  |_stores/    : les `stores` permettent de stocker des données réactives qui sont accessibles à toute l'application
-  |_utils/     : fonctions utilitaires. contrairement aux `modules`, les utils peuvent être appelés à à peu près n'importe quel endroit de l'appli
-  |_views/     : les views sont les "pages" : une `view` est un composant accessible depuis une URL et qui sera intégrée dans la balise `<RouterLink>` de notre `App.vue`
+  |_plugins/    : librairies JS installés comme plugins. dans certains cas, on a pas pu installer la librairie via `npm`. On l'installe alors comme fichier JS minifié.
+  |_router/     : le routeur qui gère les routes de l'application en rattachant à chaque URL des composants
+  |_stores/     : les `stores` permettent de stocker des données réactives qui sont accessibles à toute l'application
+  |_utils/      : fonctions utilitaires. contrairement aux `modules`, les utils peuvent être appelés à à peu près n'importe quel endroit de l'appli
+  |_views/      : les views sont les "pages" : une `view` est un composant accessible depuis une URL et qui sera intégrée dans la balise `<RouterLink>` de notre `App.vue`
   |
   |_App.vue     : point d'entrée de l'application
   |_globals.js  : constantes utilisées par toute l'application
