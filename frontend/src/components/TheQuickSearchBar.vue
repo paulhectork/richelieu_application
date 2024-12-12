@@ -8,7 +8,7 @@
 <template>
   <div class="qsb-outer-wrapper">
     <!-- the search qsbInput -->
-    <div class="qsb-form-wrapper" style="position: relative;">
+    <div class="qsb-form-wrapper">
       <FormKit type="form"
                id="qsb-form"
                name="qsbForm"
@@ -57,7 +57,8 @@
     <!-- the search results -->
     <div class="qsb-output-wrapper"
          v-if="searchResults.length">
-      <div class="qsb-output-inner">
+      <div class="qsb-output-inner animate__animated animate__slideInDown"
+        style="overflow-y: hidden;">
         <ul class="qsb-result-list list-invisible">
           <li v-for="result in searchResults"
               class="qsb-result"
@@ -83,20 +84,29 @@ import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { FormKitMessages, FormKitIcon } from '@formkit/vue';
+import $ from "jquery";
 
 import { quickSearch } from "@modules/quickSearchInternals.js";
+import { clickOutside } from "@utils/ui.js";
 import "@typedefs";
-import { pushScopeId } from "vue";
 
 /**********************************/
 
 const route = useRoute();
 
-const qsbInput = ref();
-const queryString = ref();  /** @type {String?}: the user inputted query string */
+const qsbInput      = ref();
+const queryString   = ref();    /** @type {String?}: the user inputted query string */
 const searchResults = ref([]);  /** @type {typedefs.QuickSearchResultFlatArray} */
 
 /**********************************/
+
+/**
+ * set the refs to their start state (empty the query string and results)
+ */
+function resetRefs() {
+  queryString.value = "";
+  searchResults.value = [];
+}
 
 /**
  * flatten the search results returned by quickSearchInternals.
@@ -116,7 +126,29 @@ function onSubmit(e) {
   });
 }
 
+/**
+ * events to close the results: click outside of `.qsb-outer-wrapper` or press escape
+ */
+function registerCloseEvents() {
+  $(document).on("click", (e) => {
+    if ( clickOutside(e, ".qsb-outer-wrapper") ) resetRefs();
+  });
+  $(document).on("keydown", (e) => {
+    if ( e.key==="Escape" ) resetRefs();
+  })
+}
+/**
+ * remove the event listeners registered in `registerCloseEvents()`
+ */
+function unRegisterCloseEvents() {
+  $(document).off("click");
+}
+
 /**********************************/
+
+watch(() => searchResults.value.length, (newLength, oldLength) => {
+  newLength > 0 ? registerCloseEvents() : unRegisterCloseEvents();
+})
 
 /** reset the search bar on redirect */
 watch(route, (newR, oldR) => {
@@ -143,6 +175,9 @@ watch(route, (newR, oldR) => {
   .qsb-outer-wrapper {
     min-width: 200px;
   }
+}
+.qsb-form-wrapper {
+  z-index: 2; /** for the results display animation */
 }
 .formkit-outer {
   margin: 0;
@@ -207,8 +242,8 @@ watch(route, (newR, oldR) => {
 .qsb-output-inner {
   width: 100%;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0px;
+  left: 0px;
   background-color: var(--cs-main-default-bg);
   border: var(--cs-main-border);
 
@@ -218,6 +253,17 @@ watch(route, (newR, oldR) => {
   grid-template-rows: 2fr 50px;
   grid-template-columns: 100%;
   box-shadow: 5px 5px 0 var(--cs-plum);
+}
+@media ( orientation:portrait ) {
+  .qsb-output-inner {
+    /** in portrait mode, `.qsb-output-inner` is much wider
+     and is aligned to the right end of `qsb-outer-wrapper`.
+    positionning is hacky but it works. */
+    top: 0;
+    left: -100%;
+    width: 200%;
+    max-height: 80vh;
+  }
 }
 .qsb-result-list {
   overflow: scroll;
@@ -240,7 +286,7 @@ watch(route, (newR, oldR) => {
 }
 .qsb-result.see-more {
   width: 100%;
-  height: max(15%, 40px);
+  height: max(10%, 40px);
   position: absolute;
   bottom: 0;
   left: 0;

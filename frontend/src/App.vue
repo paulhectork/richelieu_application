@@ -119,8 +119,25 @@ const maybeChangeTheme = () =>
   themeNegative.value =
     toThemeNegative.find(rgx => route.path.match(rgx) ) !== undefined;
 
+/**
+ * what it says on the box: press escape to close the menu
+ */
+const closeMenuOnEscape = () => {
+  $(document).on("keydown", (e) => {
+    if ( e.key==="Escape" ) {
+      updateMenuActive(false);
+      $(document).off("keydown");
+    }
+  })
+}
+
 
 /**********************************************************/
+
+/** attach a handler to close the menu on escape when the menu is open */
+watch(() => menuActive.value, (newMenuState, oldMenuState) => {
+  if ( newMenuState===true ) closeMenuOnEscape()
+})
 
 /**
  * on page change,
@@ -138,12 +155,10 @@ onMounted(() => {
   maybeChangeTheme();
   calcWindowOrientation();
   addEventListener("resize", calcWindowOrientation);
-  // $(document).on("keyup", closeMenuOnEscape)
 })
 
 onUnmounted(() => {
   removeEventListener("resize", calcWindowOrientation);
-  // $(document).off("keyUp", closeMenuOnEscape);
 })
 </script>
 
