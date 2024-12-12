@@ -55,7 +55,8 @@
     </div>
 
     <!-- the search results -->
-    <div class="qsb-output-wrapper" v-if="searchResults.length">
+    <div class="qsb-output-wrapper"
+         v-if="searchResults.length">
       <div class="qsb-output-inner">
         <ul class="qsb-result-list list-invisible">
           <li v-for="result in searchResults"
@@ -216,6 +217,7 @@ watch(route, (newR, oldR) => {
   display: grid;
   grid-template-rows: 2fr 50px;
   grid-template-columns: 100%;
+  box-shadow: 5px 5px 0 var(--cs-plum);
 }
 .qsb-result-list {
   overflow: scroll;

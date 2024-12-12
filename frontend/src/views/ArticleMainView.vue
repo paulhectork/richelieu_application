@@ -53,13 +53,14 @@
         >
           <IiifViewer :osdId="iconographyMainCurrent.id_uuid"
                       :iiifUrl="iconographyMainCurrent.iiif_url"
-                      :backupImgUrl="/* first non compress/thumbnail image in the `filename` array */
-                                     iconographyMainCurrent
-                                     .filename
-                                     .filter(x => x.url.match(/^qr1[a-z0-9]+\.[a-z]+$/))
-                                     [0]
-                                     .url"
-                      :folio="iconographyMainCurrent.folio"
+                      :backupImgUrl="
+                        /* first non compress/thumbnail image in the `filename` array */
+                        iconographyMainCurrent
+                        .filename
+                        .filter(x => x.url.match(/^qr1[a-z0-9]+\.[a-z]+$/))
+                        [0]
+                        .url"
+                      :iiifFolio="iconographyMainCurrent.folio"
                       backupImgDisplay="contain"
                       @osd-viewer="setCurrentIiifViewer"
 

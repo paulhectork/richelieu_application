@@ -3,16 +3,68 @@
  * string representations
  */
 
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
+/********************************************/
+
+/**
+ * @typedef tileSource
+ *    a single resource (or image) within a manifest.
+ *    limited version of OpenSeadragon.TileSource
+ * @type object
+ * @property {String} url: the URL of the data (image)
+ * @property {String} type:
+ * @property {Number} height: the height in pixels of the image, to build the tile pyramid
+ * @property {Number} width: the width in pixels of the image
+ */
+
+/**
+ * @typedef tileSequence
+ *    a sequence of tile sources. the tile sequence is the images
+ *    that will be fed to the Openseadragon viewer.
+ * @type {tileSource[]}
+ */
+
+/********************************************/
+
+/**
+ * function to create a tile source from a resource in a manifest
+ * @returns {tileSource}
+ */
+const resourceProcessing = (theResource) => {
+  return { url    : theResource["@id"],
+           type   : "image",
+           height : theResource.height,
+           width  : theResource.width }
+};
+/**
+ * build an array of tilesources from a canvas `theCanvas`
+ * @returns {tileSequence}
+ */
+const canvasProcessing = (theCanvas) =>
+  theCanvas.images.map((image) =>
+    resourceProcessing(image.resource) );
+/**
+ * extract all images from the IIIF manifest `theManifest`
+ * and return them as a tile sequence (array of `tileSource`)
+ * @returns {tileSequence}
+ */
+const manifestProcessing = (theManifest, folioIndexArray) =>
+  folioIndexArray && folioIndexArray.length
+  ? theManifest.sequences[0].canvases
+      .filter((canvas, canvasIdx) => folioIndexArray.includes(canvasIdx))
+      .map((canvas) => canvasProcessing(canvas))
+      .flat()
+  : theManifest.sequences[0].canvases
+      .map((canvas) => canvasProcessing(canvas))
+      .flat();  // `.flat()` : we get a nested tilesequence and need to flatten it.
+
+/********************************************/
 
 /**
  * process a IIIF manifest to extract tile sources
  * from a IIIF manifest, we must get all `sequences/canvases/images/resource/@id`,
- * and create an array of tile sequences with the structure:
- * `[{ type: "image",
- *     url: <url in the resource/@id>,
- *     height: 1 }]`
+ * and create a tile sequence (array of tileSource).
  * see: https://openseadragon.github.io/examples/tilesource-iiif/
  *
  * during the execution of this function, we use a flag variable
@@ -22,52 +74,27 @@ import axios, { AxiosError } from "axios";
  * somehow, just using `catch` when this function is called
  * caused more errors than it solved
  *
- * @param {JSON} manifest: the IIIF manifest
- * @param {Array} folio: an array of canvas numbers to display.
- *                       if `folio` is not empty, only the pages
- *                       in `folio` will be shown
- * @returns {Array<Array, bool>}: an array of `[tileSequence, success]`.
- * the first item is the tile sequence, the second a flag that will be `false`
- * if an error has occurred
+ * @param {Object} manifest
+ *    the IIIF manifest
+ * @param {Array<number>?} folio
+ *    an array of canvas numbers to display. if `folio` is
+ *    not empty, only the pages in `folio` will be shown
+ * @returns {Array<tileSequence, bool>}
+ *    an array of `[tileSequence, success]`.
+ *    the first item is the tile sequence, the second a flag that
+ *    will be `false`  if an error has occurred
  */
 export async function manifestToTileSequence(manifestUrl, folio=[]) {
-  /* HELPER FUNCTIONS */
-  // function to create a tile source from a resource in a manifest
-  // returns an object (`{}`)
-  const resourceProcessing = (theResource) => {
-    return { url:theResource["@id"], type:"image", height: 1 }
-  };
-  // build an array of tilesources from a canvas `theCanvas`
-  // returns an array (`[]`)
-  const canvasProcessing = (theCanvas) => {
-    let outputArr = [];
-    theCanvas.images.forEach((image) => {
-      outputArr.push( resourceProcessing(image.resource) );
-    })
-    return outputArr;
-  }
-  // extract all images from the IIIF manifest `theManifest`
-  // and add them to the array of tile sources `outputArr`.
-  // returns a tile sequence as an array (`[]`)
-  const manifestProcessing = (theManifest) => {
-    let outputArr = [];
-    theManifest.sequences[0].canvases.forEach((canvas) => {
-      outputArr = outputArr.concat( canvasProcessing(canvas) );
-    })
-    return outputArr;
-  }
+  let out     = [],  // the final output array
+      success = true;  // switched to false if an error occurs
 
-  /* LOGIC */
-  let out = [];  // the final output array
-  let success = true;  // switched to false if an error occurs
-
-  const manifest = await axios
-                         .get(manifestUrl)
-                         .then((r) => { return r.data })
-                         .catch((e) => {
-                          console.error("iiif.manifestToTileSequence: error fetching IIIF manifest", e);
-                          success = false;
-                         })
+  const manifest =
+    await axios.get(manifestUrl)
+          .then((r) => { return r.data })
+          .catch((e) => {
+           console.error("iiif.manifestToTileSequence: error fetching IIIF manifest", e);
+           success = false;
+          })
 
   // assert that we're working with a v2 presentation manifest
   if ( success && manifest["@context"] !== "http://iiif.io/api/presentation/2/context.json" ) {
@@ -76,27 +103,22 @@ export async function manifestToTileSequence(manifestUrl, folio=[]) {
     success = false;
   }
 
-  if (!success) {
-    return [ out, success ];
-  }
+  // if there's a problem so far, return.
+  if (!success) return [ out, success ];
 
-  // extract the images.
-  // if extraction using folios fails, switch back to normal extraction
-  if ( folio.length ) {
-    try {
-      folio.forEach((idx) => {
-        out = out.concat( canvasProcessing( manifest.sequences[0].canvases[idx] ) );
-      })
-    } catch(e) {
-      console.error(`iiif.manifestToTileSequence: error using "folio" parameter
-                     with value ${folio}`)
-      out = manifestProcessing(manifest, out);
+  // build the tilesequence.
+  if ( folio && folio.length ) {
+    try { out = manifestProcessing(manifest, folio) }
+    catch(e) {
+      console.error(`@utils.iiif.manifestToTileSequence: error using "folio" parameter with value ${folio}`);
+      out = manifestProcessing(manifest);
     }
   } else {
-    out = manifestProcessing(manifest, out);
+    out = manifestProcessing(manifest);
   }
   return [ out, success ];
 }
+
 
 /**
  * transform a manifest URL into an URL pointing to a thumbnail.
@@ -131,6 +153,7 @@ export async function manifestToThumbnail(manifestUrl, backupImgUrl) {
          })
 }
 
+/********************************************/
 
 export const osdNavImages = {
   "zoomIn": {
