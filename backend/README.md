@@ -84,7 +84,7 @@ identifiants de la BDD à laquelle on veut se connecter:
   |_tests/  : modules de test
   |_utils/  : fonctions utilitaires
   |
-  |_app.py  : script initiant l'application
+  |_app.py    : script initiant l'application
   |_config.py : différentes configurations possibles pour l'application
 ```
 
