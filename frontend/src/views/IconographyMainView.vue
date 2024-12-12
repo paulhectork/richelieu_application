@@ -1,11 +1,12 @@
 <!-- main page for a single iconography item.
-     this page contains:
-     * .viewer-wrapper: a viewer. there are 2 types of viewers and
-       we can toggle:
-       > IiifViewer: a IIIF viewer for the image
-       > .leaflet-<id_uuid>: a leaflet viewer showing the
-         places the image is connected to.
-     * .cartel-wrapper: a table with all of the metadata
+
+  this page contains:
+  - .viewer-wrapper: a viewer. there are 2 types of viewers and
+    we can toggle:
+     - IiifViewer: a IIIF viewer for the image
+     - .leaflet-<id_uuid>: a leaflet viewer showing the
+       places the image is connected to.
+  - .cartel-wrapper: a table with all of the metadata
 -->
 
 <template>
@@ -29,17 +30,10 @@
           <div v-if="viewerType === 'osd'"
                class="iiif-wrapper"
           >
-            <!--
-            <IiifViewer v-if="iconography.iiif_url"
-                        :osdId="`iiif-${idUuid}`"
-                        :iiifUrl="iconography.iiif_url"
-                        :backupImgUrl="imageUrl"
-            ></IiifViewer>
-            <div v-else><p>Pas d'image IIIF à montrer</p></div>
-            -->
             <IiifViewer :osdId="`iiif-${idUuid}`"
                         :iiifUrl="iconography.iiif_url"
                         :backupImgUrl="imageUrl"
+                        :iiifFolio="iconography.iiif_folio"
             ></IiifViewer>
           </div>
           <div v-else
@@ -79,13 +73,6 @@
   >
     <ErrNotFound></ErrNotFound>
   </div>
-
-  <!----
-  <div v-else>
-    <p>Chargement en cours</p>
-  </div>
-  -->
-
 </template>
 
 
@@ -122,18 +109,18 @@ const apiTarget = computed(() =>
   new URL(`/i/iconography/${idUuid.value}`, __API_URL__) );
 
 /**  @type {String} a backup image url in case the IIIF one doesn't load properly */
-const imageUrl = computed(() => {
-  return iconography.value !== undefined
+const imageUrl = computed(() =>
+  iconography.value !== undefined
   ? iconography
     .value
     .filename
     .filter( f => !f.url.match(/compress|thumbnail/) )[0].url
-  : "not yet defined" });
+  : "not yet defined" );
 
 /** @type {computed<string[][]>} */
 const structuredCartel = computed(() => {
   const cartel = [],  // Array of [ title, data ]
-        icn = iconography.value;
+        icn    = iconography.value;
 
   if ( icn.theme != null && icn.theme.length )
     cartel.push([ icn.theme.length > 1 ? "Thèmes" : "Theme"
