@@ -66,7 +66,6 @@ function handleIconographyFilter(iconographyData) {
 /*************************************************/
 
 watch(props, (newP, oldP) => {
-  console.log("IndexIconography.watch : new props !", newP)
   setRefs(newP);
 })
 

@@ -227,9 +227,6 @@ function onSubmit(formData, formNode) {
 
   const queryParams = new IconographyQueryParams(formData, "form");
 
-  console.log("AdvancedSearchQuery.onSubmit.queryParams.toJson()   :", queryParams.toJson() );
-  console.log("AdvancedSearchQuery.onSubmit.queryParams.allEmpty() :", queryParams.allEmpty());
-
   // if no input data has been added, display an error message
   // else, submit the form.
   if ( queryParams.allEmpty() ) {

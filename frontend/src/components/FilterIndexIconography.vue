@@ -344,7 +344,6 @@ function onSubmit(formData, formNode) {
  */
 function onOrderByInput(newInput) {
   disableOrderDirection.value = newInput === undefined || !newInput.length;
-  console.log( disableOrderDirection.value );
 }
 
 /**

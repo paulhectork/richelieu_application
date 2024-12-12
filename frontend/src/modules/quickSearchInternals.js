@@ -63,14 +63,12 @@ function restructureBackendData(data) {
   /** @type { typedefs.QuickSearchResultGroup[] } */
   let out = [];
 
-  console.log("restructureBackendData in  :", data);
   dataGroupNames.forEach((groupName) => {
     let entries = data.filter(item => item.table_name === groupName)
                       .map((item) => { return { entryName: item.entry_name,
                                                 entryUrl: itemToUrl(item) } })
     out.push({ groupName: groupName, entries: entries })
   })
-  console.log("restructureBackendData out :", out);
   return out;
 }
 

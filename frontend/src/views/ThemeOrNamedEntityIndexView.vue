@@ -386,7 +386,6 @@ function initViewHook() {
  * reset the refs, fetch backend data for the new category.
  */
 watch(() => route.path, (newPath, oldPath) => {
-  console.log("change : categorySlug");
   categorySlug.value           = newPath.match(/[^\/]+$/g)[0];
   dataCollectionFull.value     = [];
   dataCollectionFilter.value   = [];
@@ -394,7 +393,6 @@ watch(() => route.path, (newPath, oldPath) => {
   loadState.value              = "loading";
   // fetch the new data
   getCurrentCategoryName();
-  console.log("****", viewType.value);
   if (viewType.value === "collection") getDataCollection();
   else getDataTree();
 })
@@ -404,7 +402,6 @@ watch(() => route.path, (newPath, oldPath) => {
  * reset the necessary refs and fetch backend data.
  */
 watch(() => route.query.viewType, (newViewType, oldViewType) => {
-  console.log("change : viewType");
   viewType.value               = newViewType;
   dataCollectionFull.value     = [];
   dataCollectionFilter.value   = [];

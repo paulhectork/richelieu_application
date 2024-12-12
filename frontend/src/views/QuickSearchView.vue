@@ -75,7 +75,6 @@ function restructureToTree(data) {
   const restructureGroupName = (x) =>
     `${capitalizeFirstChar(humanReadableGroupName[x.groupName])}
     (${x.entries.length}  ${ x.entries.length > 1 ? 'résultats' : 'résultat'})`;
-  console.log(">>>>>", data);
 
   return data.map(group => {
     return { nodeLabel: restructureGroupName(group),

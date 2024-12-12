@@ -6,7 +6,7 @@
 
   props:
   - data (@typedefs.treeData)
-      the data to represent as a tree.
+      the data to represent as a tree
 -->
 
 <template>
@@ -171,5 +171,8 @@ ul.tree-root {
 }
 .node-lvl2-root {
   overflow: hidden;
+}
+.node-lvl2 {
+  margin: 10px 0;
 }
 </style>
