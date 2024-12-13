@@ -34,7 +34,10 @@ python main.py -m dev
 # si on veut lancer des tests sur machine locale
 python main.py -m test
 
-# si on veut lancer l'application sur serveur
+# si on veut lancer l'application sur serveur (avec Gunicorn, comme sur le serveur Richelieu)
+gunicorn prod-gunicorn:app
+
+# si on veut lancer sur serveur sans Gunicorn (déconseillé: dans ce cas, on utilise le serveur de dev Werkzeug en prod)
 python main.py -m prod
 ```
 

@@ -38,8 +38,11 @@ npm run dev -- --mode backend-server
 
 ### Utilisation (prod)
 
-En prod, l'application Vue est packagée en un fichier Javascript minifié. Il faut bien 
-configurer le serveur pour rendre ce fichier accessible.
+En prod, l'application Vue est packagée en un fichier Javascript minifié 
+appelé par un `index.html`.
+
+Dans ce cas, le serveur doit être configuré pour pointer vers `frontend/dist/`
+(dossier où les fichiers compilés sont stockés).
 
 ```bash
 npm install
