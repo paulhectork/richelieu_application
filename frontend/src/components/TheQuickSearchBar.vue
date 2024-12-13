@@ -55,10 +55,10 @@
     </div>
 
     <!-- the search results -->
-    <div class="qsb-output-wrapper"
-         v-if="searchResults.length">
-      <div class="qsb-output-inner animate__animated animate__slideInDown"
-        style="overflow-y: hidden;">
+    <div class="qsb-output-wrapper">
+      <div v-if="searchResults.length"
+           class="qsb-output-inner animate__animated animate__slideInDown"
+           style="overflow-y: hidden;">
         <ul class="qsb-result-list list-invisible">
           <li v-for="result in searchResults"
               class="qsb-result"
@@ -68,11 +68,20 @@
             ></RouterLink>
           </li>
         </ul>
-        <span class="qsb-result see-more negative-default">
-          <RouterLink :to="{ path: 'recherche-rapide',
+        <span class="qsb-result result-special negative-default">
+          <RouterLink :to="{ path: '/recherche-rapide',
                              query: { queryString: queryString } }"
           ><strong>Afficher plus de résultats</strong></RouterLink>
         </span>
+      </div>
+      <div v-else-if="queryString != null
+                      && queryString != ''
+                      && !searchResults.length
+                      && loadState !== 'loading'"
+           class="qsb-output-inner animate__animated animate__slideInDown"
+      >
+        <span class="no-result qsb-result result-special negative-default"
+        >Pas de résultat</span>
       </div>
     </div>
   </div>
@@ -97,6 +106,7 @@ const route = useRoute();
 const qsbInput      = ref();
 const queryString   = ref();    /** @type {String?}: the user inputted query string */
 const searchResults = ref([]);  /** @type {typedefs.QuickSearchResultFlatArray} */
+const loadState     = ref();    /** @type {typedefs.AsyncRequestState?} */
 
 /**********************************/
 
@@ -120,9 +130,16 @@ const flattenSearchResults = (theSearchResults) =>
  * when submitting data, run the query
  */
 function onSubmit(e) {
+  loadState.value = "loading";
   queryString.value = e.qsbInput;
   quickSearch(queryString.value).then(data => {
     searchResults.value = flattenSearchResults(data);
+    loadState.value = "loaded";
+  }).catch((e) => {
+    // if there's an error, log it + set `searchResults` to display "pas de résultats"
+    console.error("TheQuickSearchBar.onSubmit() : ", e);
+    loadState.value = "error";
+    searchResults.value = [];
   });
 }
 
@@ -146,7 +163,7 @@ function unRegisterCloseEvents() {
 
 /**********************************/
 
-watch(() => searchResults.value.length, (newLength, oldLength) => {
+watch(() => queryString.value?.length, (newLength, oldLength) => {
   newLength > 0 ? registerCloseEvents() : unRegisterCloseEvents();
 })
 
@@ -284,9 +301,9 @@ watch(route, (newR, oldR) => {
   color: var(--cs-main-default);
   width: 100%;
 }
-.qsb-result.see-more {
+.qsb-result.result-special {
   width: 100%;
-  height: max(10%, 40px);
+  height: max(10%, 50px);
   position: absolute;
   bottom: 0;
   left: 0;
@@ -295,9 +312,8 @@ watch(route, (newR, oldR) => {
   display: flex;
   align-items: center;
 }
-.qsb-result.see-more a {
+.qsb-result.result-special a {
   color: var(--cs-negative-default);
 }
-
 
 </style>
