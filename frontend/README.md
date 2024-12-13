@@ -10,7 +10,7 @@ via une API interne, les met en forme et les affiche.
 ### Installation
 
 ```bash
-npm install npm install
+npm install
 ```
 
 ### Utilisation (dev)
@@ -26,9 +26,6 @@ pour plus d'informations.
 **Attention: le `--` est très important pour séparer le script npm de ses arguments**
 
 ```bash
-# installer les dépendances
-npm install
-
 # si le backend est en local
 npm run dev -- --mode backend-local
 
