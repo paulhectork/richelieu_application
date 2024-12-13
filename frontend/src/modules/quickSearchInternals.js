@@ -32,7 +32,19 @@ import "@typedefs";
 /**************************************/
 
 /**
+ * alphabetically sort `qsrItemArray` by the `entryName` key of each entry.
+ * sorting is done in individual functions rather than in batch at the end
+ * to preserve the global sorting order
  *
+ * @param {typedefs.QuickSearchResultItem[]} qsrItemArray
+ * @returns {typedefs.QuickSearchResultItem[]} the sorted array
+ */
+const sortQuickSearchResultItemArray = (qsrItemArray) =>
+  qsrItemArray.sort((a,b) => a.entryName.localeCompare(b.entryName));
+
+
+/**
+ * generate a frontend URL for a `backendDataItem`
  * @param {backendDataItem} item
  * @returns {URL?}
  */
@@ -53,7 +65,8 @@ function itemToUrl(item) {
 }
 
 /**
- *
+ * restructure data received from the backend to fit the expected structure
+ * `typedefs.QuickSearchResultGroup[]`
  * @param {backendDataArray} data
  * @returns { typedefs.QuickSearchResultGroup[] }
  */
@@ -66,8 +79,10 @@ function restructureBackendData(data) {
   dataGroupNames.forEach((groupName) => {
     let entries = data.filter(item => item.table_name === groupName)
                       .map((item) => { return { entryName: item.entry_name,
-                                                entryUrl: itemToUrl(item) } })
-    out.push({ groupName: groupName, entries: entries })
+                                                entryUrl: itemToUrl(item) } });
+    entries = sortQuickSearchResultItemArray(entries);
+    out.push({ groupName: groupName,
+               entries: entries })
   })
   return out;
 }
@@ -144,6 +159,7 @@ function matchArticles(queryString) {
   out.entries.push(...matchedArticles.map(article => {
     return { entryName: article.title,
              entryUrl: urlToArticleMain(article.urlSlug) } }));
+  out.entries = sortQuickSearchResultItemArray(out.entries);
   return out;
 }
 
@@ -184,6 +200,9 @@ export async function quickSearch(queryString) {
   results.push( ...matchAppSections(queryString) );
   results.push( matchArticles(queryString) );
 
+  // combine search results from different functions, preserving the sorting order:
+  // for each group, matchAppSections items are first,
+  // followed by other results sorted alphabetically.
   return matchBackendData(queryString).then(backendData => {
     // divide `backendData` in 2 arrays:
     // `inResults`,  with groups that are aldready in `results`
@@ -197,6 +216,7 @@ export async function quickSearch(queryString) {
     // complete `results` with `backendData`, preserving the order.
     results.push(...notInResults);
     inResults.map(group => {
+      // currentGroup = group that is aldready in `results`, which we'll complete by `group.entries`
       let currentGroup = results.filter(resultGroup =>
         resultGroup.groupName === group.groupName)[0];
       currentGroup.entries = [ ...currentGroup.entries, ...group.entries ]
