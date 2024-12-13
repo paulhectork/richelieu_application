@@ -5,7 +5,7 @@ Le backend de l'application gère l'interaction avec la base de données du proj
 - `$root_url/i/`: l'API privée, utilisée pour la communication entre backend et frontend;
 - `$root_url/api/v1`: l'API publique, qui dispose d'une documentation Swagger, utilisée pour récupérer
    et réutiliser les données du projet
-- `$root_url/` est la racine du site du projet: `https://quartier-richelieu.inha.fr` pour le site en ligne
+- `$root_url` est la racine du site du projet: `https://quartier-richelieu.inha.fr` pour le site en ligne
 
 ---
 
