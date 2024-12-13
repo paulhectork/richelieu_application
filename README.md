@@ -1,8 +1,5 @@
 # Application du projet Richelieu
 
-Cette application est en cours de développement, voir la branche
-`dev` pour les versions en cours de développement.
-
 L'application comprend: 
 - un `backend` en Flask pour l'interaction avec
   la base de données et la mise en forme des réponses en JSON
@@ -20,7 +17,7 @@ Pour un guide détaillé, voir `backend/`, et `frontend/`.
 Il faut avoir un terminal par application (un pour le back, un pour le front).
 
 ```bash
-# utilisation en local, avec des environnements python nommés `env/`
+# utilisation en local, avec des environnements python nommés `env/`, postgresql et `libpq-dev` déjà installés
 bash scripts/run_backend.sh
 bash scripts/run_frontend.sh
 ```

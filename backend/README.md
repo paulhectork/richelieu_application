@@ -14,8 +14,11 @@ Le backend de l'application gère l'interaction avec la base de données du proj
 ### Installation
 
 ```bash
-sudo apt install libpq-dev  # pour utiliser `psycopg2`. ATTENTION: INSTALLATION SYSTEM-WIDE
+# installer postgresql et libpq pour pouvoir travailler avec postgres. ATTENTION: INSTALLATIONS SYSTEM-WIDE
+if [ ! (which psql) ]; then sudo bash ../scripts/install_postgresql_15.sh; fi;
+sudo apt install libpq-dev
 
+# installations python
 python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt
