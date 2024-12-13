@@ -223,7 +223,8 @@ function getCurrentCategoryName() {
   if (categorySlug.value === "all") {
     categoryName.value = "toutes catégories confondues"
   } else {
-    const apiTarget = tableName.value === "theme"
+    const apiTarget =
+      tableName.value === "theme"
       ? new URL(`/i/theme/category/name/${categorySlug.value}`, __API_URL__)
       : new URL(`/i/named-entity/category/name/${categorySlug.value}`, __API_URL__);
     axios.get(apiTarget)
@@ -243,9 +244,10 @@ function getCurrentCategoryName() {
  * @type { typedefs.ThemeOrNamedEntityCategoryItem }: the structure of `categories`
  */
 function getCategories() {
-  const apiTarget = tableName.value === "theme"
-                  ? new URL(`/i/theme/category/name/all`, __API_URL__)
-                  : new URL(`/i/named-entity/category/name/all`, __API_URL__);
+  const apiTarget =
+    tableName.value === "theme"
+    ? new URL(`/i/theme/category/name/all`, __API_URL__)
+    : new URL(`/i/named-entity/category/name/all`, __API_URL__);
   axios.get(apiTarget)
   .then(r => r.data)
   .then(data => {
@@ -285,9 +287,9 @@ function getDataTree() {
  */
 function getDataCollection() {
   const apiTarget = tableName.value === "theme"
-    ? new URL("/i/theme", __API_URL__)
-    : new URL("/i/named-entity", __API_URL__);
-  axios.get(apiTarget.href, { params: { category_slug: categorySlug.value } })
+    ? new URL(`/i/theme/category/${categorySlug.value}`, __API_URL__)
+    : new URL(`/i/named-entity/category/${categorySlug.value}`, __API_URL__);
+  axios.get(apiTarget.href)
     .then(r => r.data)
     .then(data => {
       dataCollectionFull.value = data;  /** @type { typedefs.ThemeOrNamedEntityItemLite[] } */

@@ -12,6 +12,8 @@ from ..utils.spatial import featurelist_to_featurecollection, geometry_to_featur
 from ..app import app, db, cache
 from ..orm import *
 
+# WARNING: ROUTES PASSING PARAMETERS AS QUERY STRINGS MUST NOT BE CACHED
+# (CACHING DOES NOT TAKE INTO ACCOUNT THE QUERY)
 
 # *************************************************************************
 # iconography
@@ -44,18 +46,10 @@ def main_iconography(id_uuid):
                            for place in icono["place"] ]
         icono["place"] = featurelist_to_featurecollection(icono["place"])
 
-        # la même chose, en plus verbeux:
-        # featurelist = []            # liste de features geoson
-        # for loc in icono["place"]:  # loc = le lieu associé à notre objet iconographique `icono`
-        #     loc = geometry_to_feature(loc["vector"], custom_properties={ "id_uuid": loc["id_uuid"] })
-        #     featurelist.append(loc)
-        # featurecollection = featurelist_to_featurecollection(featurelist)  # on crée notre feature collection à partir de notre liste de features
-        # icono["place"] = featurecollection   # on met à jour notre objet `icono`
     return jsonify(out)
 
 
 @app.route("/i/iconography/from-uuid")
-@cache.cached()
 def iconography_from_uuid():
     """
     return Iconography objects matching the UUIDs in `id_uuid_arr`.
@@ -101,41 +95,41 @@ def iconography_overall_date_range():
 # *************************************************************************
 
 @app.route("/i/theme")
-@cache.cached()
+# @cache.cached()  # no cache since `preview` is in the query string
 def index_theme():
     """
-    return an index of theme categories or an
-    index of themes for a single category.
-    2 optional arguments can be passed in the query string:
-    * "category_slug" (None|str):
-        a value of `theme.category_slug`.
-        category determines the kind of index returned:
-        * category_slug is None: an index of distinct categories is returned
-        * category_slug == all: all themes are returned
-        * category_slug is not None (a category is given): all themes for this
-            category are returned.
-    * "preview" (bool):
+    return an index of theme categories.
+    1 parameter can be passed in the query string:
+    - "preview" (bool):
         when category is None (returning an index of categories)
         and preview is true, we'll also return a few themes as an example
     """
-    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    # PROBLEM
-    # THE `category_slug` PARAMETER IS NOT TAKEN INTO ACCOUNT
-    # WHEN CACHING THE ROUTES => ONLY THE 1ST QUERY IS CACHED
-    # (IF YOUR FIRST QUERY IS `category_slug=all`, THEN THIS WILL
-    # BE CACHED AND SENT TO THE FRONT NO MATTER THE CATEGORY_SLUG
-    # YOU ARE QUERYING)
-    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    category_slug = request.args.get("category_slug", None)
-    preview       = request.args.get("preview", None)
-    if not category_slug:
-        out = Theme.get_categories(preview=preview)
-    elif category_slug == "all":
+    preview = request.args.get("preview", None)
+    out = Theme.get_categories(preview=preview)
+    return jsonify(out)
+
+
+@app.route("/i/theme/category/<string:category_slug>")
+@cache.cached()
+def themes_for_category(category_slug:str):
+    """
+    return all themes within a category, or all themes if `category_slug=="all"`
+    """
+    if category_slug == "all":
         out = [ t[0].serialize_lite()
                 for t in db.session.execute(Theme.query).all() ]
     else:
         out = Theme.get_themes_for_category(category_slug)
     return jsonify(out)
+
+
+@app.route("/i/theme/<string:id_uuid>")
+@cache.cached()
+def main_theme(id_uuid:str):
+    """fetch all iconographic resources related to a theme"""
+    r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
+    return jsonify([ t[0].serialize_full() for t in r.all() ])
+
 
 @app.route("/i/theme/tree/<string:category_slug>")
 @cache.cached()
@@ -166,15 +160,6 @@ def theme_category_tree(category_slug:str):
                        "category_name": row[1],
                        "entries"      : row[2] }
                      for row in r ])
-
-
-
-@app.route("/i/theme/<string:id_uuid>")
-@cache.cached()
-def main_theme(id_uuid:str):
-    """fetch all iconographic resources related to a theme"""
-    r = db.session.execute(Theme.query.filter( Theme.id_uuid == id_uuid ))
-    return jsonify([ t[0].serialize_full() for t in r.all() ])
 
 
 @app.route("/i/theme/name/<id_uuid>")
@@ -224,41 +209,43 @@ def theme_category_name(category_slug:str):
 
 
 @app.route("/i/named-entity")
-@cache.cached()
+# @cache.cached()  # no cache since `preview` is in the query string
 def index_named_entity():
     """
-    return an index of named entity categories or an index of named entities.
-    2 optional arguments can be passed in the query string:
-    * "category_slug" (null|str):
-        a value of `named_entity.category_slug`.
-        category_slug determines the kind of index returned:
-        * category_slug is null: an index of distinct categories is returned
-        * category_slug == all: all named entities are returned
-        * category_slug is not null (a category is given): all named entities
-          for this category are returned.
-    * "preview" (bool):
-        when category_slug is None (returning an index of categories)
-        and preview is true, we'll also return a few named entities as
-        an example
+    return an index of named_entity categories.
+    1 parameter can be passed in the query string:
+    - "preview" (bool):
+        when category is None (returning an index of categories)
+        and preview is true, we'll also return a few named_entities as an example
     """
-    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    # PROBLEM
-    # THE `category_slug` PARAMETER IS NOT TAKEN INTO ACCOUNT
-    # WHEN CACHING THE ROUTES => ONLY THE 1ST QUERY IS CACHED
-    # (IF YOUR FIRST QUERY IS `category_slug=all`, THEN THIS WILL
-    # BE CACHED AND SENT TO THE FRONT NO MATTER THE CATEGORY_SLUG
-    # YOU ARE QUERYING)
-    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    category_slug = request.args.get("category_slug", None)
-    preview       = request.args.get("preview", None)
-    if not category_slug:
-        out = NamedEntity.get_categories(preview=preview)
-    elif category_slug == "all":
-        out = [ n[0].serialize_lite()
-                for n in db.session.execute(NamedEntity.query).all() ]
+    preview = request.args.get("preview", None)
+    out = NamedEntity.get_categories(preview=preview)
+    return jsonify(out)
+
+
+@app.route("/i/named-entity/category/<string:category_slug>")
+@cache.cached()
+def named_entities_for_category(category_slug:str):
+    """
+    return all named entities within a category,
+    or all named entities if `category_slug=="all"`
+    """
+    if category_slug == "all":
+        out = [ ne[0].serialize_lite()
+                for ne in db.session.execute(NamedEntity.query).all() ]
     else:
         out = NamedEntity.get_named_entities_for_category(category_slug)
     return jsonify(out)
+
+
+@app.route("/i/named-entity/<id_uuid>")
+@cache.cached()
+def main_named_entity(id_uuid:str):
+    """
+    fetch all iconographic resources related to a named entity.
+    """
+    r = db.session.execute(NamedEntity.query.filter( NamedEntity.id_uuid==id_uuid ))
+    return jsonify([ n[0].serialize_full() for n in r.all() ])
 
 
 @app.route("/i/named-entity/tree/<string:category_slug>")
@@ -290,16 +277,6 @@ def named_entity_category_tree(category_slug:str):
                        "category_name": row[1],
                        "entries"      : row[2] }
                      for row in r ])
-
-
-@app.route("/i/named-entity/<id_uuid>")
-@cache.cached()
-def main_named_entity(id_uuid:str):
-    """
-    fetch all iconographic resources related to a named entity.
-    """
-    r = db.session.execute(NamedEntity.query.filter( NamedEntity.id_uuid==id_uuid ))
-    return jsonify([ n[0].serialize_full() for n in r.all() ])
 
 
 @app.route("/i/named-entity/name/<id_uuid>")
@@ -503,13 +480,12 @@ def cartography_places():
     """
     places = [ p[0].serialize_lite()
                for p in db.session.execute( Place.query ).all() ]
-    places = [
-        geometry_to_feature( geometry=p["vector"]
-                           , custom_properties={
-                               "address"           : p["address"],
-                               "iconography_count" : p["iconography_count"],
-                               "id_uuid"           : p["id_uuid"]
-                           })
+    places = [ geometry_to_feature( geometry=p["vector"]
+                                  , custom_properties={
+                                      "address"           : p["address"],
+                                      "iconography_count" : p["iconography_count"],
+                                      "id_uuid"           : p["id_uuid"]
+                                  })
                for p in places ]
     places = featurelist_to_featurecollection(places)
     return jsonify(places)
@@ -528,6 +504,7 @@ def cartography_sources():
 
 
 @app.route("/i/cartography-main/cartography/source/<string:cartography_source>")
+@cache.cached()
 def cartography_for_source(cartography_source:str):
     """
     return a list of Cartography objects with Cartography.map_source == cartography_source
@@ -551,6 +528,7 @@ def cartography_granularity():
     return jsonify(gran)
 
 @app.route("/i/cartography-main/cartography/granularity/<string:cartography_granularity>")
+@cache.cached()
 def cartography_for_granularity(cartography_granularity: str):
     """
     get all cartography sources for a certain granularity

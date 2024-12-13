@@ -106,7 +106,8 @@ function setRefs(theContext) {
 function initSelect() {
   // single select2 need an empty `html:option` as their 1st element
   // https://select2.org/placeholders#single-select-placeholders
-  if ( !multiple.value ) { $(`#${selectId}`).prepend("<option></option>") };
+  if ( !multiple.value )
+    $(`#${selectId}`).prepend("<option></option>");
 
   $(`#${selectId}`).select2({
     multiple: multiple.value,
@@ -189,4 +190,7 @@ onMounted(() => {
 
 
 <style scoped>
+:deep(.select2-selection) {
+  min-height: 30px;  /** else you get a weird thing where the elt's height can be 0 */
+}
 </style>
