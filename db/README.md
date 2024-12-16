@@ -1,8 +1,7 @@
 # Documentation du modèle de données (2024.12.17)
 
 <img src="../img/richelieu_db_model.png"
-     alt="modèle de données Richelieu (été 2024, crédits Marina Hervieu)"
-     style="background-color: white !important">
+     alt="modèle de données Richelieu (été 2024, crédits Marina Hervieu)">
 
 Modèle de données Richelieu (été 2024, crédits Marina Hervieu). Les colonnes `(theme|named_entity).category_slug` ont depuis été rajoutées.
 
