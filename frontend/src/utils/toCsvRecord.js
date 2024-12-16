@@ -30,6 +30,25 @@ function serializeGeometry(geo) {
 
 // Transform specific to entity types
 
+/**
+ * prepare an iconography object for export.
+ * small subtelty here: `iconography` is serialized
+ * slightly differently depending on if we're exporting an
+ * iconography collection (from `IconographyIconography.vue`)
+ * or a single item (from `IconographyMainView`):
+ * - if collection view, `iconography.place` is an array of places
+ *    (@typedefs.PlaceItemLite[]) with an UUID, an address and a geometry
+ *    represented as a geoJson geometry.
+ * - if main view, `iconography.place` is a geoJson featureCollection and
+ *    each place is represented by a feature. we don't have an address
+ *    in that case
+ * => detect if `place` is an array or an object and use the proper
+ *      transformation method. if place is an object (IconographyMainView),
+ *      the address can't be exported since it's not available to the frontend.
+ * @returns { {[string]:string} }
+ *   the Iconography object as a key-value pair, where each
+ *    value has been stringified
+ */
 export function iconographyToCsvRecord({
   id_uuid,
   title,
@@ -53,16 +72,26 @@ export function iconographyToCsvRecord({
     named_entities_uuids: named_entity
       .map((entity) => entity.id_uuid)
       .join("|"),
-    places_address: place
-      .map(
-        ({ address: [address] }) =>
-          `${address.address}, ${address.city}, ${address.country}`
-      )
-      .join("|"),
-    places_geometry: place
-      .map((place) => serializeGeometry(place.vector))
-      .join("|"),
-    places_uuids: place.map((place) => place.id_uuid).join("|"),
+    places_address:
+      Array.isArray(place)
+      ? place
+        .map(({ address: [address] }) =>
+          `${address.address}, ${address.city}, ${address.country}`)
+        .join("|")
+      : [].join("|"),  // no address exported since it's not available
+    places_geometry:
+      Array.isArray(place)
+      ? place
+        .map((place) => serializeGeometry(place.vector))
+        .join("|")
+      : place.features
+        .map((placeFeature) => serializeGeometry(placeFeature.geometry))
+        .join("|"),
+    places_uuids:
+      Array.isArray(place)
+      ? place.map((place) => place.id_uuid).join("|")
+      : place.features
+        .map((placeFeature) => placeFeature.properties.id_uuid).join("|"),
   };
 }
 

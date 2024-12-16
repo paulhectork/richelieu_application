@@ -30,7 +30,6 @@ import UiLoader from "@components/UiLoader.vue";
 import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
 
-import { indexDataFormatterInstitution } from "@utils/indexDataFormatter";
 import { institutionToCsvRecord } from "@utils/toCsvRecord";
 import { downloadData } from "@utils/download";
 import { useListExport } from "@composables/useListExport";
