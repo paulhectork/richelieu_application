@@ -12,6 +12,8 @@
       <h1>Index des lieux</h1>
     </div>
 
+    <DownloadButtonGroup @download="onDownload"/>
+
     <div class="bottom-container">
       <UiLoader v-if="!isLoaded"></UiLoader>
       <IndexPlace v-else
@@ -25,15 +27,19 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import axios from "axios";
 
 import $ from "jquery";
 
-import IndexPlace from "@components/IndexPlace.vue";
+import DownloadButtonGroup from "@components/DownloadButtonGroup.vue";
 import UiLoader from "@components/UiLoader.vue";
+import IndexPlace from "@components/IndexPlace.vue";
 
 import { indexDataFormatterPlace } from "@utils/indexDataFormatter";
+import { useListExport } from "@composables/useListExport";
+import { downloadData } from "@utils/download";
+import { placeToCsvRecord } from "@utils/toCsvRecord";
 import "@typedefs";
 
 /**********************************************/
@@ -43,6 +49,23 @@ const dataFull   = ref([]);     /** @type {typedefs.PlaceItemLite[]} the full in
 const dataFilter = ref([]);     /** @type {typedefs.IndexBaseItem[]} the data to pass to `IndexBase.vue`, can vary based on user filters */
 const display    = "resource";  /** @type {String} which display style to use */
 const isLoaded   = ref(false);  /** @type {typedefs.AsyncRequestState} hide the loader, show the index when toggled to true */
+
+const selection = computed(() => dataFilter.value.map(({idUuid}) => idUuid));
+
+/**********************************************/
+
+const dataToExport = useListExport(
+  dataFull,
+  selection,
+  {
+    toJSON(resource) { return resource },
+    toCSV: placeToCsvRecord
+  },
+)
+
+async function onDownload(fileType) {
+  downloadData(dataToExport[fileType].value, fileType, "places")
+}
 
 /**********************************************/
 

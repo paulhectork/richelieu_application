@@ -93,7 +93,6 @@
     <div v-else class="index-headtext-wrapper">
       <!-- not yet implemented: named entity category presentations don't exist -->
     </div>
-
     <UiLoader v-if="loadState === 'loading'"></UiLoader>
     <div v-else-if="loadState === 'loaded'"
          class="animate__animated animate__slideInLeft"
@@ -106,6 +105,7 @@
           ></FilterIndexThemeOrNamedEntity>
         </div>
 
+        <DownloadButtonGroup v-if="viewType==='collection'" @download="onDownload"/>
         <IndexBase v-if="viewType === 'collection'"
                   :display="display"
                   :data="dataCollectionFilter"
@@ -130,6 +130,8 @@ import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import _ from "lodash";
 
+import DownloadButtonGroup from "@components/DownloadButtonGroup.vue";
+import UiButtonPlus from "@components/UiButtonPlus.vue";
 import UiLoader from "@components/UiLoader.vue";
 import IndexBase from "@components/IndexBase.vue";
 import H2IndexCount from "@components/H2IndexCount.vue";
@@ -145,6 +147,10 @@ import { urlToFrontendTheme
 import { indexDataFormatterTheme
        , indexDataFormatterNamedEntity } from "@utils/indexDataFormatter";
 import { capitalizeFirstChar } from "@utils/strings";
+import { themeOrNamedEntityToCsvRecord } from "@utils/toCsvRecord";
+import { downloadData } from "@utils/download";
+import { useListExport } from "@composables/useListExport";
+
 import "@typedefs";
 
 /*************************************************************/
@@ -166,6 +172,25 @@ const dataTree             = ref([]);  /** @type {typedefs.ThemeOrNamedEntityTre
 const loadState = ref("loading");  /** @type {typedefs.AsyncRequestState} */
 
 const dataTreeRestructured = computed(() => restructureToTree(dataTree.value))
+const selection = computed(() => dataCollectionFilter.value.map(({idUuid}) => idUuid));  // id_uuids of items to export
+
+/*************************************************************/
+/** EXPORT */
+
+const dataToExport = useListExport(
+  dataCollectionFull,
+  selection,
+  {
+    toJSON(resource) {
+      return resource;
+    },
+    toCSV: themeOrNamedEntityToCsvRecord
+  },
+)
+
+function onDownload(fileType) {
+  downloadData(dataToExport[fileType].value, fileType, tableName.value)
+}
 
 /*************************************************************/
 /** DATA FETCHING */
@@ -424,9 +449,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-h1 {
-  margin-bottom: 5px;
-}
 
 .title-controller-wrapper {
   display: flex;

@@ -109,12 +109,13 @@ class Theme(db.Model):
                   .label("total_rel")
         )
 
-    def get_thumbnail(self):
+    def get_thumbnail(self) -> t.List[str]:
         """get a thumbnail image for the current theme"""
-        return [ f.url
+        return [[ f.url
                  for f in random.choice(self.r_iconography_theme)
                           .iconography.filename
-                 if "thumbnail" in f.url ]
+                 if "thumbnail" in f.url
+               ][0]]  # [0]: keep only the 1st thumbnail
 
     def get_iconography(self):
         return [ r.iconography.serialize_lite()
@@ -235,12 +236,17 @@ class NamedEntity(db.Model):
                   .label("total_rel")
         )
 
-    def get_thumbnail(self):
-        """get a thumbnail image for the current named entity"""
-        return [ f.url
+    def get_thumbnail(self) -> t.List[str]:
+        """
+        get a thumbnail image for the current named entity.
+        returns a list with 1 string in it: the thumbnail's filename
+        """
+        return [[ f.url
                  for f in random.choice(self.r_iconography_named_entity)
-                          .iconography.filename
-                 if "thumbnail" in f.url ]
+                          .iconography
+                          .filename
+                 if "thumbnail" in f.url
+               ][0]]  # [0]: keep only the 1st element.
 
     def get_iconography(self):
         return [ r.iconography.serialize_lite()

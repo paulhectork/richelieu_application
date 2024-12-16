@@ -31,7 +31,7 @@
 <template>
   <div class="form-field-slider-wrapper">
     <div class="form-field-slider">
-      <div :id="htmlId"></div>
+      <div ref="sliderRef"></div>
     </div>
     <div class="form-field-info"
          v-if="context"
@@ -54,13 +54,15 @@
 import { onMounted, onUnmounted, ref, watch } from "vue";
 
 import $ from "jquery";
+
 import noUiSlider from '@plugins/nouislider.min.mjs';  // imported as plugin because else there are import bugs
 import '@plugins/nouislider.min.css';
+import "@typedefs";
 
 /**********************************************/
 
-const htmlId      = `formkit-slider-${window.crypto.randomUUID()}`;
-const props       = defineProps(["context"]);  /** @type { { minVal: Number?, maxVal: Number?, step: Number?, number: ("integer"|"float") } } */
+const sliderRef   = ref(null)
+const props       = defineProps(["context"]);  // "minVal", "maxVal", "step", "number" ("integer"|"float")
 const slider      = ref();
 const context     = ref();
 const allowedMin  = ref();  /** @type {Number} allowed minimum value */
@@ -75,7 +77,7 @@ const selectedMax = ref();  /** @type {Number} currently selected maximum value 
  * define the slider.
  */
 function createSlider() {
-  slider.value = noUiSlider.create(document.getElementById(htmlId), {
+  slider.value = noUiSlider.create(sliderRef.value, {
     start: [ allowedMin.value, allowedMax.value ],
     step: context.value.step,
     connect: true,
