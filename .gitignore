@@ -6,7 +6,6 @@ article.txt
 # ./frontend/*.png
 # backend/**/*png
 # frontend/**/*png
-# *.jpg
 # *.tif
 # *.shp
 # *.points
