@@ -121,6 +121,14 @@
               <AbDocTocSub :tocElements="tocSubElements['toc-item-methodologie']"
               ></AbDocTocSub>
             </li>
+            <li id="toc-item-model"
+                class="toc-lvl2"
+            >
+              <RouterLink to="/documentation/modele">
+                Modèle de données</RouterLink>
+              <AbDocTocSub :tocElements="tocSubElements['toc-item-modele']"
+              ></AbDocTocSub>
+            </li>
             <li id="toc-item-donnees"
                 class="toc-lvl2"
             >
@@ -172,6 +180,7 @@ const tocSubElements = ref({ "toc-item-projet"       : []
                            , "toc-item-methodologie" : []
                            , "toc-item-donnees"      : []
                            , "toc-item-api"          : []
+                           , "toc-item-modele"       : []
                            })
 
 // { route.params.pageName: <htmlid> }
@@ -181,6 +190,7 @@ const idMapper = { projet       : "toc-item-projet"
                  , methodologie : "toc-item-methodologie"
                  , donnees      : "toc-item-donnees"
                  , api          : "toc-item-api"
+                 , modele       : "toc-item-modele"
                  }
 
 /*********************************************/

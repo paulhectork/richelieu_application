@@ -91,6 +91,7 @@ const mapper = { projet       : [ "about"         , "AbDocContentProjet" ]
                , methodologie : [ "documentation" , "AbDocContentMethodologie" ]
                , donnees      : [ "documentation" , "AbDocContentDonnees" ]
                , api          : [ "documentation" , "AbDocContentApi" ]
+               , modele       : [ "documentation" , "AbDocContentDataModel" ]
                }
 
 /************************************************/

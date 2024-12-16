@@ -187,8 +187,6 @@ li > ul > li {
 code {
   background-color: var(--cs-main-default-bg);
   color: var(--cs-main-default);
-  font-size: 90%;
-  padding: 0 2px;
 }
 
 @media ( orientation:landscape ) {

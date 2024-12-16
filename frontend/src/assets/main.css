@@ -310,6 +310,11 @@ strong {
   font-weight: normal;
 }
 
+code {
+  font-size: 90%;
+  padding: 0 2px;
+}
+
 /**************************************************************************/
 /* classes defining color patterns */
 

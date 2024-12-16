@@ -75,6 +75,11 @@
               >Méthodologie du projet</RouterLink>
             </li>
             <li class="main-default">
+              <RouterLink to="/documentation/modele"
+                          class="menu-text"
+              >Modèle de données</RouterLink>
+            </li>
+            <li class="main-default">
               <RouterLink to="/documentation/api"
                           class="menu-text"
               >API</RouterLink>
@@ -211,7 +216,7 @@ a {
 @media ( orientation:landscape ) {
   .menu {
     grid-template-columns: 50% 50%;
-    grid-template-rows: repeat(3, max( 200px, calc(100%/3) ));    /* max/calc allows a min-height of 150px for all li elements */
+    grid-template-rows: repeat(3, max( 230px, calc(100%/3) ));    /* max/calc allows a min-height of 150px for all li elements */
   }
 }
 
@@ -262,7 +267,7 @@ a {
   color: var(--cs-main-default);
   width: 100%;
   height: 100%;
-  min-height: 30px;
+  min-height: 20px;
   padding: 3px 0;
   text-align: center;
   display: flex;
