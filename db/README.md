@@ -1,5 +1,9 @@
 # Documentation du modèle de données (2024.12.17)
 
+<img src="../richelieu_db_model.png" alt="modèle de données Richelieu (été 2024, crédits Marina Hervieu)">
+
+Modèle de données Richelieu (été 2024, crédits Marina Hervieu). Les colonnes `(theme|named_entity).category_slug` ont depuis été rajoutées.
+
 ## En général
 
 La base de données comprend 23 tables. Certaines n'ont pas été remplies car elles correspondent à des fonctionnalités ou jeux de données qui n'ont au final pas été implémentées.
