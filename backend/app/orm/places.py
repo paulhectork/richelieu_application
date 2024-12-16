@@ -35,15 +35,15 @@ class Place(db.Model):
     """
     __tablename__ = "place"
 
-    id             : Mapped[int]                   = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid        : Mapped[str]                   = mapped_column(Text, nullable=False)
-    id_richelieu   : Mapped[str]                   = mapped_column(Text, nullable=False)
-    date           : Mapped[intervals.IntInterval] = mapped_column(psql.INT4RANGE, nullable=False)
-    centroid       : Mapped[t.Dict]                = mapped_column(psql.JSON, nullable=True)
-    vector         : Mapped[t.Dict]                = mapped_column(psql.JSON, nullable=True)
+    id             : Mapped[int]                   = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid        : Mapped[str]                   = mapped_column(Text, nullable=False, comment="identifiant unique")
+    id_richelieu   : Mapped[str]                   = mapped_column(Text, nullable=False, comment="identifiant richelieu")
+    date           : Mapped[intervals.IntInterval] = mapped_column(psql.INT4RANGE, nullable=False, comment="date")
+    centroid       : Mapped[t.Dict]                = mapped_column(psql.JSON, nullable=True, comment="centroid")
+    vector         : Mapped[t.Dict]                = mapped_column(psql.JSON, nullable=True, comment="coordonnées géographique (GeoJSON)")
     vector_source  : Mapped[str]                   = mapped_column(Text, nullable=False)
-    crs_epsg       : Mapped[int]                   = mapped_column(psql.INTEGER, nullable=False)
-    id_place_group : Mapped[int]                   = mapped_column(psql.INTEGER, ForeignKey("place_group.id"), nullable=True)
+    crs_epsg       : Mapped[int]                   = mapped_column(psql.INTEGER, nullable=False, comment="système de coordonnées géographique")
+    id_place_group : Mapped[int]                   = mapped_column(psql.INTEGER, ForeignKey("place_group.id"), nullable=True, comment="identifiant interne du regroupement de lieu")
 
     place_group         : Mapped["PlaceGroup"]                 = relationship("PlaceGroup", back_populates="place")
     r_address_place     : Mapped[t.List["R_AddressPlace"]]     = relationship("R_AddressPlace", back_populates="place")
@@ -53,6 +53,10 @@ class Place(db.Model):
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.id_richelieu
 
     def get_address(self):
         return [ r.address.serialize_lite()
@@ -138,16 +142,20 @@ class PlaceGroup(db.Model):
     """
     __tablename__ = "place_group"
 
-    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False)
-    entry_name  : Mapped[str] = mapped_column(Text, nullable=False)
-    description : Mapped[str] = mapped_column(Text, nullable=True)
+    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False, comment="identifiant unique")
+    entry_name  : Mapped[str] = mapped_column(Text, nullable=False, comment="nom")
+    description : Mapped[str] = mapped_column(Text, nullable=True, comment="description")
 
     place : Mapped[t.List["Place"]] = relationship("Place", back_populates="place_group")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.entry_name
 
     def get_place(self):
         return [ p.serialize_lite()
@@ -175,13 +183,13 @@ class Address(db.Model):
     """
     __tablename__ = "address"
 
-    id      : Mapped[int]                   = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid : Mapped[str]                   = mapped_column(Text, nullable=False)
-    address : Mapped[str]                   = mapped_column(Text, nullable=False)
-    city    : Mapped[str]                   = mapped_column(Text, nullable=False)
-    country : Mapped[str]                   = mapped_column(Text, nullable=False)
-    source  : Mapped[str]                   = mapped_column(Text, nullable=False)
-    date    : Mapped[intervals.IntInterval] = mapped_column(psql.INT4RANGE, nullable=False)
+    id      : Mapped[int]                   = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid : Mapped[str]                   = mapped_column(Text, nullable=False, comment="identifiant unique")
+    address : Mapped[str]                   = mapped_column(Text, nullable=False, comment="adresse")
+    city    : Mapped[str]                   = mapped_column(Text, nullable=False, comment="ville")
+    country : Mapped[str]                   = mapped_column(Text, nullable=False, comment="pays")
+    source  : Mapped[str]                   = mapped_column(Text, nullable=False, comment="source")
+    date    : Mapped[intervals.IntInterval] = mapped_column(psql.INT4RANGE, nullable=False, comment="date")
 
     r_address_place : Mapped[t.List["R_AddressPlace"]] = relationship("R_AddressPlace", back_populates="address")
     directory       : Mapped[t.List["Directory"]]      = relationship("Directory", back_populates="address")
@@ -189,6 +197,10 @@ class Address(db.Model):
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.address
 
     def get_place(self):
         return [ r.place.serialize_lite()

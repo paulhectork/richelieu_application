@@ -1,15 +1,20 @@
+"""
+test the advanced search module using the internal API
+(route "/i/search/iconography")
+
+the batches of tests here test at the same time:
+  - the route in `src/routes/api_internal.py` (parameter sanitization and validation)
+  - the advanced search module (`src/search/search_iconography.py`)
+by running the same queries as raw sql and http post requests.
+"""
+import typing as t
+import os
+
 from sqlalchemy import text
 import unittest
 
 from ..app import app, db
 from .. import orm
-
-
-# *******************************************
-# test our sql queries and query builders,
-# and especially the query builders inn
-# `app.search`
-# *******************************************
 
 
 """
@@ -52,14 +57,15 @@ ON q1.id = q2.id;
 """
 
 
-
-class TestQueries(unittest.TestCase):
+class TestAdvancedSearchInternal(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client()
+        self.route = "/i/search/iconography"
         self.app = app
         self.db = db
     def tearDown(self):
         self.client = None
+        self.route = None
         self.app = None
         self.db = None
 
@@ -75,8 +81,6 @@ class TestQueries(unittest.TestCase):
         '%' is a special character in python strings, so we need to prefix
         strings that contain it with 'r'.
         """
-        route = "/i/search/iconography"
-
         # queries is an array of [ <route params>, <raw sql query> ]
         queries = [
             [ { "title": ["bourse", "théâtre"] },
@@ -168,20 +172,7 @@ class TestQueries(unittest.TestCase):
             ]
         ]
 
-        with self.app.app_context():  # avoid RuntimeError
-            for ( http_params, raw_sql ) in queries:
-                r_http = self.client.post(route, json=http_params)
-                r_sql = self.db.session.execute(text(raw_sql))
-                r_http_count = len(r_http.json)
-                r_sql_count = r_sql.rowcount
-
-                self.assertEqual(r_http.status_code, 200)
-                self.assertEqual( r_http_count, r_sql_count
-                                , f"a different number of results was returned "
-                                + f"by HTTP ({r_http_count}) and SQL ({r_sql_count}) for params {http_params}")
-                self.assertTrue( r_http_count > 0 and r_sql_count > 0
-                               , f"queries must return at least 1 result, "
-                               + f"got {r_http_count} (HTTP) and {r_sql_count} (SQL) for params {http_params}"  )
+        tester_all_good(self, queries)
         return self
 
 
@@ -189,7 +180,6 @@ class TestQueries(unittest.TestCase):
         """
         test the combination of different params with AND, OR, NOT boolean operators.
         """
-        route = "/i/search/iconography"
         queries = [
             # basic OR
             [ { "namedEntity"   : [ "Galerie Vivienne" ],
@@ -241,6 +231,42 @@ class TestQueries(unittest.TestCase):
                 AND named_entity.entry_name IN ('Galerie Vivienne')
               );
               """
+            ]
+            ,
+            # chaining `and`s
+            [ { "theme"            : ["commerce"],
+                "themeBooleanOp" : "and",
+                "title"            : ["galerie"],
+                "titleBooleanOp" : "and",
+                "author"           : ["atget"],
+                "authorBooleanOp": "and"  },
+              r"""
+              SELECT DISTINCT iconography.id_uuid
+              FROM iconography
+              WHERE iconography.id_uuid IN (
+                SELECT iconography.id_uuid
+                FROM iconography
+                JOIN r_iconography_theme
+                ON r_iconography_theme.id_iconography = iconography.id
+                JOIN theme
+                ON r_iconography_theme.id_theme = theme.id
+                AND theme.entry_name IN ('commerce')
+              ) AND iconography.id_uuid IN (
+                  SELECT DISTINCT iconography.id_uuid
+                  FROM iconography
+                  JOIN r_iconography_actor
+                  ON r_iconography_actor.id_iconography = iconography.id
+                  AND r_iconography_actor.role = 'author'
+                  JOIN actor
+                  ON r_iconography_actor.id_actor = actor.id
+                  AND actor.entry_name ILIKE ANY(ARRAY['%atget%'])
+              ) AND iconography.id_uuid IN (
+                  SELECT DISTINCT iconography.id_uuid
+                  FROM iconography
+                  JOIN title
+                  ON title.id_iconography = iconography.id
+                  AND title.entry_name ILIKE ANY(ARRAY['%galerie%'])
+              );"""
             ]
             ,
             # fancier query
@@ -401,25 +427,7 @@ class TestQueries(unittest.TestCase):
             ]
         ]
         # the queries change but the tests are the same as in the previous function
-        with self.app.app_context():  # avoid RuntimeError
-            for ( http_params, raw_sql ) in queries:
-                r_http = self.client.post(route, json=http_params)
-                r_sql = self.db.session.execute(text(raw_sql))
-
-                if r_http.status_code != 200:
-                    print(f"\n\n{'~'*50}\n", r_http.get_data(True), f"\n{'~'*50}\n\n")
-                    exit()
-
-                r_http_count = len(r_http.json)
-                r_sql_count = r_sql.rowcount
-
-                self.assertEqual(r_http.status_code, 200)
-                self.assertEqual( r_http_count, r_sql_count
-                                , f"a different number of results was returned "
-                                + f"by HTTP ({r_http_count}) and SQL ({r_sql_count}) for params {http_params}")
-                self.assertTrue( r_http_count > 0 and r_sql_count > 0
-                               , f"queries must return at least 1 result, "
-                               + f"got {r_http_count} (HTTP) and {r_sql_count} (SQL) for params {http_params}"  )
+        tester_all_good(self, queries)
         return self
 
 
@@ -430,11 +438,9 @@ class TestQueries(unittest.TestCase):
         error to be raised.
         here, we don't need to check for raw SQL or anything.
         """
-        route = "/i/search/iconography"
-
         # get on this route returns a 400
         with self.app.app_context():
-            r = self.client.get(route)
+            r = self.client.get(self.route)
             self.assertEqual(r.status_code, 400)
 
         # assert that all the below queries will raise errors
@@ -450,8 +456,49 @@ class TestQueries(unittest.TestCase):
         ]
         with self.app.app_context():
             for http_params in queries:
-                r = self.client.post(route, json=http_params )
+                r = self.client.post(self.route, json=http_params )
                 if r.status_code != 500:
                     print(http_params)
                 self.assertEqual(r.status_code, 500)
         return self
+
+
+def tester_all_good( ctx: TestAdvancedSearchInternal
+                   , _queries: t.List[ t.Dict|str ]):
+    """
+    this function does the actual testing in some functions
+    of `TestAdvancedSearchInternal` that need the same test being done
+    but using different data (in `_queries`).
+
+    :param ctx: the context: our test case class defined above
+    :param _queries: an array of [ <json_params>, <sql_query> ]
+        both json and sql describing the same query (one in route params,
+        the other in raw sql).
+    """
+    with ctx.app.app_context():  # avoid RuntimeError
+        for ( http_params, raw_sql ) in _queries:
+            r_http = ctx.client.post(ctx.route, json=http_params)
+            r_sql = ctx.db.session.execute(text(raw_sql))
+
+            if r_http.status_code != 200:  # debug message
+                mul = 150 #os.terminal_size().columns
+                print( f"\n\n{ '*' * mul }\n"
+                     , r_http.get_data(True)
+                     , f"\n{ '*' * mul }\n"
+                     , "with params : ", http_params
+                     , f"\n{ '*' * mul }\n\n")
+
+            r_http_count = len(r_http.json)
+            r_sql_count = r_sql.rowcount
+
+            # http request success
+            ctx.assertEqual(r_http.status_code, 200)
+            # same number of rows in both results
+            ctx.assertEqual( r_http_count, r_sql_count
+                            , f"a different number of results was returned "
+                            + f"by HTTP ({r_http_count}) and SQL ({r_sql_count}) for params {http_params}")
+            # both queries returned at least 1 row
+            ctx.assertTrue( r_http_count > 0 and r_sql_count > 0
+                           , f"queries must return at least 1 result, "
+                           + f"got {r_http_count} (HTTP) and {r_sql_count} (SQL) for params {http_params}"  )
+    return ctx

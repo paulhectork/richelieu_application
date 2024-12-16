@@ -35,17 +35,21 @@ class Title(db.Model):
     """
     __tablename__: str = "title"
 
-    id             : Mapped[int]  = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid        : Mapped[str]  = mapped_column(Text, nullable=False)
-    entry_name     : Mapped[str]  = mapped_column(Text, nullable=False)
-    ismain         : Mapped[bool] = mapped_column(Boolean, nullable=False)
-    id_iconography : Mapped[int]  = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=False)
+    id             : Mapped[int]  = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid        : Mapped[str]  = mapped_column(Text, nullable=False, comment="identifiant unique")
+    entry_name     : Mapped[str]  = mapped_column(Text, nullable=False, comment="nom")
+    ismain         : Mapped[bool] = mapped_column(Boolean, nullable=False, comment="est le titre principal")
+    id_iconography : Mapped[int]  = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=False, comment="identifiant interne de l'iconographie")
 
     iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="title")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.entry_name
 
 
 # *******************************************************************
@@ -58,16 +62,20 @@ class Annotation(db.Model):
     """
     __tablename__: str = "annotation"
 
-    id             : Mapped[int]    = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid        : Mapped[str]    = mapped_column(Text, nullable=False)
-    content        : Mapped[t.Dict] = mapped_column(psql.JSON, nullable=False)
-    id_iconography : Mapped[int]    = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=False)
+    id             : Mapped[int]    = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid        : Mapped[str]    = mapped_column(Text, nullable=False, comment="identifiant unique")
+    content        : Mapped[t.Dict] = mapped_column(psql.JSON, nullable=False, comment="contenu")
+    id_iconography : Mapped[int]    = mapped_column(psql.INTEGER, ForeignKey("iconography.id"), nullable=False, comment="identifiant interne de l'iconographie")
 
     iconography : Mapped["Iconography"] = relationship("Iconography", back_populates="annotation")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.id_uuid
 
 
 # *******************************************************************
@@ -87,11 +95,14 @@ class Theme(db.Model):
     description   : Mapped[str] = mapped_column(Text, nullable=True)
 
     r_iconography_theme : Mapped[t.List["R_IconographyTheme"]] = relationship("R_IconographyTheme", back_populates="theme", lazy="selectin")
-    # r_iconography_theme : Mapped[t.List["R_IconographyTheme"]] = relationship("R_IconographyTheme", back_populates="theme")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.entry_name
 
     @hybrid_property
     def iconography_count(self):
@@ -215,11 +226,14 @@ class NamedEntity(db.Model):
     description   : Mapped[str] = mapped_column(Text, nullable=True)
 
     r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity", back_populates="named_entity", lazy="selectin")
-    # r_iconography_named_entity : Mapped[t.List["R_IconographyNamedEntity"]] = relationship("R_IconographyNamedEntity", back_populates="named_entity")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.entry_name
 
     # see `Theme` for a detailed explanation
     @hybrid_property
@@ -343,15 +357,19 @@ class Actor(db.Model):
     """
     __tablename__: str = "actor"
 
-    id         : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid    : Mapped[str] = mapped_column(Text, nullable=False)
-    entry_name : Mapped[str] = mapped_column(Text, nullable=False)
+    id         : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant")
+    id_uuid    : Mapped[str] = mapped_column(Text, nullable=False, comment="identifiant unique")
+    entry_name : Mapped[str] = mapped_column(Text, nullable=False, comment="nom")
 
     r_iconography_actor : Mapped[t.List["R_IconographyActor"]] = relationship("R_IconographyActor", back_populates="actor")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.entry_name
 
     def get_iconography_author(self):
         return [ r.iconography.serialize_lite()

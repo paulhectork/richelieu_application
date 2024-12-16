@@ -9,6 +9,10 @@ import logging
 from .config import CONFIGS
 from .utils.constants import STATICS
 
+from flask_openapi3 import OpenAPI
+from .api import api as bp_api
+
+
 # **********************************************************
 # create and configure the backend app object
 # **********************************************************
@@ -24,8 +28,9 @@ class Base(DeclarativeBase):
 # app configuration
 
 # 1) generic configuration of the app
-app = Flask( "RICH.DATA"
-           , static_folder=STATICS)
+app = OpenAPI( "RICH.DATA"
+               , static_folder=STATICS)
+
 db = SQLAlchemy(model_class=Base)
 cache = Cache(app)
 
@@ -68,4 +73,6 @@ def config_app(cfgname:str):
 
 
 from .routes import *
+
+app.register_api(bp_api)
 

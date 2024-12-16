@@ -27,16 +27,20 @@ class Institution(db.Model):
     """
     __tablename__ = "institution"
 
-    id            : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid       : Mapped[str] = mapped_column(Text, nullable=False)
-    entry_name    : Mapped[str] = mapped_column(Text, nullable=False)
-    description   : Mapped[str] = mapped_column(Text, nullable=True)
+    id            : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid       : Mapped[str] = mapped_column(Text, nullable=False, comment="identifiant unique")
+    entry_name    : Mapped[str] = mapped_column(Text, nullable=False, comment="nom")
+    description   : Mapped[str] = mapped_column(Text, nullable=True, comment="description")
 
     r_institution : Mapped[t.List["R_Institution"]] = relationship("R_Institution", back_populates="institution")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, value):
         return _validate_uuid(value, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.entry_name
 
     def get_iconography(self):
         return [ r.iconography.serialize_lite()
@@ -78,10 +82,10 @@ class Licence(db.Model):
     """
     __tablename__ = "licence"
 
-    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False)
-    entry_name  : Mapped[str] = mapped_column(Text, nullable=False)
-    description : Mapped[str] = mapped_column(Text, nullable=True)
+    id          : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid     : Mapped[str] = mapped_column(Text, nullable=False, comment="identifiant unique")
+    entry_name  : Mapped[str] = mapped_column(Text, nullable=False, comment="nom")
+    description : Mapped[str] = mapped_column(Text, nullable=True, comment="description")
 
     filename    : Mapped[t.List["Filename"]]    = relationship("Filename", back_populates="licence")
     iconography : Mapped[t.List["Iconography"]] = relationship("Iconography", back_populates="licence")
@@ -91,6 +95,10 @@ class Licence(db.Model):
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return self.entry_name
 
     def get_filename(self):
         return [ f.serialize_lite() for f in self.filename ]
@@ -124,17 +132,21 @@ class AdminPerson(db.Model):
     """
     __tablename__ = "admin_person"
 
-    id             : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True)
-    id_uuid        : Mapped[str] = mapped_column(Text, nullable=False)
-    first_name     : Mapped[str] = mapped_column(Text, nullable=False)
-    last_name      : Mapped[str] = mapped_column(Text, nullable=False)
-    id_persistent  : Mapped[int] = mapped_column(Text, nullable=True)
+    id             : Mapped[int] = mapped_column(psql.INTEGER, nullable=False, primary_key=True, comment="identifiant interne")
+    id_uuid        : Mapped[str] = mapped_column(Text, nullable=False, comment="identifiant unique")
+    first_name     : Mapped[str] = mapped_column(Text, nullable=False, comment="nom")
+    last_name      : Mapped[str] = mapped_column(Text, nullable=False, comment="prénom")
+    id_persistent  : Mapped[int] = mapped_column(Text, nullable=True, comment="identifiant persitent")
 
     r_admin_person : Mapped[t.List["R_AdminPerson"]] = relationship("R_AdminPerson", back_populates="admin_person")
 
     @validates("id_uuid", include_backrefs=False)
     def validate_uuid(self, key, _uuid):
         return _validate_uuid(_uuid, self.__tablename__)
+
+    @property
+    def label(self) -> str:
+        return f"{self.first_name} {self.last_name}"
 
     def get_r_admin_person_iconography(self):
         return [ r.iconography.serialize_lite()

@@ -341,7 +341,7 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
     subqueries = {}
 
     # 1) build the different query parameters.
-    if len(params["title"]):
+    if params.get("title"):
         # `sqlbuilder` builds an sql expression and applies it to `ctx`.
         # the expression is always the same, only the `ctx` to which it is
         # applied changes: if booleanOp is `and`, then it is added to `base_qusery`.
@@ -350,13 +350,13 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
             ctx.join(Iconography
                      .title
                      .and_( Title.entry_name.ilike(any_(params['title'])) )))
-        if params["title_boolean_op"] == "and":
+        if params.get("title_boolean_op") == "and":
             base_query = sqlbuilder(base_query)
         else:
             subqueries["title"] = [ sqlbuilder(select(Iconography.id))
                                   , params["title_boolean_op"] ]
 
-    if len(params["author"]):
+    if params.get("author"):
         sqlbuilder = lambda ctx: (
             ctx.join(Iconography
                     .r_iconography_actor
@@ -364,13 +364,13 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
                .join(R_IconographyActor
                     .actor
                     .and_( Actor.entry_name.ilike(any_(params['author'])))))
-        if params["author_boolean_op"] == "and":
+        if params.get("author_boolean_op") == "and":
             base_query = sqlbuilder(base_query)
         else:
             subqueries["author"] = [ sqlbuilder(select(Iconography.id))
                                    , params["author_boolean_op"] ]
 
-    if len(params["publisher"]):
+    if params.get("publisher"):
         sqlbuilder = lambda ctx: (
             ctx.join(Iconography
                     .r_iconography_actor
@@ -379,42 +379,42 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
                     .actor
                     .and_( Actor.entry_name.ilike(any_(params['publisher'])))))
 
-        if params["publisher_boolean_op"] == "and":
+        if params.get("publisher_boolean_op") == "and":
             base_query = sqlbuilder(base_query)
             subqueries["publisher"] = [ sqlbuilder(select(Iconography.id))
                                       , params["publisher_boolean_op"] ]
 
-    if len(params["named_entity"]):
+    if params.get("named_entity"):
         sqlbuilder = lambda ctx: (
             ctx.join( Iconography.r_iconography_named_entity )
                .join( R_IconographyNamedEntity
                       .named_entity
                       .and_( NamedEntity.entry_name.in_(params["named_entity"])) ))
-        if params["named_entity_boolean_op"] == "and":
+        if params.get("named_entity_boolean_op") == "and":
             base_query = sqlbuilder(base_query)
         else:
             sqlbuilder(select(Iconography))
-        subqueries["named_entity"] = [ sqlbuilder(select(Iconography.id)), params["named_entity_boolean_op"]  ]
+        subqueries["named_entity"] = [ sqlbuilder(select(Iconography.id)), params.get("named_entity_boolean_op", "")  ]
 
-    if len(params["theme"]):
+    if params.get("theme"):
         sqlbuilder = lambda ctx: (
             ctx.join( Iconography.r_iconography_theme )
                .join( R_IconographyTheme
                       .theme
                       .and_( Theme.entry_name.in_(params["theme"])) ))
-        if params["theme_boolean_op"] == "and":
+        if params.get("theme_boolean_op") == "and":
             base_query = sqlbuilder(base_query)
         else:
             subqueries["theme"] = [ sqlbuilder(select(Iconography.id))
                                   , params["theme_boolean_op"] ]
 
-    if len(params["institution"]):
+    if params.get("institution"):
         sqlbuilder = lambda ctx: (
             ctx.join( Iconography.r_institution )
                .join( R_Institution
                       .institution
                       .and_( Institution.entry_name.in_(params["institution"]))) )
-        if params["institution_boolean_op"] == "and":
+        if params.get("institution_boolean_op") == "and":
             base_query = sqlbuilder(base_query)
         else:
             subqueries["institution"] = [ sqlbuilder(select(Iconography.id))
@@ -438,10 +438,10 @@ def make_query(params:t.Dict) -> ChunkedIteratorResult:
                                          else date_after_expr(dateobj["data"]) if dateobj["filter"]=="dateAfter"
                                          else None)  # a final else is necessary, None will be removed below
 
-    if len(params["date"]):
+    if params.get("date"):
         date_filters = [ date_expr_builder(date) for date in params["date"] ]
         date_filters = [ f for f in date_filters if f is not None ]
-        if params["date_boolean_op"] == "and":
+        if params.get("date_boolean_op") == "and":
             base_query = base_query.filter(or_(*date_filters))
         else:
             subqueries["date"] = [ select(Iconography.id).filter(or_(*date_filters))

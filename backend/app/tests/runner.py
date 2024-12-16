@@ -1,8 +1,8 @@
 import unittest
 
 from .serializations import TestSerializations
-from .query import TestQueries
-
+from .advanced_search_internal import TestAdvancedSearchInternal
+from .advanced_search_public import TestAdvancedSearchPublic
 
 def load_tests( loader=unittest.TestLoader()
               , tests=[]
@@ -11,7 +11,10 @@ def load_tests( loader=unittest.TestLoader()
     load all the tests we'll need to run
     """
     # array of test cases to run. could be completed with other test classes
-    test_cases = [TestSerializations, TestQueries]
+    test_cases = [ TestSerializations
+                 , TestAdvancedSearchInternal
+                 , TestAdvancedSearchPublic
+                 ]
     # suite of tests that will be run
     suite = unittest.TestSuite()
     for t in test_cases:

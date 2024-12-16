@@ -1,6 +1,6 @@
 <template>
   <div class="textpage-text-wrapper">
-    <h3 id="abdoc-data-pres">Page en cours de création</h3>
+    <iframe title="API documentation and playground":src="swagger_url" class="swagger"/>
   </div>
 </template>
 
@@ -9,7 +9,7 @@
 import { onMounted } from "vue";
 
 /****************************************/
-
+const swagger_url = __SWAGGER_URL__;
 const emit = defineEmits(["h2"]);
 const subtitle = "";
 
@@ -20,5 +20,8 @@ onMounted(() => emit("h2", subtitle))
 
 
 <style scoped>
-
+.swagger {
+  width: 100%;
+  height: 2000px;
+}
 </style>
