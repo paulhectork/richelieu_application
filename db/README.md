@@ -1,16 +1,16 @@
-## Documentation du modèle de données (2024.12.17)
+# Documentation du modèle de données (2024.12.17)
 
 ## En général
 
 La base de données comprend 23 tables. Certaines n'ont pas été remplies car elles correspondent à des fonctionnalités ou jeux de données qui n'ont au final pas été implémentées.
 
-- **Les dates sont en `int4range`** (tranche d'integer, pour représenter des plages d'années). Cela permet de représenter à la fois les dates uniques (1923) et les tranches de dates (1923-1930).
+- **Les dates sont en [`int4range`](https://www.postgresql.org/docs/current/rangetypes.html)** (tranche d'integer, pour représenter des plages d'années). Cela permet de représenter à la fois les dates uniques (1923) et les tranches de dates (1923-1930).
   - les *bounds* sont `[)`: début de la tranche inclusive, fin non-inclusive.
   - *`[1923-1926)` = à partir de 1923 inclus et jusqu'à 1926 non-inclus*. Pour passer à une notation "normale", on devra donc rétroconvertir en `[1923,1925]`.
   - *`[1923-1924)` = 1924 (depuis 1923 inclus jusqu'à 1924 non-inclus)*
   - des fonctions existent dans le *back* et le *front* pour convertir de l'`int4range` au `List[int]`.
 
-- **Les géométries sont en [géométries `GeoJSON`](https://en.wikipedia.org/wiki/GeoJSON#Geometries)** et le système de projection utilisé pour toutes les géométries est l'[EPSG:4326](https://epsg.io/4326).
+- **Les géocoordonnées sont stockées dans la base sous la forme de [géométries `GeoJSON`](https://en.wikipedia.org/wiki/GeoJSON#Geometries)** et le système de projection utilisé pour toutes les géométries est l'[EPSG:4326](https://epsg.io/4326).
 
 Pour produire la description des tables ci-dessous, on utilise la requête [`query_extract_model.sql`](./query_extract_model.sql), qui produit un tableur. On complète ensuite le tableur avant de le transformer en liste à grands coups de regex.
 
