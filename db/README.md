@@ -1,6 +1,24 @@
 ## Documentation du modèle de données (2024.12.17)
 
-## actor
+## En général
+
+La base de données comprend 23 tables. Certaines n'ont pas été remplies car elles correspondent à des fonctionnalités ou jeux de données qui n'ont au final pas été implémentées.
+
+- **Les dates sont en `int4range`** (tranche d'integer, pour représenter des plages d'années). Cela permet de représenter à la fois les dates uniques (1923) et les tranches de dates (1923-1930).
+  - les *bounds* sont `[)`: début de la tranche inclusive, fin non-inclusive.
+  - *`[1923-1926)` = à partir de 1923 inclus et jusqu'à 1926 non-inclus*. Pour passer à une notation "normale", on devra donc rétroconvertir en `[1923,1925]`.
+  - *`[1923-1924)` = 1924 (depuis 1923 inclus jusqu'à 1924 non-inclus)*
+  - des fonctions existent dans le *back* et le *front* pour convertir de l'`int4range` au `List[int]`.
+
+- **Les géométries sont en [géométries `GeoJSON`](https://en.wikipedia.org/wiki/GeoJSON#Geometries)** et le système de projection utilisé pour toutes les géométries est l'[EPSG:4326](https://epsg.io/4326).
+
+Pour produire la description des tables ci-dessous, on utilise la requête [`query_extract_model.sql`](./query_extract_model.sql), qui produit un tableur. On complète ensuite le tableur avant de le transformer en liste à grands coups de regex.
+
+---
+
+## Description des tables
+
+### actor
 `actor` décrit les personnes et entités qui ont produit une ressource iconographique (auteur, autrice ou maison d’édition)
 - **`actor.entry_name`**
 	- **type PostgreSQL**: `text`
@@ -15,7 +33,7 @@
 	- **champ nullable**
 	- **description**: identifiant public au format `qr1[a-z0-9]{32}`
 
-## address
+### address
 la table `address` décrit les adresses associées à un lieu
 - **`address.address`**
 	- **type PostgreSQL**: `text`
@@ -46,7 +64,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: texte identifiant la source historique sur laquelle cette adresse est identifiée
 
-## admin_person
+### admin_person
 `admin_person` recense les membres du projet et permet de suivre qui a édité quelle ressource (dans les faits, ces attributions ont été faites en « batch » : les crédits sont les mêmes pour toutes les ressources iconographiques
 - **`admin_person.first_name`**
 	- **type PostgreSQL**: `text`
@@ -70,7 +88,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **description**: nom de famille de la personne
 
 
-## annotation
+### annotation
 `annotation` permet de stocker des annotations IIIF à ajouter à des documents. à ce state du projet, cette table est vide
 - **`annotation.content`** : contenu de l'annotation
   - **type PostgreSQL**: json
@@ -89,7 +107,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: identifiant public au format `qr1[a-z0-9]{32}`
 
-## cartography
+### cartography
 `cartography` contient les métadonnées des ressource cartographiques. Une ressource cartographique correspond à une géométrie correspondant à une parcelle issue d’une source historique précise
 - **`cartography.crs_epsg`**
 	- **type PostgreSQL**: `integer`
@@ -140,7 +158,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: géométrie de la ressource, au format de Geometry GeoJSON
 
-## directory
+### directory
 `directory` décrit les entrées de bottins et annuaires océrisés durant la première phase du projet. Dans les faits, du fait du volume de données et d’erreurs d’OCR, cette table est vide mais peut en théorie accueillir toutes les entrées d’annuaires OCRisés, avec une entrée par ligne de la table. La structure de donnée correspond à celle produite par Ravinitesh Anapureddy (EPFL)
 - **`directory.date`**
 	- **type PostgreSQL**: `int4range`
@@ -187,7 +205,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: liste de tags normalisés pour cette entrée
 
-# filename
+### filename
 `filename` stocke les noms de fichiers associés aux ressources des tables `iconography` et `cartography`. Une entrée de `filename` peut être liée à une ressource iconographique OU cartographique
 - **`filename.id`**
 	- **type PostgreSQL**: `integer`
@@ -219,7 +237,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **description**: nom du fichier image dans le serveur de l’INHA. Si le nom contient `_thumbnail`, c’est une image en petit format; si `_compress`, c’est une image en format moyen avec compression. Sinon, c’est une image en qualité maximale
 
 
-## iconography
+### iconography
 `iconography` décrit les ressources iconographiques sur le quartier. Une ressource iconographique est un document, ou une portion de document, qui est produite dans ou représente le quartier. Une ressource iconographique peut être composée de plusieurs images (recueils) ou d’une seule.
 - **`iconography.corpus`**
 	- **type PostgreSQL**: `text`
@@ -290,7 +308,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: array de Text : liste des techniques utilisées pour produire le document
 
-## institution
+### institution
 `institution` décrit les institutions de conservation chez lesquelles les ressources iconographiques et cartographiques ont été trouvées
 - **`institution.description`**
 	- **type PostgreSQL**: `text`
@@ -309,7 +327,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: identifiant public au format `qr1[a-z0-9]{32}`
 
-## licence
+### licence
 `licence` décrit les droits d’accès d’une ressource
 - **`licence.description`**
 	- **type PostgreSQL**: `text`
@@ -328,7 +346,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: identifiant public au format `qr1[a-z0-9]{32}`
 
-## named_entity
+### named_entity
 `named_entity` décrit les entités nommées, des points d’intérêts (personnes, commerces, lieux...) identifiés dans des images
 - **`named_entity.category`**
 	- **type PostgreSQL**: `text`
@@ -355,7 +373,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: identifiant public au format `qr1[a-z0-9]{32}`
 
-## place
+### place
 `place` décrit les différents lieux du quartier. Un lieu est défini par son empreinte au sol et la durée pendant laquelle il existe. Un lieu existe indépendamment des sources historiques. Il peut être représenté par plusieurs ressources cartographiques (le 14 rue Vivienne dans l’atlas Vasserot et le parcellaire municipal fin XIXe siècle).
 - **`place.centroid`**
 	- **type PostgreSQL**: `json`
@@ -394,7 +412,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: mot clé indiquant la source historique d’où a été extraite la géométrie
 
-## place_group
+### place_group
 `place_group` permet de regrouper ensemble plusieurs lieux (les différentes parcelles du Palais-Royal, par exemple). Dans les faits, cette table n’est pas utilisée
 - **`place_group.description`**
 	- **type PostgreSQL**: `text`
@@ -413,7 +431,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: identifiant public au format `qr1[a-z0-9]{32}`
 
-## r_address_place
+### r_address_place
 `r_address_place` : relation entre `address` et `place`
 - **`r_address_place.id`**
 	- **type PostgreSQL**: `integer`
@@ -432,7 +450,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: identifiant public au format `qr1[a-z0-9]{32}`
 
-## r_admin_person
+### r_admin_person
 `r_admin_person` : relation de `admin_person` à `cartography`, `directory` et `iconography`
 - **`r_admin_person.id`**
 	- **type PostgreSQL**: `integer`
@@ -459,7 +477,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: identifiant public au format `qr1[a-z0-9]{32}`
 
-## r_cartography_place
+### r_cartography_place
 `r_cartography_place` : relation entre `cartography` et `place`
 - **`r_cartography_place.id`**
 	- **type PostgreSQL**: `integer`
@@ -478,7 +496,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: identifiant public au format `qr1[a-z0-9]{32}`
 
-## r_iconography_actor
+### r_iconography_actor
 `r_iconography_actor` : relation entre `iconography` et `actor`
 - **`r_iconography_actor.id`**
 	- **type PostgreSQL**: `integer`
@@ -505,7 +523,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: "rôle de l’`actor`: « author » ou « publisher"""
 
-## r_iconography_named_entity
+### r_iconography_named_entity
 `r_iconography_named_entity` : relation entre `iconography` et `named_entity`
 - **`r_iconography_named_entity.id`**
 	- **type PostgreSQL**: `integer`
@@ -524,7 +542,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: identifiant public au format `qr1[a-z0-9]{32}`
 
-## r_iconography_place
+### r_iconography_place
 `r_iconography_place` : relation entre `iconography` et `place`
 - **`r_iconography_place.id`**
 	- **type PostgreSQL**: `integer`
@@ -543,7 +561,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: identifiant public au format `qr1[a-z0-9]{32}`
 
-## r_iconography_theme
+### r_iconography_theme
 `r_iconography_theme` : relation entre `iconography` et `theme`
 - **`r_iconography_theme.id`**
 	- **type PostgreSQL**: `integer`
@@ -562,7 +580,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: identifiant public au format `qr1[a-z0-9]{32}`
 
-## r_institution
+### r_institution
 `r_institution` : relation de `institution` à `cartography`, `directory` et `iconography`
 - **`r_institution.id`**
 	- **type PostgreSQL**: `integer`
@@ -589,7 +607,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: identifiant public au format `qr1[a-z0-9]{32}`
 
-## theme
+### theme
 `theme` : thématique ou concept à laquelle se rapporte une ressource iconographique. Là où une `named_entity` doit être une chose qui existe, le thème est simplement un concept auquel se rattache une image
 - **`theme.category`**
 	- **type PostgreSQL**: `text`
@@ -616,7 +634,7 @@ la table `address` décrit les adresses associées à un lieu
 	- **champ nullable**
 	- **description**: identifiant public au format `qr1[a-z0-9]{32}`
 
-## title
+### title
 `title` : titre d’une ressource iconographique. Une table à part est crée pour permettre d’avoir plusieurs titres par document
 - **`title.entry_name`**
 	- **type PostgreSQL**: `text`
