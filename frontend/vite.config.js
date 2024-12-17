@@ -30,16 +30,16 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
       configVariables = {
         __MODE__       : JSON.stringify("PROD"),
         __API_URL__    : JSON.stringify("https://quartier-richelieu.inha.fr/i"),
-        __SWAGGER_URL__    : JSON.stringify("https://quartier-richelieu.inha.fr/openapi/swagger#/"),
+        __SWAGGER_URL__: JSON.stringify("https://quartier-richelieu.inha.fr/openapi/swagger#/"),
         __STATICS_URL__: JSON.stringify("https://quartier-richelieu.inha.fr/statics/")
       };
       break;
     case "backend-local":
       configVariables = {
-        __MODE__       : JSON.stringify("DEV"),
-        __SWAGGER_URL__    : JSON.stringify("http://localhost:5001/openapi/swagger#/"),
-        __API_URL__    : JSON.stringify("http://localhost:5001/i"),
-        __STATICS_URL__: JSON.stringify("https://quartier-richelieu.inha.fr/statics/")
+        __MODE__        : JSON.stringify("DEV"),
+        __SWAGGER_URL__ : JSON.stringify("http://localhost:5001/openapi/swagger#/"),
+        __API_URL__     : JSON.stringify("http://localhost:5001/i"),
+        __STATICS_URL__ : JSON.stringify("https://quartier-richelieu.inha.fr/statics/")
       };
       break;
   };

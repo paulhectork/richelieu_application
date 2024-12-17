@@ -31,9 +31,6 @@
         </p>
       </li>
     </ul>
-    <p>Pour produire la description des tables ci-dessous, on utilise la requête <a
-        href="./query_extract_model.sql"><code>query_extract_model.sql</code></a>, qui produit un tableur. On complète
-      ensuite le tableur avant de le transformer en liste à grands coups de regex.</p>
     <hr>
   </div>
 
