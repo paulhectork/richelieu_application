@@ -85,7 +85,7 @@ import { useRoute } from "vue-router";
 import axios from "axios";
 
 import DownloadButtonGroup from "@components/DownloadButtonGroup.vue";
-import { downloadData } from "@utils/download";
+import { downloadData } from "@modules/download";
 import { iconographyToCsvRecord } from "@utils/toCsvRecord";
 import MapIconographyMain from "@components/MapIconographyMain.vue";
 import IiifViewer from "@components/IiifViewer.vue";

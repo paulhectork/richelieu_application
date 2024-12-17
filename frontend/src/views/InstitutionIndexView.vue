@@ -31,7 +31,7 @@ import ErrNotFound from "@components/ErrNotFound.vue";
 import IndexBase from "@components/IndexBase.vue";
 
 import { institutionToCsvRecord } from "@utils/toCsvRecord";
-import { downloadData } from "@utils/download";
+import { downloadData } from "@modules/download";
 import { useListExport } from "@composables/useListExport";
 import { indexDataFormatterInstitution } from "@utils/indexDataFormatter";
 

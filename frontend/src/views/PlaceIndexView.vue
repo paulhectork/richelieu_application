@@ -38,7 +38,7 @@ import IndexPlace from "@components/IndexPlace.vue";
 
 import { indexDataFormatterPlace } from "@utils/indexDataFormatter";
 import { useListExport } from "@composables/useListExport";
-import { downloadData } from "@utils/download";
+import { downloadData } from "@modules/download";
 import { placeToCsvRecord } from "@utils/toCsvRecord";
 import "@typedefs";
 

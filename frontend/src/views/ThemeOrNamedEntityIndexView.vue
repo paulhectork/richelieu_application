@@ -148,7 +148,7 @@ import { indexDataFormatterTheme
        , indexDataFormatterNamedEntity } from "@utils/indexDataFormatter";
 import { capitalizeFirstChar } from "@utils/strings";
 import { themeOrNamedEntityToCsvRecord } from "@utils/toCsvRecord";
-import { downloadData } from "@utils/download";
+import { downloadData } from "@modules/download";
 import { useListExport } from "@composables/useListExport";
 
 import "@typedefs";

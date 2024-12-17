@@ -62,7 +62,7 @@ import UiLoader from "@components/UiLoader.vue";
 
 import { indexDataFormatterIconography } from "@utils/indexDataFormatter";
 import { iconographyToCsvRecord } from "@utils/toCsvRecord"
-import { downloadData } from "@utils/download"
+import { downloadData } from "@modules/download"
 
 /*************************************************/
 
