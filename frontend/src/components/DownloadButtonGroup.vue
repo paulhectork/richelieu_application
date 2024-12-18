@@ -1,18 +1,19 @@
-<!-- DownloadButtonGroup.vue
-    a button that allows to download viewed content as JSON or CSV.
-
-    props:
-      - disableButtons (bool)
-          if `true`, the buttons will have the attribute @disabled
-          to block launching extra downloads when one is aldready ongoing.
-          (used by IndexIconography, where download takes a lot of time)
-
-    emits
-      - download (String "csv"|"json")
-          an order to trigger data download
--->
 <template>
-    <div class="download-button-group">
+  <!-- DownloadButtonGroup.vue
+      a button that allows to download viewed content as JSON or CSV.
+
+      props:
+        - disableButtons (bool)
+            if `true`, the buttons will have the attribute @disabled
+            to block launching extra downloads when one is aldready ongoing.
+            (used by IndexIconography, where download takes a lot of time)
+
+      emits
+        - download (String "csv"|"json")
+            an order to trigger data download
+  -->
+
+  <div class="download-button-group">
         Téléchargement&nbsp;:&nbsp;
         <button @click="emit('download', 'json')"
                 :disabled="disabled===true"

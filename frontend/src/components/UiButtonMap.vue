@@ -1,10 +1,9 @@
-<!-- UiButtonMap.vue
-     a button displaying a map
-
-     source: https://www.svgrepo.com/svg/532546/map
--->
-
 <template>
+  <!-- UiButtonMap.vue
+       a button displaying a map
+
+       source: https://www.svgrepo.com/svg/532546/map
+  -->
   <button class="button-map">
     <!--
       source: https://www.svgrepo.com/svg/532546/map

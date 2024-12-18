@@ -1,42 +1,41 @@
-<!-- FormKit custom component with tabs-like selection
-
-    the parent can pass 2 props to this component:
-    * `value`  (String)
-        the default value in one of our options.
-    * `options` (FormKitOptions)
-        the different options for this select.
-        defaults to an empty array.
-
-    our custom input doesn't check all the things in the checklist
-    as they're not needed by the project.
-
-    help:
-    the trick to getting the value of a custom input is to use
-    the `@input` with an input handler, event, either `node.input(value)`
-    or `context.handlers.DOMInput `, as described in the link below !!
-
-    see:
-    https://formkit.com/essentials/custom-inputs#global-custom-inputs
-    https://formkit.com/essentials/custom-inputs#input-checklist#input-checklist
-    https://formkit.com/guides/create-a-custom-input
-    https://formkit.com/api-reference/context
-
-    usage example:
-    ```
-    <FormKit type="fkRadioTabs"
-             id="date-filter"
-             name="dateFilter"
-             label="Date"
-             help="Choisir le type de filtre pour la date"
-             value="dateRange"
-             :options="[ { value: 'a', label: 'Entité nommée 1' },
-                         { value: 'b', label: 'Entité nommée 2' },
-                         { value: 'c', label: 'Entité nommée 3' }]"
-    ></FormKit>
-    ```
--->
-
 <template>
+  <!-- FormKit custom component with tabs-like selection
+
+      the parent can pass 2 props to this component:
+      * `value`  (String)
+          the default value in one of our options.
+      * `options` (FormKitOptions)
+          the different options for this select.
+          defaults to an empty array.
+
+      our custom input doesn't check all the things in the checklist
+      as they're not needed by the project.
+
+      help:
+      the trick to getting the value of a custom input is to use
+      the `@input` with an input handler, event, either `node.input(value)`
+      or `context.handlers.DOMInput `, as described in the link below !!
+
+      see:
+      https://formkit.com/essentials/custom-inputs#global-custom-inputs
+      https://formkit.com/essentials/custom-inputs#input-checklist#input-checklist
+      https://formkit.com/guides/create-a-custom-input
+      https://formkit.com/api-reference/context
+
+      usage example:
+      ```
+      <FormKit type="fkRadioTabs"
+              id="date-filter"
+              name="dateFilter"
+              label="Date"
+              help="Choisir le type de filtre pour la date"
+              value="dateRange"
+              :options="[ { value: 'a', label: 'Entité nommée 1' },
+                          { value: 'b', label: 'Entité nommée 2' },
+                          { value: 'c', label: 'Entité nommée 3' }]"
+      ></FormKit>
+      ```
+  -->
 
   <div class="form-radio-tabs-wrapper"
        :id="htmlId">

@@ -1,33 +1,33 @@
-<!-- CartographyPlaceInfo.vue
-
-     information on a place, displayed in `CartographyView.vue`,
-     when clicking on a place feature on the map, in a sidebar.
-
-     it contains:
-     - the address
-     - a list of the 5 places that are the most frequently
-       associated to this place.
-     - an index of iconography resources related to a place,
-       to be displayed on the cartographic interface when
-       clicking on a geojson feature
-
-     props:
-     - placeIdUuid (string)
-        the place.id_uuid of the place we want to display data on
-     - associatedPlaces (object)
-        an array of the places most often associated with the current place.
-        structure:
-        [ { id_uuid : <string:place.id_uuid>,
-            count   : <int:number of relations between input place and related places>
-          }
-        ]
-
-     emits:
-     - closePlaceInfo:
-        emitting this event will trigger the unmounting of this component
--->
-
 <template>
+  <!-- CartographyPlaceInfo.vue
+
+      information on a place, displayed in `CartographyView.vue`,
+      when clicking on a place feature on the map, in a sidebar.
+
+      it contains:
+      - the address
+      - a list of the 5 places that are the most frequently
+        associated to this place.
+      - an index of iconography resources related to a place,
+        to be displayed on the cartographic interface when
+        clicking on a geojson feature
+
+      props:
+      - placeIdUuid (string)
+          the place.id_uuid of the place we want to display data on
+      - associatedPlaces (object)
+          an array of the places most often associated with the current place.
+          structure:
+          [ { id_uuid : <string:place.id_uuid>,
+              count   : <int:number of relations between input place and related places>
+            }
+          ]
+
+      emits:
+      - closePlaceInfo:
+          emitting this event will trigger the unmounting of this component
+  -->
+
   <div class="cpi-outer-wrapper negative-default"
        :id="`cpi-${ placeIdUuid }`"
   >  <!-- cpi = CartographyPlaceInfo -->

@@ -1,28 +1,28 @@
-<!-- AdvancedSearchQuery.vue
-     an advanced search form on the `iconography` SQL table.
-
-     this creates a JSON object with the query parameters,
-     which are passed to the parent. the parent updates the
-     URL, fetches the answer and calls another component to
-     display the results
-
-     structure of each field:
-     each field is made of a boolean operator (and,not)
-     and of the actual input field (FormKitRadioTabs, FormKitRepeatableText...).
-     the structure can be manipulated using the <div> containers
-     for each part of the field:
-
-     <div class="form-field-outer-wrapper">              <=== the wrapper around the whole field
-      <div class="form-field-boolean-op-wrapper"></div>  <=== the wrapper around the FormKitBooleanOp
-      <div class="form-field-input-wrapper"></div>       <=== the wrapper around the actual input
-     </div>
-
-     see:
-     for an in-depth explanation of FormKit:
-        https://formkit.com/essentials/architecture
--->
-
 <template>
+  <!-- AdvancedSearchQuery.vue
+      an advanced search form on the `iconography` SQL table.
+
+      this creates a JSON object with the query parameters,
+      which are passed to the parent. the parent updates the
+      URL, fetches the answer and calls another component to
+      display the results
+
+      structure of each field:
+      each field is made of a boolean operator (and,not)
+      and of the actual input field (FormKitRadioTabs, FormKitRepeatableText...).
+      the structure can be manipulated using the <div> containers
+      for each part of the field:
+
+      <div class="form-field-outer-wrapper">              <=== the wrapper around the whole field
+        <div class="form-field-boolean-op-wrapper"></div>  <=== the wrapper around the FormKitBooleanOp
+        <div class="form-field-input-wrapper"></div>       <=== the wrapper around the actual input
+      </div>
+
+      see:
+      for an in-depth explanation of FormKit:
+          https://formkit.com/essentials/architecture
+  -->
+
   <FormKit type="form"
            name="theForm"
            :actions="true"

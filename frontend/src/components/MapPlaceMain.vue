@@ -1,11 +1,10 @@
+<template>
 <!-- MapPlaceMain.vue
      a cartographic interface for places, displayed on a place's main page.
 
      props:
      * place: the place, containing all necessary data
 -->
-
-<template>
 <div class="mpm-wrapper">
   <div class="mpm-left-wrapper">
     <div class="mpm-map-wrapper">

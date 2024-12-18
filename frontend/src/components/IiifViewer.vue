@@ -1,30 +1,30 @@
-<!-- a generic IIIF viewer.
-
-     this components gets a IIIF manifest url, fetches it
-     and builds an Openseadragon viewer using it. if there
-     is an error, a static image can be provided to be displayed.
-
-     the component viewer takes 4 inputs:
-     - osdId
-          String
-          the HTML id of the IIIF viewer
-     - iiifUrl
-          String
-          an URL to a IIIF presentation manifest
-     - backupImgUrl
-          String
-          the filename a backup static file, which is on our server.
-          this will be displayed if an error is encountered
-     - backupImgDisplay
-          ("cover"|"contain")
-          value for the backup static image <img>'s object-fit css property
-     - iiifFolio
-          Array<Number>?
-          an optional array of folio numbers to select which
-          canvases to show instead of the whole manfiest
--->
-
 <template>
+  <!-- a generic IIIF viewer.
+
+      this components gets a IIIF manifest url, fetches it
+      and builds an Openseadragon viewer using it. if there
+      is an error, a static image can be provided to be displayed.
+
+      the component viewer takes 4 inputs:
+      - osdId
+            String
+            the HTML id of the IIIF viewer
+      - iiifUrl
+            String
+            an URL to a IIIF presentation manifest
+      - backupImgUrl
+            String
+            the filename a backup static file, which is on our server.
+            this will be displayed if an error is encountered
+      - backupImgDisplay
+            ("cover"|"contain")
+            value for the backup static image <img>'s object-fit css property
+      - iiifFolio
+            Array<Number>?
+            an optional array of folio numbers to select which
+            canvases to show instead of the whole manfiest
+  -->
+
   <UiLoader v-if="!isLoaded"></UiLoader>
 
   <div v-if="loadingFailed !== true"

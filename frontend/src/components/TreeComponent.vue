@@ -1,15 +1,15 @@
-<!-- TreeComponent.vue
-
-  a tree component to represent a nested list.
-  currently, the tree component only allows 2 levels of depth
-  (a list of nodes and their children)
-
-  props:
-  - data (@typedefs.treeData)
-      the data to represent as a tree
--->
-
 <template>
+  <!-- TreeComponent.vue
+
+    a tree component to represent a nested list.
+    currently, the tree component only allows 2 levels of depth
+    (a list of nodes and their children)
+
+    props:
+    - data (@typedefs.treeData)
+        the data to represent as a tree
+  -->
+
   <div class="tree-wrapper">
     <ul class="tree-root list-invisible"
         v-if="data && data.length"

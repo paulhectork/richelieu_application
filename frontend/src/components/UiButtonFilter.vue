@@ -1,6 +1,5 @@
-<!-- source: https://www.svgrepo.com/svg/503022/filter -->
-
 <template>
+  <!-- source: https://www.svgrepo.com/svg/503022/filter -->
   <button>
     <svg width="100%"
          height="100%"

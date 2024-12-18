@@ -1,8 +1,7 @@
-<!-- UiLoader.vue
-
-    a very simple CSS loader. its height can be set on the parent. -->
-
 <template>
+  <!-- UiLoader.vue
+      a very simple CSS loader. its height can be set on the parent.
+  -->
   <div class="loader-wrapper">
     <span class="loader"></span>
   </div>

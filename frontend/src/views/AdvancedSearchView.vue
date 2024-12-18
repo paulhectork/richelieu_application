@@ -1,47 +1,47 @@
-<!-- advanced search page for the Iconography table
-
-     this route uses 2 components, `AvancedSearchQuery`
-     and `AdvancedSearchResults`
-
-     `AdvancedSearchQuery` is a form that creates a JSON of
-     valid query data, and returns it to this componennt.
-     here, the frontend URL is updated based on this query
-     data, and a query is run to the backend to fetch results.
-     after a query has been started, if an error occurs, an
-     error message is displayed by this component.
-
-     `AdvancedSearchResults` displays all of the results for
-     the current query parameters, once those results have
-     been received.
-
-     a reactive object `queryParams` stores the query parameters.
-     changing it triggers a watcher that updates the route's query
-     and sends a request to the backend in order to fetch relevant data.
-
-     query parameters are read either:
-     * from a form, using `updateQueryParamsFromForm()`,
-       when a form is submitted in `AdvancedSearchQuery`
-     * from a URL query, using `updateQueryParamsFromForm()`,
-       which is useful when reloading a page with URL parameters,
-       or to access the query results directly by loading a URL
-     this is handled by transforming all our query data into an
-     IconographyQueryData` object.
-
-     lifecycle:
-     **********
-     on page load
-        => are there query params in the page URL?
-          => yes: update `queryParams` ref
-          => no: when a valid form is submitted in
-             `AdvancedSearchQuery.vue`, `queryParams is updated.
-     when queryParams changes
-        => the watcher is triggered
-        => the route URL is updated and a backend query is run
-        => results from the backend query are passed to
-           AdvancedSearchResults.vue``
--->
-
 <template>
+  <!-- advanced search page for the Iconography table
+
+      this route uses 2 components, `AvancedSearchQuery`
+      and `AdvancedSearchResults`
+
+      `AdvancedSearchQuery` is a form that creates a JSON of
+      valid query data, and returns it to this componennt.
+      here, the frontend URL is updated based on this query
+      data, and a query is run to the backend to fetch results.
+      after a query has been started, if an error occurs, an
+      error message is displayed by this component.
+
+      `AdvancedSearchResults` displays all of the results for
+      the current query parameters, once those results have
+      been received.
+
+      a reactive object `queryParams` stores the query parameters.
+      changing it triggers a watcher that updates the route's query
+      and sends a request to the backend in order to fetch relevant data.
+
+      query parameters are read either:
+      * from a form, using `updateQueryParamsFromForm()`,
+        when a form is submitted in `AdvancedSearchQuery`
+      * from a URL query, using `updateQueryParamsFromForm()`,
+        which is useful when reloading a page with URL parameters,
+        or to access the query results directly by loading a URL
+      this is handled by transforming all our query data into an
+      IconographyQueryData` object.
+
+      lifecycle:
+      ----------
+      on page load
+          => are there query params in the page URL?
+            => yes: update `queryParams` ref
+            => no: when a valid form is submitted in
+              `AdvancedSearchQuery.vue`, `queryParams is updated.
+      when queryParams changes
+          => the watcher is triggered
+          => the route URL is updated and a backend query is run
+          => results from the backend query are passed to
+            AdvancedSearchResults.vue``
+  -->
+
   <h1>Recherche avancée</h1>
 
   <Transition name="slideInOut">

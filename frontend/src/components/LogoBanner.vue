@@ -1,10 +1,10 @@
-<!-- LogoBanner.vue
-
-    a horizontal rectangle containing a banner of all the collaborator
-    insitututions and financeurs' logos
--->
-
 <template>
+  <!-- LogoBanner.vue
+
+      a horizontal rectangle containing a banner of all the collaborator
+      insitututions and financeurs' logos
+  -->
+
   <div class="logobanner-outer-wrapper">
     <div class="logobanner-inner-wrapper">
       <div class="logobanner-porteurs-wrapper logobanner-block">

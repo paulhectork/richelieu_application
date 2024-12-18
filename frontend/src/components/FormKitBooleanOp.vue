@@ -1,14 +1,13 @@
-<!-- FormKitBooleanOp.vue:
-     a Select2 component to choose a boolean operator
-     ("AND", "OR", "NOT"), defaulting to "AND".
-
-     props:
-     * context: the FormKit context
-     * id: the html ID and name of the current FormKitBooleanOp component
- -->
-
-
 <template>
+  <!-- FormKitBooleanOp.vue:
+       a Select2 component to choose a boolean operator
+       ("AND", "OR", "NOT"), defaulting to "AND".
+
+       props:
+       * context: the FormKit context
+       * id: the html ID and name of the current FormKitBooleanOp component
+  -->
+
   <div class="form-field-boolean-op-wrapper">
     <label :for="htmlId" hidden>Type de relation</label>
     <select :id="htmlId"

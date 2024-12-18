@@ -1,3 +1,4 @@
+<template>
 <!-- IntroIiifView.vue
 
   a minimal introduction page. it contains 2 elements:
@@ -7,8 +8,6 @@
 
   it's pretty neat :)
 -->
-
-<template>
 <div class="intro-outer-wrapper">
   <div class="intro-inner-wrapper">
     <div class="intro-iiif-wrapper">

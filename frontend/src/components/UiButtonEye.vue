@@ -1,11 +1,11 @@
-<!-- UiButtonEye.vue
-
-     an SVG drawing of an eye, used to show that when clicking on it,
-     something can be seen (an image, a plot on map....)
--->
-
 <template>
   <button class="button-eye">
+    <!-- UiButtonEye.vue
+      (for an extremely weird version there's a bug if this comment is right after `template`)
+      an SVG drawing of an eye, used to show that when clicking on it,
+      something can be seen (an image, a plot on map....)
+    -->
+
     <!--
     <svg width="100%"
          height="100%"

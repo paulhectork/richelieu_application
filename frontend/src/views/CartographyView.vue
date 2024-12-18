@@ -1,52 +1,51 @@
-<!-- CartographyController.vue
-     an cartographic interface to explore spatial
-     (Places & Cartography tables) and image data (Iconography table).
-     based on Marina Hervieu's prototype : https://github.com/MapunaH/code-stage
-
-     page structure:
-     * left : CartographyController
-        a controller that contains a form that allows to filter
-        which places are displayed.
-        - its display is controller by `displayLeft`
-     * center : this component
-     * right : CartographyPlaceInfo
-        a block that is displayed when a plot is clicked and shows
-        (mostly) the iconography related to it
-        - its display depends on `displayRight` and `placeIdUuid`.
-           - `placeIdUuid` controls the creation of `CartographyPlaceInfo`
-           - `displayRight` (bool) changes the CSS display to allow the
-             block to be visible.
-     * modal :
-        an explanatory modal displayed when opening the map,
-        or when clicking on UiButtonQuestion
-        - is display is controlled by domStore.cartogrphyModalVisible
-          (the advantage of using a store instead of a `ref` is that state
-          handling will be done at app level instead of at view level: once
-          the modal is closed it won't be displayed until doing a hard reload
-          on the whole app)
-
-     lifecycle for updating the map's data:
-     * onMounted:
-        - the map is defined
-        - controllers are added
-        - the places geoJSON is fetched from the backend.
-          it is stored in 2 refs:
-          - `places`, a geoJSON which is never changed after being created,
-            stores the initial state of the map.
-          - `placesFilter` is a geoJSON that can be modified according to
-            user filters. it's this element that's added to the leaflet map.
-            onMounted, `placesFilter` is a copy of `places`.
-        - `placesFilter` is added to the map as an L.GeoJSON
-     * on emit of CartographyController.filterUpdate:
-        - `placesFilter` is redefined by filtering `places` using
-            the user defined filters, and by fetching/updating its
-            geometries from the backend
-        - the old leaflet geoJSON is removed from the map.
-        - `placesFilter` is added to the map as a geoJSON.
-
--->
-
 <template>
+  <!-- CartographyView.vue
+      an cartographic interface to explore spatial
+      (Places & Cartography tables) and image data (Iconography table).
+      based on Marina Hervieu's prototype : https://github.com/MapunaH/code-stage
+
+      page structure:
+      - left : CartographyController
+          a controller that contains a form that allows to filter
+          which places are displayed.
+          - its display is controller by `displayLeft`
+      - center : this component
+      - right : CartographyPlaceInfo
+          a block that is displayed when a plot is clicked and shows
+          (mostly) the iconography related to it
+          - its display depends on `displayRight` and `placeIdUuid`.
+            - `placeIdUuid` controls the creation of `CartographyPlaceInfo`
+            - `displayRight` (bool) changes the CSS display to allow the
+              block to be visible.
+      - modal :
+          an explanatory modal displayed when opening the map,
+          or when clicking on UiButtonQuestion
+          - is display is controlled by domStore.cartogrphyModalVisible
+            (the advantage of using a store instead of a `ref` is that state
+            handling will be done at app level instead of at view level: once
+            the modal is closed it won't be displayed until doing a hard reload
+            on the whole app)
+
+      lifecycle for updating the map's data:
+      - onMounted:
+          - the map is defined
+          - controllers are added
+          - the places geoJSON is fetched from the backend.
+            it is stored in 2 refs:
+            - `places`, a geoJSON which is never changed after being created,
+              stores the initial state of the map.
+            - `placesFilter` is a geoJSON that can be modified according to
+              user filters. it's this element that's added to the leaflet map.
+              onMounted, `placesFilter` is a copy of `places`.
+          - `placesFilter` is added to the map as an L.GeoJSON
+      - on emit of CartographyController.filterUpdate:
+          - `placesFilter` is redefined by filtering `places` using
+              the user defined filters, and by fetching/updating its
+              geometries from the backend
+          - the old leaflet geoJSON is removed from the map.
+          - `placesFilter` is added to the map as a geoJSON.
+  -->
+
   <h1 hidden>Cartographie</h1>
   <div class="cartography-outer-wrapper" :class="{ 'right-visible': displayRight }">
     <div class="cartography-controller-outer-wrapper" :class="{ 'cartography-controller-visible': displayLeft }">

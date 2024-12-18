@@ -1,13 +1,13 @@
-<!-- NamedEntityMainView.vue
-
-     the main page of a named entity, or an index of all
-     iconographic resources associated to that entity.
-
-     the code and logic are pretty much the same as in
-     ThemeMainView.vue
--->
-
 <template>
+  <!-- NamedEntityMainView.vue
+
+       the main page of a named entity, or an index of all
+       iconographic resources associated to that entity.
+
+       the code and logic are pretty much the same as in
+       ThemeMainView.vue
+  -->
+
   <h1>{{ namedEntityName }}</h1>
   <H2IndexCount :indexCount="namedEntity.iconography.length"
               dataType="iconography"

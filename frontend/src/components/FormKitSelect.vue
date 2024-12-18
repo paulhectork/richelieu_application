@@ -1,50 +1,49 @@
-<!-- FormKit custom input with fancier select.
-
-  FormKit only offers basic selects.
-  this custom component offers a fancier select
-  based on `select2`.
-
-  the parent can pass 2 props to this component:
-  * `placeholder` (String?)
-        a placeholder value. otherwise a default value is given
-  * `options`(typedefs.FormKitOptionArray)
-        the different options for this select. defaults to an empty array.
-        options must be an array of objects, following the structure :
-        https://formkit.com/inputs/select#array-of-objects,
-        with a `value` key containing the form data and a `label` key
-        containing the displayed data. (of course, `label` and `value` can
-        be the same)
-  * `multiple` (boolean)
-        if `true`, then it's a multi-option select. else, single option.
-        defaults to true
-  * `disabled` (boolean)
-        if `true`, then the select will be disabled. this option is THE ONLY
-        ONE that can be dynamically switched using a watcher.
-
-  style notes:
-  according to the docs, it's best to set sizes
-  using inline CSS.
-
-  see:
-  https://select2.org/
-  https://formkit.com/guides/create-a-custom-input
-  https://formkit.com/api-reference/context
-  https://formkit.com/essentials/architecture#setting-values
-
-  usage example:
-  ```
-  <FormKit type="fkSelect"
-           name="namedEntity"
-           label="Entité nommée"
-           placeholder="Sélectionner une entité nommée"
-           :options="[{ value: 'a', label: 'Entité nommée 1' },
-                      { value: 'b', label: '...2' },
-                      { value: 'c', label: '...3' }]"
-  /><FormKit>
-  ```
--->
-
 <template>
+  <!-- FormKit custom input with fancier select.
+
+    FormKit only offers basic selects.
+    this custom component offers a fancier select
+    based on `select2`.
+
+    the parent can pass 2 props to this component:
+    * `placeholder` (String?)
+          a placeholder value. otherwise a default value is given
+    * `options`(typedefs.FormKitOptionArray)
+          the different options for this select. defaults to an empty array.
+          options must be an array of objects, following the structure :
+          https://formkit.com/inputs/select#array-of-objects,
+          with a `value` key containing the form data and a `label` key
+          containing the displayed data. (of course, `label` and `value` can
+          be the same)
+    * `multiple` (boolean)
+          if `true`, then it's a multi-option select. else, single option.
+          defaults to true
+    * `disabled` (boolean)
+          if `true`, then the select will be disabled. this option is THE ONLY
+          ONE that can be dynamically switched using a watcher.
+
+    style notes:
+    according to the docs, it's best to set sizes
+    using inline CSS.
+
+    see:
+    https://select2.org/
+    https://formkit.com/guides/create-a-custom-input
+    https://formkit.com/api-reference/context
+    https://formkit.com/essentials/architecture#setting-values
+
+    usage example:
+    ```
+    <FormKit type="fkSelect"
+            name="namedEntity"
+            label="Entité nommée"
+            placeholder="Sélectionner une entité nommée"
+            :options="[{ value: 'a', label: 'Entité nommée 1' },
+                        { value: 'b', label: '...2' },
+                        { value: 'c', label: '...3' }]"
+    /><FormKit>
+    ```
+  -->
 
   <div class="form-field-input-wrapper">
     <select :id="selectId"

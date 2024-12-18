@@ -1,13 +1,13 @@
-<!-- H2IndexCount.vue
-   a pretty simple h2 title for index pages stating
-   how many resources are being displayed
-
-   props:
-    - indexCount (Number) : the number of resources displayed
-    - dataType   (String) : the type of resource displayed by the index
--->
-
 <template>
+  <!-- H2IndexCount.vue
+    a pretty simple h2 title for index pages stating
+    how many resources are being displayed
+
+    props:
+      - indexCount (Number) : the number of resources displayed
+      - dataType   (String) : the type of resource displayed by the index
+  -->
+
   <h2 v-if="indexCount <= 0">
     Aucune {{ dataTypeAsString }}
   </h2>

@@ -1,10 +1,9 @@
-<!-- PlaceView.vue
-     a view for the place index.
-     this component gets the data, most of the
-     actual work takes place in `@components/IndexPlace.vue`
--->
-
 <template>
+  <!-- PlaceView.vue
+       a view for the place index.
+       this component gets the data, most of the
+       actual work takes place in `@components/IndexPlace.vue`
+  -->
 
   <div class="index-place-container">
 

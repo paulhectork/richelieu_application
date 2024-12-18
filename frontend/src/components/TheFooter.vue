@@ -1,19 +1,19 @@
-<!-- TheFooter.vue
-  just a footer.
-
-  the only fancy thing is that `.footer-gradient` is a div
-  working as a margin between `main` and the footer, containing
-  a gradient. this gradient is:
-  - black-to-white on negative themed pages,
-  - white-to-black otherwise
-
-  props:
-  - gradient (string)
-      "main"|"negative", this prop is sent from App.vue to define the
-      class of `.footer-gradient`, and thus the type of gradient used;
--->
-
 <template>
+  <!-- TheFooter.vue
+    just a footer.
+
+    the only fancy thing is that `.footer-gradient` is a div
+    working as a margin between `main` and the footer, containing
+    a gradient. this gradient is:
+    - black-to-white on negative themed pages,
+    - white-to-black otherwise
+
+    props:
+    - gradient (string)
+        "main"|"negative", this prop is sent from App.vue to define the
+        class of `.footer-gradient`, and thus the type of gradient used;
+  -->
+
   <div class="footer-outer-wrapper">
     <div class="footer-gradient"
          :class="gradientClass"

@@ -1,33 +1,32 @@
-<!-- FilterIndexIconography.vue
-
-  a block that performs filtering of an array of iconography objects.
-  this component is completely standalone:
-  - it receives the `data` array containing all of our iconography entries,
-  - contains the HTML form to do the filtering
-  - receives the user inputted data from the form
-  - performs the filtering
-  - emits the filtered `data` to the parent.
-  all filtering is done on the frontend, there's no communication
-  with the backend. this may be less performant than custom backend
-  queries, but makes it way easier to implement `FilterIndexIconography`
-  in different parts of the app.
-
-  during filtering, a loader is displayed on top of the filter.
-  this is to make sure that the user sees that something is happening
-  and understand that the data displayed in the index is updated.
-
-  css-wise, it supports `main-default` and `negative-default` themes.
-
-  props:
-    - data (typedefs.IconographyItemLite[]):
-        an array of Iconography objects.
-
-  emits:
-    - iconographyFilter (Array<typedefs.IconographyItemLite[]>):
-        the `data`, updated to fit the user-defined filters, is sent back to the parent.
--->
-
 <template>
+  <!-- FilterIndexIconography.vue
+
+    a block that performs filtering of an array of iconography objects.
+    this component is completely standalone:
+    - it receives the `data` array containing all of our iconography entries,
+    - contains the HTML form to do the filtering
+    - receives the user inputted data from the form
+    - performs the filtering
+    - emits the filtered `data` to the parent.
+    all filtering is done on the frontend, there's no communication
+    with the backend. this may be less performant than custom backend
+    queries, but makes it way easier to implement `FilterIndexIconography`
+    in different parts of the app.
+
+    during filtering, a loader is displayed on top of the filter.
+    this is to make sure that the user sees that something is happening
+    and understand that the data displayed in the index is updated.
+
+    css-wise, it supports `main-default` and `negative-default` themes.
+
+    props:
+      - data (typedefs.IconographyItemLite[]):
+          an array of Iconography objects.
+
+    emits:
+      - iconographyFilter (Array<typedefs.IconographyItemLite[]>):
+          the `data`, updated to fit the user-defined filters, is sent back to the parent.
+  -->
 
   <div class="filter-outer-wrapper">
     <h3>Filtrer les données

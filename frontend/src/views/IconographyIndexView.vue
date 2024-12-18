@@ -1,8 +1,8 @@
-<!-- IconographyIndexView.vue
-     a view for the iconography index
--->
-
 <template>
+  <!-- IconographyIndexView.vue
+      a view for the iconography index
+  -->
+
   <h1>Iconographie</h1>
   <H2IndexCount :indexCount="dataFull.length"
               dataType="iconography"

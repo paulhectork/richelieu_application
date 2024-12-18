@@ -1,17 +1,16 @@
-<!-- StaticImageDisplay.vue
-    a component that displays a non-IIIF image with a legend and full-page-view
-    option, to be used inside the "/a-propos/" or "documentation/" pages
-
-    props:
-    - imgUrl (string)
-        the URL to fetch the image from
-    - imgAlt (string)
-        the @alt attribute of the <img>
-    - imgLegend (string)
-        the HTML string to use as a legend for the image
--->
-
 <template>
+  <!-- StaticImageDisplay.vue
+      a component that displays a non-IIIF image with a legend and full-page-view
+      option, to be used inside the "/a-propos/" or "documentation/" pages
+
+      props:
+      - imgUrl (string)
+          the URL to fetch the image from
+      - imgAlt (string)
+          the @alt attribute of the <img>
+      - imgLegend (string)
+          the HTML string to use as a legend for the image
+  -->
   <div class="id-outer-wrapper">
     <figure class="id-wrapper">
       <div class="id-img-wrapper">

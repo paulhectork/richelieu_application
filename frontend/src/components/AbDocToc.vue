@@ -1,53 +1,53 @@
-<!-- AbDocToc.vue
-
-  a table of contents for About/Documentation pages.
-
-  2 displays are defined:
-  - landscape mode
-      the table of contents is always visible
-  - portrait mode
-      the table of contents is hidden by default
-      and can be displayed by clicking .toc-showhide > UiButtonPlus,
-      which will cause:
-      - the parent `AboutDocumentationView` to change
-        its display to make the TOC visible
-      - `.toc-lvl1-root` to switch its display from `none`
-        to `block`, making its content visible.
-
-  architecture:
-  - toc-lvl1-root : the root of the toc
-  - toc-lvl1      : À propos / Documentation
-  - toc-lvl2-root : list containing all lvl2 items
-  - toc-lvl2      : actual view (Le projet, L'équipe...)
-  - toc-lvl3-root : list containing all lvl3 items
-  - toc-lvl3      : all H3 titles within the current
-                    AbDocContent* component, if there are any
-
-  how it works:
-  - AbDocToc contains a static table of contents on levels
-    `toc-lvl1` and `toc-lvl2` (that is, the main title of all
-    AbDocContent component).
-  - `toc-lvl3` (H3 subtitles within a AbDocContent*) are
-    handled by `AbDocTocSub.vue`, using `tocSubElements`, an
-    object built here that contains info on the subtitles.
-  - `tocSubElements` is populated using `jQuery`: when the parent
-    `AboutDocumentationView` informs us that the current AbDocContent*
-    view has been loaded, a query is run to extract all H3 level titles
-    and to build `tocSubElements`. the subelements are shown / hidden
-    depending on the page we're currently on.
-
-  props:
-  - textMounted (undefined)
-      a message sent from AboutDocumentationView when the AbDocContent content
-      has been loaded.
-
-  emits:
-  - displayToc (bool)
-      in portrait mode, displayToc is sent to AboutDocumentationView
-      to hide/show the table of contents.
--->
-
 <template>
+  <!-- AbDocToc.vue
+
+    a table of contents for About/Documentation pages.
+
+    2 displays are defined:
+    - landscape mode
+        the table of contents is always visible
+    - portrait mode
+        the table of contents is hidden by default
+        and can be displayed by clicking .toc-showhide > UiButtonPlus,
+        which will cause:
+        - the parent `AboutDocumentationView` to change
+          its display to make the TOC visible
+        - `.toc-lvl1-root` to switch its display from `none`
+          to `block`, making its content visible.
+
+    architecture:
+    - toc-lvl1-root : the root of the toc
+    - toc-lvl1      : À propos / Documentation
+    - toc-lvl2-root : list containing all lvl2 items
+    - toc-lvl2      : actual view (Le projet, L'équipe...)
+    - toc-lvl3-root : list containing all lvl3 items
+    - toc-lvl3      : all H3 titles within the current
+                      AbDocContent* component, if there are any
+
+    how it works:
+    - AbDocToc contains a static table of contents on levels
+      `toc-lvl1` and `toc-lvl2` (that is, the main title of all
+      AbDocContent component).
+    - `toc-lvl3` (H3 subtitles within a AbDocContent*) are
+      handled by `AbDocTocSub.vue`, using `tocSubElements`, an
+      object built here that contains info on the subtitles.
+    - `tocSubElements` is populated using `jQuery`: when the parent
+      `AboutDocumentationView` informs us that the current AbDocContent*
+      view has been loaded, a query is run to extract all H3 level titles
+      and to build `tocSubElements`. the subelements are shown / hidden
+      depending on the page we're currently on.
+
+    props:
+    - textMounted (undefined)
+        a message sent from AboutDocumentationView when the AbDocContent content
+        has been loaded.
+
+    emits:
+    - displayToc (bool)
+        in portrait mode, displayToc is sent to AboutDocumentationView
+        to hide/show the table of contents.
+  -->
+
   <div class="toc-outer-wrapper"
   >
     <div class="toc-inner-wrapper negative-default">

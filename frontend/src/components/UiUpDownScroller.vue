@@ -1,12 +1,11 @@
-<!--
-  UiUpDownScroller.vue : a component to add Up/Down
-  buttons to a page. buttons are visible when the
-  user has scrolled past `0.75 * windowHeight`,
-  but is further than `0.75 * windowHeight`
-  from the end of the document.
--->
-
 <template>
+  <!-- UiUpDownScroller.vue
+    a component to add Up/Down
+    buttons to a page. buttons are visible when the
+    user has scrolled past `0.75 * windowHeight`,
+    but is further than `0.75 * windowHeight`
+    from the end of the document.
+  -->
   <div id="scroll-buttons">
     <TransitionGroup>
       <UiButtonArrow orient="up"

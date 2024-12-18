@@ -1,12 +1,13 @@
-<!-- AdvancedSearchResults
-  display the results of an advanced search query in an index.
-
-  props:
-    - queryResults (Array<Object>)
-        the array of Iconography objects.
-
--->
 <template>
+  <!-- AdvancedSearchResults
+    display the results of an advanced search query in an index.
+
+    props:
+      - queryResults (Array<Object>)
+          the array of Iconography objects.
+
+  -->
+
   <h2>Résultats de la recherche</h2>
 
   <p v-if="dataFull.length > 1">{{ dataFull.length }}
