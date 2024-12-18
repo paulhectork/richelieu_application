@@ -1,5 +1,15 @@
 # Application du projet Richelieu
 
+## 🪩🪩🪩
+
+clone personnel de l'application [Quartier Richelieu](https://quartier-richelieu.inha.fr) développée pour le projet *Richelieu. Histoire du quartier* au SNR.
+
+ce clone date du 17.12.2024 et ne sera pas mis à jour. le dépôt officiel se trouve sur le [GitLab de l'INHA](https://gitlab.inha.fr/snr/rich.data/application), avec [tous les autres outils](https://gitlab.inha.fr/snr/rich.data/) développés pour le projet.
+
+---
+
+## Présentation
+
 L'application comprend: 
 - un `backend` en Flask pour l'interaction avec
   la base de données et la mise en forme des réponses en JSON
