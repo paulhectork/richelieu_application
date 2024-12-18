@@ -1,48 +1,50 @@
-<!--  ThemeOrNamedEntityCategoryIndexView.vue
-      an index of categories fo the Themes or Named Entities.
-
-      this component handles two indexes:
-         $rootUrl/theme         : the "Theme" category index
-         $rootUrl/entite-nommee : the "Named Entity" category index.
-      those are two different pages on the website, but their
-      functionning is centralized in this view: themes and named entities
-      work them same way, and have the same data structure. they are
-      different concepts (hence the 2 different tables), but the underlying
-      logic is the same.
-      if we're on a theme or named entity index is determined by `props.tableName`.
-      this is a static prop defined in `@router/index.js` which tells the view
-      wether it is a named entity or a theme, and loads the relevant variables
-      (like the backend url to query).
-
-      the user's path through themes and named entities has 3 steps:
-        1) ThemeOrNamedEntityCategoryIndexView.vue:
-          a category index (the current view). categories are broad
-          groups in which individual themes/named entities are
-          classified, and correspond to theme.category_name or
-          named_entity.category_name, in the SQL DB.
-        2) ThemeOrNamedEntityIndexView.vue:
-          an index of themes/named entities for a single category.
-          this gives access to individual themes / named entities.
-        3) the index of iconography ressources describing this
-          theme or named entities.
-
-      props and global variables:
-        tableName (prop) : the name of the table we're querying, which
-          determines relevant info to display and backend urls.
-        dataFull (ref) : all the data fetched from the backend,
-          reformatted to fit the data model of `IndexBase`
-
-      lifecycle:
-        1) first page load: based on the URL (theme/entite-nommee),
-          define relevant variables and fetch data from the proper
-          backend routes.
-        2) page change without reload: manually reset the variables
-          based on the new URL, fetch data again. this happens when
-          we're on $root/theme and, using the menu, click on
-          $root/entite-nommee to see the named entity reload.
--->
-
 <template>
+
+  <!--  ThemeOrNamedEntityCategoryIndexView.vue
+        an index of categories fo the Themes or Named Entities.
+  
+        this component handles two indexes:
+           $rootUrl/theme         : the "Theme" category index
+           $rootUrl/entite-nommee : the "Named Entity" category index.
+        those are two different pages on the website, but their
+        functionning is centralized in this view: themes and named entities
+        work them same way, and have the same data structure. they are
+        different concepts (hence the 2 different tables), but the underlying
+        logic is the same.
+        if we're on a theme or named entity index is determined by `props.tableName`.
+        this is a static prop defined in `@router/index.js` which tells the view
+        wether it is a named entity or a theme, and loads the relevant variables
+        (like the backend url to query).
+  
+        the user's path through themes and named entities has 3 steps:
+          1) ThemeOrNamedEntityCategoryIndexView.vue:
+            a category index (the current view). categories are broad
+            groups in which individual themes/named entities are
+            classified, and correspond to theme.category_name or
+            named_entity.category_name, in the SQL DB.
+          2) ThemeOrNamedEntityIndexView.vue:
+            an index of themes/named entities for a single category.
+            this gives access to individual themes / named entities.
+          3) the index of iconography ressources describing this
+            theme or named entities.
+  
+        props and global variables:
+          tableName (prop) : the name of the table we're querying, which
+            determines relevant info to display and backend urls.
+          dataFull (ref) : all the data fetched from the backend,
+            reformatted to fit the data model of `IndexBase`
+  
+        lifecycle:
+          1) first page load: based on the URL (theme/entite-nommee),
+            define relevant variables and fetch data from the proper
+            backend routes.
+          2) page change without reload: manually reset the variables
+            based on the new URL, fetch data again. this happens when
+            we're on $root/theme and, using the menu, click on
+            $root/entite-nommee to see the named entity reload.
+  -->
+
+
   <div v-if="loadState !== 'error'">
 
     <h1>Index des {{ tableName === "theme" ? "thèmes" : "entités nommées" }}</h1>

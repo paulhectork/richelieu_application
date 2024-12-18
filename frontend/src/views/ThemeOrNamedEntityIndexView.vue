@@ -1,39 +1,41 @@
-<!--  ThemeViewOrNamedEntityIndexView.vue
-    an index page for all themes or named entities in a category
-
-    lifecycle:
-    - the parent `ThemeOrNamedEntityCategoryIndexView`,, redirects
-        to this component to display an index of all themes / named entities.
-        the URL defines 1 argument/path (compulsory) and 1 parameter (optional):
-        - path: <categorySlug>: only themes/named entities from this category will
-            be displayed.
-        - viewType: a parameter that allows to switch between collection and tree view.
-    - on page load or when route parameter changes without a full-page reload
-        (for example, clicking on a button in the menu), `initViewHook()` is called.
-        it resets all refs to their start state and fetches data based on URL data
-    - 2 controllers allow to switch the values of `categorySlug` and `viewType` by
-        triggering 2 functions:
-         - `changeCategory()` will switch from one category to another
-         - `changeViewType()` will switch from "collection"|"tree" view and back.
-         - both functions update the route's URL, which will trigger watchers to
-           update the necessary refs and fetch backend data
-
-    props :
-    - tableName (String)
-        "theme"|"named_entity"
-
-    url path and parameter:
-    - categorySlug (path, parameter, String)
-        a value of theme.category_slug, or named_entity.category_slug or "all".
-        used to target a themes/named entities from a specific category. if "all",
-        then all values are fetched from the backend
-    - viewType (parameter, optional, String)
-        "collection"||"tree", defaults to "collection"
-        this parameter decides if we'll display a collection of items with images,
-        or a tree of category/category-items  with just the name of the item.
--->
-
 <template>
+
+  <!--  ThemeViewOrNamedEntityIndexView.vue
+      an index page for all themes or named entities in a category
+  
+      lifecycle:
+      - the parent `ThemeOrNamedEntityCategoryIndexView`,, redirects
+          to this component to display an index of all themes / named entities.
+          the URL defines 1 argument/path (compulsory) and 1 parameter (optional):
+          - path: <categorySlug>: only themes/named entities from this category will
+              be displayed.
+          - viewType: a parameter that allows to switch between collection and tree view.
+      - on page load or when route parameter changes without a full-page reload
+          (for example, clicking on a button in the menu), `initViewHook()` is called.
+          it resets all refs to their start state and fetches data based on URL data
+      - 2 controllers allow to switch the values of `categorySlug` and `viewType` by
+          triggering 2 functions:
+           - `changeCategory()` will switch from one category to another
+           - `changeViewType()` will switch from "collection"|"tree" view and back.
+           - both functions update the route's URL, which will trigger watchers to
+             update the necessary refs and fetch backend data
+  
+      props :
+      - tableName (String)
+          "theme"|"named_entity"
+  
+      url path and parameter:
+      - categorySlug (path, parameter, String)
+          a value of theme.category_slug, or named_entity.category_slug or "all".
+          used to target a themes/named entities from a specific category. if "all",
+          then all values are fetched from the backend
+      - viewType (parameter, optional, String)
+          "collection"||"tree", defaults to "collection"
+          this parameter decides if we'll display a collection of items with images,
+          or a tree of category/category-items  with just the name of the item.
+  -->
+
+
   <div v-if="loadState === 'error'">
     <ErrNotFound></ErrNotFound>
   </div>
@@ -122,6 +124,7 @@
   </div>
 
 </template>
+
 
 <script setup>
 import { onMounted, ref, watch, computed } from "vue";
@@ -447,6 +450,7 @@ onMounted(() => {
   initViewHook();
 })
 </script>
+
 
 <style scoped>
 

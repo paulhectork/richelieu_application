@@ -1,14 +1,16 @@
-<!-- IntroIiifView.vue
-
-  a minimal introduction page. it contains 2 elements:
-  - a modal with some info on the website
-  - a iiif viewer in the background that moves based
-    on the user's mouse movements.
-
-  it's pretty neat :)
--->
-
 <template>
+
+  <!-- IntroIiifView.vue
+  
+    a minimal introduction page. it contains 2 elements:
+    - a modal with some info on the website
+    - a iiif viewer in the background that moves based
+      on the user's mouse movements.
+  
+    it's pretty neat :)
+  -->
+
+
 <div class="intro-outer-wrapper">
   <div class="intro-inner-wrapper">
     <div class="intro-iiif-wrapper">

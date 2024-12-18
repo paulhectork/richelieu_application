@@ -1,15 +1,17 @@
-<!-- main page for a single iconography item.
-
-  this page contains:
-  - .viewer-wrapper: a viewer. there are 2 types of viewers and
-    we can toggle:
-     - IiifViewer: a IIIF viewer for the image
-     - .leaflet-<id_uuid>: a leaflet viewer showing the
-       places the image is connected to.
-  - .cartel-wrapper: a table with all of the metadata
--->
-
 <template>
+
+  <!-- main page for a single iconography item.
+  
+    this page contains:
+    - .viewer-wrapper: a viewer. there are 2 types of viewers and
+      we can toggle:
+       - IiifViewer: a IIIF viewer for the image
+       - .leaflet-<id_uuid>: a leaflet viewer showing the
+         places the image is connected to.
+    - .cartel-wrapper: a table with all of the metadata
+  -->
+
+
   <div class="iconography-loader-wrapper"
        v-if="loadState === 'loading'"
   ><UiLoader></UiLoader></div>

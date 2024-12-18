@@ -1,14 +1,16 @@
-<!-- IndexItem.vue
-  a single item in @components/IndexBase
-
-  props:
-    - item (typedefs.IndexBaseItem)
-        the item to format
-    - display (String)
-        a keyword to switch between display styles
--->
-
 <template>
+
+  <!-- IndexItem.vue
+    a single item in @components/IndexBase
+  
+    props:
+      - item (typedefs.IndexBaseItem)
+          the item to format
+      - display (String)
+          a keyword to switch between display styles
+  -->
+
+
   <RouterLink v-if="display==='resource'"
      class="index-item index-item-resource"
      :to="item.href"
@@ -36,6 +38,7 @@
      :to="item.href"
   ></RouterLink>
 </template>
+
 
 <script setup>
 

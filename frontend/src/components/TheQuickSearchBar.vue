@@ -1,11 +1,13 @@
-<!-- TheQuickSearchBar.vue
-
-  a search bar placed in the navbar to run a quick search
-  (on the website and on backend data)
-
--->
-
 <template>
+
+  <!-- TheQuickSearchBar.vue
+  
+    a search bar placed in the navbar to run a quick search
+    (on the website and on backend data)
+  
+  -->
+
+
   <div class="qsb-outer-wrapper">
     <!-- the search qsbInput -->
     <div class="qsb-form-wrapper">
@@ -175,6 +177,7 @@ watch(route, (newR, oldR) => {
 })
 
 </script>
+
 
 <style scoped>
 .qsb-outer-wrapper {

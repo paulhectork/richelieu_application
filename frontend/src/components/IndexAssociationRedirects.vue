@@ -1,48 +1,51 @@
-<!-- IndexAssociationRedirects.vue
-     an html:p redirecting to other related ressources
-
-     used in main pages that display an index of iconography resources
-     (like ThemeMainVew, NamedEntityMainView...) to point to an array of
-     related ressources (themes or named entites that are often tagged together
-     with the current named entity, for example).
-
-     this component is generic: in theory, it could describe relationships
-     between any tableA and tableB. clicking on any item in `props.to` will
-     redirect to a association index, displaying iconography resources tagged
-     with both `props.from` and the current item in `props.to`, for example:
-      * an index for iconography ressources tagged with
-        theme:fiction + theme:édition, or theme).
-      * an index for iconography ressources tagged with
-        theme:fiction + named_entity:Robert Macaire
-
-     props
-     *****
-     fromTable : the name of the table whose main page we're on: theme, for ex.
-
-     toTable   : the name of the table we're building relationships to.
-                 items displayed in IndexAssociationRedirects belong to `toTable`.
-
-     from      : describes the ressource whose main page we're on
-                 (ThemeMainView, NamedEntityMainView...). structure:
-
-                 >>> { entry_name: <entry name of the ressource:string>,
-                 ...   id_uuid   : <id uuid:string>
-                 ... }
-
-     to        : array of resources linked to `from` in another
-                (or the same) database table. structure: an array of
-                 items with pretty much the same structure as `from`:
-
-                 >>> [ { entry_name: <entry name of the ressource:string>,
-                 ...     id_uuid   : <id uuid:string>,
-                 ...     count     : <number of relations between `from` and the current item in `to`>
-                 ...   },
-                 ...   ...
-                 ... ]
-
-     WARNING: TABLE NAMES MUST BE WRITTED IN snake_case, LIKE IN THE DATABASE
--->
 <template>
+
+  <!-- IndexAssociationRedirects.vue
+       an html:p redirecting to other related ressources
+  
+       used in main pages that display an index of iconography resources
+       (like ThemeMainVew, NamedEntityMainView...) to point to an array of
+       related ressources (themes or named entites that are often tagged together
+       with the current named entity, for example).
+  
+       this component is generic: in theory, it could describe relationships
+       between any tableA and tableB. clicking on any item in `props.to` will
+       redirect to a association index, displaying iconography resources tagged
+       with both `props.from` and the current item in `props.to`, for example:
+        * an index for iconography ressources tagged with
+          theme:fiction + theme:édition, or theme).
+        * an index for iconography ressources tagged with
+          theme:fiction + named_entity:Robert Macaire
+  
+       props
+       *****
+       fromTable : the name of the table whose main page we're on: theme, for ex.
+  
+       toTable   : the name of the table we're building relationships to.
+                   items displayed in IndexAssociationRedirects belong to `toTable`.
+  
+       from      : describes the ressource whose main page we're on
+                   (ThemeMainView, NamedEntityMainView...). structure:
+  
+                   >>> { entry_name: <entry name of the ressource:string>,
+                   ...   id_uuid   : <id uuid:string>
+                   ... }
+  
+       to        : array of resources linked to `from` in another
+                  (or the same) database table. structure: an array of
+                   items with pretty much the same structure as `from`:
+  
+                   >>> [ { entry_name: <entry name of the ressource:string>,
+                   ...     id_uuid   : <id uuid:string>,
+                   ...     count     : <number of relations between `from` and the current item in `to`>
+                   ...   },
+                   ...   ...
+                   ... ]
+  
+       WARNING: TABLE NAMES MUST BE WRITTED IN snake_case, LIKE IN THE DATABASE
+  -->
+
+
   <p>
     <span v-html=introString></span>
     <span v-for="(t, idx) in props.to">

@@ -1,32 +1,34 @@
-<!-- AboutDocumentationView.vue
-    a small component that handles the display of all About / Documentation pages.
-
-    for scalability, to be sure that every one of these pages has the same HTML
-    markup and offers the same behaviour, `AboutDocumentationView` will serve
-    as a parent component that will dynamically import `AbDocContent*`, child
-    components containing page-specific HTML and emits based on the current route.
-    if the route points to nothing, an `ErrNotFound.vue` will be displayed.
-
-    this is loosely based on @views/ArticleMainView.vue.
-
-    this parent component handles 2 components:
-    - AbDocConent* :
-        the "main" part, containing a static HTML page in the ABout/Documentation
-        sections, based on the router's path
-        (AbDocContentEquipe, AbDocContentMethodologie, AbDocContentProjet, AbDocContentCredits, AbDocContentApi)
-    - AbDocToc: a table of contents
-
-    2 interactions between those components happen:
-    - in portrait mode, AbDocToc can emit a message to hide/show the table
-      of contents, when clicking on a button.
-    - when the AbDocContent* page is loaded, AboutDocumentationView emits
-      a flag to AbDocToc so that AbDocToc, using JQuery, can complete the
-      table of contents with H3 headers that are within a single
-      AbDocContent component.
-
--->
-
 <template>
+
+  <!-- AboutDocumentationView.vue
+      a small component that handles the display of all About / Documentation pages.
+  
+      for scalability, to be sure that every one of these pages has the same HTML
+      markup and offers the same behaviour, `AboutDocumentationView` will serve
+      as a parent component that will dynamically import `AbDocContent*`, child
+      components containing page-specific HTML and emits based on the current route.
+      if the route points to nothing, an `ErrNotFound.vue` will be displayed.
+  
+      this is loosely based on @views/ArticleMainView.vue.
+  
+      this parent component handles 2 components:
+      - AbDocConent* :
+          the "main" part, containing a static HTML page in the ABout/Documentation
+          sections, based on the router's path
+          (AbDocContentEquipe, AbDocContentMethodologie, AbDocContentProjet, AbDocContentCredits, AbDocContentApi)
+      - AbDocToc: a table of contents
+  
+      2 interactions between those components happen:
+      - in portrait mode, AbDocToc can emit a message to hide/show the table
+        of contents, when clicking on a button.
+      - when the AbDocContent* page is loaded, AboutDocumentationView emits
+        a flag to AbDocToc so that AbDocToc, using JQuery, can complete the
+        table of contents with H3 headers that are within a single
+        AbDocContent component.
+  
+  -->
+
+
   <component v-if="notFoundFlag === true"
              :is="currentComponent"
   ></component>

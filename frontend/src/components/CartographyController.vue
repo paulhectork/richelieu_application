@@ -1,25 +1,27 @@
-<!-- CartographyController.vue
-     a sidebar containing a form in which the user can define
-     filters to change the data displayed on the map.
-
-     @props:
-      * places {Object}:
-          the default `places` geoJson (corresponds to
-          a geoJson representation of the `Place` database table)
-      * currentFeatureCount {Integer}:
-          the number of features currently displayed on the map,
-          after the user filters have been applied
-
-     @emits:
-      * closeCartographyController {undefined}:
-          an emit that triggers the closing of this component.
-      * filterUpdate {Object}:
-          on input inside the form, emit the fitler data to the parent
-          CartographyView, which will trigger filtering data and updating
-          the map.
--->
-
 <template>
+
+  <!-- CartographyController.vue
+       a sidebar containing a form in which the user can define
+       filters to change the data displayed on the map.
+  
+       @props:
+        * places {Object}:
+            the default `places` geoJson (corresponds to
+            a geoJson representation of the `Place` database table)
+        * currentFeatureCount {Integer}:
+            the number of features currently displayed on the map,
+            after the user filters have been applied
+  
+       @emits:
+        * closeCartographyController {undefined}:
+            an emit that triggers the closing of this component.
+        * filterUpdate {Object}:
+            on input inside the form, emit the fitler data to the parent
+            CartographyView, which will trigger filtering data and updating
+            the map.
+  -->
+
+
   <!-- cc = cartographyController -->
   <div class="cc-outer-wrapper">
     <div class="cc-closer-wrapper">

@@ -1,14 +1,16 @@
-<!-- TheHomeModal.vue
-    a small modal displaying basic info on the project and 2 videos.
-    1 button allows to switch between videos
-
-    emits:
-    - closeHomeModal
-        an emit that is received by @/App.vue
-        which in turn unmounts this component.
--->
-
 <template>
+
+  <!-- TheHomeModal.vue
+      a small modal displaying basic info on the project and 2 videos.
+      1 button allows to switch between videos
+  
+      emits:
+      - closeHomeModal
+          an emit that is received by @/App.vue
+          which in turn unmounts this component.
+  -->
+
+
   <div class="hm-outer-wrapper">
     <div class="hm-inner-wrapper main-default">
 

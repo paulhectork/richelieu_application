@@ -1,14 +1,15 @@
-<!-- ThemeMainView.vue
-
-     the main page of a theme, or an index of all
-     iconographic resources associated to that theme.
-
-     the code and logic are pretty much the same as in
-     NamedEntityMainView.vue
--->
-
-
 <template>
+
+  <!-- ThemeMainView.vue
+  
+       the main page of a theme, or an index of all
+       iconographic resources associated to that theme.
+  
+       the code and logic are pretty much the same as in
+       NamedEntityMainView.vue
+  -->
+
+
   <h1>{{ formattedThemeName }}</h1>
   <H2IndexCount :indexCount="theme.iconography.length"
                 dataType="iconography"
@@ -131,5 +132,3 @@ onMounted(() => {
 <style scoped>
 
 </style>
-
-

@@ -1,8 +1,10 @@
-<!-- InstitutionIndexView.vue
-     an index page of all institutions
--->
-
 <template>
+
+  <!-- InstitutionIndexView.vue
+       an index page of all institutions
+  -->
+
+
   <div v-if="loadState==='error'">
     <ErrNotFound></ErrNotFound>
   </div>

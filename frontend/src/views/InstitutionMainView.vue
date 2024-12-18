@@ -1,18 +1,21 @@
-<!-- InstitutionMainView.vue
-     displays all iconography related to an institution.
-     that institution is targeted using its `id_uuid`.
-
-    the small fun complexity of this component is that there
-    are 2 kinds of institutions: "normal" ones and "consortiums"
-    that regroup several institutions.
-    for example, "Musée Carnavalet" is a member of the "Paris Musées" consortium.
-    we do a 2-way binding between institutions that are member of a consortium
-    and consortium.
-    - on the consortium's page we list all institutions that belong to the consortium.
-    - on the pages of institutions that are members of a consortium,
-      we include a hyperlink to the consortium's page.
--->
 <template>
+
+  <!-- InstitutionMainView.vue
+       displays all iconography related to an institution.
+       that institution is targeted using its `id_uuid`.
+  
+      the small fun complexity of this component is that there
+      are 2 kinds of institutions: "normal" ones and "consortiums"
+      that regroup several institutions.
+      for example, "Musée Carnavalet" is a member of the "Paris Musées" consortium.
+      we do a 2-way binding between institutions that are member of a consortium
+      and consortium.
+      - on the consortium's page we list all institutions that belong to the consortium.
+      - on the pages of institutions that are members of a consortium,
+        we include a hyperlink to the consortium's page.
+  -->
+
+
   <div v-if="loadState === 'error'">
     <ErrNotFound></ErrNotFound>
   </div>
@@ -166,5 +169,3 @@ onMounted(() => {
 <style scoped>
 
 </style>
-
-

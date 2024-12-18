@@ -1,10 +1,12 @@
-<!-- PlaceMainView.vue
-
-     the main view for a single place, to see it on a map
-     and view all of its related iconography
--->
-
 <template>
+
+  <!-- PlaceMainView.vue
+  
+       the main view for a single place, to see it on a map
+       and view all of its related iconography
+  -->
+
+
   <div v-if="loadStatePlace==='error' || loadStateAddress==='error'">
     <ErrNotFound></ErrNotFound>
   </div>

@@ -1,29 +1,31 @@
-<!-- AssociationIndexView.vue
-
-     a view displaying an iconography index combining two filters on the database:
-     fromTable and toTable are two tables describing the iconography dataset
-     (like places, named entities...). we build an index of
-     all Iconography items that are tagged with fromTable.fromIdUuid
-     and toTable.toIdUuid.
-
-     currently only implemented for:
-     - theme <-> theme
-     - theme <-> named entity
-     - place <-> place
-
-     this association index is accessed when clicking on
-     the "Ressources associées" part
-
-     props:
-     - fromTable  (string) : the name of the `from` table
-     - fromIdUuid (string) : the `id_uuid` value of the `to` table
-     - toTable    (string) : the name of the "to" table
-     - toIdUuid   (string) : the `id_uuid` value of the `from` table
-
-     WARNING: TABLE NAMES MUST BE WRITTED IN snake_case, LIKE IN THE DATABASE
--->
-
 <template>
+
+  <!-- AssociationIndexView.vue
+  
+       a view displaying an iconography index combining two filters on the database:
+       fromTable and toTable are two tables describing the iconography dataset
+       (like places, named entities...). we build an index of
+       all Iconography items that are tagged with fromTable.fromIdUuid
+       and toTable.toIdUuid.
+  
+       currently only implemented for:
+       - theme <-> theme
+       - theme <-> named entity
+       - place <-> place
+  
+       this association index is accessed when clicking on
+       the "Ressources associées" part
+  
+       props:
+       - fromTable  (string) : the name of the `from` table
+       - fromIdUuid (string) : the `id_uuid` value of the `to` table
+       - toTable    (string) : the name of the "to" table
+       - toIdUuid   (string) : the `id_uuid` value of the `from` table
+  
+       WARNING: TABLE NAMES MUST BE WRITTED IN snake_case, LIKE IN THE DATABASE
+  -->
+
+
   <!-- display the combined index -->
   <div v-if="loadState === 'loading'"
        class="loader-wrapper"

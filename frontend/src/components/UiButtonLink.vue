@@ -1,10 +1,12 @@
-<!-- UiButtonLink.vue
-     a button with a link to other pages
-
-     source: https://www.svgrepo.com/svg/525988/link
--->
-
 <template>
+
+  <!-- UiButtonLink.vue
+       a button with a link to other pages
+  
+       source: https://www.svgrepo.com/svg/525988/link
+  -->
+
+
   <button class="button-link">
     <svg width="90%"
          height="90%"

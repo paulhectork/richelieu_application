@@ -1,13 +1,15 @@
-<!-- a map for `IconographyMainView`
-     `IconographyMainView` sens this component the following:
-     > placeGeoJson: a geojson of places related to the
-                     resource in `IconographyMainView`
-     > lflId       : an HTML id for the leafet map container
-
-     from this data, this compnent builds a leaflet map
--->
-
 <template>
+
+  <!-- a map for `IconographyMainView`
+       `IconographyMainView` sens this component the following:
+       > placeGeoJson: a geojson of places related to the
+                       resource in `IconographyMainView`
+       > lflId       : an HTML id for the leafet map container
+  
+       from this data, this compnent builds a leaflet map
+  -->
+
+
   <div :id="lflId"
        class="leaflet-viewer"
   ></div>

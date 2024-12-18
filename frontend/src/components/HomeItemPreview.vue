@@ -1,32 +1,34 @@
-<!-- HomeThemeOrNamedEntity.vue
-
-     props:
-        resource (Object). see below for its structure.
-        display (string): one of 'article'|'category',
-          to set HTML style classes
-
-     resource data model: @typedefs.HomeItemPreviewItem
-     {
-      title_main   : <string. the main item to be displayed>,
-      title_second : <string. an item that will be displayed next to title_main, in gray>,
-      title_sub    : <string. a secondary item that will be displayed below, in white on back>,
-      href         : <URL. an URL to make redirections>,
-      thumbnail    : <string. an URL to an optional image to be displayed on the background of this component>
-     }
-
-     html structure:
-     +-----------------------------------------+
-     | +--------------------+ +--------------+ |
-     | | title_main         | | title_second | |
-     | +--------------------+ +--------------+ |
-     |                                         |
-     | +-------------------------------------+ |
-     | | title_sub                           | |
-     | +-------------------------------------+ |
-     +-----------------------------------------+
--->
-
 <template>
+
+  <!-- HomeThemeOrNamedEntity.vue
+  
+       props:
+          resource (Object). see below for its structure.
+          display (string): one of 'article'|'category',
+            to set HTML style classes
+  
+       resource data model: @typedefs.HomeItemPreviewItem
+       {
+        title_main   : <string. the main item to be displayed>,
+        title_second : <string. an item that will be displayed next to title_main, in gray>,
+        title_sub    : <string. a secondary item that will be displayed below, in white on back>,
+        href         : <URL. an URL to make redirections>,
+        thumbnail    : <string. an URL to an optional image to be displayed on the background of this component>
+       }
+  
+       html structure:
+       +-----------------------------------------+
+       | +--------------------+ +--------------+ |
+       | | title_main         | | title_second | |
+       | +--------------------+ +--------------+ |
+       |                                         |
+       | +-------------------------------------+ |
+       | | title_sub                           | |
+       | +-------------------------------------+ |
+       +-----------------------------------------+
+  -->
+
+
   <div v-if="resource != null"
        class="preview-wrapper main-default"
        :id="htmlId"

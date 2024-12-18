@@ -1,28 +1,30 @@
-<!-- HomeView.vue
-     the homepage of our app.
-
-    this component displays theses, named entites,
-    redirections to a map and a modal presenting the project.
-
-    the themes and namedEntities received from the backend
-    have the following structure:
-    both are arrays of `@types.ThemeOrNamedEntityCategoryItemFull`
-
-    themes, named entities and articles are reformatted to be
-    passed to `HomeItemPreview.vue`, with the following structure
-    (see HomeItemPreview for more info):
-    ```
-    {
-       title_main   : <string>,
-       title_second : <string>,
-       title_sub    : <str>,
-       href         : <str>,
-       thumbnail    : <str>
-    }
-    ```
--->
-
 <template>
+
+  <!-- HomeView.vue
+       the homepage of our app.
+  
+      this component displays theses, named entites,
+      redirections to a map and a modal presenting the project.
+  
+      the themes and namedEntities received from the backend
+      have the following structure:
+      both are arrays of `@types.ThemeOrNamedEntityCategoryItemFull`
+  
+      themes, named entities and articles are reformatted to be
+      passed to `HomeItemPreview.vue`, with the following structure
+      (see HomeItemPreview for more info):
+      ```
+      {
+         title_main   : <string>,
+         title_second : <string>,
+         title_sub    : <str>,
+         href         : <str>,
+         thumbnail    : <str>
+      }
+      ```
+  -->
+
+
 
   <!-- without `v-if` on `Transition`, TheHomeModal would slide-out on each page,
      since it would be removed. -->
@@ -115,6 +117,7 @@
 
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
@@ -265,6 +268,7 @@ onUnmounted(() =>
 )
 
 </script>
+
 
 <style scoped>
 .home-wrapper {

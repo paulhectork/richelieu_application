@@ -1,10 +1,12 @@
-<!-- UiButtonEye.vue
-
-     an SVG drawing of an eye, used to show that when clicking on it,
-     something can be seen (an image, a plot on map....)
--->
-
 <template>
+
+  <!-- UiButtonEye.vue
+  
+       an SVG drawing of an eye, used to show that when clicking on it,
+       something can be seen (an image, a plot on map....)
+  -->
+
+
   <button class="button-eye">
     <!--
     <svg width="100%"
@@ -38,8 +40,10 @@
   </button>
 </template>
 
+
 <script setup>
 </script>
+
 
 <style scoped>
 </style>

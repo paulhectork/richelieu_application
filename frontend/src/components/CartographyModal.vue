@@ -1,13 +1,15 @@
-<!-- CartographyModal.vue
-     a modal that shows info in @views/CartographyMain.vue
-
-     emits:
-        closeCartographyModal: a flag that will cause
-          @views/CartographyMain.vue to remove this
-          component.
- -->
-
 <template>
+
+  <!-- CartographyModal.vue
+       a modal that shows info in @views/CartographyMain.vue
+  
+       emits:
+          closeCartographyModal: a flag that will cause
+            @views/CartographyMain.vue to remove this
+            component.
+   -->
+
+
   <div v-if="displayModal"
        class="c-modal-outer-wrapper"
   >
@@ -112,6 +114,7 @@ onUnmounted(() => {
 })
 
 </script>
+
 
 <style scoped>
 .c-modal-outer-wrapper {

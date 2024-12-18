@@ -1,8 +1,10 @@
-<!-- TheMenu.vue
-     the menu for the website.
- -->
-
 <template>
+
+  <!-- TheMenu.vue
+       the menu for the website.
+   -->
+
+
   <div class="menu-wrapper fill-parent negative-default">
 
     <ul class="menu fill-parent border-bottom list-invisible"

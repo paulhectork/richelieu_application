@@ -1,8 +1,10 @@
-<!-- QuickSearchView.vue
-  displays the results of a quick search in a tree.
--->
-
 <template>
+
+  <!-- QuickSearchView.vue
+    displays the results of a quick search in a tree.
+  -->
+
+
   <div class="qsv-wrapper">
     <div class="qsv-title-wrapper">
       <h1>Recherche rapide</h1>
@@ -17,6 +19,7 @@
   </div>
 
 </template>
+
 
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";

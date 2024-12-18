@@ -1,40 +1,42 @@
-<!-- TheSidebar.vue
-
-     a decorative sidebar incorporating a IIIF viewer.
-     the viewer is panned depending on the % of page scrolling.
-     if there's an error, a static image is displayed.
-
-     logic:
-     1) create an openseadragon IIIF viewer. if there's no error,
-        assign the osd viewer to the ref `viewer`. if there is an error,
-        the ref `viewer` is `false` and the Openseadragon-specific
-        behaviours are disabled.
-     2) if there's no error: on page scrolling, the viewport is be
-        panned from left to right.
-        > `viewportPan()` handles the panning, depending on the % of
-          the page that has been scrolled.
-        > the Osd viewer can be manipulated by hand (clicked, pinched etc.),
-          which can zoom/move the image around and mess up our scrolling.
-          to prevent that, we use
-          > `viewportRevert()` to go back to the expected panning/zooming levels
-          > `viewportReset()` to go back to the original position and zooming level on page change.
-
-     x-axis scrolling is ponly allowed within a certain range, defined
-     by setting min-max values in a `viewportConfig` object:
-
-     X = non-scrollable zone
-     V = scrollable zone
-     ______________________________
-     |   |                    |   |
-     |   |                    |   |
-     | X |         V          | X |
-     |   |                    |   |
-     |   |                    |   |
-     ______________________________
-
--->
-
 <template>
+
+  <!-- TheSidebar.vue
+  
+       a decorative sidebar incorporating a IIIF viewer.
+       the viewer is panned depending on the % of page scrolling.
+       if there's an error, a static image is displayed.
+  
+       logic:
+       1) create an openseadragon IIIF viewer. if there's no error,
+          assign the osd viewer to the ref `viewer`. if there is an error,
+          the ref `viewer` is `false` and the Openseadragon-specific
+          behaviours are disabled.
+       2) if there's no error: on page scrolling, the viewport is be
+          panned from left to right.
+          > `viewportPan()` handles the panning, depending on the % of
+            the page that has been scrolled.
+          > the Osd viewer can be manipulated by hand (clicked, pinched etc.),
+            which can zoom/move the image around and mess up our scrolling.
+            to prevent that, we use
+            > `viewportRevert()` to go back to the expected panning/zooming levels
+            > `viewportReset()` to go back to the original position and zooming level on page change.
+  
+       x-axis scrolling is ponly allowed within a certain range, defined
+       by setting min-max values in a `viewportConfig` object:
+  
+       X = non-scrollable zone
+       V = scrollable zone
+       ______________________________
+       |   |                    |   |
+       |   |                    |   |
+       | X |         V          | X |
+       |   |                    |   |
+       |   |                    |   |
+       ______________________________
+  
+  -->
+
+
   <aside class="sidebar-wrapper main-default">
     <!-- <img :src="menuCropPath"> -->
     <div class="sidebar-iiif-wrapper">

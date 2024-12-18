@@ -1,21 +1,23 @@
-<!-- IndexPlace.vue
-
-     a special type of index for our places:
-     left, a list of places. right, a map that can display
-     vectors and rasters for the selected place.
-
-      props:
-      * `display`: one of "resource"|"concept".
-          passed to `IndexItem` to determine the style used.
-      * `data`   : `@typedefs.IndexBaseItem[]`
-          the array of data to display. the structure is the same
-          no matter the parent which calls IndexBase, or the kind of object
-          to display (Icono, Named Entity...)
-        ```
-
--->
-
 <template>
+
+  <!-- IndexPlace.vue
+  
+       a special type of index for our places:
+       left, a list of places. right, a map that can display
+       vectors and rasters for the selected place.
+  
+        props:
+        * `display`: one of "resource"|"concept".
+            passed to `IndexItem` to determine the style used.
+        * `data`   : `@typedefs.IndexBaseItem[]`
+            the array of data to display. the structure is the same
+            no matter the parent which calls IndexBase, or the kind of object
+            to display (Icono, Named Entity...)
+          ```
+  
+  -->
+
+
   <div class="index-place">
 
     <div class="index-container">
@@ -50,6 +52,7 @@
 
   </div>
 </template>
+
 
 <script setup>
 import { onMounted, onUpdated, onBeforeUnmount, ref } from "vue";
@@ -129,6 +132,7 @@ onMounted(() => {
   map.value = globalDefineMap("place-map")[0];
 })
 </script>
+
 
 <style scoped>
 .index-place {

@@ -1,31 +1,33 @@
-<!-- IndexIconography.vue
-  a component that centralizes all indexes/catalogs of Iconography objects.
-
-  this view is to be used every time we need to display an array
-  of `Iconography.serialize_lite()`. what is does is wrap IndexBase
-  with a few extra functionnalities:
-    - FilterIndexIconographyIndex allows to filter the disiplayed data
-    - DownloadButtonGroup allows to download the filtered data in CSV or JSON
-    - IndexBase handles the UI display of the iconography index)
-
-  props:
-    - data (Array<Object>)
-          an array of Iconography.serialize_lite objects
-    - oneItemRow (bool)
-        a flag indicating that the IndexBase build will display only 1 item per row
-        (useful for small viewports: `CartographyPlaceInfo`)
-    - hideFilter (bool)
-        a flag to hide the FilterIndexIconography block
-
-  as with all collections with filters, we use 2 refs:
-    - dataFull (Array<Object>)
-          stores the data sent from the backend and isn't modified.
-    - dataFilter (Array<Object>)
-          stores data corresponding to user-defined filters and
-          reformatted to fit the data structure expected by IndexBase.
--->
-
 <template>
+
+  <!-- IndexIconography.vue
+    a component that centralizes all indexes/catalogs of Iconography objects.
+  
+    this view is to be used every time we need to display an array
+    of `Iconography.serialize_lite()`. what is does is wrap IndexBase
+    with a few extra functionnalities:
+      - FilterIndexIconographyIndex allows to filter the disiplayed data
+      - DownloadButtonGroup allows to download the filtered data in CSV or JSON
+      - IndexBase handles the UI display of the iconography index)
+  
+    props:
+      - data (Array<Object>)
+            an array of Iconography.serialize_lite objects
+      - oneItemRow (bool)
+          a flag indicating that the IndexBase build will display only 1 item per row
+          (useful for small viewports: `CartographyPlaceInfo`)
+      - hideFilter (bool)
+          a flag to hide the FilterIndexIconography block
+  
+    as with all collections with filters, we use 2 refs:
+      - dataFull (Array<Object>)
+            stores the data sent from the backend and isn't modified.
+      - dataFilter (Array<Object>)
+            stores data corresponding to user-defined filters and
+            reformatted to fit the data structure expected by IndexBase.
+  -->
+
+
   <div class="index-iconography-outer-wrapper">
     <div class="index-iconography-inner-wrapper">
       <FilterIndexIconography v-if="!hideFilter"

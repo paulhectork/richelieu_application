@@ -1,29 +1,31 @@
-<!-- FilterIndexThemeOrNamedEntity.vue
-
-  like `@components/FilterIndexIconography`, this component is
-  completely standalone: it handles:
-  - form html structure
-  - retrieving form data
-  - data manipulation : getting data from parent, filtering
-    and emitting filtered data back to the parent.
-  - it does so without any ajax requests.
-
-  the structure of a single Theme or NamedEntity object is:
-  @typedefs.ThemeOrNamedEntityItemLite :
-    {
-    "category_name": "consommer",
-    "category_slug": "consommer",
-    "entry_name": "alimentation",
-    "iconography_count": 364,
-    "id_uuid": "qr17eaf451869db4d64b5d9942651d7ed5b",
-    "thumbnail": [
-      "qr1b6cc58cb98f14868ad4f0d9120cfbb9b_thumbnail.jpg"
-    ]
-  }
-
--->
-
 <template>
+
+  <!-- FilterIndexThemeOrNamedEntity.vue
+  
+    like `@components/FilterIndexIconography`, this component is
+    completely standalone: it handles:
+    - form html structure
+    - retrieving form data
+    - data manipulation : getting data from parent, filtering
+      and emitting filtered data back to the parent.
+    - it does so without any ajax requests.
+  
+    the structure of a single Theme or NamedEntity object is:
+    @typedefs.ThemeOrNamedEntityItemLite :
+      {
+      "category_name": "consommer",
+      "category_slug": "consommer",
+      "entry_name": "alimentation",
+      "iconography_count": 364,
+      "id_uuid": "qr17eaf451869db4d64b5d9942651d7ed5b",
+      "thumbnail": [
+        "qr1b6cc58cb98f14868ad4f0d9120cfbb9b_thumbnail.jpg"
+      ]
+    }
+  
+  -->
+
+
   <div class="filter-outer-wrapper">
     <h3>Filter les données
       <span v-if="currentCount > 1"

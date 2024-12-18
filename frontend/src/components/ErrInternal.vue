@@ -1,8 +1,10 @@
-<!-- ErrInternal.vue
-     a component that displays an error message when an error occurs
--->
-
 <template>
+
+  <!-- ErrInternal.vue
+       a component that displays an error message when an error occurs
+  -->
+
+
   <div class="err-internal">
     <h1>Erreur</h1>
     <p>Une erreur interne est survenue</p>

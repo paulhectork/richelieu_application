@@ -1,10 +1,12 @@
-<!-- ArticleComponentTemplate.vue:
-
-     a basic template for all the ArticleContent...
-     components. actually unused in the app.
--->
-
 <template>
+
+  <!-- ArticleComponentTemplate.vue:
+  
+       a basic template for all the ArticleContent...
+       components. actually unused in the app.
+  -->
+
+
   <!--
     images and footnotes:
     <UiButtonEllipsis data-key="..."></UiButtonEllipsis>

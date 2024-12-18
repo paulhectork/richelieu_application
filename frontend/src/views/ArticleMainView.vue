@@ -1,40 +1,41 @@
-<!--  ArticleMainView.vue
-
-      a component that displays an in-depth article,
-      with extra data fetched from the database.
-
-      this component is composed of 4 components:
-      * `ArticleContent...`: (ArticleComponentBourse...):
-          the article itself, loaded dynamically based on the
-          `articleName` parameter in the URL. if the article
-          looked for is not found, a 404 is displayed instead
-      * `IiifViewer`: a IIIF viewer to display important images
-          for the article
-      * `IconographyIndex`: an index of relevant, but not directly
-          related, iconography entries, fetched from a backend db query
-      * `ArticleFootnote`: rfootnotes for an article
-
-      how to the components interact?
-      * `ArticleMainView` handles the interaction between
-          components and ALL generic processes (all things that
-          can and will be repeated from one article to another)
-      * `ArticleContent...` contains the DATA specific to an article:
-          the article itself, query parameters to build the `IconographyIndex`,
-          UUIDs for the iconography ressources to display in the
-          IIIF viewer, footnotes... all of that is emitted to
-          `ArticleMainView`. the data changes from an article to
-          another, but the processes are always the same, so they
-          are handled by the current component.
-      * `IiifViewer`, `IconographyIndex` and `ArticleFootnote` display data
-          retrieved from `ArticleContent...` and passed to them
-          from `ArticleMainView`
-
-      view @components/ArticleContentTemplate.vue for more info on
-      the structure of all the components.
--->
-
-
 <template>
+
+  <!--  ArticleMainView.vue
+  
+        a component that displays an in-depth article,
+        with extra data fetched from the database.
+  
+        this component is composed of 4 components:
+        * `ArticleContent...`: (ArticleComponentBourse...):
+            the article itself, loaded dynamically based on the
+            `articleName` parameter in the URL. if the article
+            looked for is not found, a 404 is displayed instead
+        * `IiifViewer`: a IIIF viewer to display important images
+            for the article
+        * `IconographyIndex`: an index of relevant, but not directly
+            related, iconography entries, fetched from a backend db query
+        * `ArticleFootnote`: rfootnotes for an article
+  
+        how to the components interact?
+        * `ArticleMainView` handles the interaction between
+            components and ALL generic processes (all things that
+            can and will be repeated from one article to another)
+        * `ArticleContent...` contains the DATA specific to an article:
+            the article itself, query parameters to build the `IconographyIndex`,
+            UUIDs for the iconography ressources to display in the
+            IIIF viewer, footnotes... all of that is emitted to
+            `ArticleMainView`. the data changes from an article to
+            another, but the processes are always the same, so they
+            are handled by the current component.
+        * `IiifViewer`, `IconographyIndex` and `ArticleFootnote` display data
+            retrieved from `ArticleContent...` and passed to them
+            from `ArticleMainView`
+  
+        view @components/ArticleContentTemplate.vue for more info on
+        the structure of all the components.
+  -->
+
+
 
   <div class="fill-parent"
        v-if="notFoundFlag===true">

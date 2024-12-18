@@ -1,34 +1,36 @@
-<!-- FormKitSlider
-  a custom formkit slider that supports 2-input slider (min,max)
-  instead of just 1 input, done using jQuery plugin noUiSlider.
-
-  props: as with all formkit inputs, the props are all contained
-  within `context` object.
-  - number (string)
-      one of "float"|"integer", wether we accept float inputs
-      or only integer inputs
-  - step (number)
-      the slider's step (distance between 2 possible values: .1, 0.01...)
-  - minVal (number)
-      the minimum value for the slider
-  - maxVal (number)
-      the maximum value for the slider
-
-  usage example:
-    <FormKit type="fkSlider"
-             name="iconographyCount"
-             id="iconography-count"
-             label="Nombre de ressources iconographiques"
-             help="Filtrer par nombre de ressources iconographiques"
-             number="integer"
-             :step="1"
-             :minVal="0"
-             :maxVal="800"
-    ></FormKit>
-
--->
-
 <template>
+
+  <!-- FormKitSlider
+    a custom formkit slider that supports 2-input slider (min,max)
+    instead of just 1 input, done using jQuery plugin noUiSlider.
+  
+    props: as with all formkit inputs, the props are all contained
+    within `context` object.
+    - number (string)
+        one of "float"|"integer", wether we accept float inputs
+        or only integer inputs
+    - step (number)
+        the slider's step (distance between 2 possible values: .1, 0.01...)
+    - minVal (number)
+        the minimum value for the slider
+    - maxVal (number)
+        the maximum value for the slider
+  
+    usage example:
+      <FormKit type="fkSlider"
+               name="iconographyCount"
+               id="iconography-count"
+               label="Nombre de ressources iconographiques"
+               help="Filtrer par nombre de ressources iconographiques"
+               number="integer"
+               :step="1"
+               :minVal="0"
+               :maxVal="800"
+      ></FormKit>
+  
+  -->
+
+
   <div class="form-field-slider-wrapper">
     <div class="form-field-slider">
       <div ref="sliderRef"></div>

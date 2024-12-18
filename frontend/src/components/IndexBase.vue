@@ -1,50 +1,52 @@
-<!--  IndexBase.vue
-
-      a basic index to display an array of data: Iconography, Named Entity, Themes.
-      the parent sends an array of objects from which to build an item.
-
-      lifecycle:
-      - onMounted, `data` is set: an Iconography index can be displayed.
-      - when  `props.data` changes, the data sent by the parent has changed.
-          this mostly happens when `FilterIndexIconography` filters the
-          iconography data and the parent transmits the newly translated
-          data to the current component. in that case,
-          - update the `data` ref with the new index
-          - reset `pageNumber`: we start viewing data from page 0.
-
-      component communication:
-      - IndexBase
-          handles the array-level
-      - IndexItem
-          handles the object-level, aka the display of each individual
-          item in this array.
-
-      props:
-      - display ("resource"|"concept")
-          passed to `IndexItem` to determine the style used.
-      - itemsPerRow (Number|undefined)
-          the maximum number of items to display per row. so far it's only used
-          by `CartographyPlaceInfo`
-      - data ( @typedefs.IndexBaseItem[] )
-          the array of data to display. the structure is the same
-          no matter the parent which calls IndexBase, or the kind of object
-          to display (Icono, Named Entity...):
-        ```
-        [
-          // 1st object
-          {
-            "idUuid" : <uuid of the resource>,
-            "href"   : <relative url to redirect to on click (without the url origin)>,
-            "img"    : <url to the background image>,
-            "text"   : <text to display in the `IndexItem`>
-          },
-          // other objects
-          {...}
-        ]
-        ```
--->
-
 <template>
+
+  <!--  IndexBase.vue
+  
+        a basic index to display an array of data: Iconography, Named Entity, Themes.
+        the parent sends an array of objects from which to build an item.
+  
+        lifecycle:
+        - onMounted, `data` is set: an Iconography index can be displayed.
+        - when  `props.data` changes, the data sent by the parent has changed.
+            this mostly happens when `FilterIndexIconography` filters the
+            iconography data and the parent transmits the newly translated
+            data to the current component. in that case,
+            - update the `data` ref with the new index
+            - reset `pageNumber`: we start viewing data from page 0.
+  
+        component communication:
+        - IndexBase
+            handles the array-level
+        - IndexItem
+            handles the object-level, aka the display of each individual
+            item in this array.
+  
+        props:
+        - display ("resource"|"concept")
+            passed to `IndexItem` to determine the style used.
+        - itemsPerRow (Number|undefined)
+            the maximum number of items to display per row. so far it's only used
+            by `CartographyPlaceInfo`
+        - data ( @typedefs.IndexBaseItem[] )
+            the array of data to display. the structure is the same
+            no matter the parent which calls IndexBase, or the kind of object
+            to display (Icono, Named Entity...):
+          ```
+          [
+            // 1st object
+            {
+              "idUuid" : <uuid of the resource>,
+              "href"   : <relative url to redirect to on click (without the url origin)>,
+              "img"    : <url to the background image>,
+              "text"   : <text to display in the `IndexItem`>
+            },
+            // other objects
+            {...}
+          ]
+          ```
+  -->
+
+
   <div class="index-outer-wrapper">
     <div class="index-inner-wrapper animate__animated animate__slideInLeft"
          :style="computedStyle"
@@ -61,6 +63,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { onMounted, onUnmounted, ref, computed, watch } from "vue";
@@ -134,6 +137,7 @@ onUnmounted(() => {
   $(window).off("scroll");
 })
 </script>
+
 
 <style>
 /**

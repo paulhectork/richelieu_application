@@ -1,31 +1,33 @@
-<!-- App.vue
-    this component is the starting point for the app.
-    it manages basic app-wide processes.
-
-    3 importants actions happen here:
-    - log the window orientation in `domStore` (landscape or portrait)
-    - handling the showing/hiding of the menu (see below).
-    - switching color theme between light/dark, based on the route's path
-      (see `toThemeNegative` and `maybeChangeTheme`)
-
-    interaction between App.vue, TheMenu.vue and TheNavbar.vue:
-    how is the menu displayed ?
-    - hiding/showing the menu is defined in `App.vue` and `TheNavbar.vue`.
-    - App.vue contains a `menuActive` ref. if `true`, the menu is shown and
-       the burger button in TheNavbar takes the shape of a cross. else,
-       the menu is hidden and the burger is in its normal state.
-    - App.vue listens to route changes. when the route changes, `menuActive`
-       is set to close and TheMenu is hidden.
-    - App.vue passes menuActive as a prop to TheNavbar.
-    - TheNavbar determines the style of `#burger` (cross or burger) and
-       the display of the menu when interacting with `#burger` based
-       on menuActive. when `#burger` is clicked, TheNavbar emits an event
-       (menu-active-update) to App.vue, and App.vue will switch the flag
-       menuActive: if true-> false, if false -> true. this will toggle the
-       visibility of the menu.
--->
-
 <template>
+
+  <!-- App.vue
+      this component is the starting point for the app.
+      it manages basic app-wide processes.
+  
+      3 importants actions happen here:
+      - log the window orientation in `domStore` (landscape or portrait)
+      - handling the showing/hiding of the menu (see below).
+      - switching color theme between light/dark, based on the route's path
+        (see `toThemeNegative` and `maybeChangeTheme`)
+  
+      interaction between App.vue, TheMenu.vue and TheNavbar.vue:
+      how is the menu displayed ?
+      - hiding/showing the menu is defined in `App.vue` and `TheNavbar.vue`.
+      - App.vue contains a `menuActive` ref. if `true`, the menu is shown and
+         the burger button in TheNavbar takes the shape of a cross. else,
+         the menu is hidden and the burger is in its normal state.
+      - App.vue listens to route changes. when the route changes, `menuActive`
+         is set to close and TheMenu is hidden.
+      - App.vue passes menuActive as a prop to TheNavbar.
+      - TheNavbar determines the style of `#burger` (cross or burger) and
+         the display of the menu when interacting with `#burger` based
+         on menuActive. when `#burger` is clicked, TheNavbar emits an event
+         (menu-active-update) to App.vue, and App.vue will switch the flag
+         menuActive: if true-> false, if false -> true. this will toggle the
+         visibility of the menu.
+  -->
+
+
 
 
   <div class="app-wrapper main-default">
@@ -301,4 +303,3 @@ main {
   transform: translateX(-60vw);
 }
 </style>
-
