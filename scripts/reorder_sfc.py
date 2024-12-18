@@ -10,6 +10,7 @@
 import re
 import os
 import shutil
+import textwrap
 import argparse
 import typing as t
 
@@ -116,7 +117,20 @@ def prompt_run():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser( prog="reorder_sfc"
                                     , usage="python reorder-src -w"
-                                    , description="reorder your Vue from the format: \n<intro comment> - <template> - <script> - <style> to the format: \n<template starting with intro comment> - <script> - <style>. WARNING: CAN ONLY BE DONE ONCE AND WILL OVERWRITE YOUR FILES.")
+                                    , description=textwrap.fill("""reorder your Vue from the format:
+                                                                  ```\n<!-- intro comment -->?
+                                                                  <template/>
+                                                                  <script/>
+                                                                  <style/>
+                                                                  ```
+                                                                  to the format:
+                                                                  ```
+                                                                  <template><!-- intro comment -->?...</template>
+                                                                  <script/>
+                                                                  <style/>
+                                                                  ```
+                                                                  WARNING: CAN ONLY BE DONE ONCE AND WILL OVERWRITE YOUR FILES.""", initial_indent="\t", subsequent_indent="\t")
+                                    , formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument( "-w"
                        , "--writefiles"
                        , help="write the reformatted version to file"
