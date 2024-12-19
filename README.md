@@ -2,7 +2,7 @@
 
 ## 🪩🪩🪩
 
-clone personnel de l'application [Quartier Richelieu](https://quartier-richelieu.inha.fr) développée pour le projet *Richelieu. Histoire du quartier* au SNR.
+clone personnel de l'application [Quartier Richelieu](https://quartier-richelieu.inha.fr) développée pour le projet *Richelieu. Histoire du quartier* à l'INHA.
 
 ce clone date du 17.12.2024 et ne sera pas mis à jour. le dépôt officiel se trouve sur le [GitLab de l'INHA](https://gitlab.inha.fr/snr/rich.data/application), avec [tous les autres outils](https://gitlab.inha.fr/snr/rich.data/) développés pour le projet.
 
